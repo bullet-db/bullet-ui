@@ -1,0 +1,62 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.query-name-entry {
+  $max-text-length: 760px;
+  $vertical-offset: 5px;
+  overflow: auto;
+  cursor: pointer;
+
+  .query-description {
+    float: left;
+    padding-top: $vertical-offset;
+    .query-real-name {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: $max-text-length;
+    }
+    .query-blurb {
+      @import "../query-blurb";
+      .filter-summary-text, .projections-summary-text {
+        display: inline-block;
+        max-width: $max-text-length/2;
+      }
+      .filter-summary-text {
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .query-name-actions {
+    display: none;
+  }
+
+  .query-name-actions.is-visible {
+    display: inline-block;
+    // Prevent selection from showing up when clicking
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+
+    margin-left: 20px;
+    padding-top: $vertical-offset;
+
+    .query-name-action-icon {
+      color: $inactive-grey;
+      font-size: $font-size-regular;
+      &:hover {
+        cursor: pointer;
+      }
+      &:focus {
+        outline: none;
+      }
+      &:not(:last-of-type) {
+        margin-right: 15px;
+      }
+    }
+  }
+}

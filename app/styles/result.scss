@@ -1,0 +1,79 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+$results-right-space: 30px;
+$results-left-space: $left-bar-separation-width;
+$results-inner-left-space: 20px;
+$results-inner-right-space: 35px;
+
+.query-information {
+  margin: 22px 30px $results-right-space $results-left-space;
+  color: $heading-text-color;
+
+  .query-title {
+    margin-bottom: 25px;
+    color: $heading-text-color;
+    font-size: $font-size-large;
+    font-weight: $font-weight-strong;
+  }
+
+  .query-blurb-wrapper {
+    $button-width: 130px;
+    $button-height: 38px;
+    @import "components/query-blurb";
+
+    cursor: pointer;
+    padding: 5px 35px 15px 20px;
+    background-color: $background-grey;
+    border-radius: 4px;
+    position: relative;
+    &:hover {
+      background-color: $background-grey-darker;
+    }
+    .query-text {
+      margin-right: $results-right-space + $button-width;
+      h4 {
+        margin-bottom: 15px;
+        font-size: $font-size-regular;
+        font-weight: $font-weight-strong;
+        text-transform: uppercase;
+      }
+      .query-blurb > .filter-summary-text, .query-blurb > .projections-summary-text {
+        display: block;
+      }
+    }
+    .query-link-button {
+      @extend %primary-button;
+
+      float: right;
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      right: $results-right-space;
+      margin-top: (-$button-height)/2;
+      width: $button-width;
+      height: $button-height;
+      font-size: $font-size-regular;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+.result-container {
+  @import "components/pretty-json";
+  @import "components/records-viewer";
+  @import "components/no-results-help";
+  pre {
+    padding-left: $results-inner-left-space;
+    padding-right: $results-inner-right-space;
+    overflow: auto;
+    max-height: 60vh;
+  }
+  margin-left: $left-bar-separation-width;
+  margin-bottom: 30px;
+  .help-text {
+    margin-right: $results-right-space;
+  }
+}

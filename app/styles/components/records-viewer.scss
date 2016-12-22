@@ -1,0 +1,104 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.records-viewer {
+  margin-right: $results-right-space;
+
+  .records-title {
+    @import "section-heading-with-help";
+
+    margin-top: 35px;
+    margin-bottom: 15px;
+    padding-left: 0;
+
+    .view-controls {
+      float: right;
+      display: inline-block;
+      margin-top: -10px;
+
+      .view-control {
+        margin-left: 15px;
+        border: 2px solid $secondary-button-color;
+        border-radius: $button-radius-circle;
+        color: $white;
+        i {
+          color: $secondary-button-color;
+          font-weight: 200;
+          vertical-align: -1px;
+        }
+        background-color: $white;
+        width: 30px;
+        height: 30px;
+        &:hover {
+          border-color: $secondary-button-hover-color;
+          i {
+            color: $secondary-button-hover-color;
+          }
+        }
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .raw-view, .table-view {
+        padding-left: 7px; 
+      }
+      .download  {
+        padding-right: 6px; 
+      }
+
+      .download-options {
+        left: -50px;
+        top: 40px;
+        min-width: 95px;
+        background-color: $white;
+        padding: 0;
+        border: 1px solid $primary-button-color;
+
+        .download-option {
+          text-align: center;
+          a {
+            color: $inactive-grey;
+            height: 35px;
+            line-height: 35px;
+            padding-top: 1px;
+            font-size: $font-size-regular-small;
+            font-weight: $font-weight-medium;
+          }
+          :hover {
+            background-color: $primary-button-color;
+            color: $white !important;
+          }
+        }
+        .triangle {
+          position: absolute;
+          width: 0;
+          height: 0;
+          color: white;
+          border: 9px solid transparent;
+          border-bottom-color: $primary-button-color;
+          top: -18px;
+          right: 4px;
+          z-index: -2;
+          .inner {
+            position: relative;
+            width: 0;
+            height: 0;
+            color: $white;
+            left: -7px;
+            top: -6px;
+            border: 7px solid transparent;
+            border-bottom-color: $white;
+            z-index: -1;
+          }
+        }
+      }
+
+    }
+  }
+  .records-display {
+    @import "records-table";
+  }
+}

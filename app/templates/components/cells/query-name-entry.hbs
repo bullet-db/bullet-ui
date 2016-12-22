@@ -1,0 +1,23 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<div class="query-description">
+  {{#if row.name}}
+   <p class="query-real-name"><strong>{{row.name}}</strong></p>
+  {{else}}
+    {{query-blurb query=row}}
+  {{/if}}
+</div>
+<div class="query-name-actions {{if hasHover 'is-visible'}}">
+  <i class="query-name-action-icon edit-icon glyphicon glyphicon-edit" {{action "editClick" bubbles=false}}>
+    {{#tooltip-on-element}}Edit{{/tooltip-on-element}}
+  </i>
+  <i class="query-name-action-icon copy-icon glyphicon glyphicon-duplicate" {{action "copyClick" bubbles=false}}>
+    {{#tooltip-on-element}}Copy{{/tooltip-on-element}}
+  </i>
+  <i class="query-name-action-icon delete-icon glyphicon glyphicon-trash" {{action "deleteClick" bubbles=false}}>
+    {{#tooltip-on-element}}Delete Query and Historical Results{{/tooltip-on-element}}
+  </i>
+</div>

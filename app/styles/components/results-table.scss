@@ -1,0 +1,56 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.results-table {
+  $row-highlight-color: $inactive-grey-lighter;
+
+  height: 300px;
+  border-collapse: collapse;
+  overflow-x: auto;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .lt-head {
+    margin-bottom: 15px;
+    tr {
+      .lt-column {
+        font-weight: $font-weight-medium;
+        font-size: $font-size-small;
+        padding: 0 5px 5px 5px;
+        border-bottom: 1px solid $table-header-line-color;
+        color: $table-body-grey-text-color;
+        overflow-x: hidden;
+
+        .lt-sort-icon {
+          float: none;
+          padding-left: 2px;
+        }
+      }
+    }
+  }
+
+  .lt-body {
+    .lt-row {
+      height: 35px;
+      color: $table-body-grey-text-color;
+
+      &:hover {
+        background-color: $background-grey !important;
+        color: $table-body-blue-text-color;
+      }
+
+      .lt-cell {
+        @import "cells/date-entry";
+        cursor: pointer;
+
+        font-size: $font-size-regular-small;
+        font-weight: $font-weight-regular;
+        padding: 0 5px;
+      }
+    }
+  }
+}

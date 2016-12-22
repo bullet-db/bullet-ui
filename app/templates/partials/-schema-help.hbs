@@ -1,0 +1,29 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<p>
+  This page describes the data fields that Bullet knows about in the data. Note that Bullet can also query map fields in data records with unknown subfields, as long as the user knows the name of the subfields. Those unknown subfields are not present in the schema page.
+</p>
+
+<h5 class="content-header">Columns</h5>
+<ul>
+  <li>
+    The Field column contains the name of each field.
+  </li>
+  <li>
+    The Type column defines the type of the field. There are simple fields like string, boolean etc. and complex fields like "map of strings to booleans" (a map of key/value pairs where each key name is a string and its value is a boolean) or "list of maps". Lists of maps do not have the types of the maps known since no operations can currently be performed on them.
+  </li>
+  <li>
+    The Description column is intended to contain all sorts of informative descriptions of the structure or field. The description may contain limited formatting and hyperlinks.
+  </li>
+  <li>
+    Sorting is possible by clicking on the name of the column. Note that any nested structures that have been expanded will be collapsed, and their subfields will not be sorted.
+  </li>
+</ul>
+
+<h5 class="content-header">Nesting</h5>
+<p>
+  The schema page supports expansion of nested map fields if the subfields are known. Nested "list" types can currently not be expanded even if their contents are known. If a map has known subfields, a green caret (>) is displayed next to the field name. The map is expanded if a user clicks anywhere on that row and all its known subfields are listed below with descriptions.
+</p>

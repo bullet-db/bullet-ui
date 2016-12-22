@@ -1,0 +1,37 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.info-popover.popover {
+  $info-text-color: $heading-text-color;
+  max-width: 475px;
+  padding: 20px 30px 25px 20px;
+  font-family: $font-family-regular;
+
+  .popover-title {
+    font-size: $font-size-regular;
+    font-weight: $font-weight-medium;
+    background: $white;
+    color: $info-text-color;
+    // This makes the border line flush with the rest of the text
+    padding: 8px 0;
+    margin: 0 14px;
+  }
+  .popover-content {
+    max-height: 525px;
+    overflow: auto;
+    font-size: $font-size-regular-small;
+    font-weight: $font-weight-regular;
+    color: $info-text-color;
+
+    .content-header {
+      font-weight: $font-weight-strong;
+      margin-top: 25px;
+    }
+    .content-sub-header {
+      font-weight: $font-weight-medium;
+      margin-top: 15px;
+    }
+  }
+}

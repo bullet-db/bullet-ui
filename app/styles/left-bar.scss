@@ -1,0 +1,62 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.left-bar {
+  $bar-background-color: #0D0D0D;
+  $bar-link-color: #9B9B9B;
+  $bar-link-inactive-opacity: 0.5;
+  $bar-link-active-opacity: 1;
+  $bar-link-space-between: 65px;
+
+  background: $bar-background-color;
+  height: 100%;
+  left: 0;
+  top: 0;
+  padding: ($top-bar-height - 6px) 0 30px 0;
+  position: fixed;
+  width: $left-bar-width;
+  z-index: 1;
+  opacity: 0.7;
+
+  .icon-bar {
+    height: 100%;
+  }
+
+  // Could nest inside ul and li below but too much indentation
+  .left-bar-link {
+    color: $bar-link-color;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    opacity: $bar-link-inactive-opacity;
+    transition: opacity $default-transition-time;
+    .custom-icon {
+      width: 42px;
+      height: 38px;
+    }
+    .link-name {
+      font-size: $font-size-regular-small;
+      margin: 8px 0px 0px 0px;
+    }
+    &:hover, &.active {
+      color: $white;
+      opacity: $bar-link-active-opacity;
+    }
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      margin-bottom: $bar-link-space-between;
+      padding: 0;
+    }
+  }
+}

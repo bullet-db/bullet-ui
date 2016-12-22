@@ -1,0 +1,46 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.query-results-entry-popover {
+  max-width: 270px;
+  max-height: 550px;
+  font-family: $font-family-regular;
+
+  .popover-title {
+    background-color: $white;
+    padding: 15px 15px 5px 15px;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-regular-small;
+    color: $heading-text-color;
+    border-bottom: none;
+
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+
+    .clear-history {
+      cursor: pointer;
+      font-weight: $font-weight-regular;
+      font-size: $font-size-regular-small;
+      color: $table-body-blue-text-color;
+      margin-left: 55px;
+    }
+  }
+
+  .popover-content {
+    .close-button {
+      @extend %close-button;
+      position: absolute;
+      top: 10px;
+      right: -12px;
+      font-size: $font-size-regular-large;
+    }
+    padding: 10px 25px 25px 20px;
+    max-height: 400px;
+    overflow: auto;
+    @import "../results-table";
+  }
+}

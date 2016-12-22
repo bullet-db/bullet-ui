@@ -1,0 +1,22 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.labeled-input {
+  label {
+    @extend %query-input-label;
+    // Push into the div's padding + 3 px for margins and borders
+    left: $padding-base-horizontal + 14px;
+  }
+
+  input {
+    @extend %query-input-field;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}

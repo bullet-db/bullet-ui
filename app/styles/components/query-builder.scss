@@ -1,0 +1,256 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+ // Overrides to the QueryBuilder styling
+
+.builder {
+  $logical-button-active-color: #6E54A2;
+  $logical-button-inactive-hover-color: #E9E9E9;
+  $logical-button-inactive-color: #D3D3D3;
+  $rule-background-color: $background-box-color;
+  $rule-background-hover-color: $background-box-hover-color;
+  $rule-background-error-color: $background-box-error-color;
+  $guidance-line-color: #D8DADE;
+
+  $drag-icon-color: #B9BDC5;
+  $drag-icon-hover-color: #F5F5F6;
+
+  width: 1100px;
+  margin-top: -5px;
+
+  // Remove the padding the for the outermost container
+  & > .rules-group-container {
+    padding-left: 0;
+    margin-left: -5px;
+  }
+
+  .rules-group-container {
+    // Border: remove
+    background-color: $white;
+    border-color: $white;
+    // To right align buttons
+    padding-right: 0;
+    margin-right: 0;
+    border-right: 0;
+
+    // All delete buttons should look like this
+    .btn-danger {
+      @extend %remove-button;
+      margin-top: 4px;
+      margin-left: 5px;
+      margin-right: 10px;
+    }
+
+    .rules-group-header {
+      // Pushes the Logical selections to the right and aligns with the Rules
+      padding-left: 15px !important;
+
+      .group-actions {
+        .btn-success {
+          @extend %add-button;
+          i {
+            margin-left: -12px;
+            padding-right: 5px;
+          }
+          margin-right: 4px;
+          border: none;
+        }
+        .btn-danger {
+          // The now circular button needs to be pulled up to align better.
+          margin-top: 0;
+          // Because Groups don't have a bordered div around them, the margin needs to be pushed a px more to line up the buttons
+          margin-right: 11px;
+        }
+      }
+
+      .group-conditions {
+        // Forces the border for the rule grouping lines to go to the background
+        z-index: 1;
+        // Override Button colors for the logical operations
+        .btn-primary {
+          border-style: none;
+          padding-top: 4px;
+          width: 55px;
+          background-color: $logical-button-inactive-color;
+          height: 24px;
+          font-weight: $font-weight-regular;
+          font-family: $font-family-regular;
+          font-size: $font-size-small;
+          &.active {
+            background-color: $logical-button-active-color;
+          }
+          &:hover:not(.active) {
+            background-color: $logical-button-inactive-hover-color
+          }
+          &:focus {
+            outline: 0;
+          }
+          // Only two buttons, first is curved to left, second to the right
+          &:first-child {
+            border-radius: $button-radius-large 0 0 $button-radius-large;
+          }
+          &:last-child {
+            border-radius: 0 $button-radius-large $button-radius-large 0;
+          }
+        }
+      }
+    }
+    // Make the guidelines wider and taller
+    .rules-list {
+      & > *:before, & > *:after {
+        left: -13px;
+        width: 13px;
+        // Moves the guidance line to the center of the drag handle
+        height: calc(50% + 10px);
+        border-color: $guidance-line-color;
+      }
+      & > *:before {
+        top: -8px;
+        border-width: 0 0 4px 4px;
+      }
+      & > *:after {
+        top: 50%;
+        border-width: 0 0 0 4px;
+      }
+      & > *:first-child:before {
+       // Add a top border
+       border-width: 4px 0px 4px 4px;
+       // Pushes the border to the center of the group conditions and the rule
+       top: -24px;
+       // Moves the guidance line to the center of the drag handle
+       height: calc(50% + 26px);
+      }
+      & > *:last-child:before {
+       border-radius: 0 0 0 0px;
+      }
+    }
+  }
+  // Force guidelines to touch for nesting levels. Needs to be outside groups container.
+  .rules-list > .rules-group-container:before {
+    width: 26px !important;
+  }
+
+  .rule-container {
+    background-color: $rule-background-color;
+    // Border: remove
+    border-color: $white;
+    border-radius: 5px;
+
+    // To right align buttons and move guidance line closer
+    padding: 7px 0 7px 0;
+    margin: 4px 0;
+    // Change height
+    height: $row-height;
+
+    .rule-subfield-container {
+      input {
+        max-width: 90px;
+      }
+    }
+    .rule-value-container {
+      input {
+        // Bootstrap variables to match the padding of the other fields
+        padding: $padding-base-vertical $padding-base-horizontal !important;
+      }
+      input[type="radio"] {
+        margin-left: 25px;
+        margin-right: 5px;
+      }
+    }
+    .rule-actions {
+      margin-top: 3px;
+    }
+    &:hover {
+      background-color: $rule-background-hover-color;
+      .drag-handle > i {
+        color: $drag-icon-hover-color;
+      }
+    }
+    // Background color when error.
+    &.has-error {
+      background-color: $rule-background-error-color;
+      &:hover > .drag-handle > i {
+        color: $drag-icon-color;
+      }
+    }
+
+    .rule-filter-container, .rule-operator-container {
+      // Hide it if the div has nothing inside
+      &:empty {
+        display: none;
+      }
+      // Make a pseudoelement triangle that looks like the ember-power-select triangle
+      &::after {
+        content: '';
+        position: relative;
+        right: 14px;
+        top: 14px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 7px 4px 0 4px;
+        border-color:  #999 transparent transparent transparent;
+      }
+      // Remove the default select styling and ensure spacing
+      select {
+        appearance: none;
+        -ms-appearance: none;
+        -o-appearance: none;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        &::-ms-expand {
+          display: none;
+        }
+        &:-moz-focusring {
+          color: transparent;
+          text-shadow: 0 0 0 #000;
+        }
+        min-width: 130px;
+        padding: 0 6px 2px 6px;
+      }
+    }
+
+    .rule-operator-container, .rule-value-container {
+      border-left: none;
+    }
+  }
+  // error icon color
+  .error-container {
+    cursor: default;
+    margin-left: -2px;
+    margin-right: 10px;
+    margin-top: 5px;
+    i {
+      font-size: $font-size-regular;
+      color: $error-icon-color;
+      &:hover {
+        color: $error-icon-hover-color;
+      }
+    }
+  }
+
+  // Override ember-tooltips styling colliding with builder
+  .tooltip {
+    background: none;
+    .tooltip-arrow {
+      border-bottom-color: $inactive-grey;
+      margin-left: -10px;
+      border-width: 0 10px 10px;
+    }
+    .tooltip-inner {
+      @extend %tooltip;
+      font-weight: $font-weight-thin !important;
+    }
+  }
+
+  // Drag handle color should be more muted
+  .drag-handle  {
+    margin-right: 0;
+    i {
+      color: $drag-icon-color;
+      font-size: $font-size-large;
+    }
+  }
+}

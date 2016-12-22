@@ -1,0 +1,101 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.top-bar {
+  $border-bottom-color: #ECECEC;
+  $logo-vertical-space: 19px;
+  $help-icon-height: 22px;
+  $help-link-background-hover-color: #6E52A2;
+
+  margin-bottom: 0;
+  margin-left: $left-bar-width;
+  height: $top-bar-height;
+  padding-left: 0;
+  border-color: $border-bottom-color;
+  background-color: $white;
+  border-width: 1px;
+
+  .navbar-logo {
+    img {
+      width: 186px;
+      height: 50px;
+    }
+    margin: $logo-vertical-space 0 $logo-vertical-space 22px;
+    padding: 0;
+  }
+  .brand-version {
+    display: inline-block;
+    margin: 5px 0 0 5px;
+    font-variant: small-caps;
+    color: $heading-text-color;
+  }
+  .right-panel {
+    $right-space: $right-separation-width - 15px;
+    .help-button {
+      .glyphicon {
+        font-size: $help-icon-height;
+      }
+      span {
+        position: relative;
+        top: -5px;
+        vertical-align: middle;
+        padding-left: 5px;
+      }
+      color: $inactive-grey;
+      padding: 20px 15px 11px 15px;
+      margin-top: 13px;
+      margin-right: $right-space;
+      transition: color $default-transition-time;
+      &:hover {
+        color: $black;
+      }
+    }
+    .help-link {
+      &:hover {
+        color: $white;
+        background-color: $help-link-background-hover-color
+      }
+    }
+    .dropdown-menu {
+      margin-top: 12px;
+      margin-right: $right-space;
+      border-radius: 0;
+      border-color: $inactive-grey-lighter;
+      box-shadow: none;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+}
+
+#help-modal {
+  .large-dialog {
+    .help-header {
+      padding: 15px 40px 0 40px;
+      border-bottom: none;
+      font-size: $font-size-large;
+      font-weight: $font-weight-medium;
+      .close-button {
+        @extend %close-button;
+        position: absolute;
+        padding: 0px 1px 0 2px;
+        margin-top: 2px;
+        right: -17px;
+        float: right;
+        height: 34px;
+        width: 34px;
+        font-size: $font-size-extra-large;
+        font-weight: 600;
+      }
+    }
+
+    .help-body {
+      padding: 10px 40px 20px 40px;
+      font-size: $font-size-regular;
+    }
+    width: 800px;
+  }
+  top: 180px;
+}

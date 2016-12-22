@@ -1,0 +1,34 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<div class="results-container">
+  <div class="query-information">
+    <div class="query-title">
+      <p>
+        {{if model.query.name model.query.name "New Untitled Query"}}
+      </p>
+    </div>
+    <div class="query-blurb-wrapper" {{action "queryClick" model.query}}>
+      <div class="query-text">
+        <h4>Query Definition</h4>
+        {{query-blurb query=model.query}}
+      </div>
+      <button class="btn btn-info btn-primary query-link-button" {{action "queryClick" model.query}}>
+        Edit
+      </button>
+    </div>
+  </div>
+  <div class="result-container">
+      {{#if model.records}}
+        {{#if model.query.projections}}
+          {{records-viewer records=model.records metadata=model.metadata showTable=true}}
+        {{else}}
+          {{records-viewer records=model.records metadata=model.metadata showTable=false}}
+        {{/if}}
+      {{else}}
+        {{partial "partials/no-results-help"}}
+    {{/if}}
+  </div>
+</div>

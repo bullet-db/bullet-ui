@@ -1,0 +1,65 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.simple-alert {
+  $error-alert-background-color: $error-red;
+  $success-alert-background-color: $success-green;
+  $warning-alert-background-color: #FFD600;
+  $alert-close-background-color: $white;
+
+  font-size: $font-size-regular-large;
+  font-family: $font-family-regular;
+  z-index: -1;
+
+  .alert {
+    padding: $alert-padding $right-separation-width $alert-padding $query-panel-side-padding;
+    margin-bottom: 0;
+
+    .alert-message {
+      color: $white;
+    }
+
+    .alert-close {
+      background-color: $alert-close-background-color;
+      border-color: $alert-close-background-color;
+      border-radius: $button-radius-circle;
+      font-size: $font-size-regular-large;
+      opacity: 0.6;
+      .glyphicon {
+        font-weight: 600;
+        vertical-align: -1.5px;
+      }
+      &:hover {
+        background-color: $alert-close-background-color;
+        border-color: $alert-close-background-color;
+        opacity: 0.8;
+      }
+      &:focus {
+        outline: 0;
+      }
+    }
+  }
+
+  .alert-warning {
+    background-color: $warning-alert-background-color;
+   .alert-close > i {
+      color: $warning-alert-background-color;
+    }
+  }
+
+  .alert-danger {
+    background-color: $error-alert-background-color;
+   .alert-close > i {
+      color: $error-alert-background-color;
+    }
+  }
+
+  .alert-success {
+    background-color: $success-alert-background-color;
+   .alert-close > i {
+      color: $success-alert-background-color;
+    }
+  }
+}

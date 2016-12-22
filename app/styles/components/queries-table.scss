@@ -1,0 +1,27 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+@import "standard-page-table";
+
+.queries-table {
+  height: 650px;
+  margin-right: 30px;
+
+  .lt-body {
+    .lt-no-data {
+      border-bottom: none;
+      height: 600px;
+      td {
+        display: block;
+        @import "cells/no-queries";
+      }
+    }
+    .lt-row .lt-cell {
+      @import "cells/query-name-entry";
+      @import "cells/query-results-entry";
+      @import "cells/date-entry";
+    }
+  }
+}

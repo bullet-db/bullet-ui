@@ -1,0 +1,10 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<div class="alert {{alertClass}} alert-dismissible" role="alert">
+  {{yield}}
+  <button type="button" class="btn btn-danger btn-xs alert-close pull-right" data-dismiss="alert" aria-label="Close"><i class="glyphicon glyphicon-remove"></i></button>
+  <span class="alert-message">{{message}}</span>
+</div>

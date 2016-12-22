@@ -1,0 +1,22 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+{{#if value.length}}
+  <p class="length-entry"> <span><strong>{{value.length}}</strong></span> Results</p>
+  <div class="query-results-entry-popover-title hidden">
+    <span class="heading">Result History ({{value.length}})</span>
+    <span class="clear-history" {{action "deleteResultsClick"}}>Clear</span>
+  </div>
+  <div class="query-results-entry-popover-body hidden">
+    <button class="btn btn-xs close-button" aria-label="Close" {{action "closePopover"}}>
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+    {{#if renderTable}}
+      {{results-table results=value resultClick=(action "resultClick") deleteResultsClick=(action "deleteResultsClick")}}
+    {{/if}}
+  </div>
+{{else}}
+  <p><strong>--</strong></p>
+{{/if}}

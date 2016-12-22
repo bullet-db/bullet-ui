@@ -1,0 +1,31 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.query-summary {
+  margin: 0 0 0.5em 0;
+
+  .query-summary-description {
+    width: 85%;
+    height: 4em;
+
+    .query-summary-text {
+      text-align: left;
+      @import "query-blurb";
+    }
+  }
+
+  .results-dropdown-button {
+    width: 15%;
+    height: 4em;
+  }
+
+  .results-dropdown {
+    width: 100%;
+
+    .result-item {
+      line-height: 3em;
+    }
+  }
+}

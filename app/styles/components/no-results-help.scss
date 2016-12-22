@@ -1,0 +1,68 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.bummer {
+  margin-top: 100px;
+
+  .bummer-image > img {
+    width: 100px;
+    height: 100px;
+  }
+  h2 {
+    margin-top: 25px;
+    font-family: $font-family-regular;
+    font-size: $font-size-ultra-large;
+    font-weight: $font-weight-strong;
+    color: $heading-text-color;
+  }
+  h3 {
+    font-family: $font-family-regular;
+    font-size: $font-size-regular-large + 1;
+    font-weight: $font-weight-regular;
+    color: $header-help-color;
+  }
+  .steps {
+    text-align: left;
+    margin: auto;
+    margin-top: 30px;
+    width: 600px;
+
+    h4 {
+      font-family: $font-family-regular;
+      font-size: $font-size-regular;
+      font-weight: $font-weight-strong;
+      color: $heading-text-color;
+    }
+    p {
+      font-family: $font-family-regular;
+      font-size: $font-size-regular;
+      font-weight: $font-weight-regular;
+      color: $header-help-color;
+    }
+
+    ol {
+      list-style-type: none;
+      margin: 0;
+      counter-reset: li-counter;
+      li {
+        position: relative;
+        &:before {
+          position: absolute;
+          width: 23px;
+          height: 23px;
+          left: -35px;
+
+          content: counter(li-counter);
+          counter-increment: li-counter;
+          text-align: center;
+          border-radius: 30px;
+          background-color: $table-body-blue-text-color;
+          color: white;
+          padding: 1.5px 0 0 0.5px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<label class="power-select-label">Field</label>
+{{#power-select disabled=disabled selected=selectedColumn options=columns searchField="id" onchange=(action "handleSelect") as |column|}}
+  {{column.id}}
+{{/power-select}}

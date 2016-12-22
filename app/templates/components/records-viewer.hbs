@@ -1,0 +1,47 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<div class="records-title">
+  <span class="section-header">
+    <h3 class="section-title">Query Results</h3>
+    {{#info-popover title="Query Results"}}
+      {{partial "partials/results-help"}}
+    {{/info-popover}}
+  </span>
+  <div class="view-controls">
+    {{#if showTable}}
+      <button type="button" class="view-control raw-view" {{action "showRawData"}}>
+        <i class="glyphicon glyphicon-align-left"></i>
+        {{#tooltip-on-element}}Show Raw data{{/tooltip-on-element}}
+      </button>
+    {{else}}
+      <button type="button" class="view-control table-view" {{action "showTable"}}>
+        <i class="glyphicon glyphicon-th"></i>
+        {{#tooltip-on-element}}Show as table{{/tooltip-on-element}}
+      </button>
+    {{/if}}
+    <div class="btn-group">
+      <button type="button" class="view-control download dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="glyphicon glyphicon-download-alt"></i>
+        {{#tooltip-on-element}}Download{{/tooltip-on-element}}
+      </button>
+      <ul class="download-options dropdown-menu">
+        <div class="triangle">
+          <div class="inner"></div>
+        </div>
+        <li class="download-option"><a {{action "downloadAsJSON"}}>JSON</a></li>
+        <li class="download-option"><a {{action "downloadAsCSV"}}>CSV</a></li>
+        <li class="download-option"><a {{action "downloadAsFlatCSV"}}>Flat CSV</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="records-display">
+  {{#if showTable}}
+    {{records-table columnNames=columns rawRows=records}}
+  {{else}}
+    {{pretty-json data=records}}
+  {{/if}}
+</div>

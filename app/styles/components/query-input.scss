@@ -1,0 +1,312 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.query-panel {
+  // TODO: Move these into closest block after changes are all done.
+  $fill-icon-color: $inactive-grey;
+  $error-icon-color: $error-red;
+  $error-icon-hover-color: #FF9693;
+  $background-box-color: $background-grey;
+  $background-box-error-color: #FFE1E0;
+  $background-box-hover-color: $background-grey-darker;
+  $divider-color: #979797;
+  $label-text-color: #878C91;
+  $input-text-color: $text-color-regular;
+  $secondary-text-color: $heading-text-color;
+  $query-input-height: 38px;
+  $row-height: 54px;
+  $inactive-button-color: #D3D3D3;
+  $inactive-secondary-button-color: #E9E9E9;
+  $inactive-container-color: #EAEAEA;
+  $query-footer-panel-height: 140px;
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // Reused mixins
+
+  %add-button {
+    @extend %primary-button;
+    padding: 0;
+    font-size: $font-size-regular-small;
+    font-weight: $font-weight-medium;
+    height: 28px;
+    width: 96px;
+  }
+
+  %remove-button {
+    @extend %delete-button;
+    i {
+      vertical-align: -0.5px;
+    }
+    font-size: $font-size-regular-large;
+  }
+
+
+  %query-input-label {
+    position: absolute;
+    font-size: $font-size-small;
+    z-index: 1;
+    font-weight: $font-weight-regular;
+    font-family: $font-family-regular;
+    color: $label-text-color;
+    padding-top: 3px;
+  }
+
+  %query-input-field {
+    height: 38px;
+    line-height: 38px;
+    font-size: $font-size-regular;
+    color: $input-text-color;
+    padding-left: 10px;
+    padding-top: $font-size-small + 5px;
+    padding-bottom: 4px;
+  }
+
+  @import "section-heading-with-help";
+  @import "column-field";
+  @import "labeled-input";
+  @import "validated-input";
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // Query Form wide styling
+  .row {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .container-fluid {
+    // The query-panel-container padding is what will push the inputs inside
+    padding-left: 0;
+  }
+
+  // Change all the input elements
+  .form-control {
+    font-family: $font-family-regular;
+    font-weight: $font-weight-regular;
+    font-size: $font-size-regular;
+    color: $input-text-color;
+    height: $query-input-height;
+    line-height: $query-input-height;
+    border-radius: $input-radius-regular;
+    border-color: $background-grey;
+    box-shadow: none;
+    &:focus {
+      border: 1px solid $input-border-focus;
+      box-shadow: none;
+    }
+  }
+
+  .has-error .form-control {
+    border-color: $error-icon-color;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  .validation-container {
+    @import "simple-alert";
+    margin-left: (-$query-panel-side-padding);
+    margin-right: (-$query-panel-side-padding);
+
+    .validation-status-icon {
+      float: left;
+      padding-right: 20px;
+      font-size: 22px;
+      color: $white;
+    }
+  }
+
+  // Top level query builder elements
+  .scrollable-panel {
+    overflow-y: auto;
+    padding-bottom: $query-footer-panel-height;
+    background: transparent;
+
+    // Buffer for content inside to not clip into the scrollable panel
+    margin-left: (-$query-panel-side-padding);
+    padding-left: $query-panel-side-padding;
+
+    // All this styling is to make the query name look like the title of the page
+    .name-container {
+      margin-top: 10px;
+      margin-bottom: 5px;
+      .query-name {
+        max-width: 900px;
+        margin-left: -25px;
+        label {
+          display: none;
+        }
+        .form-control {
+          height: 45px;
+          color: $heading-text-color;
+          font-weight: $font-weight-strong;
+          font-size: $font-size-large;
+          font-family: $font-family-regular;
+          padding-top: 6px;
+          border-color: $white;
+          box-shadow: none;
+          &:focus {
+            border: 1px solid $input-border-focus;
+            box-shadow: none;
+          }
+        }
+      }
+    }
+
+    .filter-container {
+      margin-top: -5px;
+      @import "query-builder";
+    }
+
+    .projections-container {
+      .projection-options {
+        padding-top: 5px;
+        margin-bottom: 20px;
+        .ember-radio-button {
+          display: block;
+          max-width: 200px;
+          margin-bottom: 10px;
+          font-size: $font-size-regular-small;
+          font-family: $font-family-regular;
+          font-weight: $font-weight-regular;
+          input {
+            margin-right: 10px;
+          }
+        }
+      }
+
+      .projection-container {
+        $spacing-vertical: ($row-height - $query-input-height)/2;
+
+        background-color: $background-box-color;
+        padding: $spacing-vertical 0 $spacing-vertical 0;
+        margin: 4px 0;
+        width: 800px;
+        border: 1px solid $white;
+        border-radius: 5px;
+
+        &:hover {
+          background-color: $background-box-hover-color;
+        }
+        &.projection-error {
+          background-color: $background-box-error-color;
+        }
+      }
+      .projection-container:last-of-type {
+        margin-bottom: 10px;
+      }
+
+      .projection-field {
+        padding-left: 0;
+      }
+
+      .delete-button {
+        @extend %remove-button;
+        margin-top: 8px;
+        margin-right: 10px;
+      }
+
+      .add-button {
+        @extend %add-button;
+        float: left;
+        margin-bottom: 5px;
+        i {
+          padding-right: 5px;
+        }
+      }
+    }
+
+    .options-container {
+      // $option-right-space: 15px;
+      padding-top: 5px;
+      .row {
+        margin-top: 10px;
+        margin-left: 0;
+        input {
+          height: 45px;
+        }
+      }
+      .aggregation-size {
+        padding-right: 0;
+        width: 165px;
+        margin-left: -15px;
+        margin-right: 0;
+      }
+      .query-duration {
+        margin-left: -5px;
+        width: 195px;
+      }
+      .error-tooltip-link {
+        // Because these fields are an exception, their error icon needs to be recentered
+        margin-top: 45px/2 - $font-size-regular/2;
+      }
+    }
+  }
+
+  .control-container {
+    height: $query-footer-panel-height;
+    width: 100%;
+    background-color: white;
+    z-index: 1000;
+
+    position: fixed;
+    bottom: 0;
+
+    @import "timed-progress-bar";
+
+    hr {
+      margin-left: (-$query-panel-side-padding);
+      margin-right: (-$grid-gutter-width/2) + (-$query-panel-side-padding);
+      margin-top: 0;
+      border-color: $divider-color;
+      opacity: 0.2;
+    }
+
+    .submit-button {
+      @extend %primary-button;
+      margin-top: 25px;
+      width: 140px;
+      height: 40px;
+      font-weight: $font-weight-medium;
+      font-size: $font-size-regular;
+    }
+
+    .cancel-button {
+      @extend %secondary-button;
+      border-width: 2px;
+      width: 140px;
+      height: 40px;
+      font-size: $font-size-regular;
+      font-weight: $font-weight-medium;
+    }
+
+    .save-button {
+      @extend %secondary-button;
+      border-width: 2px;
+      width: 140px;
+      margin-top: 25px;
+      height: 40px;
+      font-size: $font-size-regular;
+      margin-left: 10px;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  // Running state page styling
+
+  &.query-running {
+    .btn:not(.cancel-button) {
+      background-color:  $inactive-button-color !important;
+      border-color:  $inactive-button-color !important;
+    }
+    // Querybuilder
+    .query-builder .rules-group-header .group-conditions > .btn:not(.active) {
+      background-color:  $inactive-secondary-button-color !important;
+      border-color:  $inactive-secondary-button-color !important;
+    }
+
+    .rule-container, .projection-container {
+      background-color: $inactive-container-color !important;
+    }
+  }
+}

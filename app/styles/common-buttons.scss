@@ -1,0 +1,65 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+%primary-button {
+  color: $white;
+  background-color: $primary-button-color;
+  border-color: $primary-button-color;
+  border-radius: $button-radius-regular;
+  font-family: $font-family-regular;
+  &:hover {
+    background-color: $primary-button-hover-color;
+    border-color: $primary-button-hover-color;
+  }
+  &:focus {
+    outline: 0;
+  }
+}
+
+%secondary-button {
+  border-color: $secondary-button-color;
+  border-radius: $button-radius-regular;
+  background-color: $white;
+  color: $secondary-button-color;
+  font-family: $font-family-regular;
+  &:hover {
+    border-color: $secondary-button-hover-color;
+    color: $secondary-button-hover-color;
+  }
+  &:focus {
+    outline: 0;
+  }
+}
+
+// Apply to btn-dangers
+%delete-button {
+  background-color: $delete-button-color;
+  border-color: $delete-button-color;
+  border-radius: $button-radius-circle;
+  padding: 0px 1px 0 1px;
+  color: $white;
+  height: 24px;
+  width: 24px;
+  .glyphicon {
+    font-weight: 100;
+  }
+  &:hover {
+    background-color: $delete-button-hover-color;
+    border-color: $delete-button-hover-color;
+  }
+  &:focus {
+    outline: 0;
+  }
+}
+
+%close-button {
+  @extend %delete-button;
+  background-color: $inactive-grey;
+  border-color: $inactive-grey;
+  &:hover {
+    background-color: $inactive-grey-lighter;
+    border-color: $inactive-grey-lighter;
+  }
+}

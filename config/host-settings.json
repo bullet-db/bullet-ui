@@ -1,0 +1,16 @@
+{
+  "default": {
+    "drpcHost": "http://foo.bar.com:4080",
+    "drpcNamespace": "bullet/api",
+    "drpcPath": "drpc",
+    "schemaHost": "http://foo.bar.com:4080",
+    "schemaNamespace": "bullet/api",
+    "helpLinks": [
+      {
+        "name": "Example Docs Page",
+        "link": ""
+      }
+    ],
+    "modelVersion": 1
+  }
+}

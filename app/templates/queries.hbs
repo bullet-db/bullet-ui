@@ -1,0 +1,25 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<div class="queries-list">
+  <span class="section-header">
+    <h3 class="section-title">All Queries</h3>
+    {{#info-popover title="All Queries"}}
+      {{partial "partials/queries-help"}}
+    {{/info-popover}}
+  </span>
+  <div class="clearfix">
+    {{#link-to "queries.new" tagName="button" class="btn btn-primary btn-md add-button pull-left"}}
+      <i class="glyphicon glyphicon-plus"></i>
+      New Query
+    {{/link-to}}
+  </div>
+    {{queries-table queries=model.queries
+                    queryClick=(route-action "queryClick")
+                    copyQueryClick=(route-action "copyQueryClick")
+                    deleteQueryClick=(route-action "deleteQueryClick")
+                    resultClick=(route-action "resultClick")
+                    deleteResultsClick=(route-action "deleteResultsClick")}}
+</div>

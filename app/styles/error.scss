@@ -1,0 +1,36 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.error {
+  margin-top: 110px;
+
+  .error-image > img {
+    width: 100px;
+    height: 100px;
+  }
+  h2 {
+    margin-top: 25px;
+    font-family: $font-family-regular;
+    font-size: $font-size-ultra-large;
+    font-weight: $font-weight-strong;
+    color: $heading-text-color;
+  }
+  p {
+    font-family: $font-family-regular;
+    font-size: $font-size-regular-large;
+    font-weight: $font-weight-regular;
+    color: $header-help-color;
+    margin-bottom: 0;
+  }
+  .file-bug {
+    @extend %primary-button;
+    width: 140px;
+    height: 40px;
+    margin-top: 25px;
+    font-family: $font-family-regular;
+    font-size: $font-size-regular;
+    font-weight: $font-weight-medium;
+  }
+}

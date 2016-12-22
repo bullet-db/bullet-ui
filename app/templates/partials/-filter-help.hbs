@@ -1,0 +1,94 @@
+<!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ -->
+<p>
+  The filters determine which records that will be part of the output data. Complex combinations of AND and OR filters are supported, as well as arbitrary nesting of groups of filters. Bullet is aware of each column's data type, which impacts the set of available operators and their behaviors.
+</p>
+
+<h5 class="content-header">Filter Rules and Filter Groups</h5>
+<p>
+A Filter Group consists of a set of at least one filter. All filters within a Filter Group have either an AND or a OR relationship between them, determined by the AND or OR toggle at the top left of each group. Purple color means enabled. Add new Filter Groups by clicking +Group at the top right of the Filter Group you want to add the group to.
+</p>
+
+<p>
+It is possible to move individual filters or entire groups by dragging and dropping the &#8942; icon. If you want to move an entire Filter Group, use the &#8942; icon next to the AND / OR toggle.
+</p>
+
+<h5 class="content-header">Columns</h5>
+<p>
+  <strong>First level columns</strong> can be found in the drop down list on each Filter Rule.
+</p>
+<p>
+  <strong>Maps</strong> can be accessed as
+  <ul>
+    <li>
+      <strong>foo</strong> for the entire map.
+    </li>
+    <li>
+      <strong>foo.bar</strong> for the specific "bar" subfield inside "foo" map. This only works for maps where all subfields are known in the schema configuration.
+      </li>
+    <li>
+      <strong>foo.*</strong> for maps where Bullet does not know all possible subfields, so the user needs to enter the desired subfield manually. Once "foo.*" is selected from the drop-down box, a new "subfield" textbox appears next to the drop-down box where the user could enter “bar” for the foo.bar subfield.
+    </li>
+  </ul>
+</p>
+<p>
+  <strong>List of Maps (a.k.a bags)</strong> cannot currently be exploded, so no subfields can be filtered on.
+</p>
+
+<h5 class="content-header">Relational Operators</h5>
+<p>
+  Bullet is type aware, so the set of available operators is different depending on whether a column is defined as a string or a long for example. If the type specific parsing fails, Bullet will fail to match that value and not return any results (nor display any error at the moment), which can cause confusion. For example:
+</p>
+<p>
+  <ul>
+    <li>
+      10 is less than 2 for strings but not for numbers
+    </li>
+    <li>
+      foo &gt; 1.0 will always fail because 1.0 could be a long (but foo &gt; 1.1 will generate an error message because 1.1 is definitely not a long)
+    </li>
+  </ul>
+</p>
+
+<h6 class="content-sub-header">(Not) Equal</h6>
+<p>Data Types: string, long, double, boolean</p>
+<p>
+  Usage: Enter a string or a number in the text box without quotation marks. For the boolean type, use "true" or "false" radio buttons.
+</p>
+<p>Example: foobar</p>
+
+<h6 class="content-sub-header">Less (or Equal) & Greater (or Equal)</h6>
+<p>Data Types: string, long, double</p>
+<p>
+  Usage: The entered textbox value is parsed according to the column data type, so 10 is less than 2 for strings but not for number types, and foo &gt; 1.0 will always fail for longs (and currently does not produce an error message).
+</p>
+
+<p>
+  Number type columns are parsed and appropriate arithmetic comparison is executed assuming the parsing of the value succeeds. String data types are compared alphanumerically, so 10 is less than 2.
+</p>
+<p>Example: 17</p>
+
+<h6 class="content-sub-header">(Not) In</h6>
+<p>Data Types: string, long, double</p>
+<p>
+  Usage: Comma delimited list of possible allowed values. Any surrounding spaces are removed, so "foo,bar" matches the same records as "foo, bar".
+</p>
+<p>Example: foo,bar</p>
+
+<h6 class="content-sub-header">Is (Not) Empty</h6>
+<p>Data Types: string</p>
+<p>Usage: Matches a empty string of zero length.</p>
+
+<h6 class="content-sub-header">Is (Not) Null</h6>
+<p>Data Types: All</p>
+<p>Usage: Checks if a column/map/list-of-maps is present or not.</p>
+
+<h6 class="content-sub-header">Regex Matches</h6>
+<p>Data Types: string</p>
+<p>
+  Usage: Regular expression matching. Use .* as a simple wildcard. More details <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">here</a>
+</p>
+<p>Example: foo.*bar (Similar to LIKE foo%bar in SQL. Will match 'food at the bar'.)</p>

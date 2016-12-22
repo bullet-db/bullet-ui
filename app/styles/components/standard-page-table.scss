@@ -1,0 +1,76 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.ember-light-table {
+  $row-highlight-color: $background-grey;
+  $cell-indent-first: 20px;
+  $cell-indent: 6px;
+
+  border-collapse: collapse;
+  overflow-x: auto;
+  margin-top: 25px;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .lt-head {
+    tr {
+      .lt-column {
+        font-weight: $font-weight-medium;
+        font-size: $font-size-regular-small;
+        height: 30px;
+        color: $white;
+        background-color: $table-header-background-color;
+
+        overflow-x: hidden;
+        white-space: nowrap;
+
+        padding-left: $cell-indent;
+        padding-right: 10px;
+        &:first-of-type {
+          padding-left: $cell-indent-first;
+        }
+
+        .lt-sort-icon {
+          float: none;
+          padding-left: 2px;
+          padding-right: 5px;
+          font-size: $font-size-small;
+        }
+
+        .lt-column-resizer {
+          border-right: 1px solid $white;
+        }
+      }
+    }
+  }
+
+  .lt-body .lt-row {
+    $cell-hover-text-color: $table-body-blue-text-color;
+    height: 45px;
+    border-bottom: 1px solid $background-grey;
+
+    .lt-cell {
+      font-size: $font-size-regular-small;
+      padding-left: $cell-indent;
+
+      &:first-of-type{
+        padding-left: $cell-indent-first;
+      }
+      &:hover {
+        color: $cell-hover-text-color;
+        font-weight: $font-weight-medium;
+      }
+    }
+    &:not(.lt-expanded-row):hover {
+      background-color: $row-highlight-color;
+    }
+    // This is a multiple of the page size in the table
+    &:nth-of-type(10n) {
+      border-bottom: 5px solid $background-grey;
+    }
+  }
+}

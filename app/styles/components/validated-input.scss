@@ -1,0 +1,26 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.validated-input {
+  .error-tooltip-link {
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: $query-input-height/2 - $font-size-regular/2;
+    outline: 0 !important;
+    text-decoration: none !important;
+    color: $error-icon-color;
+    font-size: $font-size-regular;
+
+    &:hover {
+      color: $error-icon-hover-color;
+    }
+  }
+}
+.validated-input.has-error {
+  & div[class ^= "col-"] {
+    margin-left: -15px;
+  }
+}

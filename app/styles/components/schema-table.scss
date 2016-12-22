@@ -1,0 +1,67 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+@import "standard-page-table";
+
+$group-mark-color: #54DF9A;
+
+.schema-table {
+  height: 85vh;
+
+  .lt-head tr .lt-column {
+    padding-left: 20px;
+  }
+
+  .lt-body {
+    .lt-row {
+      cursor: auto;
+      &.has-enumerations {
+        cursor: pointer;
+      }
+
+      // Remove the special page markers for the schema table
+      &:nth-of-type(10n) {
+        border-bottom: 1px solid $background-grey;
+      }
+      .lt-cell {
+        // Default cell padding is 20px
+        padding: 20px;
+        &:hover {
+          color: initial;
+          font-weight: $font-weight-medium;
+        }
+        @import "cells/schema-name-entry";
+        @import "cells/schema-description-entry";
+        @import "cells/schema-type-entry";
+      }
+
+      &.lt-expanded-row .schema-table {
+        height: auto;
+        &.is-nested .ember-light-table {
+          margin-top: 0;
+          // The nested table should have this guidance line on its left
+          border-left: 10px solid rgba($group-mark-color, 0.5);
+
+          .lt-body .lt-row .lt-cell {
+            // Reduce the left padding by 10px except the first one
+            padding-left: 10px;
+            &:first-of-type {
+              padding-left: 30px;
+            }
+          }
+        }
+      }
+
+      &.is-expanded {
+        border-left: 20px solid $group-mark-color;
+        .lt-cell:first-of-type {
+          // When the row is expanded, because of the 20px guidance line, reduce the padding by 10px.
+          padding-left: 10px;
+        }
+      }
+
+    }
+  }
+}

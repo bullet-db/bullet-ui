@@ -1,0 +1,62 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+@import "bootstrap/_variables";
+
+// Colors
+$white: #FFF;
+$black: #000;
+$inactive-grey: #9EA2AF;
+$inactive-grey-lighter: #D8DADE;
+$background-grey: #E8E8E9;
+$background-grey-darker: #E1E1E1;
+$success-green: #21D87D;
+$error-red: #FF6864;
+
+$text-color-regular: #464E56;
+$heading-text-color: #424242;
+$header-help-color: #979797;
+$table-header-text-color: #787D82;
+$table-header-line-color: #EAEAEA;
+$table-header-background-color: #9B9B9B;
+$table-body-grey-text-color: $heading-text-color;
+$table-body-blue-text-color: #188FFF;
+
+$primary-button-color: #56B9FB;
+$primary-button-hover-color: #82CDFF;
+$secondary-button-color: #56B9FB;
+$secondary-button-hover-color: #D4EEFF;
+$delete-button-color: #FF847E;
+$delete-button-hover-color: #FFC3BF;
+
+$input-radius-regular: 5px;
+
+$button-radius-regular: 4px;
+$button-radius-large: 5px;
+$button-radius-circle: 30px;
+
+$font-size-small: 11px;
+$font-size-regular-small: 13px;
+$font-size-regular: 15px;
+$font-size-regular-large: 17px;
+$font-size-large: 21px;
+$font-size-extra-large: 24px;
+$font-size-ultra-large: 35px;
+$letter-spacing-regular: 0.25px;
+
+// Font families
+$font-family-regular:  'Helvetica Neue','HelveticaNeue', Helvetica, 'Lucida Grande', Arial, sans-serif;
+
+$font-weight-thin: 200;
+$font-weight-regular: 300;
+$font-weight-medium: 500;
+$font-weight-strong: 600;
+
+$left-bar-width: 90px;
+$top-bar-height: 85px;
+$left-bar-separation-width: 35px;
+$right-separation-width: 45px;
+
+$default-transition-time: 800ms;
