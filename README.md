@@ -113,12 +113,21 @@ Your UI on CI host will POST to http://bullet-ws.development.domain.com:4080/bul
 
 There is a Node.js server endpoint defined at [server/index.js](server/index.js) to serve the UI. This dynamically injects the settings (see configuration [above](#configuration)) into the served UI based on the environment variable NODE_ENV. You should not need to worry about if you only have one environment.
 
-The entrypoint for the UI is the [Express](http://expressjs.com/) endpoint defined as the main in package.json that simply adds the index.js as a middleware.
+The entrypoint for the UI is the [Express](http://expressjs.com/) endpoint defined as the main in package.json that simply adds the server/index.js as a middleware.
 
-You can use node to launch the ui.
+You need the following folder structure in order to run the UI:
+
+```
+dist/
+config/host-settings.json
+server/index.js
+express-server.js
+```
+
+You can use node to launch the ui from the top-level of the folder structure above.
 
 ```bash
-NODE_ENV=<property_from_host-settings.json> PORT=8800 node express-server.js
+NODE_ENV=<your_env_property_from_host-settings.json> PORT=8800 node express-server.js
 ```
 
 Visit localhost:8800 to see your UI that should be configured with the right settings.
