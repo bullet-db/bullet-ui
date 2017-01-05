@@ -5,6 +5,10 @@ node_js:
 
 sudo: false
 
+branches:
+  only:
+    - master
+
 cache:
   directories:
     - $HOME/.npm
@@ -12,7 +16,6 @@ cache:
     - node_modules
 
 before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
   - "npm config set spin false"
   - "npm install -g npm@^3"
 
@@ -22,4 +25,5 @@ install:
   - bower install
 
 script:
+  - npm run lint
   - npm test
