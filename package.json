@@ -18,6 +18,7 @@
   "scripts": {
     "clean": "rm -rf tmp dist node_modules bower_components",
     "build": "ember build --environment=production",
+    "test": "ember test",
     "local-build": "ember build",
     "local-test": "ember test --server",
     "postinstall": "bower install",
