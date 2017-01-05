@@ -18,7 +18,7 @@
   "scripts": {
     "clean": "rm -rf tmp dist node_modules bower_components",
     "build": "ember build --environment=production",
-    "test": "PATH=./node_modules/.bin:$PATH; phantomjs --version; ember test",
+    "test": "PATH=./node_modules/.bin:$PATH; phantomjs --version; COVERAGE=true ember test",
     "local-build": "ember build",
     "local-test": "ember test --server",
     "postinstall": "bower install",
@@ -51,8 +51,8 @@
     "ember-cli": "~2.7.0",
     "ember-cli-app-version": "^1.0.0",
     "ember-cli-babel": "^5.1.6",
-    "ember-cli-blanket": "0.9.4",
     "ember-cli-bootstrap-sassy": "0.5.1",
+    "ember-cli-code-coverage": "0.3.9",
     "ember-cli-dependency-checker": "^1.2.0",
     "ember-cli-htmlbars": "^1.0.3",
     "ember-cli-htmlbars-inline-precompile": "^0.3.1",

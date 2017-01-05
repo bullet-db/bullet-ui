@@ -39,7 +39,7 @@ export function emptyAPI() {
     Ember.Logger.log(`Unhandled endpoint for ${verb} on path: ${path}`);
   };
   pretender.map(function() {
-    this.post('/write-blanket-coverage', this.passthrough);
+    this.post('/write-coverage', this.passthrough);
   });
   return pretender;
 }
