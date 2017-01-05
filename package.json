@@ -18,7 +18,7 @@
   "scripts": {
     "clean": "rm -rf tmp dist node_modules bower_components",
     "build": "ember build --environment=production",
-    "test": "ember test",
+    "test": "PATH=./node_modules/.bin:$PATH; phantomjs --version; ember test",
     "local-build": "ember build",
     "local-test": "ember test --server",
     "postinstall": "bower install",
@@ -85,7 +85,8 @@
     "jshint": "^2.9.1",
     "loader.js": "^4.0.1",
     "moment": "2.11.2",
-    "moment-timezone": "0.5.0"
+    "moment-timezone": "0.5.0",
+    "phantomjs-prebuilt": "2.1.14"
   },
   "dependencies": {
     "cheerio": "^0.19.0",
