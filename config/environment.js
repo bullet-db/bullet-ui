@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 module.exports = function(environment) {
-  var configuration = require('./host-settings.json');
+  var configuration = require('./env-settings.json');
   var ENV = {
     modulePrefix: 'bullet-ui',
     environment: environment,

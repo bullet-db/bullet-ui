@@ -33,7 +33,7 @@ The entire application with all its assets and dependencies are compiled and pla
 ## Configuration
 
 All of the configuration for the UI is **environment-specific**. This lets you have different instances of Bullet for different environments (e.g. CI, Staging, Production).
-These settings can be found in [config/host-settings.json](config/host-settings.json).
+These settings can be found in [config/env-settings.json](config/env-settings.json).
 
 The ```default``` property shows the default settings for the UI that can be selectively overridden based on which host you are running on. The file does not specify the ```defaultFilter``` setting shown below.
 
@@ -83,7 +83,7 @@ helps them understand your data (that this UI is operating on).
 
 **Note that all your web-service endpoints must support CORS (return the right headers) in order for the UI to be able to communicate with it.** The Bullet Web-Service already does this for the DRPC and columns endpoints.
 
-To cement all this, if you wanted an instance of the UI in your CI environment, you could add this to the host-settings.json file.
+To cement all this, if you wanted an instance of the UI in your CI environment, you could add this to the env-settings.json file.
 
 ```json
 {
@@ -121,7 +121,7 @@ You need the following folder structure in order to run the UI:
 
 ```
 dist/
-config/host-settings.json
+config/env-settings.json
 server/index.js
 express-server.js
 ```
@@ -129,7 +129,7 @@ express-server.js
 You can use node to launch the ui from the top-level of the folder structure above.
 
 ```bash
-NODE_ENV=<your_env_property_from_host-settings.json> PORT=8800 node express-server.js
+NODE_ENV=<your_env_property_from_env-settings.json> PORT=8800 node express-server.js
 ```
 
 Visit localhost:8800 to see your UI that should be configured with the right settings.
