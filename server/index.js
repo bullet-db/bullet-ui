@@ -6,7 +6,7 @@
 var path = require('path');
 var fs = require('fs');
 var cheerio = require('cheerio');
-var configuration = require('../config/host-settings.json');
+var configuration = require('../config/env-settings.json');
 
 // Set the environment based on a NODE_ENV variable.
 var env = process.env.NODE_ENV;
