@@ -37,9 +37,9 @@ export default Ember.Component.extend(PaginatedTable, {
   }),
 
   columns: Ember.A([
-    { label: 'Query', valuePath: 'name', cellComponent: 'cells/query-name-entry', width: '900px' },
-    { label: 'Last Result', valuePath: 'latestResult', cellComponent: 'cells/query-date-entry', width: '240px' },
-    { label: 'Historical Results', valuePath: 'results', cellComponent: 'cells/query-results-entry', width: '150px' }
+    { label: 'Query', valuePath: 'name', cellComponent: 'cells/query-name-entry' },
+    { label: 'Last Result', valuePath: 'latestResult', cellComponent: 'cells/query-date-entry', width: '20%' },
+    { label: 'Historical Results', valuePath: 'results', cellComponent: 'cells/query-results-entry', width: '10%' }
   ]),
 
   init() {
