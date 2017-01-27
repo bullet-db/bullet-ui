@@ -15,7 +15,6 @@ moduleForAcceptance('Acceptance | result lifecycle', {
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-    server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
   },
 
   afterEach() {
@@ -28,6 +27,7 @@ moduleForAcceptance('Acceptance | result lifecycle', {
 test('it has a link to go back to the query from the result', function(assert) {
   assert.expect(2);
 
+  server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
   let createdQuery;
   visit('/queries/new').then(() => {
     createdQuery = currentURL();
@@ -44,6 +44,7 @@ test('it has a link to go back to the query from the result', function(assert) {
 
 test('it lets you swap between raw and tabular forms', function(assert) {
   assert.expect(4);
+
   server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
 
   visit('/queries/new');

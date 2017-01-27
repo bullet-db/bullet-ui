@@ -59,8 +59,8 @@ test('query firing and result accessible through historical queries', function(a
 });
 
 test('query firing and redirecting to error', function(assert) {
-  server = failAPI(COLUMNS.BASIC);
   assert.expect(1);
+  server = failAPI(COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
   andThen(() => {
