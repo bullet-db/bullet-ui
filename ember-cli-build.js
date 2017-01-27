@@ -13,7 +13,7 @@ module.exports = function(defaults) {
         'bower_components/bootstrap-sass/assets/stylesheets'
       ]
     },
-    babel: {
+    'ember-cli-babel': {
       includePolyfill: true
     }
   });

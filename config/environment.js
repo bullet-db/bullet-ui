@@ -3,25 +3,33 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+
+/* jshint node: true */
+
 module.exports = function(environment) {
   var configuration = require('./env-settings.json');
   var ENV = {
     modulePrefix: 'bullet-ui',
     environment: environment,
-    baseURL: '/',
+    rootURL: '/',
     locationType: 'auto',
     EmberENV: {
-      // Need this to make csv iteration simpler
-      EXTEND_PROTOTYPES: {
-        Array: false
-      },
       FEATURES: {
-        // Here you can enable experimental features on an ember canary build e.g. 'with-controller': true
+        // Here you can enable experimental features on an ember canary build
+        // e.g. 'with-controller': true
+      },
+      EXTEND_PROTOTYPES: {
+        Array: false,
+        // Prevent Ember Data from overriding Date.parse.
+        Date: false
       }
     },
+
     APP: {
       // Inject default static settings
       SETTINGS: configuration.default
+      // Here you can pass flags/options to your application instance
+      // when it is created
     }
   };
 
@@ -35,7 +43,6 @@ module.exports = function(environment) {
 
   if (environment === 'test') {
     // Testem prefers this...
-    ENV.baseURL = '/';
     ENV.locationType = 'none';
 
     // keep test console output quieter

@@ -38,6 +38,7 @@ export default Ember.Component.extend(ElementPopover, {
 
     deleteResultsClick() {
       this.removePopover();
+      this.set('hasPopover', false);
       this.get('tableActions.deleteResultsClick')(this.get('row'));
     },
 

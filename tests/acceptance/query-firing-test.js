@@ -59,12 +59,12 @@ test('query firing and result accessible through historical queries', function(a
 });
 
 test('query firing and redirecting to error', function(assert) {
-  server = failAPI(COLUMNS.BASIC);
   assert.expect(1);
+  server = failAPI(COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
   andThen(() => {
-    assert.equal(currentRouteName(), 'error');
+    assert.equal(currentRouteName(), 'errored');
   });
 });
 
@@ -98,7 +98,7 @@ test('creating, deleting query filters and projections and saving', function(ass
     assert.equal(find('.filter-container .rule-filter-container select').val(), 'simple_column');
     assert.equal(find('.filter-container .rule-operator-container select').val(), 'equal');
     assert.equal(find('.filter-container .rule-value-container input').val(), 'foo,bar');
-    assert.equal(find('.projections-container .projection-field .column-onlyfield .ember-power-select').text().trim(), 'simple_column');
+    assert.equal(find('.projections-container .projection-field .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
     // Test that the projection name was autofilled
     assert.equal(find('.projections-container .projection-name input').val(), 'simple_column');
   });
@@ -128,7 +128,7 @@ test('creating a query, adding filters and projections, and save on submit', fun
     assert.equal(find('.filter-container .rule-filter-container select').val(), 'simple_column');
     assert.equal(find('.filter-container .rule-operator-container select').val(), 'equal');
     assert.equal(find('.filter-container .rule-value-container input').val(), 'foo,bar');
-    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
     assert.equal(find('.projections-container .projection-field .column-subfield input').val(), 'foo');
     // Test that the projection name was autofilled
     assert.equal(find('.projections-container .projection-name input').val(), 'complex_map_column.foo');

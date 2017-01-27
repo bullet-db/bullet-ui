@@ -144,9 +144,9 @@ export default Ember.Component.extend(BuilderAdapter, {
   },
 
   validateAndSave() {
-    return this.validate().then(result => {
+    return this.validate().then(() => {
       return this.save();
-    }, (args) => {
+    }, () => {
       this.set('hasError', true);
       this.get('scroller').scrollVertical('.validation-container');
       return Ember.RSVP.reject();

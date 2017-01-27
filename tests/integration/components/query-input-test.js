@@ -88,7 +88,7 @@ test('it displays two projection fields for a single projection', function(asser
   assert.equal(this.$('.projection-container input').length, 1);
   assert.equal(this.$('.projection-field').length, 1);
   assert.equal(this.$('.projection-name').length, 1);
-  assert.equal(this.$('.projection-field .column-onlyfield .ember-power-select').text().trim(), 'foo');
+  assert.equal(this.$('.projection-field .column-onlyfield .ember-power-select-selected-item').text().trim(), 'foo');
   assert.equal(this.$('.projection-name :input').val(), 'goo');
 });
 
@@ -106,9 +106,9 @@ test('it displays multiple projections', function(assert) {
   assert.equal(this.$('.projection-container input').length, 2);
   assert.equal(this.$('.projection-field').length, 2);
   assert.equal(this.$('.projection-name').length, 2);
-  assert.equal(this.$('.projection-field .column-onlyfield .ember-power-select').first().text().trim(), 'foo');
+  assert.equal(this.$('.projection-field .column-onlyfield .ember-power-select-selected-item').first().text().trim(), 'foo');
   assert.equal(this.$('.projection-name :input').first().val(), 'goo');
-  assert.equal(this.$('.projection-field  .column-onlyfield .ember-power-select').last().text().trim(), 'baz.norf');
+  assert.equal(this.$('.projection-field  .column-onlyfield .ember-power-select-selected-item').last().text().trim(), 'baz.norf');
   assert.equal(this.$('.projection-name :input').last().val(), 'norf');
 });
 

@@ -26,7 +26,7 @@ export default Ember.Route.extend({
   errorHandler(error, context) {
     context.set('pendingRequest', null);
     Ember.Logger.error(error);
-    context.transitionTo('error');
+    context.transitionTo('errored');
   },
 
   actions: {
