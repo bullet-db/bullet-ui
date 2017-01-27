@@ -1,5 +1,4 @@
 {
-  "esnext": true,
   "excludeFiles": ["node_modules/**", "bower_components/**", "tmp/**", "vendor/**", "dist/**", "coverage/**", "public/**"],
   "disallowSpacesInsideArrayBrackets": "all",
   "disallowPaddingNewlinesInBlocks": true,

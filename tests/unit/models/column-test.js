@@ -40,11 +40,11 @@ test('it returns false if there are no enumerations', function(assert) {
 
 test('it flat maps enumerated columns', function(assert) {
   let model = this.subject({ name: 'test', type: 'MAP', subtype: 'STRING',
-                             enumerations: [
-                               { name: 'foo' },
-                               { name: 'bar' }
-                             ]
-                           });
+                              enumerations: [
+                                { name: 'foo' },
+                                { name: 'bar' }
+                              ]
+                            });
   let enumerations = Ember.A(model.get('enumeratedColumns'));
   assert.equal(enumerations.length, 2);
   assert.equal(enumerations.objectAt(0).get('name'), 'test.foo');
@@ -55,11 +55,11 @@ test('it flat maps enumerated columns', function(assert) {
 
 test('it returns itself when asked for all flattened columns', function(assert) {
   let model = this.subject({ name: 'test', type: 'MAP', subtype: 'STRING',
-                             enumerations: [
-                               { name: 'foo' },
-                               { name: 'bar' }
-                             ]
-                           });
+                              enumerations: [
+                                { name: 'foo' },
+                                { name: 'bar' }
+                              ]
+                            });
   let flattenedColumns = Ember.A(model.get('flattenedColumns'));
   assert.equal(flattenedColumns.length, 3);
   assert.equal(flattenedColumns.objectAt(0).get('name'), 'test');

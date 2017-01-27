@@ -30,9 +30,11 @@ export default DS.Model.extend(Validations, {
   projections: DS.hasMany('projection', { dependent: 'destroy' }),
   aggregation: DS.belongsTo('aggregation'),
   duration: DS.attr('number', { defaultValue: 20 }),
-  created: DS.attr('date', { defaultValue() {
-    return new Date(Date.now());
-  } }),
+  created: DS.attr('date', {
+    defaultValue() {
+      return new Date(Date.now());
+    }
+  }),
   results: DS.hasMany('result', { async: true, dependent: 'destroy' }),
 
   filterSummary: Ember.computed('filter.summary', function() {
