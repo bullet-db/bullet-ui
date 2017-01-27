@@ -22,6 +22,7 @@ export default Ember.Component.extend(PaginatedTable, {
       label: item,
       valuePath: '',
       resizable: true,
+      draggable: true,
       cellComponent: this.get('cellComponent')
     }));
   }),
