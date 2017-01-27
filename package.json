@@ -82,6 +82,7 @@
     "ember-source": "^2.11.0",
     "ember-tether": "0.3.1",
     "ember-tooltips": "2.0.1",
+    "jscs": "^3.0.7",
     "loader.js": "^4.0.10",
     "phantomjs-prebuilt": "2.1.14",
     "pretender": "1.4.0"
