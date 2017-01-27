@@ -81,6 +81,8 @@ helps them understand your data (that this UI is operating on).
 
 ```defaultFilter``` can either be a [Bullet Filter Specification](https://github.com/yahoo/bullet-storm#filters) or a URL from which one could be fetched dynamically. The UI adds this filter to every newly created Query. You could use this as a way to have user specific (for example, cookie based) filters created for your users when they create a new query in the UI.
 
+```bugLink``` is a url that by default points to the issues page for the UI GitHub repository (this). You can change it to point to your own custom JIRA queue or the like if you want to.
+
 **Note that all your web-service endpoints must support CORS (return the right headers) in order for the UI to be able to communicate with it.** The Bullet Web-Service already does this for the DRPC and columns endpoints.
 
 To cement all this, if you wanted an instance of the UI in your CI environment, you could add this to the env-settings.json file.
@@ -99,6 +101,7 @@ To cement all this, if you wanted an instance of the UI in your CI environment, 
           "link": "http://data.docs.domain.com"
         }
       ],
+      "bugLink": "http://your.issues.page.com",
       "modelVersion": 1
   },
    "ci": {

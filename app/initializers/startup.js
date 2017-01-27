@@ -20,9 +20,6 @@ export default {
     Ember.merge(settings, ENV.APP.SETTINGS);
     Ember.merge(settings, decodedSettings);
 
-    // JIRA issue collector
-    let issueCollectorSettings = Ember.Object.create(ENV.APP.ISSUE_COLLECTOR);
-
     application.register('settings:main', Ember.Object.create(settings), { instantiate: false });
     application.inject('service', 'settings', 'settings:main');
     application.inject('adapter', 'settings', 'settings:main');

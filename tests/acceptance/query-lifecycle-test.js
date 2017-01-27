@@ -226,13 +226,13 @@ test('adding a projection with a subfield column', function(assert) {
   });
   triggerEvent('.projections-container .projection-field .column-subfield input', 'focusout');
   andThen(() => {
-    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
     assert.equal(find('.projections-container .projection-field .column-subfield input').val(), '');
   });
   fillIn('.projections-container .projection-field .column-subfield input', 'foo');
   triggerEvent('.projections-container .projection-field .column-subfield input', 'focusout');
   andThen(() => {
-    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
     assert.equal(find('.projections-container .projection-field .column-subfield input').val(), 'foo');
   });
 });
@@ -251,7 +251,7 @@ test('switching to another projection type wipes selected columns', function(ass
   click('.save-button');
   andThen(() => {
     assert.equal(find('.projection-container').length, 2);
-    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .projection-field .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
     assert.equal(find('.projections-container .projection-field .column-subfield input').val(), 'foo');
     // This means that save was also successful
     assert.equal(find('.projection-container:eq(1) .projection-name input').val(), 'simple_column');

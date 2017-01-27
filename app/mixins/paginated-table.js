@@ -60,7 +60,7 @@ export default Ember.Mixin.create({
   },
 
   reset() {
-    let { table, firstNewRow } = this.getProperties('table', 'firstNewRow');
+    let table = this.get('table');
     table.setRows([]);
     this.set('firstNewRow', 0);
   }

@@ -39,9 +39,9 @@ test('it only takes in an initial value if it does not already have one', functi
   this.set('field', 'foo');
   this.set('mockColumns', MOCK_COLUMNS);
   this.render(hbs`{{column-field columns=mockColumns subfieldSeperator='.' subfieldSuffix='.*' initialValue=field}}`);
-  assert.equal(this.$('.column-onlyfield .ember-power-select').text().trim(), 'foo');
+  assert.equal(this.$('.column-onlyfield .ember-power-select-selected-item').text().trim(), 'foo');
   this.set('field', 'bar');
-  assert.equal(this.$('.column-onlyfield .ember-power-select').text().trim(), 'foo');
+  assert.equal(this.$('.column-onlyfield .ember-power-select-selected-item').text().trim(), 'foo');
 });
 
 test('it shows a subfield for a composite field', function(assert) {
