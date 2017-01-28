@@ -44,9 +44,9 @@ export default {
   applyMigrations(version) {
     let currentVersion = window.localStorage.modelVersion;
     if (!currentVersion || version > currentVersion) {
-      Ember.Logger.info("Wiping of all data requested...Performing wipe");
+      Ember.Logger.info('Wiping of all data requested...Performing wipe');
       return window.localforage.clear().then(() => {
-        Ember.Logger.info("Data was wiped.");
+        Ember.Logger.info('Data was wiped.');
         return true;
       });
     }
