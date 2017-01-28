@@ -19,12 +19,12 @@ moduleForAcceptance('Acceptance | query default filter', {
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
     server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    return window.localforage.setDriver(window.localforage.LOCALSTORAGE);
   },
 
   afterEach() {
     server.shutdown();
-    // Wipe out localstorage because we are creating here
-    window.localStorage.clear();
+    return window.localforage.clear();
   }
 });
 

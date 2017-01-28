@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/yahoo/bullet-ui.svg?branch=master)](https://travis-ci.org/yahoo/bullet-ui) [![Code Climate](https://codeclimate.com/github/yahoo/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/yahoo/bullet-ui) [![Test Coverage](https://codeclimate.com/github/yahoo/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/yahoo/bullet-ui/coverage)
 
-This is the UI for Bullet created with Ember 2. The UI stores all created queries, results and other metadata in the browser's **LocalStorage**.
+This is the UI for Bullet created with Ember 2. The UI stores all created queries, results and other metadata in the browser's **WebStorage**. It uses [LocalForage](https://github.com/localForage/localForage) to wrap IndexedDB, WebSQL, LocalStorage depending
+on what is available through the browser and on the device.
 
 ## Prerequisites
 
@@ -74,7 +75,7 @@ You can add more configuration at the top level for each host you have the UI ru
 
 ```schemaNamespace``` is the fragment of the path to your schema web-service on the ```schemaHost```. There is no ```schemaPath``` because it **must** be "columns" in order for the UI to be able fetch the column resource (columns in your schema).
 
-```modelVersion``` is a way for you to control your UI users' Ember models saved in LocalStorage. If there is a need for you to purge all your user's created queries, results and other data stored in their LocalStorage, then you should increment this number. The UI, on startup, will compare this number with what it has seen before (your old version) and purge the LocalStorage.
+```modelVersion``` is a way for you to control your UI users' Ember models saved in WebStorage. If there is a need for you to purge all your user's created queries, results and other data stored in their WebStorage, then you should increment this number. The UI, on startup, will compare this number with what it has seen before (your old version is stored in LocalStorage) and purge the WebStorage.
 
 ```helpLinks``` is a list of objects, where each object is a help link. These links drive the dropdown list when you click the "Help" button on the UI's top navbar. You can use this to point to your particular help links. For example, you could use this to point your users toward a page that
 helps them understand your data (that this UI is operating on).

@@ -26,6 +26,7 @@ module.exports = function(environment) {
     },
 
     APP: {
+      LOCALFORAGE_CACHING: 'model',
       // Inject default static settings
       SETTINGS: configuration.default
       // Here you can pass flags/options to your application instance
@@ -44,6 +45,9 @@ module.exports = function(environment) {
   if (environment === 'test') {
     // Testem prefers this...
     ENV.locationType = 'none';
+
+    // Turn off caching for tests. Otherwise tests need to wipe it between each.
+    ENV.APP.LOCALFORAGE_CACHING = 'none';
 
     // keep test console output quieter
     ENV.APP.LOG_ACTIVE_GENERATION = false;

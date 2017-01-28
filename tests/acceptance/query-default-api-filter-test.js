@@ -30,12 +30,12 @@ moduleForAcceptance('Acceptance | query default api filter', {
         return jsonWrap(200, FILTERS.AND_ENUMERATED);
       });
     });
+    return window.localforage.setDriver(window.localforage.LOCALSTORAGE);
   },
 
   afterEach() {
     server.shutdown();
-    // Wipe out localstorage because we are creating here
-    window.localStorage.clear();
+    return window.localforage.clear();
   }
 });
 

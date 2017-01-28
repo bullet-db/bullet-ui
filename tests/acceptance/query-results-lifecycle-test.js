@@ -12,12 +12,16 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query results lifecycle', {
+  beforeEach() {
+    return window.localforage.setDriver(window.localforage.LOCALSTORAGE);
+  },
+
   afterEach() {
     // Wipe out localstorage because we are creating here
     if (server) {
       server.shutdown();
     }
-    window.localStorage.clear();
+    return window.localforage.clear();
   }
 });
 

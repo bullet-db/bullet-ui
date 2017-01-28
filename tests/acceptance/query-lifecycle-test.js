@@ -13,15 +13,15 @@ let server;
 
 moduleForAcceptance('Acceptance | query lifecycle', {
   beforeEach() {
-    // Wipe out localstorage because we are creating queries here
-    window.localStorage.clear();
     server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
+    return window.localforage.setDriver(window.localforage.LOCALSTORAGE);
   },
 
   afterEach() {
     if (server) {
       server.shutdown();
     }
+    return window.localforage.clear();
   }
 });
 

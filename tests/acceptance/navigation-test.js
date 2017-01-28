@@ -14,12 +14,12 @@ let server;
 moduleForAcceptance('Acceptance | navigation', {
   beforeEach() {
     server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    return window.localforage.setDriver(window.localforage.LOCALSTORAGE);
   },
 
   afterEach() {
     server.shutdown();
-    // Wipe out localstorage because we are creating here
-    window.localStorage.clear();
+    return window.localforage.clear();
   }
 });
 
