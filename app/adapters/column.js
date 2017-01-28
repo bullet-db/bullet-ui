@@ -20,3 +20,4 @@ export default DS.JSONAPIAdapter.extend({
     return false;
   }
 });
+
