@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
@@ -68,7 +69,7 @@ test('result table popover open and close', function(assert) {
     assert.equal(find('.query-results-entry-popover').length, 1);
   });
   click('.query-results-entry-popover .close-button');
-  // Bootstrap popovers hiding is async but andThen doesn't need to catch it...
+  // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
   Ember.run.next(() => {
     andThen(() => {
       assert.equal(find('.query-results-entry-popover .results-table .result-date-entry').length, 0);
