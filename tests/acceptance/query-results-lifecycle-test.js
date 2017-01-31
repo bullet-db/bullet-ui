@@ -54,7 +54,7 @@ test('query submission with projections opens the table view by default', functi
 });
 
 test('result table popover open and close', function(assert) {
-  assert.expect(2);
+  assert.expect(3);
   server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
@@ -64,11 +64,15 @@ test('result table popover open and close', function(assert) {
     assert.equal(find('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
   });
   click('.queries-table .query-results-entry');
-  click('.query-results-entry-popover .close-button');
-  click('.queries-table .query-results-entry');
-  click('.query-results-entry-popover .results-table .result-number-entry');
   andThen(() => {
-    assert.equal(currentRouteName(), 'result');
+    assert.equal(find('.query-results-entry-popover').length, 1);
+  });
+  click('.query-results-entry-popover .close-button');
+  // Bootstrap popovers hiding is async but andThen doesn't need to catch it...
+  Ember.run.next(() => {
+    andThen(() => {
+      assert.equal(find('.query-results-entry-popover .results-table .result-date-entry').length, 0);
+    });
   });
 });
 
