@@ -17,7 +17,8 @@ In order for your UI to work with Bullet, you should have:
 We are considering various packaging options at the moment. In the meantime, the following option is available:
 
 * Install [Node](https://nodejs.org/) (recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions).
-* Install [Bower](https://bower.io/). Use NPM to install it with ```npm install -g bower```
+* Install [Bower](https://bower.io/). Use NPM to install it with ```sudo npm install -g bower```
+* Install [Ember](http://emberjs.com/). ```sudo npm install -g ember-cli``` (sudo required only if not using nvm)
 * git clone this repository
 * change into the new directory
 * `npm install`
@@ -34,6 +35,8 @@ The entire application with all its assets and dependencies are compiled and pla
 
 All of the configuration for the UI is **environment-specific**. This lets you have different instances of Bullet for different environments (e.g. CI, Staging, Production).
 These settings can be found in [config/env-settings.json](config/env-settings.json).
+
+Each property in the env-settings.json file will contain the settings that will be used when running a custom instance of the UI (see [below](#Running)).
 
 The ```default``` property shows the default settings for the UI that can be selectively overridden based on which host you are running on. The file does not specify the ```defaultFilter``` setting shown below.
 
@@ -129,10 +132,18 @@ server/index.js
 express-server.js
 ```
 
-You can use node to launch the ui from the top-level of the folder structure above.
+You can use node to launch the UI from the top-level of the folder structure above.
+
+To launch the UI with the default settings (without specifying proper API endpoints you will not be able to create or run a query):
 
 ```bash
-NODE_ENV=<your_env_property_from_env-settings.json> PORT=8800 node express-server.js
+PORT=8800 node express-server.js
+```
+
+To launch with custom settings:
+
+```bash
+NODE_ENV=<your_property_name_from_env-settings.json> PORT=8800 node express-server.js
 ```
 
 Visit localhost:8800 to see your UI that should be configured with the right settings.
