@@ -42,6 +42,10 @@
   color: $white;
   height: 24px;
   width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   .glyphicon {
     font-weight: 100;
   }

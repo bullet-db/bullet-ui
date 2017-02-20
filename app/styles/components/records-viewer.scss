@@ -4,6 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .records-viewer {
+  $records-header-color: #00C877;
+
   margin-right: $results-right-space;
 
   .records-title {
@@ -13,11 +15,20 @@
     margin-bottom: 15px;
     padding-left: 0;
 
-    .view-controls {
-      float: right;
-      display: inline-block;
-      margin-top: -10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
+    .records-header {
+      color: $records-header-color;
+      font-size: $font-size-regular;
+      font-weight: $font-weight-strong;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .view-controls {
       .view-control {
         margin-left: 15px;
         border: 2px solid $secondary-button-color;
@@ -43,10 +54,10 @@
       }
 
       .raw-view, .table-view {
-        padding-left: 7px; 
+        padding-left: 7px;
       }
       .download  {
-        padding-right: 6px; 
+        padding-right: 6px;
       }
 
       .download-options {

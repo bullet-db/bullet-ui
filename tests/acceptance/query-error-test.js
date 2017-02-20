@@ -25,6 +25,6 @@ test('visiting a non-existant query', function(assert) {
   visit('/query/foo');
 
   andThen(function() {
-    assert.equal(currentURL(), '/not-found');
+    assert.equal(currentURL(), '/errored');
   });
 });

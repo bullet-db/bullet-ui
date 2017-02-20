@@ -1,0 +1,46 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<p>
+  You can see metadata for your results by clicking the expand caret at the bottom of this block. The fields shown here are configured by the maintainer of Bullet. Bullet uses Sketches to approximate results if it is computationally intractable to get the result exactly. For a primer on Sketches, please visit the <a href=https://datasketches.github.io/docs/TheChallenge.html>Sketches home page</a>.
+</p>
+
+<h5 class="content-header">Start Time</h5>
+<p>
+  This denotes the time Bullet received the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
+</p>
+
+<h5 class="content-header">Finish Time</h5>
+<p>
+  This denotes the time Bullet terminated the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
+</p>
+
+<h5 class="content-header">Was Estimated</h5>
+<p>
+  You may notice an entry that denotes whether the result was estimated or not. If the result was not estimated, the Standard Deviations section (see below) would show exact upper and lower bounds for the estimate.
+</p>
+
+<h5 class="content-header">Standard Deviations</h5>
+<p>
+  If you see a Standard Deviations entry in the metadata, there are 3 different entries at "1", "2" and "3", each having an upper and a lower bound. These are the ranges of the true value of an approximated result at 1, 2 and 3 Standard Deviations of Confidence.
+  <ul>
+    <li>1 Standard Deviation is 68.27% confidence</li>
+    <li>2 Standard Deviation is 95.45% confidence</li>
+    <li>3 Standard Deviation is 99.73% confidence</li>
+  </ul>
+</p>
+<p>
+  In other words, if you were performing a Count Distinct and the result was estimated, then these Standard Deviations help you to bound the true value with these levels of confidence. For example, if your Count Distinct result was 34326.58, and the Upper and Lower Bound at "1" Standard Deviation was 34522.56, 34131.69 respectively. This means that we can be sure with 68% confidence that the true value of the count distinct was between 34131 and 34522. Similarly, for the other standard deviations.
+</p>
+
+<h5 class="content-header">Uniques Estimate</h5>
+<p>
+  This key is present if you have Grouped Data and the number of unique groups exceeded the maximum number of rows returned (configured by the maintainer).   If so, the value for the key denotes the approximate number of unique groups there were. You can use the Standard Deviations section as usual to estimate the true range of the estimate. You will have received a uniform sample of these unique groups (with the right values for your metrics) as the result.
+</p>
+
+<h5 class="content-header">Sketch Theta</h5>
+<p>
+  This denotes the theta value of the Sketch that was used underneath to perform a Count Distinct or a Group operation. This is particularly useful if you have Grouped Data and you have more groups than can be returned. If you have performed metrics like Sum or Count, you can add them up over the returned rows in the Result below and divide by this Sketch Theta. The resulting number is an estimate of the Sum or Count across <strong>all</strong> your unique values that could not be returned.
+</p>

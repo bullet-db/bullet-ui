@@ -18,10 +18,12 @@
         @import "cells/no-queries";
       }
     }
-    .lt-row .lt-cell {
-      @import "cells/query-name-entry";
-      @import "cells/query-results-entry";
-      @import "cells/date-entry";
+    .lt-row {
+      .lt-cell {
+        @import "cells/query-name-entry";
+        @import "cells/query-results-entry";
+        @import "cells/date-entry";
+      }
     }
   }
 }

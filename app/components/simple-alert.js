@@ -8,7 +8,20 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['simple-alert'],
   type: null,
-  message: null,
+
+  alertIconClass: Ember.computed('type', function() {
+    switch (this.get('type')) {
+      case 'error':
+        return 'glyphicon glyphicon-ban-circle';
+      case 'success':
+        return 'glyphicon glyphicon-ok-sign';
+      case 'warning':
+        return 'glyphicon glyphicon-flag';
+      default:
+        return '';
+    }
+  }),
+
   alertClass: Ember.computed('type', function() {
     switch (this.get('type')) {
       case 'error':

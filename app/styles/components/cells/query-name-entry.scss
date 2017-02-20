@@ -4,27 +4,25 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .query-name-entry {
-  $max-text-length: 760px;
-  $vertical-offset: 5px;
   overflow: auto;
   cursor: pointer;
 
+  display: flex;
+  align-items: center;
+
   .query-description {
-    float: left;
-    padding-top: $vertical-offset;
+    flex: 2 1 auto;
+    max-width: 75%;
+    margin-right: 20px;
     .query-real-name {
-      display: inline-block;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: $max-text-length;
     }
     .query-blurb {
       @import "../query-blurb";
-      .filter-summary-text, .projections-summary-text {
-        display: inline-block;
-        max-width: $max-text-length/2;
-      }
+      display: flex;
+      align-items: center;
       .filter-summary-text {
         padding-right: 10px;
       }
@@ -42,20 +40,23 @@
     -moz-user-select: none;
     user-select: none;
 
-    margin-left: 20px;
-    padding-top: $vertical-offset;
+    flex: 1 1 auto;
+    margin-left: auto;
+    margin-right: 20px;
+    max-width: 20%;
 
     .query-name-action-icon {
       color: $inactive-grey;
       font-size: $font-size-regular;
       &:hover {
         cursor: pointer;
+        color: $black;
       }
       &:focus {
         outline: none;
       }
       &:not(:last-of-type) {
-        margin-right: 15px;
+        margin-right: 10px;
       }
     }
   }

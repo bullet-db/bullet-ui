@@ -1,0 +1,102 @@
+<div class="output-option raw-option">
+  {{#radio-button radioId="raw" value=OUTPUT_DATA_TYPES.RAW groupValue=outputDataType changed=(action "addRawAggregation") disabled=disabled}}
+    Raw Data
+  {{/radio-button}}
+
+  {{#if isRawAggregation}}
+    <div class="output-nested-container raw-sub-options">
+      {{#radio-button radioId="all" value=RAW_TYPES.ALL groupValue=rawType changed=(action "deleteProjections") disabled=disabled}}
+        Show All Fields
+      {{/radio-button}}
+      {{#radio-button radioId="select" value=RAW_TYPES.SELECT groupValue=rawType changed=(action "addRawAggregation") disabled=disabled}}
+        Select Fields
+      {{/radio-button}}
+
+      {{#if showRawSelections}}
+        <div class="fields-selection-container projections-container">
+          {{#each query.projections as |projection|}}
+            {{validated-field-selection model=projection columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
+                                        forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-4"
+                                        fieldModified=(action "modifyFieldLike" projection) deleteModel=(action "destroyModel" projection)}}
+          {{/each}}
+          <button {{action "addFieldLike" "projection" "query" "query"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-projection">
+            <i class="glyphicon glyphicon-plus"></i>
+            Field
+          </button>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+
+<div class="output-option group-option">
+  {{#radio-button radioId="grouped-data" value=OUTPUT_DATA_TYPES.GROUP groupValue=outputDataType changed=(action "addGroupAggregation") disabled=disabled}}
+    Grouped Data
+  {{/radio-button}}
+
+  {{#if isGroupAggregation}}
+    <div class="output-nested-container">
+      <div class="fields-selection-container groups-container">
+        <div class="groups-header">Group Fields</div>
+        {{#each query.aggregation.groups as |group|}}
+          {{validated-field-selection model=group columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
+                                      forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-5"
+                                      fieldModified=(action "modifyFieldLike" group) deleteModel=(action "destroyModel" group)}}
+        {{/each}}
+        <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-group">
+          <i class="glyphicon glyphicon-plus"></i>
+          Group Field
+        </button>
+      </div>
+
+      <br />
+
+      <div class="fields-selection-container metrics-container">
+        <div class="metrics-header">Metric Fields</div>
+        {{#each query.aggregation.metrics as |metric|}}
+          {{#validated-field-selection model=metric columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
+                                      forceDirty=true fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
+                                      fieldModified=(action "modifyFieldLike" metric) deleteModel=(action "destroyModel" metric)}}
+            <div class="col-xs-3 metrics-selection">
+              <label class="power-select-label">Metric</label>
+              {{#power-select disabled=disabled selected=(lift-string "name" metric.type) options=metricsList onchange=(action "handleMetricChange" metric) as |metricItem|}}
+              {{metricItem.name}}
+              {{/power-select}}
+            </div>
+          {{/validated-field-selection}}
+        {{/each}}
+        <button {{action "addFieldLike" "metric" "aggregation" "query.aggregation"}} disabled={{disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
+          <i class="glyphicon glyphicon-plus"></i>
+          Metric Field
+        </button>
+      </div>
+    </div>
+  {{/if}}
+
+</div>
+
+<div class="output-option count-distinct-option">
+  {{#radio-button radioId="count-distinct" value=OUTPUT_DATA_TYPES.COUNT_DISTINCT groupValue=outputDataType changed=(action "addCountDistinctAggregation") disabled=disabled}}
+    Count Distinct
+  {{/radio-button}}
+
+  {{#if isCountDistinctAggregation}}
+    <div class="output-nested-container">
+      <div class="fields-selection-container fields-container">
+        {{#each query.aggregation.groups as |field|}}
+          {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
+                                      disabled=disabled forceDirty=true enableRenaming=false fieldClasses="col-xs-10"
+                                      fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
+        {{/each}}
+        <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
+          <i class="glyphicon glyphicon-plus"></i>
+          Field
+        </button>
+      </div>
+      <div class="row count-distinct-display-name">
+        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.name
+          placeholder="Optional" disabled=disabled}}
+      </div>
+    </div>
+  {{/if}}
+</div>

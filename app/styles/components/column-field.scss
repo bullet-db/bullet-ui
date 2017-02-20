@@ -21,30 +21,6 @@
   }
 
   .column-mainfield, .column-onlyfield {
-    .power-select-label {
-      @extend %query-input-label;
-      left: $padding-base-horizontal + 14px;
-    }
-    .ember-power-select-trigger {
-      &:focus {
-        box-shadow: none;
-      }
-      // Make the selects as tall as the inputs
-      height: $query-input-height;
-      overflow-y: hidden;
-      border-radius: $input-radius-regular;
-      border-color: transparent;
-
-      .ember-power-select-selected-item {
-        display: inline-block;
-        font-family: $font-family-regular;
-        font-weight: $font-weight-regular;
-        font-size: $font-size-regular;
-        // margin-top: $font-size-small;
-        padding-top: $font-size-small - 2px;
-        padding-left: 2px;
-        color: $text-color-regular;
-      }
-    }
+    @import "power-select-inputs";
   }
 }

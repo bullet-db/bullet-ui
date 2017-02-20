@@ -13,6 +13,8 @@ export default Ember.Component.extend(PaginatedTable, {
   cellComponent: 'cells/record-entry',
   pageSize: 10,
   isFixed: true,
+  // Use natural types in the results
+  useDefaultStringExtractor: false,
 
   rawRows: null,
 

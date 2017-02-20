@@ -11,7 +11,7 @@ moduleForComponent('simple-alert', 'Integration | Component | simple alert', {
   integration: true
 });
 
-test('it renders', function(assert) {
+test('it renders a message in block form', function(assert) {
   this.render(hbs`{{simple-alert}}`);
   assert.equal(this.$().text().trim(), '');
 
@@ -21,11 +21,6 @@ test('it renders', function(assert) {
     {{/simple-alert}}
   `);
   assert.equal(this.$().text().trim(), 'template block text');
-});
-
-test('it renders a message', function(assert) {
-  this.render(hbs`{{simple-alert message='foo'}}`);
-  assert.equal(this.$('.alert-message').text(), 'foo');
 });
 
 test('it shows a dismiss button', function(assert) {

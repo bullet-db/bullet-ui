@@ -21,6 +21,13 @@ export default Ember.Component.extend({
     return Ember.String.htmlSafe(`width: ${percent}%`);
   }),
 
+  valueNow: Ember.computed('percentNow', 'timingDone', function() {
+    if (this.get('timingDone')) {
+      return 'Collecting results...';
+    }
+    return `${this.get('percentNow')}%`;
+  }),
+
   didReceiveAttrs() {
     this._super(...arguments);
     // Don't do any timing unless active. Also any changes with active true should restart timer.

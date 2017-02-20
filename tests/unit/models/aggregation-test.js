@@ -7,11 +7,14 @@ import { moduleForModel, test } from 'ember-qunit';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
 moduleForModel('aggregation', 'Unit | Model | aggregation', {
-  needs: ['model:query']
+  needs: ['model:query', 'model:group', 'model:metric',
+          'validator:presence', 'validator:belongsTo', 'validator:hasMany',
+          'validator:number', 'validator:countDistinctFieldPresence',
+          'validator:groupMetricPresence']
 });
 
 test('it sets its default values right', function(assert) {
   let model = this.subject();
-  assert.equal(model.get('type'), AGGREGATIONS.get('LIMIT'));
+  assert.equal(model.get('type'), AGGREGATIONS.get('RAW'));
   assert.equal(model.get('size'), 1);
 });

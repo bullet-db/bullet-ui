@@ -6,58 +6,11 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
+  queryManager: Ember.inject.service(),
+
   model() {
     return Ember.RSVP.hash({
-      queries: this.store.findAll('query'),
-      filters: this.store.findAll('filter'),
-      projections: this.store.findAll('projection'),
-      results: this.store.findAll('result')
-    });
-  },
-
-  copy(from, to, fields, query) {
-    fields.forEach(field => {
-      to.set(field, from.get(field));
-    });
-    to.set('query', query);
-    return to.save();
-  },
-
-  copySingle(source, target, name, fields) {
-    let from = source.get(name);
-    if (Ember.isEmpty(from)) {
-      return Ember.RSVP.resolve();
-    }
-    let to = this.store.createRecord(name);
-    return this.copy(from, to, fields, target);
-  },
-
-  copyMultiple(source, target, name, fields) {
-    let all = source.get(Ember.Inflector.inflector.pluralize(name));
-    if (Ember.isEmpty(all)) {
-      return Ember.RSVP.resolve();
-    }
-    let promises = [];
-    all.forEach(from => {
-      let to = this.store.createRecord(name);
-      promises.push(this.copy(from, to, fields, target));
-    });
-    return Ember.RSVP.all(promises);
-  },
-
-  deleteSingle(name, query) {
-    query.get(name).then(item => {
-      item.set('query', null);
-      item.destroyRecord();
-    });
-  },
-
-  deleteMultiple(name, query) {
-    query.get(name).then(items => {
-      items.toArray().forEach(item => {
-        items.removeObject(item);
-        item.destroyRecord();
-      });
+      queries: this.store.findAll('query')
     });
   },
 
@@ -70,22 +23,10 @@ export default Ember.Route.extend({
     copyQueryClick(query, callback) {
       query.validate().then((hash) => {
         if (!hash.validations.get('isValid')) {
-          return;
+          return Ember.RSVP.reject();
         }
-        let copied = this.store.createRecord('query', {
-          name: query.get('name'),
-          duration: query.get('duration')
-        });
-        // All prefetched
-        let promises = [
-          this.copySingle(query, copied, 'filter', ['clause', 'summary']),
-          this.copySingle(query, copied, 'aggregation', ['type', 'size']),
-          this.copyMultiple(query, copied, 'projection', ['field', 'name'])
-        ];
-        Ember.RSVP.all(promises).then(() => {
-          copied.save().then(() => {
-            callback(copied);
-          });
+        this.get('queryManager').copyQuery(query).then((copied) => {
+          callback(copied);
         });
       });
     },
@@ -95,16 +36,11 @@ export default Ember.Route.extend({
     },
 
     deleteResultsClick(query) {
-      this.deleteMultiple('results', query);
-      query.save();
+      this.get('queryManager').deleteResults(query);
     },
 
     deleteQueryClick(query) {
-      this.deleteSingle('filter', query);
-      this.deleteSingle('aggregation', query);
-      this.deleteMultiple('projections', query);
-      this.deleteMultiple('results', query);
-      query.destroyRecord();
+      this.get('queryManager').deleteQuery(query);
     }
   }
 });

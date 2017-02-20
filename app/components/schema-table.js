@@ -54,7 +54,7 @@ export default Ember.Component.extend(PaginatedTable, {
     },
 
     onScrolledToBottom() {
-      if (this.get('haveMoreRows') && !this.get('isDestroyed') && !this.get('isDestroying')) {
+      if (!this.get('isDestroyed') && !this.get('isDestroying') && this.get('haveMoreRows')) {
         this.addPages();
       }
     }

@@ -8,6 +8,7 @@ import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { METRICS } from 'bullet-ui/models/metric';
 
 moduleFor('service:querier', 'Unit | Service | querier', {
 });
@@ -51,29 +52,19 @@ test('it overrides options correctly', function(assert) {
 test('it formats a defaulted query correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ foo: 'bar' });
-  assert.deepEqual(service.reformat(query), { aggregation: { size: NaN, type: undefined }, duration: 0 });
+  assert.deepEqual(service.reformat(query), { duration: 0 });
 });
 
-test('it formats an aggregation correctly', function(assert) {
+test('it formats an raw aggregation correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ duration: 20 });
   query.set('aggregation', null);
   assert.deepEqual(service.reformat(query), {
     duration: 20000
   });
-  query.addAggregation(AGGREGATIONS.get('LIMIT'));
+  query.addAggregation(AGGREGATIONS.get('RAW'));
   assert.deepEqual(service.reformat(query), {
-    aggregation: { size: 1, type: AGGREGATIONS.get('LIMIT') },
-    duration: 20000
-  });
-});
-
-test('it formats an count aggregation correctly', function(assert) {
-  let service = this.subject();
-  let query = MockQuery.create({ duration: 20 });
-  query.addAggregation(AGGREGATIONS.get('COUNT'));
-  assert.deepEqual(service.reformat(query), {
-    aggregation: { size: 1, type: 'GROUP', attributes: { operations: [{ type: 'COUNT' }] } },
+    aggregation: { size: 1, type: 'RAW' },
     duration: 20000
   });
 });
@@ -81,11 +72,11 @@ test('it formats an count aggregation correctly', function(assert) {
 test('it formats projections correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ duration: 1, created: new Date(Date.now()) });
-  query.addAggregation(AGGREGATIONS.get('COUNT'));
+  query.addAggregation(AGGREGATIONS.get('RAW'), 10);
   query.addProjection('foo', 'goo');
   query.addProjection('timestamp', 'ts');
   assert.deepEqual(service.reformat(query), {
-    aggregation: { size: 1, type: 'GROUP', attributes: { operations: [{ type: 'COUNT' }] } },
+    aggregation: { size: 10, type: 'RAW' },
     projection: { fields: { foo: 'goo', timestamp: 'ts' } },
     duration: 1000
   });
@@ -94,9 +85,9 @@ test('it formats projections correctly', function(assert) {
 test('it ignores a removed filter', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ foo: 'bar' });
-  query.addAggregation(AGGREGATIONS.get('LIMIT'));
+  query.addAggregation(AGGREGATIONS.get('RAW'));
   query.set('filter', undefined);
-  assert.deepEqual(service.reformat(query), { aggregation: { size: 1, type: AGGREGATIONS.get('LIMIT') }, duration: 0 });
+  assert.deepEqual(service.reformat(query), { aggregation: { size: 1, type: 'RAW' }, duration: 0 });
 });
 
 test('it formats a filter correctly', function(assert) {
@@ -109,11 +100,11 @@ test('it formats a filter correctly', function(assert) {
       { field: 'simple_column', subfield: null, operator: 'in', value: 'foo,bar' }
     ]
   };
-  query.addAggregation(AGGREGATIONS.get('LIMIT'));
+  query.addAggregation(AGGREGATIONS.get('RAW'));
   query.addFilter(filter, 'foo');
   assert.deepEqual(service.reformat(query), {
     filters: [FILTERS.OR_FREEFORM],
-    aggregation: { size: 1, type: AGGREGATIONS.get('LIMIT') },
+    aggregation: { size: 1, type: 'RAW' },
     duration: 0
   });
 });
@@ -127,12 +118,114 @@ test('it unwraps a filter if it is the only one at the top level', function(asse
       { field: 'foo', operator: 'is_null' }
     ]
   };
-  query.addAggregation(AGGREGATIONS.get('LIMIT'));
+  query.addAggregation(AGGREGATIONS.get('RAW'));
   query.addFilter(filter, 'foo');
   assert.deepEqual(service.reformat(query), {
     filters: [{ field: 'foo', operation: '==', values: ['NULL'] }],
-    aggregation: { size: 1, type: AGGREGATIONS.get('LIMIT') },
+    aggregation: { size: 1, type: 'RAW' },
     duration: 0
   });
 });
 
+test('it formats a count distinct query with a new name query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('COUNT_DISTINCT'), 100, { name: 'cnt' });
+  query.addGroup('foo', '1');
+  query.addGroup('bar', '2');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 100,
+      type: 'COUNT DISTINCT',
+      fields: { foo: '1', bar: '2' },
+      attributes: { newName: 'cnt' }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a count distinct query without a new name query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('COUNT_DISTINCT'), 100);
+  query.addGroup('foo', '1');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 100,
+      type: 'COUNT DISTINCT',
+      fields: { foo: '1' }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distinct query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
+  query.addGroup('foo', '1');
+  query.addGroup('bar', '2');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      fields: { foo: '1', bar: '2' }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a group all query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
+  query.addMetric(METRICS.get('COUNT'), null, 'cnt');
+  query.addMetric(METRICS.get('SUM'), 'baz', 'sum');
+  query.addMetric(METRICS.get('MAX'), 'foo');
+  query.addMetric(METRICS.get('AVG'), 'bar');
+  query.addMetric(METRICS.get('MIN'), 'foo');
+
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      attributes: {
+        operations: [
+          { type: 'COUNT', newName: 'cnt' },
+          { type: 'SUM', field: 'baz', newName: 'sum' },
+          { type: 'MAX', field: 'foo' },
+          { type: 'AVG', field: 'bar' },
+          { type: 'MIN', field: 'foo' }
+        ]
+      }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a group by query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
+  query.addGroup('foo', 'foo');
+  query.addGroup('complex_map_column.foo', 'bar');
+  query.addMetric(METRICS.get('COUNT'));
+  query.addMetric(METRICS.get('SUM'), 'baz', 'sum');
+  query.addMetric(METRICS.get('MIN'), 'foo');
+
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
+      attributes: {
+        operations: [
+          { type: 'COUNT' },
+          { type: 'SUM', field: 'baz', newName: 'sum' },
+          { type: 'MIN', field: 'foo' }
+        ]
+      }
+    },
+    duration: 10000
+  });
+});

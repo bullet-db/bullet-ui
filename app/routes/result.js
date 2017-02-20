@@ -7,8 +7,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   model(params) {
-    return this.store.findRecord('result', params.result_id)
-    .catch(() => {
+    return this.store.findRecord('result', params.result_id).catch(() => {
       return this.transitionTo('missing', 'not-found');
     });
   },

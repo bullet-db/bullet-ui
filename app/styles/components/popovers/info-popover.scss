@@ -5,7 +5,7 @@
  */
 .info-popover.popover {
   $info-text-color: $heading-text-color;
-  max-width: 475px;
+  max-width: 500px;
   padding: 20px 30px 25px 20px;
   font-family: $font-family-regular;
 
@@ -19,7 +19,7 @@
     margin: 0 14px;
   }
   .popover-content {
-    max-height: 525px;
+    max-height: 600px;
     overflow: auto;
     font-size: $font-size-regular-small;
     font-weight: $font-weight-regular;

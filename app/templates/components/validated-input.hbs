@@ -4,10 +4,6 @@
   See the LICENSE file associated with the project for terms.
  --}}
 {{#if isInvalid}}
-  <a tabindex="0" class="glyphicon glyphicon-exclamation-sign error-tooltip-link" role="button">
-  {{#tooltip-on-element side=tooltipPosition}}
-    {{v-get model valuePath "message"}}
-  {{/tooltip-on-element}}
-  </a>
+  {{partial "partials/validation-tooltip"}}
 {{/if}}
-{{yield (hash input-field=(component inputField))}}
+{{labeled-input classNames=inputClassNames type=type fieldName=fieldName fieldValue=value disabled=disabled}}

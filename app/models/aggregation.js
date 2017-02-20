@@ -8,16 +8,25 @@ import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
 let Aggregation = Ember.Object.extend({
-  LIMIT: 'LIMIT',
-  COUNT: 'COUNT'
+  RAW: 'Raw',
+  GROUP: 'Group',
+  COUNT_DISTINCT: 'Count Distinct',
+  INVERSE: {
+    'Raw': 'RAW',
+    'Group': 'GROUP',
+    'Count Distinct': 'COUNT_DISTINCT'
+  },
+
+  invert(key) {
+    return this.get(`INVERSE.${key}`);
+  }
 });
 
 export const AGGREGATIONS = Aggregation.create();
 
 let Validations = buildValidations({
   size: {
-    description: 'Maximum records',
-    validators: [
+    description: 'Maximum records', validators: [
       validator('presence', true),
       validator('number', {
         integer: true,
@@ -27,11 +36,18 @@ let Validations = buildValidations({
       })
     ]
   },
-  query: validator('belongs-to')
+  groups: validator('has-many'),
+  metrics: validator('has-many'),
+  query: validator('belongs-to'),
+  countDistinctField: validator('count-distinct-field-presence'),
+  groupAndOrMetrics: validator('group-metric-presence')
 });
 
 export default DS.Model.extend(Validations, {
-  type: DS.attr('string', { defaultValue: AGGREGATIONS.get('LIMIT') }),
+  type: DS.attr('string', { defaultValue: AGGREGATIONS.get('RAW') }),
   size: DS.attr('number', { defaultValue: 1 }),
+  groups: DS.hasMany('group', { dependent: 'destroy' }),
+  metrics: DS.hasMany('metric', { dependent: 'destroy' }),
+  attributes: DS.attr({ defaultValue: () => Ember.Object.create() }),
   query: DS.belongsTo('query', { autoSave: true })
 });

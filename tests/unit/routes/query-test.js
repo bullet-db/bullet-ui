@@ -8,11 +8,6 @@ import { moduleFor, test } from 'ember-qunit';
 moduleFor('route:query', 'Unit | Route | query', {
 });
 
-test('it exists', function(assert) {
-  let route = this.subject();
-  assert.ok(route);
-});
-
 test('it aborts a pending request if one exists', function(assert) {
   assert.expect(1);
   let route = this.subject();

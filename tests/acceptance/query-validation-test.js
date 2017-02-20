@@ -26,6 +26,7 @@ moduleForAcceptance('Acceptance | query validation', {
 });
 
 test('query showing filter validation messages', function(assert) {
+  assert.expect(2);
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
   click('.save-button');
@@ -36,37 +37,75 @@ test('query showing filter validation messages', function(assert) {
   });
 });
 
-test('query showing projection validation messages', function(assert) {
-  visit('/queries/new');
-  click('.projections-container .projection-options #select');
-  click('.projections-container .add-button');
-  andThen(function() {
-    assert.equal(find('.projection-container .validated-input .error-tooltip-link').length, 2);
-  });
-  click('.submit-button');
-
-  andThen(function() {
-    assert.equal(find('.validation-container .alert-message').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
-    assert.equal(find('.projection-container .validated-input .error-tooltip-link').length, 2);
-  });
-});
-
 test('query showing aggregation validation messages', function(assert) {
+  assert.expect(4);
   visit('/queries/new');
   fillIn('.options-container .aggregation-size input', '-1');
   click('.submit-button');
   andThen(function() {
-    assert.equal(find('.validation-container .alert-message').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(find('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+                 'Maximum records must be a positive integer');
     assert.equal(find('.aggregation-size').siblings('.error-tooltip-link').length, 1);
   });
 });
 
 test('query showing options validation messages', function(assert) {
+  assert.expect(4);
   visit('/queries/new');
   fillIn('.options-container .query-duration input', '-1');
   click('.submit-button');
   andThen(function() {
-    assert.equal(find('.validation-container .alert-message').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(find('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+                 'Duration must be a positive integer');
     assert.equal(find('.query-duration').siblings('.error-tooltip-link').length, 1);
+  });
+});
+
+test('selecting count distinct without adding fields is an error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-container .count-distinct-option #count-distinct');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+                 'If you are counting distincts, you must add at least one Field to count distinct on');
+  });
+});
+
+test('selecting grouped data without adding fields or metrics is an error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-container .group-option #grouped-data');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+                 'If you are grouping data, you must add at least one Group Field and/or Metric Field');
+  });
+});
+
+test('query showing multiple error validation messages', function(assert) {
+  assert.expect(4);
+  visit('/queries/new');
+  click('.output-container .raw-sub-options #select');
+  click('.output-container .raw-sub-options .projections-container .add-projection');
+  fillIn('.options-container .query-duration input', '-1');
+  click('.save-button');
+
+  andThen(function() {
+    assert.equal(find('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('Duration must be a positive integer'));
+    assert.ok(text.includes('No Raw data field selected'));
   });
 });

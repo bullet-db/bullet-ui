@@ -17,7 +17,25 @@ export let MockProjection = Ember.Object.extend({
 
 export let MockAggregation = Ember.Object.extend({
   type: null,
-  size: null
+  size: null,
+  groups: null,
+  metrics: null,
+  attributes: null,
+
+  init() {
+    this.setProperties({ _metrics: Ember.A(), _groups: Ember.A() });
+  }
+});
+
+export let MockGroup = Ember.Object.extend({
+  field: null,
+  name: null
+});
+
+export let MockMetric = Ember.Object.extend({
+  type: null,
+  field: null,
+  name: null
 });
 
 export let MockResult = Ember.Object.extend({
@@ -43,10 +61,10 @@ export default Ember.Object.extend({
       _aggregation: Ember.Object.create(),
       _results: Ember.A()
     });
-    Ember.A(['filter', 'projections', 'aggregation', 'results']).forEach(this.asPromise, this);
+    Ember.A(['filter', 'projections', 'aggregation', 'results']).forEach(this.topLevelPropertyAsPromise, this);
   },
 
-  asPromise(attr) {
+  topLevelPropertyAsPromise(attr) {
     if (this.get('promisify')) {
       this.set(attr, Ember.RSVP.resolve(this.get(`_${attr}`)));
     } else {
@@ -54,24 +72,47 @@ export default Ember.Object.extend({
     }
   },
 
+  nestedPropertyAsPromise(top, nested) {
+    let attr = `${top}.${nested}`;
+    if (this.get('promisify')) {
+      this.set(attr, Ember.RSVP.resolve(this.get(`_${top}._${nested}`)));
+    } else {
+      this.set(attr, this.get(`_${top}._${nested}`));
+    }
+  },
+
   addFilter(clause, summary = '') {
-    this.set('_filter', MockFilter.create({ clause: clause, summary: summary }));
-    this.asPromise('filter');
+    this.set('_filter', MockFilter.create({ clause, summary }));
+    this.topLevelPropertyAsPromise('filter');
   },
 
   addProjection(field, name) {
-    this.get('_projections').pushObject(MockProjection.create({ field: field, name: name }));
-    this.asPromise('projections');
+    this.get('_projections').pushObject(MockProjection.create({ field, name }));
+    this.topLevelPropertyAsPromise('projections');
   },
 
-  addAggregation(type, size = 1) {
-    this.set('_aggregation', MockAggregation.create({ type: type, size: size }));
-    this.asPromise('aggregation');
+  addAggregation(type, size = 1, attributes = { }) {
+    this.set('_aggregation', MockAggregation.create({ type, size, attributes }));
+    this.topLevelPropertyAsPromise('aggregation');
+    this.nestedPropertyAsPromise('aggregation', 'groups');
+    this.nestedPropertyAsPromise('aggregation', 'metrics');
+  },
+
+  addGroup(field, name) {
+    let aggregation = this.get('_aggregation');
+    aggregation.get('_groups').pushObject(MockGroup.create({ field, name }));
+    this.nestedPropertyAsPromise('aggregation', 'groups');
+  },
+
+  addMetric(type, field, name) {
+    let aggregation = this.get('_aggregation');
+    aggregation.get('_metrics').pushObject(MockMetric.create({ type, field, name }));
+    this.nestedPropertyAsPromise('aggregation', 'metrics');
   },
 
   addResult(records, created = new Date(Date.now())) {
-    this.get('_results').pushObject(MockResult.create({ records: records, created: created }));
-    this.asPromise('results');
+    this.get('_results').pushObject(MockResult.create({ records, created }));
+    this.topLevelPropertyAsPromise('results');
   },
 
   validate() {
@@ -84,13 +125,23 @@ export default Ember.Object.extend({
 
   filterSummary: Ember.computed.oneWay('_filter.summary'),
 
-  projectionsSummary: Ember.computed('_projections.[]', function() {
-    return this.get('_projections').reduce((p, c) => `${p}${c.name}`, '');
+  fieldsSummary: Ember.computed('_projections.[]', '_aggregation._groups.[]', '_aggregation._metrics.[]', function() {
+    let projections = this.concatFieldLikes(this.get('_projections'));
+    let groups = this.concatFieldLikes(this.get('_aggregation._groups'));
+    let metrics = this.concatFieldLikes(this.get('_aggregation._metrics'));
+    return `${projections}${groups}${metrics}`;
   }),
 
   latestResult: Ember.computed('_results.[]', function() {
     let length = this.get('_results.length');
     return Ember.Object.create({ created: new Date(2016, 0, (length + 1) % 30) });
-  })
+  }),
+
+  concatFieldLikes(fieldLikes) {
+    if (Ember.isEmpty(fieldLikes)) {
+      return '';
+    }
+    return fieldLikes.reduce((p, c) => `${p}${c.name}`, '');
+  }
 });
 

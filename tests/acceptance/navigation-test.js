@@ -34,7 +34,7 @@ test('visiting / and redirecting to queries', function(assert) {
 test('visiting a non-existant query', function(assert) {
   visit('/query/foo');
   andThen(() => {
-    assert.equal(currentURL(), '/not-found');
+    assert.equal(currentURL(), '/errored');
   });
 });
 

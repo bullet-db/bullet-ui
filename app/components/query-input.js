@@ -4,8 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
 
 export default Ember.Component.extend(BuilderAdapter, {
@@ -20,42 +20,24 @@ export default Ember.Component.extend(BuilderAdapter, {
   subfieldSeparator: SUBFIELD_SEPARATOR,
   subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
   query: null,
-  // TODO: Get store out of component
-  store: Ember.inject.service(),
+  queryManager: Ember.inject.service(),
   scroller: Ember.inject.service(),
+  settings: Ember.inject.service(),
   schema: null,
   isListening: false,
   listenDuration: 0,
   hasError: false,
   hasSaved: false,
   hasCancelled: false,
-  // Merging of the one aggregation and projections till new types of aggregations are added.
-  PROJECTION_TYPES: Ember.Object.create({ ALL: 0, COUNT: 1, SELECT: 2 }),
-
-  projectionType: Ember.computed('query.projections', 'query.aggregation.type', function() {
-    let projections = this.get('query.projections');
-    let aggregation = this.get('query.aggregation.type');
-    const ALL = this.get('PROJECTION_TYPES.ALL');
-    const SELECT = this.get('PROJECTION_TYPES.SELECT');
-    const COUNT = this.get('PROJECTION_TYPES.COUNT');
-    if (aggregation === 'COUNT') {
-      return COUNT;
-    }
-    return Ember.isEmpty(projections) ? ALL : SELECT;
-  }),
-
-  showProjectionSelection: Ember.computed('projectionType', function() {
-    return this.get('projectionType') === this.get('PROJECTION_TYPES.SELECT');
-  }),
 
   columns: Ember.computed('schema', function() {
     let schema = this.get('schema');
     return this.builderFilters(schema);
   }).readOnly(),
 
-  init() {
-    this._super(...arguments);
-  },
+  showAggregationSize: Ember.computed('query.aggregation.type', function() {
+    return this.get('query.aggregation.type') === AGGREGATIONS.get('RAW');
+  }),
 
   didInsertElement() {
     this._super(...arguments);
@@ -100,21 +82,37 @@ export default Ember.Component.extend(BuilderAdapter, {
     this.$(this.get('queryBuilderInputs')).removeAttr('disabled');
   },
 
-  fixProjections(query) {
-    return query.get('projections').then((p) => {
-      p.forEach(i => {
+  fixFieldLikes(query, fieldLikesPath) {
+    return query.get(fieldLikesPath).then((e) => {
+      e.forEach(i => {
         if (Ember.isBlank(i.get('name'))) {
           i.set('name', i.get('field'));
         }
       });
+      return Ember.RSVP.resolve();
     });
+  },
+
+  autoFill(query) {
+    return Ember.RSVP.all([
+      this.fixFieldLikes(query, 'projections'),
+      this.fixFieldLikes(query, 'aggregation.groups')
+    ]);
+  },
+
+  fixAggregationSize(query) {
+    let type = query.get('aggregation.type');
+    if (type !== AGGREGATIONS.get('RAW')) {
+      query.set('aggregation.size', this.get('settings.aggregateDataDefaultSize'));
+    }
   },
 
   validate() {
     this.reset();
     let query = this.get('query');
     let isFilterValid = this.isCurrentFilterValid();
-    return this.fixProjections(query).then(() => {
+    return this.autoFill(query).then(() => {
+      this.fixAggregationSize(query);
       return query.validate().then((hash) => {
         let isValid = isFilterValid && hash.validations.get('isValid');
         return isValid ? Ember.RSVP.resolve() : Ember.RSVP.reject();
@@ -123,29 +121,8 @@ export default Ember.Component.extend(BuilderAdapter, {
   },
 
   save() {
-    let clause = this.currentFilterClause();
-    let summary = this.currentFilterSummary();
-    let promises = [
-      this.get('query.filter').then(i => {
-        i.set('clause', clause);
-        i.set('summary', summary);
-        i.save();
-      }),
-      this.get('query.projections').forEach(i => i.save()),
-      this.get('query.aggregation').then(i => {
-        let type = this.get('projectionType');
-        const COUNT = this.get('PROJECTION_TYPES.COUNT');
-        i.set('type', type === COUNT ? AGGREGATIONS.get('COUNT') : AGGREGATIONS.get('LIMIT'));
-        i.save();
-      }),
-      this.get('query').save()
-    ];
-    return Ember.RSVP.all(promises);
-  },
-
-  validateAndSave() {
     return this.validate().then(() => {
-      return this.save();
+      return this.get('queryManager').save(this.get('query'), this.currentFilterClause(), this.currentFilterSummary());
     }, () => {
       this.set('hasError', true);
       this.get('scroller').scrollVertical('.validation-container');
@@ -154,38 +131,8 @@ export default Ember.Component.extend(BuilderAdapter, {
   },
 
   actions: {
-    removeProjections() {
-      this.get('query.projections').then((p) => {
-        p.forEach(i => {
-          i.destroyRecord();
-        });
-      });
-    },
-
-    addProjectionToQuery() {
-      // Autosave takes care of updating query
-      let query = this.get('query');
-      let projection = this.get('store').createRecord('projection', {
-        query: query
-      });
-      projection.save().then(() => {
-        this.get('scroller').scrollVertical('.options-container', { duration: 0 });
-      });
-    },
-
-    modifyProjection(projection, field) {
-      projection.set('field', field);
-      projection.set('name', '');
-      projection.save();
-    },
-
-    removeProjectionFromQuery(projection) {
-      // Autosave takes care of updating query
-      projection.destroyRecord();
-    },
-
     save() {
-      this.validateAndSave().then(() => {
+      this.save().then(() => {
         this.set('hasSaved', true);
         this.get('scroller').scrollVertical('.validation-container');
       });
@@ -200,7 +147,7 @@ export default Ember.Component.extend(BuilderAdapter, {
     },
 
     listen() {
-      this.validateAndSave().then(() => {
+      this.save().then(() => {
         this.setProperties({
           isListening: true,
           hasSaved: true,

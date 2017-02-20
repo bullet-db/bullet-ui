@@ -13,21 +13,10 @@ import MockColumn from '../../helpers/mocked-column';
 
 let SIMPLE_SCHEMA = [MockColumn.create({ name: 'foo', type: 'STRING' })];
 
-function getMockSchema() {
-  let schema = Ember.A();
-  schema.pushObject(MockColumn.create({ name: 'foo', type: 'STRING' }));
-  schema.pushObject(MockColumn.create({ name: 'bar', type: 'MAP', subtype: 'STRING', hasFreeformField: true }));
-  let enumerated = MockColumn.create({ name: 'baz', type: 'MAP', subtype: 'DOUBLE' });
-  enumerated.addEnumeration('qux');
-  enumerated.addEnumeration('norf');
-  schema.pushObject(enumerated);
-  return schema;
-}
-
 function getMockQuery() {
   let query = MockQuery.create({ promisify: true, duration: 1 });
   query.addFilter({ condition: 'AND', rules: [] });
-  query.addAggregation(AGGREGATIONS.get('LIMIT'));
+  query.addAggregation(AGGREGATIONS.get('RAW'));
   return query;
 }
 
@@ -37,11 +26,11 @@ moduleForComponent('query-input', 'Integration | Component | query input', {
 
 test('it renders', function(assert) {
   this.set('mockSchema', SIMPLE_SCHEMA);
-  this.render(hbs`{{query-input schema=mockSchema }}`);
+  this.render(hbs`{{query-input schema=mockSchema}}`);
 
   let text = this.$().text().trim();
   assert.ok(text.indexOf('Filters') !== -1);
-  assert.ok(text.indexOf('Result Data Fields') !== -1);
+  assert.ok(text.indexOf('Output Data') !== -1);
   assert.ok(text.indexOf('Query Stop Criteria') !== -1);
   assert.ok(text.indexOf('Run Query') !== -1);
   assert.ok(text.indexOf('Save Query') !== -1);
@@ -73,63 +62,6 @@ test('it displays the duration of a query', function(assert) {
   this.set('mockQuery', query);
   this.render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
   assert.equal(this.$('.query-duration :input').val(), '1000');
-});
-
-test('it displays two projection fields for a single projection', function(assert) {
-  assert.expect(6);
-
-  this.set('mockSchema', getMockSchema());
-  let query = MockQuery.create({ duration: 1 });
-  query.addProjection('foo', 'goo');
-
-  this.set('mockQuery', query);
-  this.render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
-  assert.equal(this.$('.projection-container').length, 1);
-  assert.equal(this.$('.projection-container input').length, 1);
-  assert.equal(this.$('.projection-field').length, 1);
-  assert.equal(this.$('.projection-name').length, 1);
-  assert.equal(this.$('.projection-field .column-onlyfield .ember-power-select-selected-item').text().trim(), 'foo');
-  assert.equal(this.$('.projection-name :input').val(), 'goo');
-});
-
-test('it displays multiple projections', function(assert) {
-  assert.expect(8);
-
-  this.set('mockSchema', getMockSchema());
-  let query = MockQuery.create({ duration: 1 });
-  query.addProjection('foo', 'goo');
-  query.addProjection('baz.norf', 'norf');
-  this.set('mockQuery', query);
-  this.render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
-
-  assert.equal(this.$('.projection-container').length, 2);
-  assert.equal(this.$('.projection-container input').length, 2);
-  assert.equal(this.$('.projection-field').length, 2);
-  assert.equal(this.$('.projection-name').length, 2);
-  assert.equal(this.$('.projection-field .column-onlyfield .ember-power-select-selected-item').first().text().trim(), 'foo');
-  assert.equal(this.$('.projection-name :input').first().val(), 'goo');
-  assert.equal(this.$('.projection-field  .column-onlyfield .ember-power-select-selected-item').last().text().trim(), 'baz.norf');
-  assert.equal(this.$('.projection-name :input').last().val(), 'norf');
-});
-
-test('it does not save unless the query is valid', function(assert) {
-  assert.expect(1);
-
-  this.set('mockSchema', SIMPLE_SCHEMA);
-  let query = getMockQuery();
-  query.set('shouldValidate', false);
-  this.set('mockQuery', query);
-  this.set('mockSave', () => {
-    assert.ok(false, 'We should not save');
-    return Ember.RSVP.Promise.resolve();
-  });
-  this.render(hbs`{{query-input query=mockQuery save=mockSave schema=mockSchema}}`);
-
-  this.$('.save-button').click();
-  return wait().then(() => {
-    // We should have a validation message
-    assert.equal(this.$('.validation-container .simple-alert').length, 1);
-  });
 });
 
 test('it displays validation messages on saving if the query is not valid', function(assert) {
