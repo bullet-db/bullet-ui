@@ -28,22 +28,29 @@ export default {
     application.inject('component', 'settings', 'settings:main');
 
     let version = settings.modelVersion;
-    this.applyMigrations(version);
-    localStorage.modelVersion = version;
+    application.deferReadiness();
+    this.applyMigrations(version).then(() => {
+      // Store versions in localStorage explicitly.
+      window.localStorage.modelVersion = version;
+      application.advanceReadiness();
+    });
   },
 
   /**
-   * Applies any forced migrations for local storage. Currently, only wipes localStorage
+   * Applies any forced migrations for the client side storage. Currently, wipes localforage
    * if version is greater than the stored version  or if stored version is not present.
    * @param  {Number} version A numeric version to compare the current stored version against.
-   * @return {Boolean}        Denoting whether local storage was modified.
+   * @return {Promise}        That resolves to a boolean denoting whether the storage was wiped.
    */
   applyMigrations(version) {
-    let currentVersion = localStorage.modelVersion;
+    let currentVersion = window.localStorage.modelVersion;
     if (!currentVersion || version > currentVersion) {
-      localStorage.clear();
-      return true;
+      Ember.Logger.info('Wiping of all data requested...Performing wipe');
+      return window.localforage.clear().then(() => {
+        Ember.Logger.info('Data was wiped.');
+        return true;
+      });
     }
-    return false;
+    return Ember.RSVP.resolve(false);
   }
 };

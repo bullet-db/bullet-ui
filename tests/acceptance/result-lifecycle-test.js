@@ -13,14 +13,14 @@ let server;
 
 moduleForAcceptance('Acceptance | result lifecycle', {
   beforeEach() {
-    // Wipe out localstorage because we are creating queries here
-    window.localStorage.clear();
+    return window.localforage.setDriver(window.localforage.LOCALSTORAGE);
   },
 
   afterEach() {
     if (server) {
       server.shutdown();
     }
+    return window.localforage.clear();
   }
 });
 
