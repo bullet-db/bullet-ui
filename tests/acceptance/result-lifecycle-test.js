@@ -60,3 +60,26 @@ test('it lets you swap between raw and tabular forms', function(assert) {
     assert.equal(find('.pretty-json-container').length, 1);
   });
 });
+
+test('it lets you expand metadata can be expanded in results in raw format', function(assert) {
+  assert.expect(7);
+  server = mockAPI(RESULTS.COUNT_DISTINCT, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-container .count-distinct-option #count-distinct');
+  click('.output-container .count-distinct-option .fields-selection-container .add-field');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  click('.submit-button');
+  andThen(() => {
+    assert.equal(currentRouteName(), 'result');
+    assert.equal(find('.records-table').length, 1);
+    assert.equal(find('.result-metadata').length, 1);
+    assert.notOk(find('.result-metadata').hasClass('is-expanded'));
+    assert.equal(find('.result-metadata pre').length, 0);
+    click('.result-metadata .expand-bar');
+    andThen(() => {
+      assert.ok(find('.result-metadata').hasClass('is-expanded'));
+      assert.equal(find('.result-metadata pre').length, 1);
+    });
+  });
+});

@@ -36,11 +36,11 @@ test('it can be made active', function(assert) {
   assert.ok(this.$('.progress').prop('class').indexOf('hidden') === -1);
 });
 
-test('it charges to 100', function(assert) {
+test('it changes from percentage to a message when done', function(assert) {
   assert.expect(1);
   this.render(hbs`{{timed-progress-bar active=true duration=100}}`);
   return wait().then(() => {
-    assert.equal(this.$().text().trim(), '100%');
+    assert.equal(this.$().text().trim(), 'Collecting results...');
   });
 });
 

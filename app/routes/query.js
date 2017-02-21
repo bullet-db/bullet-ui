@@ -56,7 +56,9 @@ export default Ember.Route.extend({
       schema: this.store.findAll('column'),
       query: this.store.findRecord('query', params.query_id)
     }).catch(() => {
-      return this.transitionTo('missing', 'not-found');
+      // Needed since findRecord adds the non-existant record to the cache
+      this.store.unloadAll('query');
+      return this.transitionTo('errored');
     });
   },
 

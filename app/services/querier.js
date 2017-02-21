@@ -7,6 +7,7 @@ import Ember from 'ember';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import CORSRequest from 'bullet-ui/services/cors-request';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { METRICS } from 'bullet-ui/models/metric';
 
 export default CORSRequest.extend(Filterizer, {
   subfieldSuffix: '.*',
@@ -30,15 +31,14 @@ export default CORSRequest.extend(Filterizer, {
     let filter = this.reformatFilter(query.get('filter'));
     let projection = this.reformatProjections(query.get('projections'));
     let aggregation = this.reformatAggregation(query.get('aggregation'));
+
     if (filter) {
       json.filters = [filter];
     }
     if (projection) {
       json.projection = { fields: projection };
     }
-    if (aggregation) {
-      json.aggregation = aggregation;
-    }
+    this.assignIfTruthy(json, 'aggregation', aggregation);
     json.duration = Number(query.get('duration')) * 1000;
     return json;
   },
@@ -66,14 +66,7 @@ export default CORSRequest.extend(Filterizer, {
   },
 
   reformatProjections(projections) {
-    if (Ember.isEmpty(projections)) {
-      return false;
-    }
-    let json = {};
-    projections.forEach(item => {
-      json[item.get('field')] = item.get('name');
-    });
-    return json;
+    return this.getFields(projections);
   },
 
   reformatAggregation(aggregation) {
@@ -81,21 +74,65 @@ export default CORSRequest.extend(Filterizer, {
       return false;
     }
     let json = {};
-    let type = aggregation.get('type');
-    json.size = Number(aggregation.get('size'));
+    let fields = this.getFields(aggregation.get('groups'));
+    let attributes = this.getAttributes(aggregation);
 
-    /*
-     * TODO: Rewrite to include new aggregations.
-     *
-     * Temporary workaround till the backend fully implements aggregations. COUNT is now a GROUP operation.
-     * The UI only supports a GROUP BY ALL, COUNT till the UI implements the new aggregations.
-     */
-    if (type === AGGREGATIONS.get('COUNT')) {
-      json.type =  'GROUP';
-      json.attributes = { operations: [{ type }] };
-    } else {
-      // Just LIMIT for now
-      json.type = type;
+    json.type = this.findType(aggregation.get('type'));
+    json.size = Number(aggregation.get('size'));
+    this.assignIfTruthy(json, 'fields', fields);
+    this.assignIfTruthy(json, 'attributes', attributes);
+
+    return json;
+  },
+
+  getFields(enumerable, sourceName = 'field', targetName = 'name') {
+    if (Ember.isEmpty(enumerable)) {
+      return false;
+    }
+    let json = {};
+    enumerable.forEach(item => {
+      json[item.get(sourceName)] = item.get(targetName);
+    });
+    return json;
+  },
+
+  getAttributes(aggregation) {
+    let json = {};
+
+    if (aggregation.get('type') === AGGREGATIONS.get('COUNT_DISTINCT')) {
+      return this.assignIfTruthy(json, 'newName', aggregation.get('attributes.name'));
+    }
+    // Otherwise, we only have GROUP (for now)
+    let operations = this.getGroupOperations(aggregation.get('metrics'));
+    this.assignIfTruthy(json, 'operations', operations);
+    return Ember.$.isEmptyObject(json) ? false : json;
+  },
+
+  getGroupOperations(metrics) {
+    let json = [];
+    if (!Ember.isEmpty(metrics)) {
+      metrics.forEach(item => {
+        let invertedType = METRICS.invert(item.get('type'));
+        let metric = { type: invertedType };
+        this.assignIfTruthy(metric, 'field', item.get('field'));
+        this.assignIfTruthy(metric, 'newName', item.get('name'));
+        json.push(metric);
+      });
+    }
+    return json;
+  },
+
+  findType(type) {
+    let apiType = AGGREGATIONS.invert(type);
+    if (apiType === 'COUNT_DISTINCT') {
+      return 'COUNT DISTINCT';
+    }
+    return apiType;
+  },
+
+  assignIfTruthy(json, key, value) {
+    if (!Ember.isEmpty(value) && Object.keys(value).length !== 0) {
+      json[key] = value;
     }
     return json;
   },

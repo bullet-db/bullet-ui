@@ -31,12 +31,42 @@ We are considering various packaging options at the moment. In the meantime, the
 
 The entire application with all its assets and dependencies are compiled and placed into dist/. You could point a web server directly at this folder but you will **only** be able to use the default configuration (see [below](#configuration)).
 
+## Running
+
+There is a Node.js server endpoint defined at [server/index.js](server/index.js) to serve the UI. This dynamically injects the settings (see configuration [below](#configuration)) into the served UI based on the environment variable NODE_ENV. You should not need to worry about if you only have one environment.
+
+The entrypoint for the UI is the [Express](http://expressjs.com/) endpoint defined as the main in package.json that simply adds the server/index.js as a middleware.
+
+You need the following folder structure in order to run the UI:
+
+```
+dist/
+config/env-settings.json
+server/index.js
+express-server.js
+```
+
+You can use node to launch the UI from the top-level of the folder structure above.
+
+To launch the UI with the default settings (without specifying proper API endpoints you will not be able to create or run a query):
+
+```bash
+PORT=8800 node express-server.js
+```
+
+To launch with custom settings:
+
+```bash
+NODE_ENV=<your_property_name_from_env-settings.json> PORT=8800 node express-server.js
+```
+Visit localhost:8800 to see your UI that should be configured with the right settings.
+
 ## Configuration
 
 All of the configuration for the UI is **environment-specific**. This lets you have different instances of Bullet for different environments (e.g. CI, Staging, Production).
 These settings can be found in [config/env-settings.json](config/env-settings.json).
 
-Each property in the env-settings.json file will contain the settings that will be used when running a custom instance of the UI (see [below](#Running)).
+Each property in the env-settings.json file will contain the settings that will be used when running a custom instance of the UI (see [above](#Running)).
 
 The ```default``` property shows the default settings for the UI that can be selectively overridden based on which host you are running on. The file does not specify the ```defaultFilter``` setting shown below.
 
@@ -63,6 +93,7 @@ The ```default``` property shows the default settings for the UI that can be sel
       ],
       "operation":"AND"
   },
+  "aggregateDataDefaultSize": 512,
   "modelVersion": 1
 }
 ```
@@ -86,6 +117,11 @@ helps them understand your data (that this UI is operating on).
 
 ```bugLink``` is a url that by default points to the issues page for the UI GitHub repository (this). You can change it to point to your own custom JIRA queue or the like if you want to.
 
+```aggregateDataDefaultSize``` is the aggregation size for all queries that are not pulling raw data. In order to keep the
+aggregation size from being ambiguous for UI users when doing a Count Distinct or a Distinct or a Group By query, this is
+the size that is used. You should set this to your max size that you have configured for your non-raw aggregations in
+your topology configuration.
+
 **Note that all your web-service endpoints must support CORS (return the right headers) in order for the UI to be able to communicate with it.** The Bullet Web-Service already does this for the DRPC and columns endpoints.
 
 To cement all this, if you wanted an instance of the UI in your CI environment, you could add this to the env-settings.json file.
@@ -105,6 +141,7 @@ To cement all this, if you wanted an instance of the UI in your CI environment, 
         }
       ],
       "bugLink": "http://your.issues.page.com",
+      "aggregateDataDefaultSize": 500,
       "modelVersion": 1
   },
    "ci": {
@@ -116,36 +153,5 @@ To cement all this, if you wanted an instance of the UI in your CI environment, 
 ```
 
 Your UI on CI host will POST to http://bullet-ws.development.domain.com:4080/bullet/api/drpc for UI created Bullet queries, GET the schema from http://bullet-ws.development.domain.com:4080/bullet/api/columns, populate an additional link on the Help dropdown pointing to http://data.docs.domain.com and will GET and cache a defaultFilter from http://bullet-ws.development.domain.com:4080/custom-endpoint/api/defaultQuery.
-
-## Running
-
-There is a Node.js server endpoint defined at [server/index.js](server/index.js) to serve the UI. This dynamically injects the settings (see configuration [above](#configuration)) into the served UI based on the environment variable NODE_ENV. You should not need to worry about if you only have one environment.
-
-The entrypoint for the UI is the [Express](http://expressjs.com/) endpoint defined as the main in package.json that simply adds the server/index.js as a middleware.
-
-You need the following folder structure in order to run the UI:
-
-```
-dist/
-config/env-settings.json
-server/index.js
-express-server.js
-```
-
-You can use node to launch the UI from the top-level of the folder structure above.
-
-To launch the UI with the default settings (without specifying proper API endpoints you will not be able to create or run a query):
-
-```bash
-PORT=8800 node express-server.js
-```
-
-To launch with custom settings:
-
-```bash
-NODE_ENV=<your_property_name_from_env-settings.json> PORT=8800 node express-server.js
-```
-
-Visit localhost:8800 to see your UI that should be configured with the right settings.
 
 Code licensed under the Apache 2 license. See LICENSE file for terms.

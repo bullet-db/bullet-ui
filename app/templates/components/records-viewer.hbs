@@ -4,12 +4,18 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="records-title">
+
   <span class="section-header">
     <h3 class="section-title">Query Results</h3>
     {{#info-popover title="Query Results"}}
       {{partial "partials/results-help"}}
     {{/info-popover}}
   </span>
+
+  <span class="records-header">
+    {{records.length}} records returned from your query
+  </span>
+
   <div class="view-controls">
     {{#if showTable}}
       <button type="button" class="view-control raw-view" {{action "showRawData"}}>
@@ -37,7 +43,9 @@
       </ul>
     </div>
   </div>
+
 </div>
+
 <div class="records-display">
   {{#if showTable}}
     {{records-table columnNames=columns rawRows=records}}

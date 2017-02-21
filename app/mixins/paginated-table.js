@@ -11,6 +11,7 @@ export default Ember.Mixin.create({
   pageSize: 15,
   firstNewRow: 0,
   extractors: null,
+  useDefaultStringExtractor: true,
 
   numberOfRows: Ember.computed('rows.[]', function() {
     return this.get('rows.length');
@@ -33,20 +34,35 @@ export default Ember.Mixin.create({
     return this.addRows(firstNewRow, lastNewRow);
   },
 
-  getExtractor(key) {
-    let extractor = this.get(`extractors.${key}`);
+  defaultExtractor(column) {
+    return (row) => {
+      let value = row.get(column);
+      let valueType = Ember.typeOf(value);
+      if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+        return value;
+      }
+      // If not a primitive, return a String version
+      return String(value);
+    };
+  },
+
+  getExtractor(column) {
+    let extractor = this.get(`extractors.${column}`);
     if (extractor) {
       return extractor;
     }
     // Default String convertor
-    return a => String(a.get(key));
+    if (this.get('useDefaultStringExtractor')) {
+      return a => String(a.get(column));
+    }
+    // Identity
+    return this.defaultExtractor(column);
   },
 
-  sortBy(key, direction = 'ascending') {
-    // TODO: Need to consider a partial sort for speed
+  sortBy(column, direction = 'ascending') {
     let rows = this.get('rows');
     rows.sort((a, b) => {
-      let extractor = this.getExtractor(key);
+      let extractor = this.getExtractor(column);
       let itemA = extractor(a);
       let itemB = extractor(b);
       let comparison = 0;
@@ -63,6 +79,20 @@ export default Ember.Mixin.create({
     let table = this.get('table');
     table.setRows([]);
     this.set('firstNewRow', 0);
+  },
+
+  actions: {
+    onColumnClick(column) {
+      this.reset();
+      this.sortBy(column.valuePath, column.ascending ? 'ascending' : 'descending');
+      this.addPages();
+    },
+
+    onScrolledToBottom() {
+      if (!this.get('isDestroyed') && !this.get('isDestroying') && this.get('haveMoreRows')) {
+        this.addPages();
+      }
+    }
   }
 });
 

@@ -13,6 +13,8 @@ export default Ember.Component.extend(PaginatedTable, {
   cellComponent: 'cells/record-entry',
   pageSize: 10,
   isFixed: true,
+  // Use natural types in the results
+  useDefaultStringExtractor: false,
 
   rawRows: null,
 
@@ -20,7 +22,7 @@ export default Ember.Component.extend(PaginatedTable, {
     let names = this.get('columnNames');
     return names.map(item => Ember.Object.create({
       label: item,
-      valuePath: '',
+      valuePath: item,
       resizable: true,
       draggable: true,
       cellComponent: this.get('cellComponent')
@@ -33,19 +35,5 @@ export default Ember.Component.extend(PaginatedTable, {
 
     this.set('rows', this.get('rawRows').map(row => Ember.Object.create(row)));
     this.addPages(1);
-  },
-
-  actions: {
-    onColumnClick(column) {
-      this.reset();
-      this.sortBy(column.label, column.ascending ? 'ascending' : 'descending');
-      this.addPages();
-    },
-
-    onScrolledToBottom() {
-      if (this.get('haveMoreRows')) {
-        this.addPages();
-      }
-    }
   }
 });

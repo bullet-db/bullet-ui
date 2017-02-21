@@ -7,29 +7,32 @@
 
   <div class="validation-container">
     {{#if hasError}}
-      {{#simple-alert type="error" message="OOPS! PLEASE FIX ALL ERRORS TO PROCEED"}}
-        <i class="validation-status-icon glyphicon glyphicon-ban-circle"></i>
+      {{#simple-alert type="error"}}
+        <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
+        <ul class="error-list">
+          {{#each query.validations.messages as |message|}}
+            <li>{{message}}</li>
+          {{/each}}
+        </ul>
       {{/simple-alert}}
     {{else if hasSaved}}
-      {{#simple-alert type="success" message="SAVED TO BROWSER CACHE!"}}
-        <i class="validation-status-icon glyphicon glyphicon-ok-sign"></i>
+      {{#simple-alert type="success"}}
+        <span>SAVED TO BROWSER CACHE!</span>
       {{/simple-alert}}
     {{else if hasCancelled}}
-      {{#simple-alert type="warning" message="CANCELLED!"}}
-        <i class="validation-status-icon glyphicon glyphicon-flag"></i>
+      {{#simple-alert type="warning"}}
+        <span>CANCELLED!</span>
       {{/simple-alert}}
     {{/if}}
   </div>
 
   <div class="scrollable-panel">
 
-
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
         {{labeled-input fieldName="Name" placeholder="Name Your Query" fieldValue=query.name disabled=isListening maxlength=80}}
       </div>
     </div>
-
 
     <div class="container-fluid filter-container">
       <div class="section-header">
@@ -42,48 +45,15 @@
     </div>
 
 
-    <div class="container-fluid projections-container">
+    <div class="container-fluid output-container">
       <div class="section-header">
-        <h3 class="section-title">Result Data Fields</h3>
-        {{#info-popover title="Result Data Fields"}}
-          {{partial "partials/projections-help"}}
+        <h3 class="section-title">Output Data</h3>
+        {{#info-popover title="Output Data"}}
+          {{partial "partials/output-data-help"}}
         {{/info-popover}}
       </div>
 
-      <div class="projection-options">
-        {{#radio-button radioId="all" value=PROJECTION_TYPES.ALL groupValue=projectionType changed=(action "removeProjections") disabled=isListening}}
-          Show All Fields
-        {{/radio-button}}
-        {{#radio-button radioId="select" value=PROJECTION_TYPES.SELECT groupValue=projectionType changed=(action "addProjectionToQuery") disabled=isListening}}
-          Select Fields
-        {{/radio-button}}
-        {{#radio-button radioId="count" value=PROJECTION_TYPES.COUNT groupValue=projectionType changed=(action "removeProjections") disabled=isListening}}
-          Count Records
-        {{/radio-button}}
-      </div>
-      {{#if showProjectionSelection}}
-        {{#each query.projections as |projection|}}
-          <div class="row projection-container {{if projection.validations.attrs.field.isInvalid 'projection-error'}}">
-            {{#validated-input inputField="column-field" forceDirty=true model=projection valuePath="field" as |v|}}
-              <div class="col-xs-6 projection-field">
-                {{v.input-field columns=columns disabled=isListening initialValue=projection.field
-                                subfieldKey="show_subfield" subfieldSeparator=subfieldSeparator subfieldSuffix=subfieldSuffix
-                                onDone=(action "modifyProjection" projection)}}
-              </div>
-            {{/validated-input}}
-            <div class="col-xs-4 projection-name">
-              {{labeled-input fieldName="Display Name" fieldValue=projection.name placeholder="Optional" disabled=isListening}}
-            </div>
-            <button {{action "removeProjectionFromQuery" projection}} disabled={{isListening}} class="btn btn-danger btn-xs delete-button pull-right">
-              <i class="glyphicon glyphicon-remove"></i>
-            </button>
-          </div>
-        {{/each}}
-        <button {{action "addProjectionToQuery"}} disabled={{isListening}} class="btn btn-primary btn-xs add-button">
-          <i class="glyphicon glyphicon-plus"></i>
-          Field
-        </button>
-      {{/if}}
+      {{output-data-input subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator query=query disabled=isListening columns=columns}}
     </div>
 
 
@@ -96,19 +66,12 @@
       </div>
 
       <div class="row">
-        {{#validated-input model=query.aggregation valuePath="size" as |v|}}
-          <div class="col-xs-2 aggregation-size">
-            {{v.input-field type="number" fieldName="Maximum Record Count" fieldValue=query.aggregation.size disabled=isListening}}
-          </div>
-        {{/validated-input}}
-        {{#validated-input model=query valuePath="duration" as |v|}}
-          <div class="col-xs-2 query-duration">
-            {{v.input-field type="number" fieldName="Maximum Duration (seconds)" fieldValue=query.duration disabled=isListening}}
-          </div>
-        {{/validated-input}}
+        {{#if showAggregationSize}}
+          {{validated-input inputClassNames="col-xs-2 aggregation-size" model=query.aggregation valuePath="size" fieldName="Maximum Result Count" disabled=isListening}}
+        {{/if}}
+        {{validated-input inputClassNames="col-xs-2 query-duration" model=query valuePath="duration" fieldName="Maximum Duration (seconds)" disabled=isListening}}
       </div>
     </div>
-
 
   </div>
 

@@ -7,7 +7,6 @@ import Ember from 'ember';
 import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('column', 'Unit | Model | column', {
-  needs: []
 });
 
 test('it does not allow freeform subfields if it has a wrong type', function(assert) {

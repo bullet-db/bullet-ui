@@ -7,7 +7,7 @@ import Ember from 'ember';
 import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('projection', 'Unit | Model | projection', {
-  needs: ['model:query']
+  needs: ['model:query', 'validator:presence', 'validator:belongsTo']
 });
 
 test('it sets its default values right', function(assert) {

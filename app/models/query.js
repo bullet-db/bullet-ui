@@ -6,6 +6,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { METRICS } from 'bullet-ui/models/metric';
 
 let Validations = buildValidations({
   duration: {
@@ -43,9 +45,54 @@ export default DS.Model.extend(Validations, {
   }).readOnly(),
 
   projectionsSummary: Ember.computed('projections.@each.name', function() {
-    let projections = this.get('projections');
-    return Ember.isEmpty(projections) ? 'All' : projections.getEach('name').reject((n) => Ember.isEmpty(n)).join(', ');
+    return this.summarizeFieldLike(this.get('projections'));
   }).readOnly(),
+
+  groupsSummary: Ember.computed('aggregation.groups.@each.name', function() {
+    return this.summarizeFieldLike(this.get('aggregation.groups'));
+  }),
+
+  metricsSummary: Ember.computed('aggregation.metrics.@each.type', 'aggregation.metrics.@each.name', function() {
+    let metrics = this.getWithDefault('aggregation.metrics', Ember.A());
+    return metrics.map(m => {
+      let type = m.get('type');
+      let field = m.get('field');
+      let name = m.get('name');
+      if (type === METRICS.get('COUNT')) {
+        field = '*';
+      }
+      return Ember.isEmpty(name) ? `${type}(${field})` : name;
+    }).join(', ');
+  }),
+
+  aggregationSummary: Ember.computed('aggregation.type', 'groupsSummary', 'metricsSummary', function() {
+    let type = this.get('aggregation.type');
+    if (type === AGGREGATIONS.get('RAW')) {
+      return '';
+    }
+    let groupsSummary = this.get('groupsSummary');
+    if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
+      return `${type}(${groupsSummary})`;
+    }
+    let metricsSummary = this.get('metricsSummary');
+
+    if (Ember.isEmpty(metricsSummary)) {
+      return groupsSummary;
+    } else if (Ember.isEmpty(groupsSummary)) {
+      return metricsSummary;
+    }
+    return `${groupsSummary}, ${metricsSummary}`;
+  }),
+
+  fieldsSummary: Ember.computed('projectionsSummary', 'aggregationSummary', function() {
+    let projectionsSummary = this.get('projectionsSummary');
+    let aggregationSummary = this.get('aggregationSummary');
+    if (Ember.isEmpty(aggregationSummary)) {
+      // If All fields with Raw Aggregation
+      return Ember.isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
+    }
+    return this.get('aggregationSummary');
+  }),
 
   latestResult: Ember.computed('results.[]', function() {
     let results = this.get('results');
@@ -63,6 +110,14 @@ export default DS.Model.extend(Validations, {
       }
     });
     return max;
-  }).readOnly()
+  }).readOnly(),
+
+  isRawWithoutFields: Ember.computed('projections.[]', 'aggregation.type', function() {
+    return this.get('aggregation.type') === AGGREGATIONS.get('RAW') && Ember.isEmpty(this.get('projections'));
+  }),
+
+  summarizeFieldLike(fieldLike) {
+    return Ember.isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => Ember.isEmpty(n)).join(', ');
+  }
 });
 

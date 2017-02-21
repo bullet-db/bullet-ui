@@ -1,0 +1,70 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<h5 class="content-header">Raw Fields</h5>
+<p>
+  This option is used to get the raw data that matches your filters (as opposed to aggregating the data). You can choose to get all the fields in your data or select the particular few you are interested in from them.
+</p>
+
+<h6 class="content-sub-header">Show All Fields</h6>
+<p>
+  If selected, all non-null data columns are displayed in the output. If “Show All Fields are selected, the Result Page will be shown as the raw JSON view by default.
+</p>
+<h6 class="content-sub-header">Select Fields</h6>
+<p>
+  If selected, only the selected columns are displayed in the output. The user can optionally rename each column, which can be useful if many columns are extracted and viewing the data in a tabular mode.  If All Columns are selected, the Result Page will be shown as the table view by default.
+</p>
+
+<h5 class="content-header">Grouped Data</h5>
+<p>
+  If selected, you can group the data that matches your filters by certain fields. You group by these fields and perform metrics per each unique combination of these. Note that this automatically causes the Result Page to show your results in the table view.
+</p>
+<h6 class="content-sub-header">Group Fields</h6>
+<p>
+  Here you can select fields to group by. Each distinct combination of values in all the fields you add here will show up as rows in your result. You can get all the <strong>distinct</strong> values for your fields by simply not adding any metric fields. You can also  optionally rename the fields you select here. Note that when you are performing a Count Distinct operation, the new names you choose for the fields are ignored as there is only a single field in the result representing the Count Distinct value. You have to rename that field in the metric
+  fields section.
+</p>
+<h6 class="content-sub-header">Metric Fields</h6>
+<p>
+  Here you can select operations to apply per each distinct combination of values in the fields you have added as your group fields. If you have not added any group fields, you will be performing these metrics over <strong>all</strong> the data that matches your filters.
+</p>
+  These are the metric types supported currently. You are allowed to perform some of these metrics (Sum, Minimum, Maximum, Average) on non-numeric fields. The system will attempt to coerce the value to a number if possible or ignore the value if it cannot. Note that all numeric
+  metric values in the outputs will be <strong>decimal values</strong> except for the result of the Count metric.
+<p>
+  <ul>
+    <li>
+      <strong>Sum</strong>: Performs a Sum operation across the field you select per group or across your data if there were no group fields added.
+    </li>
+    <li>
+      <strong>Count</strong>: Counts the records per group or across your data. Note that you cannot select a field because you will be getting a count per group or across your data if there were no group fields. Null values for a field will also be counted.
+    </li>
+    <li>
+      <strong>Minimum</strong>: Finds the minimum value for the field you select per group or across your data if there were no groups.
+    </li>
+    <li>
+      <strong>Maximum</strong>: Finds the maximum value for the field you select per group or across your data if there were no groups.
+    </li>
+    <li>
+      <strong>Average</strong>: Finds the average value for the field you select per group or across your data if there were no groups.
+    </li>
+  </ul>
+</p>
+
+<h5 class="content-header">Count Distinct</h5>
+<p>
+  You can use this to perform a Count of distinct values for a set of fields. For each distinct combination of values for the fields you select in this option, a count will be incremented. You <strong>must</strong> select fields. Currently, we do not support peforming count distincts per grouped data.
+</p>
+<p>
+  You can use the display name field to give an optional name to the result field that will contain the count of the distincts for your chosen fields.
+</p>
+
+<h5 class="content-header">Constraints</h5>
+<p>
+  Note that due to the streaming nature of the data, certain computations are <strong>approximate</strong>. We use <a href="http://datasketches.github.io">Sketches</a> to perform operations like Count Distinct. While these give out approximate results, the accuracy and the
+  errors are reported in the Result Metadata section in the Results Page. Please note that the values are <strong>exact</strong> up to configured thresholds and are approximate after. By default, Count Distinct is exact up to <strong>16,384</strong> unique values and is approximate after but the <strong>maximum error</strong> at 99.73% confidence is at most 2.34%. In other words, if your count distinct value was 2,000,000, the real value was somewhere between 1,953,200 and 2,046,800 at 99.73% confidence. These thresholds depend on what the maintainer has chosen for this instance of Bullet but these are the defaults.
+</p>
+<p>
+  Another important feature to note that Bullet has a maximum number of records it can return (also chosen by the maintainer). If you are choosing the Grouped Data option and your group fields have more unique combinations than this, you will get a <strong>uniform</strong> sample across these unique values. In other words, if there are more groups than can be returned, there is no guarantee of which of your group values and metrics (i.e. your result rows) will be returned. These should not affect the common queries that the maintainer expects people to perform on the data that Bullet is running on. You should reach out to the maintainer if you do find practical queries that cannot be performed adequately because of the limits the maintainer has chosen. These limits arise partly from the streaming nature of the data and computational intractability of keeping track of arbitrary numbers of unique values and partly from having to prevent users from overloading the system due to improperly created queries.
+</p>

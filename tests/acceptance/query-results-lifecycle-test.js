@@ -40,13 +40,29 @@ test('query submission and result navigation', function(assert) {
   });
 });
 
-test('query submission with projections opens the table view by default', function(assert) {
+test('query submission with raw output with projections opens the table view by default', function(assert) {
   assert.expect(2);
   server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
-  click('.projections-container .projection-options #select');
-  selectChoose('.projections-container .projection-field', 'simple_column');
+  click('.output-container .raw-sub-options #select');
+  click('.output-container .raw-sub-options .projections-container .add-projection');
+  selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
+  click('.submit-button');
+  andThen(() => {
+    assert.equal(currentRouteName(), 'result');
+    assert.equal(find('.records-table').length, 1);
+  });
+});
+
+test('query submission with grouped data opens the table view by default', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.GROUP, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-container .group-option #grouped-data');
+  click('.output-container .group-option .groups-container .add-group');
+  selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
   click('.submit-button');
   andThen(() => {
     assert.equal(currentRouteName(), 'result');

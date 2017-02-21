@@ -1,0 +1,67 @@
+.output-data-input {
+  $box-rectangle-color: #F6F6F6;
+  $border-rectangle-color: #DCDEE2;
+
+  .output-option {
+
+    margin-left: $output-option-indentation;
+
+    .fields-selection-container {
+      @import "validated-field-selection";
+
+      .add-button {
+        @extend %add-button;
+        margin-bottom: 10px;
+        i {
+          padding-right: 5px;
+        }
+        &.add-group, &.add-metric {
+          width: 120px;
+        }
+      }
+
+      &.metrics-container .metrics-selection {
+        @import "power-select-inputs";
+      }
+    }
+
+    .output-nested-container {
+      margin-left: $output-option-indentation;
+      margin-bottom: 20px;
+    }
+
+    .raw-sub-options .fields-selection-container {
+      margin-left: $output-option-indentation;
+    }
+
+    &.count-distinct-option .field-selection-container.row {
+      margin-top: 0;
+      width: 400px;
+    }
+
+    .groups-container, .metrics-container {
+      display: inline-block;
+      padding: 0 10px 0 $output-option-indentation;
+      margin-bottom: 15px;
+      clear: left;
+
+      .groups-header, .metrics-header {
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  .ember-radio-button {
+    display: block;
+    max-width: 200px;
+    margin-bottom: 10px;
+    font-size: $font-size-regular-small;
+    font-family: $font-family-regular;
+    font-weight: $font-weight-regular;
+    input {
+      margin-right: 10px;
+    }
+  }
+}

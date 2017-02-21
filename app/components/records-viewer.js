@@ -9,10 +9,6 @@ export default Ember.Component.extend({
   fileSaver: Ember.inject.service(),
   classNames: ['records-viewer'],
   showTable: false,
-  /*
-   * TODO:  Not used at the moment. Will be used when metadata support is added.
-   */
-  metadata: null,
   records: null,
   fileName: 'results',
 

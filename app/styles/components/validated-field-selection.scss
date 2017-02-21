@@ -1,0 +1,43 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.validated-field-selection {
+  $spacing-vertical: ($row-height - $query-input-height)/2;
+
+  background-color: $background-box-color;
+  padding: $spacing-vertical 0 $spacing-vertical 0;
+  margin: 4px 0;
+  width: 900px;
+  border: 1px solid $white;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: $background-box-hover-color;
+  }
+  &:last-of-type {
+    margin-bottom: 10px;
+  }
+
+  .field-selection {
+    padding-left: 0;
+  }
+  .delete-button {
+    @extend %remove-button;
+    margin-top: 8px;
+    margin-right: 10px;
+  }
+
+  .error-tooltip-link {
+    @extend %error-icon;
+  }
+
+  &.has-error {
+    background-color: $background-box-error-color;
+    // Move the first column field to the left when there is an error in the container
+    & div[class ^= "col-"]:first-of-type {
+      margin-left: -15px;
+    }
+  }
+}

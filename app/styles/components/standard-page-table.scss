@@ -33,7 +33,17 @@
         &:first-of-type {
           padding-left: $cell-indent-first;
         }
-
+        &.is-draggable {
+          cursor: move;
+          cursor: grab;
+          cursor: -moz-grab;
+          cursor: -webkit-grab;
+        }
+        &.is-dragging {
+          cursor: grabbing;
+          cursor: -moz-grabbing;
+          cursor: -webkit-grabbing;
+        }
         .lt-sort-icon {
           float: none;
           padding-left: 2px;

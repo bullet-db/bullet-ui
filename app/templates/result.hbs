@@ -4,14 +4,14 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="results-container">
-  <div class="query-information">
+  <div class="information-container query-information">
     <div class="query-title">
       <p>
         {{if model.query.name model.query.name "New Untitled Query"}}
       </p>
     </div>
-    <div class="query-blurb-wrapper" {{action "queryClick" model.query}}>
-      <div class="query-text">
+    <div class="information-wrapper query-blurb-wrapper" {{action "queryClick" model.query}}>
+      <div class="information-text query-text">
         <h4>Query Definition</h4>
         {{query-blurb query=model.query}}
       </div>
@@ -20,12 +20,27 @@
       </button>
     </div>
   </div>
+
+  <div class="information-container result-information">
+    <div class="information-wrapper metadata-wrapper">
+      <div class="information-text metadata-text">
+        <span class="section-header">
+          <h4 class="section-title">Result Metadata</h4>
+          {{#info-popover title="Result Metadata"}}
+            {{partial "partials/result-metadata-help"}}
+          {{/info-popover}}
+        </span>
+        {{result-metadata metadata=model.metadata}}
+      </div>
+    </div>
+  </div>
+
   <div class="result-container">
       {{#if model.records}}
-        {{#if model.query.projections}}
-          {{records-viewer records=model.records metadata=model.metadata showTable=true}}
+        {{#if model.query.isRawWithoutFields}}
+          {{records-viewer records=model.records showTable=false}}
         {{else}}
-          {{records-viewer records=model.records metadata=model.metadata showTable=false}}
+          {{records-viewer records=model.records showTable=true}}
         {{/if}}
       {{else}}
         {{partial "partials/no-results-help"}}

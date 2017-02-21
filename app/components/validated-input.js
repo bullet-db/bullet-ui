@@ -10,14 +10,16 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['validated-input'],
   classNameBindings: ['isInvalid:has-error'],
+  inputClassNames: '',
   model: null,
+  fieldName: '',
   valuePath: '',
+  tooltipPosition: 'right',
+  forceDirty: false,
+  disabled: false,
   // Defined properties in init
   value: null,
   validation: null,
-  tooltipPosition: 'right',
-  inputField: 'labeled-input',
-  forceDirty: false,
 
   notValidating: Ember.computed.not('validation.isValidating'),
   isDirty: Ember.computed.or('validation.isDirty', 'forceDirty'),

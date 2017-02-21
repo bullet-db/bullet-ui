@@ -21,6 +21,7 @@
   $inactive-secondary-button-color: #E9E9E9;
   $inactive-container-color: #EAEAEA;
   $query-footer-panel-height: 140px;
+  $output-option-indentation: 25px;
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // Reused mixins
@@ -36,9 +37,6 @@
 
   %remove-button {
     @extend %delete-button;
-    i {
-      vertical-align: -0.5px;
-    }
     font-size: $font-size-regular-large;
   }
 
@@ -63,10 +61,24 @@
     padding-bottom: 4px;
   }
 
+  %error-icon {
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: $query-input-height/2 - $font-size-regular/2;
+    outline: 0 !important;
+    text-decoration: none !important;
+    color: $error-icon-color;
+    font-size: $font-size-regular;
+
+    &:hover {
+      color: $error-icon-hover-color;
+    }
+  }
+
   @import "section-heading-with-help";
   @import "column-field";
   @import "labeled-input";
-  @import "validated-input";
 
 
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -98,21 +110,14 @@
     }
   }
 
-  .has-error .form-control {
-    border-color: $error-icon-color;
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////////
   .validation-container {
     @import "simple-alert";
     margin-left: (-$query-panel-side-padding);
     margin-right: (-$query-panel-side-padding);
-
-    .validation-status-icon {
-      float: left;
-      padding-right: 20px;
-      font-size: 22px;
-      color: $white;
+    .error-list {
+      margin-left: -20px;
+      font-size: $font-size-regular;
     }
   }
 
@@ -154,100 +159,56 @@
     }
 
     .filter-container {
-      margin-top: -5px;
+      margin-top: 15px;
       @import "query-builder";
     }
 
-    .projections-container {
-      .projection-options {
-        padding-top: 5px;
-        margin-bottom: 20px;
-        .ember-radio-button {
-          display: block;
-          max-width: 200px;
-          margin-bottom: 10px;
-          font-size: $font-size-regular-small;
-          font-family: $font-family-regular;
-          font-weight: $font-weight-regular;
-          input {
-            margin-right: 10px;
-          }
-        }
-      }
-
-      .projection-container {
-        $spacing-vertical: ($row-height - $query-input-height)/2;
-
-        background-color: $background-box-color;
-        padding: $spacing-vertical 0 $spacing-vertical 0;
-        margin: 4px 0;
-        width: 800px;
-        border: 1px solid $white;
-        border-radius: 5px;
-
-        &:hover {
-          background-color: $background-box-hover-color;
-        }
-        &.projection-error {
-          background-color: $background-box-error-color;
-        }
-      }
-      .projection-container:last-of-type {
-        margin-bottom: 10px;
-      }
-
-      .projection-field {
-        padding-left: 0;
-      }
-
-      .delete-button {
-        @extend %remove-button;
-        margin-top: 8px;
-        margin-right: 10px;
-      }
-
-      .add-button {
-        @extend %add-button;
-        float: left;
-        margin-bottom: 5px;
-        i {
-          padding-right: 5px;
-        }
-      }
+    .output-container {
+      @import "output-data-input";
     }
 
     .options-container {
-      // $option-right-space: 15px;
       padding-top: 5px;
       .row {
+        @import "validated-input";
+
         margin-top: 10px;
         margin-left: 0;
         input {
           height: 45px;
         }
-      }
-      .aggregation-size {
-        padding-right: 0;
-        width: 165px;
-        margin-left: -15px;
-        margin-right: 0;
-      }
-      .query-duration {
-        margin-left: -5px;
-        width: 195px;
-      }
-      .error-tooltip-link {
-        // Because these fields are an exception, their error icon needs to be recentered
-        margin-top: 45px/2 - $font-size-regular/2;
+        .validated-input {
+          .aggregation-size {
+            padding-right: 0;
+            width: 165px;
+            margin-left: -15px;
+            margin-right: 0;
+          }
+          .query-duration {
+            margin-left: -5px;
+            width: 195px;
+          }
+          &.has-error .query-duration {
+            margin-left: -15px;
+          }
+          &.has-error > .labeled-input > .form-control {
+            border-color: $error-icon-color;
+          }
+          .error-tooltip-link {
+            // Because these fields are an exception, their error icon needs to be recentered
+            margin-top: 45px/2 - $font-size-regular/2;
+          }
+        }
       }
     }
+
   }
 
   .control-container {
     height: $query-footer-panel-height;
     width: 100%;
     background-color: white;
-    z-index: 1000;
+    z-index: 100;
 
     position: fixed;
     bottom: 0;
