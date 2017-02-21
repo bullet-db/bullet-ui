@@ -21,7 +21,6 @@
     "test": "PATH=./node_modules/.bin:$PATH; phantomjs --version; COVERAGE=true ember test",
     "local-build": "ember build",
     "local-test": "ember test --server",
-    "postinstall": "bower install",
     "start": "ember server",
     "lint": "jscs . --verbose",
     "lint-fix": "jscs . --fix --verbose"
