@@ -77,18 +77,6 @@ export default Ember.Component.extend(PaginatedTable, {
     deleteQueryClick(row) {
       this.get('table').removeRow(row);
       this.sendAction('deleteQueryClick', row.get('content'));
-    },
-
-    onColumnClick(column) {
-      this.reset();
-      this.sortBy(column.valuePath, column.ascending ? 'ascending' : 'descending');
-      this.addPages();
-    },
-
-    onScrolledToBottom() {
-      if (this.get('haveMoreRows') && !this.get('isDestroyed') && !this.get('isDestroying')) {
-        this.addPages();
-      }
     }
   }
 });

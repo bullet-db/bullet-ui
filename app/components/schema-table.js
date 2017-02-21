@@ -41,21 +41,9 @@ export default Ember.Component.extend(PaginatedTable, {
   },
 
   actions: {
-    onColumnClick(column) {
-      this.reset();
-      this.sortBy(column.valuePath, column.ascending ? 'ascending' : 'descending');
-      this.addPages();
-    },
-
     onRowClick(row) {
       if (!row.get('hasEnumerations')) {
         row.set('expanded', false);
-      }
-    },
-
-    onScrolledToBottom() {
-      if (!this.get('isDestroyed') && !this.get('isDestroying') && this.get('haveMoreRows')) {
-        this.addPages();
       }
     }
   }

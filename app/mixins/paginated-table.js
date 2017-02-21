@@ -79,6 +79,20 @@ export default Ember.Mixin.create({
     let table = this.get('table');
     table.setRows([]);
     this.set('firstNewRow', 0);
+  },
+
+  actions: {
+    onColumnClick(column) {
+      this.reset();
+      this.sortBy(column.valuePath, column.ascending ? 'ascending' : 'descending');
+      this.addPages();
+    },
+
+    onScrolledToBottom() {
+      if (!this.get('isDestroyed') && !this.get('isDestroying') && this.get('haveMoreRows')) {
+        this.addPages();
+      }
+    }
   }
 });
 
