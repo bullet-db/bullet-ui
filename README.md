@@ -1,6 +1,6 @@
 # Bullet UI
 
-[![Build Status](https://travis-ci.org/yahoo/bullet-ui.svg?branch=master)](https://travis-ci.org/yahoo/bullet-ui) [![Code Climate](https://codeclimate.com/github/yahoo/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/yahoo/bullet-ui) [![Test Coverage](https://codeclimate.com/github/yahoo/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/yahoo/bullet-ui/coverage)
+[![Build Status](https://travis-ci.org/yahoo/bullet-ui.svg?branch=master)](https://travis-ci.org/yahoo/bullet-ui) [![Code Climate](https://codeclimate.com/github/yahoo/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/yahoo/bullet-ui) [![Test Coverage](https://codeclimate.com/github/yahoo/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/yahoo/bullet-ui/coverage)[![GitHub release](https://img.shields.io/github/release/yahoo/bullet-ui.svg)](https://github.com/yahoo/bullet-ui/releases/latest)
 
 This is the UI for Bullet created with Ember 2. The UI stores all created queries, results and other metadata in the browser's **LocalStorage**.
 
@@ -14,20 +14,25 @@ In order for your UI to work with Bullet, you should have:
 
 ## Installation
 
-We are considering various packaging options at the moment. In the meantime, the following option is available:
+We are considering various packaging options at the moment. In the meantime, the following two options are available:
+
+### GitHub Release
+
+* Click the GitHub release badge above.
+* Download the bullet-ui-vX.X.X.tar.gz archive
+* Unarchive it into your web server where you wish to run the UI.
+* Install [Node](https://nodejs.org/) (recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions) on the web server.
+
+### Build from source
 
 * Install [Node](https://nodejs.org/) (recommend using [nvm](https://github.com/creationix/nvm) to manage Node versions).
 * Install [Bower](https://bower.io/). Use NPM to install it with ```sudo npm install -g bower```
 * Install [Ember](http://emberjs.com/). ```sudo npm install -g ember-cli``` (sudo required only if not using nvm)
-* git clone this repository
-* change into the new directory
+* git clone git@github.com:yahoo/bullet-ui.git
+* cd bullet-ui
 * `npm install`
 * `bower install`
-
-### Building
-
-* `ember build` (development)
-* `ember build --environment production` (production)
+* `ember build --environment production`
 
 The entire application with all its assets and dependencies are compiled and placed into dist/. You could point a web server directly at this folder but you will **only** be able to use the default configuration (see [below](#configuration)).
 
@@ -37,10 +42,10 @@ There is a Node.js server endpoint defined at [server/index.js](server/index.js)
 
 The entrypoint for the UI is the [Express](http://expressjs.com/) endpoint defined as the main in package.json that simply adds the server/index.js as a middleware.
 
-You need the following folder structure in order to run the UI:
+Regardless of which [installation](#installation) option you chose, you need the following folder structure in order to run the UI:
 
 ```
-dist/
+dist/*
 config/env-settings.json
 server/index.js
 express-server.js
