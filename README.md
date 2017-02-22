@@ -1,6 +1,6 @@
 # Bullet UI
 
-[![Build Status](https://travis-ci.org/yahoo/bullet-ui.svg?branch=master)](https://travis-ci.org/yahoo/bullet-ui) [![Code Climate](https://codeclimate.com/github/yahoo/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/yahoo/bullet-ui) [![Test Coverage](https://codeclimate.com/github/yahoo/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/yahoo/bullet-ui/coverage)[![GitHub release](https://img.shields.io/github/release/yahoo/bullet-ui.svg)](https://github.com/yahoo/bullet-ui/releases/latest)
+[![Build Status](https://travis-ci.org/yahoo/bullet-ui.svg?branch=master)](https://travis-ci.org/yahoo/bullet-ui) [![Code Climate](https://codeclimate.com/github/yahoo/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/yahoo/bullet-ui) [![Test Coverage](https://codeclimate.com/github/yahoo/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/yahoo/bullet-ui/coverage) [![GitHub release](https://img.shields.io/github/release/yahoo/bullet-ui.svg)](https://github.com/yahoo/bullet-ui/releases/latest)
 
 This is the UI for Bullet created with Ember 2. The UI stores all created queries, results and other metadata in the browser's **LocalStorage**.
 
