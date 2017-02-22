@@ -4,15 +4,6 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
-    'ember-cli-bootstrap-sassy': {
-      'glyphicons': true
-    },
-    // Lets us just do import bootstrap etc from this base path
-    sassOptions: {
-      includePaths: [
-        'bower_components/bootstrap-sass/assets/stylesheets'
-      ]
-    },
     'ember-cli-babel': {
       includePolyfill: true
     }

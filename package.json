@@ -1,7 +1,7 @@
 {
   "name": "bullet-ui",
-  "version": "0.0.1",
-  "description": "Ember 2 UI for Bullet - Realtime Streaming Record Tracing",
+  "version": "0.1.0",
+  "description": "Ember 2 UI for Bullet - Realtime Query Engine",
   "private": true,
   "main": "express-server.js",
   "keywords": [
@@ -23,7 +23,9 @@
     "local-test": "ember test --server",
     "start": "ember server",
     "lint": "jscs . --verbose",
-    "lint-fix": "jscs . --fix --verbose"
+    "lint-fix": "jscs . --fix --verbose",
+    "build-package": "npm install && npm run -s build &&  rm -rf node_modules && npm install --only=production && npm run -s archive",
+    "archive": "tar --exclude='.jshintrc' --exclude='.DS_Store' --exclude='coverage.js' --exclude='environment.js' -czf bullet-ui-v${BULLET_VERSION}.tar.gz dist express-server.js server config node_modules/"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,7 @@
     "url": "https://github.com/yahoo/bullet-ui/issues"
   },
   "engines": {
-    "node": ">= 0.12.0"
+    "node": ">= 4"
   },
   "author": "Akshai Sarma akshaisarma@gmail.com",
   "contributors": [
@@ -58,6 +60,7 @@
     "ember-cli-inject-live-reload": "^1.4.1",
     "ember-cli-jshint": "^2.0.1",
     "ember-cli-moment-shim": "3.0.1",
+    "ember-cli-preprocess-registry": "3.0.0",
     "ember-cli-pretender": "1.0.1",
     "ember-cli-qunit": "^3.0.1",
     "ember-cli-release": "^0.2.9",
