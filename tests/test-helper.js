@@ -4,6 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import resolver from './helpers/resolver';
+import './helpers/responsive';
+
 import {
   setResolver
 } from 'ember-qunit';

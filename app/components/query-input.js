@@ -22,7 +22,6 @@ export default Ember.Component.extend(BuilderAdapter, {
   query: null,
   queryManager: Ember.inject.service(),
   scroller: Ember.inject.service(),
-  settings: Ember.inject.service(),
   schema: null,
   isListening: false,
   listenDuration: 0,
