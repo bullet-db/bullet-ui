@@ -9,22 +9,22 @@
 
 <h5 class="content-header">Start Time</h5>
 <p>
-  This denotes the time Bullet received the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
+  <strong>{{settings.defaultValues.metadataKeyMapping.queryCreationTime}}</strong> is the start time of the query. This denotes the time Bullet received the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
 </p>
 
 <h5 class="content-header">Finish Time</h5>
 <p>
-  This denotes the time Bullet terminated the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
+  <strong>{{settings.defaultValues.metadataKeyMapping.queryTerminationTime}}</strong> is the finish time of the query. This denotes the time Bullet terminated the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
 </p>
 
 <h5 class="content-header">Was Estimated</h5>
 <p>
-  You may notice an entry that denotes whether the result was estimated or not. If the result was not estimated, the Standard Deviations section (see below) would show exact upper and lower bounds for the estimate.
+  You may notice a <strong>{{settings.defaultValues.metadataKeyMapping.estimatedResult}}</strong> entry which denotes whether the result was estimated or not. If the result was not estimated, the Standard Deviations section (see below) would show exact upper and lower bounds for the estimate.
 </p>
 
 <h5 class="content-header">Standard Deviations</h5>
 <p>
-  If you see a Standard Deviations entry in the metadata, there are 3 different entries at "1", "2" and "3", each having an upper and a lower bound. These are the ranges of the true value of an approximated result at 1, 2 and 3 Standard Deviations of Confidence.
+  If you see a <strong>{{settings.defaultValues.metadataKeyMapping.standardDeviations}}</strong> entry in the metadata, there are 3 different entries at "1", "2" and "3", each having an upper and a lower bound. These are the ranges of the true value of an approximated result at 1, 2 and 3 Standard Deviations of Confidence.
   <ul>
     <li>1 Standard Deviation is 68.27% confidence</li>
     <li>2 Standard Deviation is 95.45% confidence</li>
@@ -37,10 +37,10 @@
 
 <h5 class="content-header">Uniques Estimate</h5>
 <p>
-  This key is present if you have Grouped Data and the number of unique groups exceeded the maximum number of rows returned (configured by the maintainer).   If so, the value for the key denotes the approximate number of unique groups there were. You can use the Standard Deviations section as usual to estimate the true range of the estimate. You will have received a uniform sample of these unique groups (with the right values for your metrics) as the result.
+  The <strong>{{settings.defaultValues.metadataKeyMapping.uniquesEstimate}}</strong> key is present if you have Grouped Data and the number of unique groups exceeded the maximum number of rows returned (<strong>{{settings.defaultValues.groupByMaxEntries}}</strong> by default). If so, the value for the key denotes the approximate number of unique groups there were. You can use the Standard Deviations section as usual to estimate the true range of the estimate. You will have received a uniform sample of these unique groups (with the right values for your metrics) as the result.
 </p>
 
 <h5 class="content-header">Sketch Theta</h5>
 <p>
-  This denotes the theta value of the Sketch that was used underneath to perform a Count Distinct or a Group operation. This is particularly useful if you have Grouped Data and you have more groups than can be returned. If you have performed metrics like Sum or Count, you can add them up over the returned rows in the Result below and divide by this Sketch Theta. The resulting number is an estimate of the Sum or Count across <strong>all</strong> your unique values that could not be returned.
+  <strong>{{settings.defaultValues.metadataKeyMapping.theta}}</strong> denotes the theta value of the Sketch that was used underneath to perform a Count Distinct or a Group operation. This is particularly useful if you have Grouped Data and you have more groups than can be returned. If you have performed metrics like Sum or Count, you can add them up over the returned rows in the Result below and divide by this Sketch Theta. The resulting number is an estimate of the Sum or Count across <strong>all</strong> your unique values that could not be returned.
 </p>

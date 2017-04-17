@@ -12,7 +12,22 @@
       }
     ],
     "bugLink": "https://github.com/yahoo/bullet-ui/issues",
-    "aggregateDataDefaultSize": 512,
-    "modelVersion": 1
+    "modelVersion": 1,
+    "defaultValues": {
+      "aggregationMaxSize": 512,
+      "rawMaxSize": 30,
+      "maxDurationSecs": 120,
+      "countDistinctMaxEntries": 16384,
+      "groupByMaxEntries": 512,
+      "queryTimeoutSecs": 3,
+      "metadataKeyMapping": {
+        "theta": "theta",
+        "uniquesEstimate": "uniques_estimate",
+        "queryCreationTime": "query_receive_time",
+        "queryTerminationTime": "query_finish_time",
+        "estimatedResult": "was_estimated",
+        "standardDeviations": "standard_deviations"
+      }
+    }
   }
 }

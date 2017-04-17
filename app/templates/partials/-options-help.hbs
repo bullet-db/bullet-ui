@@ -10,10 +10,10 @@
 
 <h5 class="content-header">Maximum Result Count</h5>
 <p>
-  The max number of results (records) returned for the Raw query by Bullet. By default, it needs to be a integer between <strong>1 and 30</strong>.
+  The max number of results (records) returned for the Raw query by Bullet. By default, it needs to be an integer between <strong>1 and {{settings.defaultValues.rawMaxSize}}</strong>.
 </p>
 
 <h5 class="content-header">Maximum Duration</h5>
 <p>
-  The max time Bullet will look for records matching the filter criteria. Must be a number between 1 and 120 seconds (default). Note that this is a not a guarantee to denote the results will arrive in this time, only that this is the window for gathering results. Typically, the results take a few seconds (~3 s) after the duration to be returned.
+  The max time Bullet will look for records matching the filter criteria. Must be a number between 1 and <strong>{{settings.defaultValues.maxDurationSecs}}</strong> seconds (default). Note that this is a not a guarantee that the results will arrive in this time, only that this is the window for gathering results. Typically, the results take a few seconds (<strong>~{{settings.defaultValues.queryTimeoutSecs}} s</strong>) after the duration to be returned.
 </p>
