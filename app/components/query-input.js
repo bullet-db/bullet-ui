@@ -102,7 +102,7 @@ export default Ember.Component.extend(BuilderAdapter, {
   fixAggregationSize(query) {
     let type = query.get('aggregation.type');
     if (type !== AGGREGATIONS.get('RAW')) {
-      query.set('aggregation.size', this.get('settings.aggregateDataDefaultSize'));
+      query.set('aggregation.size', this.get('settings.defaultValues.aggregationMaxSize'));
     }
   },
 
