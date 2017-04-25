@@ -68,6 +68,17 @@ export default Ember.Service.extend({
     return childModel.save();
   },
 
+  addAttributeIfNotEmpty(query, fieldName, value) {
+    return query.get('aggregation').then(aggregation => {
+      let fieldPath = `attributes.${fieldName}`;
+      if (Ember.isEmpty(aggregation.get(fieldPath))) {
+        aggregation.set(fieldPath, value);
+        return aggregation.save();
+      }
+      return Ember.RSVP.resolve();
+    });
+  },
+
   replaceAggregation(query, type, size = 1) {
     return query.get('aggregation').then(aggregation => {
       return Ember.RSVP.all([

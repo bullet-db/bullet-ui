@@ -45,9 +45,11 @@
       margin-left: $output-option-indentation;
     }
 
-    &.count-distinct-option .field-selection-container.row {
-      margin-top: 0;
-      width: 400px;
+    &.count-distinct-option, &.distribution-option {
+      .field-selection-container.row {
+        margin-top: 0;
+        width: 500px;
+      }
     }
 
     .groups-container, .metrics-container {

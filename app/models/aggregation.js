@@ -7,7 +7,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
-let Aggregation = Ember.Object.extend({
+let AggregationTypes = Ember.Object.extend({
   RAW: 'Raw',
   GROUP: 'Group',
   COUNT_DISTINCT: 'Count Distinct',
@@ -26,7 +26,29 @@ let Aggregation = Ember.Object.extend({
   }
 });
 
-export const AGGREGATIONS = Aggregation.create();
+let RawTypes = Ember.Object.extend({ ALL: 'ALL', SELECT: 'SELECT' });
+
+let DistributionTypes = Ember.Object.extend({
+  QUANTILE: 'Quantile',
+  PMF: 'PMF',
+  CDF: 'CDF',
+  INVERSE: {
+    'Quantile': 'QUANTILE',
+    'PMF': 'PMF',
+    'CDF': 'CDF'
+  },
+
+  invert(key) {
+    return this.get(`INVERSE.${key}`);
+  }
+});
+
+let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'NUMBER', POINTS: 'POINTS', GENERATED: 'GENERATED' });
+
+export const AGGREGATIONS = AggregationTypes.create();
+export const RAW_TYPES = RawTypes.create();
+export const DISTRIBUTIONS = DistributionTypes.create();
+export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
 let Validations = buildValidations({
   size: {

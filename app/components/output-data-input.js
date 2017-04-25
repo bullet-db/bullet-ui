@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, RAW_TYPES, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
 export default Ember.Component.extend({
@@ -16,19 +16,15 @@ export default Ember.Component.extend({
   subfieldSuffix: '',
   queryManager: Ember.inject.service(),
 
-  OUTPUT_DATA_TYPES: Ember.Object.create({ RAW: 'RAW', COUNT_DISTINCT: 'COUNT_DISTINCT',
-                                            GROUP: 'GROUP', DISTRIBUTION: 'DISTRIBUTION',
-                                            TOP_K: 'TOP_K' }),
-  RAW_TYPES: Ember.Object.create({ ALL: 'ALL', SELECT: 'SELECT' }),
-  DISTRIBUTION_TYPES: Ember.Object.create({ QUANTILE: 'QUANTILE', PMF: 'PMF', CDF: 'CDF' }),
-  DISTRIBUTION_POINT_TYPES: Ember.Object.create({ GENERATED: 'GENERATED', POINTS: 'POINTS', NUMBER: 'NUMBER' }),
+  OUTPUT_DATA_TYPES: AGGREGATIONS,
+  DISTRIBUTION_TYPES: DISTRIBUTIONS,
+  RAW_TYPES: RAW_TYPES,
+  DISTRIBUTION_POINT_TYPES: DISTRIBUTION_POINTS,
 
   metricsList: METRICS.asList(),
 
   outputDataType: Ember.computed('query.aggregation.type', function() {
-    let type = this.get('query.aggregation.type');
-    let inverse = AGGREGATIONS.invert(type);
-    return this.get(`OUTPUT_DATA_TYPES.${inverse}`);
+    return this.get('query.aggregation.type');
   }),
 
   rawType: Ember.computed('query.projections', function() {
@@ -36,6 +32,14 @@ export default Ember.Component.extend({
       return this.get('RAW_TYPES.ALL');
     }
     return this.get('RAW_TYPES.SELECT');
+  }),
+
+  distributionType: Ember.computed('query.aggregation.attributes', function() {
+    let type = this.get('query.aggregation.attributes.type');
+    if (Ember.isEmpty(type)) {
+      return this.get('DISTRIBUTION_TYPES.QUANTILE');
+    }
+    return type;
   }),
 
   pointType: Ember.computed('query.aggregation.attributes', function() {
@@ -54,36 +58,45 @@ export default Ember.Component.extend({
     return this.get('DISTRIBUTION_POINT_TYPES.NUMBER');
   }),
 
-  distributionType: Ember.computed('query.aggregation.attributes', function() {
-    let type = this.get('query.aggregation.attributes.type');
-    if (Ember.isEmpty(type)) {
-      return this.get('DISTRIBUTION_TYPES.QUANTILE');
-    }
-    return this.get(`DISTRIBUTION_TYPES.${type}`);
+  isRawAggregation: Ember.computed('outputDataType', function() {
+    return Ember.isEqual(this.get('outputDataType'), this.get('OUTPUT_DATA_TYPES.RAW'));
+  }),
+  isGroupAggregation: Ember.computed('outputDataType', function() {
+    return Ember.isEqual(this.get('outputDataType'), this.get('OUTPUT_DATA_TYPES.GROUP'));
+  }),
+  isCountDistinctAggregation: Ember.computed('outputDataType', function() {
+    return Ember.isEqual(this.get('outputDataType'), this.get('OUTPUT_DATA_TYPES.COUNT_DISTINCT'));
+  }),
+  isDistributionAggregation: Ember.computed('outputDataType', function() {
+    return Ember.isEqual(this.get('outputDataType'), this.get('OUTPUT_DATA_TYPES.DISTRIBUTION'));
+  }),
+  isTopKAggregation: Ember.computed('outputDataType', function() {
+    return Ember.isEqual(this.get('outputDataType'), this.get('OUTPUT_DATA_TYPES.TOP_K'));
   }),
 
-  isRawAggregation: Ember.computed.equal('outputDataType', 'RAW'),
-  isGroupAggregation: Ember.computed.equal('outputDataType', 'GROUP'),
-  isCountDistinctAggregation: Ember.computed.equal('outputDataType', 'COUNT_DISTINCT'),
-  isDistributionAggregation: Ember.computed.equal('outputDataType', 'DISTRIBUTION'),
-  isTopKAggregation: Ember.computed.equal('outputDataType', 'TOP_K'),
-
-  isSelectType: Ember.computed.equal('rawType', 'SELECT'),
+  isSelectType: Ember.computed('rawType', function() {
+    return Ember.isEqual(this.get('rawType'), this.get('RAW_TYPES.SELECT'));
+  }),
   showRawSelections: Ember.computed.and('isRawAggregation', 'isSelectType'),
 
-  haveFields: Ember.computed.notEmpty('query.aggregation.groups'),
-  isNumberOfPoints: Ember.computed.equal('pointType', 'NUMBER'),
-  isPoints: Ember.computed.equal('pointType', 'POINTS'),
-  isGeneratedPoints: Ember.computed.equal('pointType', 'GENERATED'),
+  isNumberOfPoints: Ember.computed('pointType', function() {
+    return Ember.isEqual(this.get('pointType'), this.get('DISTRIBUTION_POINT_TYPES.NUMBER'));
+  }),
+  isPoints: Ember.computed('pointType', function() {
+    return Ember.isEqual(this.get('pointType'), this.get('DISTRIBUTION_POINT_TYPES.POINTS'));
+  }),
+  isGeneratedPoints: Ember.computed('pointType', function() {
+    return Ember.isEqual(this.get('pointType'), this.get('DISTRIBUTION_POINT_TYPES.GENERATED'));
+  }),
 
   changeToNonRawAggregation(type) {
     this.get('queryManager').deleteProjections(this.get('query'));
-    return this.get('queryManager').replaceAggregation(this.get('query'), AGGREGATIONS.get(type));
+    return this.get('queryManager').replaceAggregation(this.get('query'), this.get(`OUTPUT_DATA_TYPES.${type}`));
   },
 
   actions: {
     addRawAggregation() {
-      this.get('queryManager').replaceAggregation(this.get('query'), AGGREGATIONS.get('RAW'));
+      this.get('queryManager').replaceAggregation(this.get('query'), this.get('OUTPUT_DATA_TYPES.RAW'));
     },
 
     addNonRawAggregation(type) {
@@ -92,12 +105,9 @@ export default Ember.Component.extend({
 
     addDistributionAggregation() {
       this.changeToNonRawAggregation('DISTRIBUTION').then(() => {
-        this.get('queryManager').addFieldLike('group', 'aggregation', this.get('query.aggregation')).then(() => {
-          let attributes = this.get('query.aggregation.attributes')
-          if (Ember.isEmpty(Ember.get(attributes, 'numberOfPoints'))) {
-            this.set('query.aggregation.attributes.numberOfPoints', 11);
-          }
-        });
+        this.get('queryManager').addFieldLike('group', 'aggregation', this.get('query.aggregation'));
+        let defaultPoints = this.get('settings.defaultValues.distributionNumberOfPoints');
+        this.get('queryManager').addAttributeIfNotEmpty(this.get('query'), 'numberOfPoints', defaultPoints);
       });
     },
 
@@ -108,6 +118,12 @@ export default Ember.Component.extend({
     modifyDistributionType(type) {
       let aggregation = this.get('query.aggregation');
       aggregation.set('attributes.type', type);
+      let quantilePoints = this.get('settings.defaultValues.distributionQuantilePoints');
+      if (Ember.isEqual(type, this.get('DISTRIBUTION_TYPES.QUANTILE'))) {
+        this.get('queryManager').addAttributeIfNotEmpty(this.get('query'), 'points', quantilePoints);
+      } else {
+        aggregation.set('attributes.points', '');
+      }
     },
 
     modifyFieldLike(fieldLike, field) {

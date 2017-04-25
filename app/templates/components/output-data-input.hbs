@@ -37,7 +37,8 @@
 </div>
 
 <div class="output-option group-option">
-  {{#radio-button radioId="grouped-data" value=OUTPUT_DATA_TYPES.GROUP groupValue=outputDataType changed=(action "addNonRawAggregation" "GROUP") disabled=disabled}}
+  {{#radio-button radioId="grouped-data" value=OUTPUT_DATA_TYPES.GROUP groupValue=outputDataType
+                  changed=(action "addNonRawAggregation" OUTPUT_DATA_TYPES.GROUP) disabled=disabled}}
     Group Data
   {{/radio-button}}
 
@@ -83,7 +84,8 @@
 </div>
 
 <div class="output-option count-distinct-option">
-  {{#radio-button radioId="count-distinct" value=OUTPUT_DATA_TYPES.COUNT_DISTINCT groupValue=outputDataType changed=(action "addNonRawAggregation" "COUNT_DISTINCT") disabled=disabled}}
+  {{#radio-button radioId="count-distinct" value=OUTPUT_DATA_TYPES.COUNT_DISTINCT groupValue=outputDataType
+                  changed=(action "addNonRawAggregation" OUTPUT_DATA_TYPES.COUNT_DISTINCT) disabled=disabled}}
     Count Distinct
   {{/radio-button}}
 
@@ -119,13 +121,16 @@
       <div class="distribution-sub-options distribution-type-options">
         <div class="subsection-header distribution-type-header">Choose Type</div>
 
-        {{#radio-button radioId="quantile" value=DISTRIBUTION_TYPES.QUANTILE groupValue=distributionType changed=(action "modifyDistributionType" "QUANTILE") disabled=disabled}}
+        {{#radio-button radioId="quantile" value=DISTRIBUTION_TYPES.QUANTILE groupValue=distributionType
+                        changed=(action "modifyDistributionType" DISTRIBUTION_TYPES.QUANTILE) disabled=disabled}}
           Quantiles
         {{/radio-button}}
-        {{#radio-button radioId="pmf" value=DISTRIBUTION_TYPES.PMF groupValue=distributionType changed=(action "modifyDistributionType" "PMF") disabled=disabled}}
+        {{#radio-button radioId="frequency" value=DISTRIBUTION_TYPES.PMF groupValue=distributionType
+                        changed=(action "modifyDistributionType" DISTRIBUTION_TYPES.PMF) disabled=disabled}}
           Frequencies (Histogram)
         {{/radio-button}}
-        {{#radio-button radioId="cdf" value=DISTRIBUTION_TYPES.CDF groupValue=distributionType changed=(action "modifyDistributionType" "CDF") disabled=disabled}}
+        {{#radio-button radioId="cumulative" value=DISTRIBUTION_TYPES.CDF groupValue=distributionType
+                        changed=(action "modifyDistributionType" DISTRIBUTION_TYPES.CDF) disabled=disabled}}
           Cumulative Frequencies
         {{/radio-button}}
       </div>
@@ -173,7 +178,8 @@
 </div>
 
 <div class="output-option top-k-option">
-  {{#radio-button radioId="top-k" value=OUTPUT_DATA_TYPES.TOP_K groupValue=outputDataType changed=(action "addNonRawAggregation" "TOP_K") disabled=disabled}}
+  {{#radio-button radioId="top-k" value=OUTPUT_DATA_TYPES.TOP_K groupValue=outputDataType
+                  changed=(action "addNonRawAggregation" OUTPUT_DATA_TYPES.TOP_K) disabled=disabled}}
     Top K
   {{/radio-button}}
 
