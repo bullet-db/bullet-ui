@@ -22,6 +22,7 @@ export default Ember.Component.extend({
   nameClasses: '',
   disabled: false,
   enableRenaming: true,
+  enableDeleting: true,
 
   notValidating: Ember.computed.not('validation.isValidating'),
   isDirty: Ember.computed.or('validation.isDirty', 'forceDirty'),

@@ -20,6 +20,7 @@
 
       {{#if showRawSelections}}
         <div class="fields-selection-container projections-container">
+          <div class="subsection-header distribution-type-header">Choose Fields</div>
           {{#each query.projections as |projection|}}
             {{validated-field-selection model=projection columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
                                         forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-4"
@@ -36,14 +37,14 @@
 </div>
 
 <div class="output-option group-option">
-  {{#radio-button radioId="grouped-data" value=OUTPUT_DATA_TYPES.GROUP groupValue=outputDataType changed=(action "addGroupAggregation") disabled=disabled}}
-    Grouped Data
+  {{#radio-button radioId="grouped-data" value=OUTPUT_DATA_TYPES.GROUP groupValue=outputDataType changed=(action "addNonRawAggregation" "GROUP") disabled=disabled}}
+    Group Data
   {{/radio-button}}
 
   {{#if isGroupAggregation}}
     <div class="output-nested-container">
       <div class="fields-selection-container groups-container">
-        <div class="groups-header">Group Fields</div>
+        <div class="subsection-header groups-header">Choose Group Fields</div>
         {{#each query.aggregation.groups as |group|}}
           {{validated-field-selection model=group columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
                                       forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-5"
@@ -58,7 +59,7 @@
       <br />
 
       <div class="fields-selection-container metrics-container">
-        <div class="metrics-header">Metric Fields</div>
+        <div class="subsection-header metrics-header">Choose Metric Fields</div>
         {{#each query.aggregation.metrics as |metric|}}
           {{#validated-field-selection model=metric columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
                                       forceDirty=true fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
@@ -82,7 +83,7 @@
 </div>
 
 <div class="output-option count-distinct-option">
-  {{#radio-button radioId="count-distinct" value=OUTPUT_DATA_TYPES.COUNT_DISTINCT groupValue=outputDataType changed=(action "addCountDistinctAggregation") disabled=disabled}}
+  {{#radio-button radioId="count-distinct" value=OUTPUT_DATA_TYPES.COUNT_DISTINCT groupValue=outputDataType changed=(action "addNonRawAggregation" "COUNT_DISTINCT") disabled=disabled}}
     Count Distinct
   {{/radio-button}}
 
@@ -99,9 +100,104 @@
           Field
         </button>
       </div>
-      <div class="row count-distinct-display-name">
-        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.name
-          placeholder="Optional" disabled=disabled}}
+
+      <div class="subsection-header distribution-type-header">Rename Output Field</div>
+      <div class="row narrow-row count-distinct-display-name">
+        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.name placeholder="Optional" disabled=disabled}}
+      </div>
+    </div>
+  {{/if}}
+</div>
+
+<div class="output-option distribution-option">
+  {{#radio-button radioId="distribution" value=OUTPUT_DATA_TYPES.DISTRIBUTION groupValue=outputDataType changed=(action "addDistributionAggregation") disabled=disabled}}
+    Distribution
+  {{/radio-button}}
+
+  {{#if isDistributionAggregation}}
+    <div class="output-nested-container">
+      <div class="distribution-sub-options distribution-type-options">
+        <div class="subsection-header distribution-type-header">Choose Type</div>
+
+        {{#radio-button radioId="quantile" value=DISTRIBUTION_TYPES.QUANTILE groupValue=distributionType changed=(action "modifyDistributionType" "QUANTILE") disabled=disabled}}
+          Quantiles
+        {{/radio-button}}
+        {{#radio-button radioId="pmf" value=DISTRIBUTION_TYPES.PMF groupValue=distributionType changed=(action "modifyDistributionType" "PMF") disabled=disabled}}
+          Frequencies (Histogram)
+        {{/radio-button}}
+        {{#radio-button radioId="cdf" value=DISTRIBUTION_TYPES.CDF groupValue=distributionType changed=(action "modifyDistributionType" "CDF") disabled=disabled}}
+          Cumulative Frequencies
+        {{/radio-button}}
+      </div>
+
+      <div class="subsection-header distribution-type-header">Choose a Field</div>
+      <div class="fields-selection-container fields-container">
+        {{#each query.aggregation.groups as |field|}}
+          {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
+                                      disabled=disabled forceDirty=true enableRenaming=false enableDeleting=false fieldClasses="col-xs-10"
+                                      fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
+        {{/each}}
+      </div>
+
+      <div class="distribution-sub-options distribution-point-options">
+        <div class="subsection-header distribution-points-header">Choose the Domain</div>
+
+        {{#radio-button radioId="number-points" value=DISTRIBUTION_POINT_TYPES.NUMBER groupValue=pointType disabled=disabled}}
+          Generate evenly spaced points in the whole domain
+        {{/radio-button}}
+        {{#radio-button radioId="generate-points" value=DISTRIBUTION_POINT_TYPES.GENERATED groupValue=pointType disabled=disabled}}
+          Generate evenly spaced points in a region of the domain
+        {{/radio-button}}
+        {{#radio-button radioId="points" value=DISTRIBUTION_POINT_TYPES.POINTS groupValue=pointType disabled=disabled}}
+          Define a set of points in the domain yourself
+        {{/radio-button}}
+      </div>
+
+      {{#if isNumberOfPoints}}
+        <div class="row narrow-row distribution-type-number-of-points">
+          {{labeled-input classNames="col-xs-2" type="number" fieldName="Number of Points" fieldValue=query.aggregation.attributes.numberOfPoints placeholder="Number" disabled=disabled}}
+        </div>
+      {{else if isPoints}}
+        <div class="row narrow-row distribution-type-points">
+          {{labeled-input classNames="col-xs-3" fieldName="Points" fieldValue=query.aggregation.attributes.points placeholder="Comma separated numbers" disabled=disabled}}
+        </div>
+      {{else if isGeneratedPoints}}
+        <div class="row narrow-row distribution-type-point-range">
+          {{labeled-input classNames="col-xs-1" type="number" fieldName="Start" fieldValue=query.aggregation.attributes.start placeholder="Number" disabled=disabled}}
+          {{labeled-input classNames="col-xs-1" type="number" fieldName="End" fieldValue=query.aggregation.attributes.end placeholder="Number" disabled=disabled}}
+          {{labeled-input classNames="col-xs-1" type="number" fieldName="Increment" fieldValue=query.aggregation.attributes.increment placeholder="Number" disabled=disabled}}
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+
+<div class="output-option top-k-option">
+  {{#radio-button radioId="top-k" value=OUTPUT_DATA_TYPES.TOP_K groupValue=outputDataType changed=(action "addNonRawAggregation" "TOP_K") disabled=disabled}}
+    Top K
+  {{/radio-button}}
+
+  {{#if isTopKAggregation}}
+    <div class="output-nested-container">
+      <div class="subsection-header distribution-type-header">Choose Fields</div>
+      <div class="fields-selection-container fields-container">
+        {{#each query.aggregation.groups as |field|}}
+          {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
+                                      forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-5"
+                                      fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
+        {{/each}}
+        <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
+          <i class="glyphicon glyphicon-plus"></i>
+          Field
+        </button>
+      </div>
+      <div class="subsection-header distribution-type-header">Having Minimum Count</div>
+      <div class="row narrow-row top-k-threshold">
+        {{labeled-input classNames="col-xs-2" type="number" fieldName="Threshold" fieldValue=query.aggregation.attributes.threshold placeholder="Optional" disabled=disabled}}
+      </div>
+      <div class="subsection-header distribution-type-header">Rename Output Field</div>
+      <div class="row narrow-row top-k-display-name">
+        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.name placeholder="Optional" disabled=disabled}}
       </div>
     </div>
   {{/if}}

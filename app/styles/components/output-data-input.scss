@@ -30,6 +30,17 @@
       margin-bottom: 20px;
     }
 
+    .subsection-header {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-weight: $font-weight-medium;
+    }
+
+    .narrow-row {
+      margin-top: 5px;
+    }
+
     .raw-sub-options .fields-selection-container {
       margin-left: $output-option-indentation;
     }
@@ -44,18 +55,22 @@
       padding: 0 10px 0 $output-option-indentation;
       margin-bottom: 15px;
       clear: left;
+    }
 
-      .groups-header, .metrics-header {
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        font-weight: $font-weight-medium;
+    &.distribution-option {
+      .distribution-sub-options .ember-radio-button {
+        display: inline-block;
+        margin-right: 10px;
+      }
+      .distribution-point-options {
+        margin-top: 15px;
       }
     }
   }
 
   .ember-radio-button {
     display: block;
-    max-width: 200px;
+    max-width: 400px;
     margin-bottom: 10px;
     font-size: $font-size-regular-small;
     font-family: $font-family-regular;

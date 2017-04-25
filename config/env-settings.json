@@ -7,8 +7,8 @@
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
-        "name": "Example Docs Page",
-        "link": ""
+        "name": "Tutorials and Walkthroughs",
+        "link": "https://yahoo.github.io/bullet-docs/ui/usage"
       }
     ],
     "bugLink": "https://github.com/yahoo/bullet-ui/issues",

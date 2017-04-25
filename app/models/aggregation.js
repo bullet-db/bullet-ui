@@ -11,10 +11,14 @@ let Aggregation = Ember.Object.extend({
   RAW: 'Raw',
   GROUP: 'Group',
   COUNT_DISTINCT: 'Count Distinct',
+  DISTRIBUTION: 'Distribution',
+  TOP_K: 'TOP K',
   INVERSE: {
     'Raw': 'RAW',
     'Group': 'GROUP',
-    'Count Distinct': 'COUNT_DISTINCT'
+    'Count Distinct': 'COUNT_DISTINCT',
+    'Distribution': 'DISTRIBUTION',
+    'Top K': 'TOP_K'
   },
 
   invert(key) {
