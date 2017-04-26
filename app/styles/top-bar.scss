@@ -25,12 +25,6 @@
     margin: $logo-vertical-space 0 $logo-vertical-space 22px;
     padding: 0;
   }
-  .brand-version {
-    display: inline-block;
-    margin: 5px 0 0 5px;
-    font-variant: small-caps;
-    color: $heading-text-color;
-  }
   .right-panel {
     $right-space: $right-separation-width - 15px;
     .help-button {

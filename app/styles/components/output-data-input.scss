@@ -2,10 +2,55 @@
   $box-rectangle-color: #F6F6F6;
   $border-rectangle-color: #DCDEE2;
 
-  .output-option {
+  @import "info-popover";
+  padding-top: 5px;
+  padding-left: 10px;
+  max-width: 1000px;
 
+  .ember-radio-button {
+    display: block;
+    max-width: 400px;
+    margin-bottom: 10px;
+    font-size: $font-size-regular-small;
+    font-family: $font-family-regular;
+    font-weight: $font-weight-regular;
+    input {
+      margin-right: 10px;
+    }
+  }
+
+  .inline-radio-buttons {
+    .ember-radio-button {
+      display: inline-block;
+      margin-right: 30px;
+    }
+  }
+
+  .output-options {
+    display: flex;
+    justify-content: space-between;
+    .ember-radio-button {
+      font-size: $font-size-regular;
+    }
+  }
+
+  .output-data-outlet {
+    @import "validated-input";
     margin-left: $output-option-indentation;
+    margin-bottom: 20px;
+    max-width: 1200px;
 
+    .help {
+      float: right;
+      font-size: $font-size-regular-small;
+      font-family: $font-family-regular;
+      font-weight: $font-weight-regular;
+    }
+
+    .info-popover-wrapper {
+      display: inline;
+
+    }
     .fields-selection-container {
       @import "validated-field-selection";
 
@@ -25,10 +70,6 @@
       }
     }
 
-    .output-nested-container {
-      margin-left: $output-option-indentation;
-      margin-bottom: 20px;
-    }
 
     .subsection-header {
       margin-top: 5px;
@@ -39,46 +80,6 @@
 
     .narrow-row {
       margin-top: 5px;
-    }
-
-    .raw-sub-options .fields-selection-container {
-      margin-left: $output-option-indentation;
-    }
-
-    &.count-distinct-option, &.distribution-option {
-      .field-selection-container.row {
-        margin-top: 0;
-        width: 500px;
-      }
-    }
-
-    .groups-container, .metrics-container {
-      display: inline-block;
-      padding: 0 10px 0 $output-option-indentation;
-      margin-bottom: 15px;
-      clear: left;
-    }
-
-    &.distribution-option {
-      .distribution-sub-options .ember-radio-button {
-        display: inline-block;
-        margin-right: 10px;
-      }
-      .distribution-point-options {
-        margin-top: 15px;
-      }
-    }
-  }
-
-  .ember-radio-button {
-    display: block;
-    max-width: 400px;
-    margin-bottom: 10px;
-    font-size: $font-size-regular-small;
-    font-family: $font-family-regular;
-    font-weight: $font-weight-regular;
-    input {
-      margin-right: 10px;
     }
   }
 }

@@ -81,39 +81,12 @@ export default Ember.Component.extend(BuilderAdapter, {
     this.$(this.get('queryBuilderInputs')).removeAttr('disabled');
   },
 
-  fixFieldLikes(query, fieldLikesPath) {
-    return query.get(fieldLikesPath).then((e) => {
-      e.forEach(i => {
-        if (Ember.isBlank(i.get('name'))) {
-          i.set('name', i.get('field'));
-        }
-      });
-      return Ember.RSVP.resolve();
-    });
-  },
-
-  autoFill(query) {
-    return Ember.RSVP.all([
-      this.fixFieldLikes(query, 'projections'),
-      this.fixFieldLikes(query, 'aggregation.groups')
-    ]);
-  },
-
-  fixAggregationSize(query) {
-    let type = query.get('aggregation.type');
-    if (type !== AGGREGATIONS.get('RAW')) {
-      query.set('aggregation.size', this.get('settings.defaultValues.aggregationMaxSize'));
-    }
-  },
-
   validate() {
     this.reset();
     let query = this.get('query');
-    let isFilterValid = this.isCurrentFilterValid();
-    return this.autoFill(query).then(() => {
-      this.fixAggregationSize(query);
+    return this.get('queryManager').cleanup(query).then(() => {
       return query.validate().then((hash) => {
-        let isValid = isFilterValid && hash.validations.get('isValid');
+        let isValid = this.isCurrentFilterValid() && hash.validations.get('isValid');
         return isValid ? Ember.RSVP.resolve() : Ember.RSVP.reject();
       });
     });

@@ -188,12 +188,6 @@
             margin-left: -5px;
             width: 195px;
           }
-          &.has-error .query-duration {
-            margin-left: -15px;
-          }
-          &.has-error > .labeled-input > .form-control {
-            border-color: $error-icon-color;
-          }
           .error-tooltip-link {
             // Because these fields are an exception, their error icon needs to be recentered
             margin-top: 45px/2 - $font-size-regular/2;

@@ -12,7 +12,7 @@ let AggregationTypes = Ember.Object.extend({
   GROUP: 'Group',
   COUNT_DISTINCT: 'Count Distinct',
   DISTRIBUTION: 'Distribution',
-  TOP_K: 'TOP K',
+  TOP_K: 'Top K',
   INVERSE: {
     'Raw': 'RAW',
     'Group': 'GROUP',
@@ -43,10 +43,11 @@ let DistributionTypes = Ember.Object.extend({
   }
 });
 
-let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'NUMBER', POINTS: 'POINTS', GENERATED: 'GENERATED' });
+let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'NUMBER', POINTS: 'POINTS',
+                                                    GENERATED: 'GENERATED' });
 
 export const AGGREGATIONS = AggregationTypes.create();
-export const RAW_TYPES = RawTypes.create();
+export const RAWS = RawTypes.create();
 export const DISTRIBUTIONS = DistributionTypes.create();
 export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
@@ -58,7 +59,7 @@ let Validations = buildValidations({
         integer: true,
         allowString: true,
         gte: 1,
-        message: 'Maximum records must be a positive integer'
+        message: 'Maximum results must be a positive integer'
       })
     ]
   },

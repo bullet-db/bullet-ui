@@ -1,9 +1,9 @@
 {
   "default": {
-    "drpcHost": "https://bullet-dev-api.data.yahoo.com:4443",
+    "drpcHost": "http://foo.bar.com:4080",
     "drpcNamespace": "bullet/api",
     "drpcPath": "drpc",
-    "schemaHost": "https://bullet-dev-api.data.yahoo.com:4443",
+    "schemaHost": "http://foo.bar.com:4080",
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
@@ -15,20 +15,30 @@
     "modelVersion": 1,
     "defaultValues": {
       "aggregationMaxSize": 512,
-      "rawMaxSize": 30,
+      "rawMaxSize": 100,
       "maxDurationSecs": 120,
-      "countDistinctMaxEntries": 16384,
-      "groupByMaxEntries": 512,
+      "distributionMaxNumberOfPoints": 100,
       "queryTimeoutSecs": 3,
-      "distributionNumberOfPoints": 11,
-      "distributionQuantilePoints": "0, 0.25, 0.5, 0.75, 1",
+      "sketches": {
+        "distributionNumberOfPoints": 11,
+        "countDistinctMaxEntries": 16384,
+        "groupByMaxEntries": 512,
+        "distributionMaxEntries": 1024,
+        "topKMaxEntries": 1024
+      },
       "metadataKeyMapping": {
         "theta": "theta",
         "uniquesEstimate": "uniques_estimate",
         "queryCreationTime": "query_receive_time",
         "queryTerminationTime": "query_finish_time",
         "estimatedResult": "was_estimated",
-        "standardDeviations": "standard_deviations"
+        "standardDeviations": "standard_deviations",
+        "normalizedRankError": "normalized_rank_error",
+        "maximumCountError": "maximum_count_error",
+        "activeItems": "active_items",
+        "itemsSeen": "items_seen",
+        "minimumValue": "minimum_value",
+        "maximumValue": "maximum_value"
       }
     }
   }

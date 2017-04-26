@@ -6,7 +6,7 @@
 import Ember from 'ember';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import CORSRequest from 'bullet-ui/services/cors-request';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
 export default CORSRequest.extend(Filterizer, {
@@ -99,12 +99,24 @@ export default CORSRequest.extend(Filterizer, {
   getAttributes(aggregation) {
     let json = {};
 
-    if (aggregation.get('type') === AGGREGATIONS.get('COUNT_DISTINCT')) {
-      return this.assignIfTruthy(json, 'newName', aggregation.get('attributes.name'));
-    }
-    // Otherwise, we only have GROUP (for now)
+    // COUNT_DISTINCT, TOP_K
+    this.assignIfTruthy(json, 'newName', aggregation.get('attributes.newName'));
+
+    // DISTRIBUTION
+    this.assignIfTruthyNumeric(json, 'start', aggregation.get('attributes.start'));
+    this.assignIfTruthyNumeric(json, 'end', aggregation.get('attributes.end'));
+    this.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
+    this.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
+    this.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
+    this.assignIfTruthy(json, 'type', this.findDistributionType(aggregation.get('attributes.type')));
+
+    // TOP_K
+    this.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
+
+    // GROUP
     let operations = this.getGroupOperations(aggregation.get('metrics'));
     this.assignIfTruthy(json, 'operations', operations);
+
     return Ember.$.isEmptyObject(json) ? false : json;
   },
 
@@ -122,12 +134,29 @@ export default CORSRequest.extend(Filterizer, {
     return json;
   },
 
+  getPoints(points) {
+    let json = [];
+    if (!Ember.isEmpty(points)) {
+      points.split(',').map(s => s.trim()).filter(s => Ember.$.isNumeric(s)).forEach(n =>  json.push(parseFloat(n)));
+    }
+    return json;
+  },
+
   findType(type) {
     let apiType = AGGREGATIONS.invert(type);
-    if (apiType === 'COUNT_DISTINCT') {
-      return 'COUNT DISTINCT';
-    }
+    apiType = apiType.replace(/_/g, ' ');
     return apiType;
+  },
+
+  findDistributionType(type) {
+    return DISTRIBUTIONS.invert(type);
+  },
+
+  assignIfTruthyNumeric(json, key, value) {
+    if (!Ember.isEmpty(value)) {
+      json[key] = parseFloat(value);
+    }
+    return json;
   },
 
   assignIfTruthy(json, key, value) {
@@ -172,4 +201,3 @@ export default CORSRequest.extend(Filterizer, {
     return Ember.$.ajax(options);
   }
 });
-
