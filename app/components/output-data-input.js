@@ -53,6 +53,14 @@ export default Ember.Component.extend({
   isPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('POINTS')),
   isGeneratedPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')),
 
+  canDeleteProjections: Ember.computed('query.projections.[]', function() {
+    return this.get('query.projections.length') > 1;
+  }),
+
+  canDeleteField: Ember.computed('query.aggregation.groups.[]', function() {
+    return this.get('query.aggregation.groups.length') > 1;
+  }),
+
   findOrDefault(valuePath, defaultValue) {
     let value = this.get(valuePath);
     if (Ember.isEmpty(value)) {
@@ -61,25 +69,66 @@ export default Ember.Component.extend({
     return value;
   },
 
+  getDefaults(type) {
+    let values = { points: '', start: '', end: '', increment: '', numberOfPoints: '' };
+    if (Ember.isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
+      values.points = this.get('settings.defaultValues.distributionQuantilePoints');
+      values.start = this.get('settings.defaultValues.distributionQuantileStart');
+      values.end = this.get('settings.defaultValues.distributionQuantileEnd');
+      values.increment = this.get('settings.defaultValues.distributionQuantileIncrement');
+    }
+    values.numberOfPoints = this.get('settings.defaultValues.distributionNumberOfPoints');
+    return values;
+  },
+
+  setAttributes(type, pointType) {
+    let fields = [];
+    let defaults = this.getDefaults(type);
+    let lastQuantile = Ember.isEqual(this.get('query.aggregation.attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
+    let isQuantile = Ember.isEqual(type, DISTRIBUTIONS.get('QUANTILE'));
+    for (let field in defaults) {
+      // Wipe the current values if our last type or current type is Quantile but not both -> an XOR operation
+      // If you're changing point types within particular distribution type, it shouldn't lose values entered
+      // But if you go to QUANTILE or come from QUANTILE, it will wipe all the quantile specific defaults
+      fields.push({ name: field, value: defaults[field], forceSet: lastQuantile !== isQuantile });
+    }
+    fields.push({ name: 'type', value: type, forceSet: true });
+    fields.push({ name: 'pointType', value: pointType, forceSet: true });
+    this.get('queryManager').setAggregationAttributes(this.get('query'), fields.map(f => Ember.Object.create(f)));
+  },
+
   changeToNonRawAggregation(type) {
     this.get('queryManager').deleteProjections(this.get('query'));
     return this.get('queryManager').replaceAggregation(this.get('query'), type);
   },
 
+  changeToNonRawAggregationWithField(type) {
+    return this.changeToNonRawAggregation(type).then(() => {
+      return this.get('queryManager').addFieldLike('group', 'aggregation', this.get('query.aggregation'));
+    });
+  },
+
   actions: {
-    addRawAggregation() {
-      this.get('queryManager').replaceAggregation(this.get('query'), AGGREGATIONS.get('RAW'));
+    addRawAggregation(addField = false) {
+      this.get('queryManager').replaceAggregation(this.get('query'), AGGREGATIONS.get('RAW')).then(() => {
+        if (addField) {
+          return this.get('queryManager').addFieldLike('projection', 'query', this.get('query'));
+        }
+      });
     },
 
-    addNonRawAggregation(type) {
-      this.changeToNonRawAggregation(type);
+    addGroupAggregation() {
+      this.changeToNonRawAggregation(AGGREGATIONS.get('GROUP'));
+    },
+
+    addOneOrMoreFieldAggregation(type) {
+      this.changeToNonRawAggregationWithField(type);
     },
 
     addDistributionAggregation() {
-      this.changeToNonRawAggregation(AGGREGATIONS.get('DISTRIBUTION')).then(() => {
-        this.get('queryManager').addFieldLike('group', 'aggregation', this.get('query.aggregation'));
-        let defaultPoints = this.get('settings.defaultValues.distributionNumberOfPoints');
-        this.get('queryManager').setNonEmptyAggregationAttribute(this.get('query'), 'numberOfPoints', defaultPoints);
+      this.changeToNonRawAggregationWithField(AGGREGATIONS.get('DISTRIBUTION')).then(() => {
+        // Default type is Quantile, Number of Points
+        this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
       });
     },
 
@@ -88,11 +137,11 @@ export default Ember.Component.extend({
     },
 
     modifyDistributionType(type) {
-      this.get('queryManager').setAggregationAttribute(this.get('query'), 'type', type);
+      this.setAttributes(type, this.get('pointType'));
     },
 
     modifyDistributionPointType(type) {
-      this.get('queryManager').setAggregationAttribute(this.get('query'), 'pointType', type);
+      this.setAttributes(this.get('distributionType'), type);
     },
 
     modifyFieldLike(fieldLike, field) {

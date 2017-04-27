@@ -5,7 +5,7 @@
   @import "info-popover";
   padding-top: 5px;
   padding-left: 10px;
-  max-width: 1000px;
+  max-width: 800px;
 
   .ember-radio-button {
     display: block;
@@ -38,7 +38,6 @@
     @import "validated-input";
     margin-left: $output-option-indentation;
     margin-bottom: 20px;
-    max-width: 1200px;
 
     .help {
       float: right;

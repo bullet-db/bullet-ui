@@ -9,7 +9,7 @@ import { validator, buildValidations } from 'ember-cp-validations';
 let Validations = buildValidations({
   field: validator('presence', {
     presence: true,
-    message: 'No Raw data field selected'
+    message: 'No field selected'
   }),
   query: validator('belongs-to')
 });

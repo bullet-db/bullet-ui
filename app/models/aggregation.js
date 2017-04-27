@@ -66,7 +66,6 @@ let Validations = buildValidations({
   groups: validator('has-many'),
   metrics: validator('has-many'),
   query: validator('belongs-to'),
-  countDistinctField: validator('count-distinct-field-presence'),
   groupAndOrMetrics: validator('group-metric-presence')
 });
 

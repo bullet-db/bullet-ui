@@ -69,21 +69,18 @@ export default Ember.Service.extend({
     return childModel.save();
   },
 
-  setAggregationAttribute(query, fieldName, value) {
+  setAggregationAttributes(query, fields) {
     return query.get('aggregation').then(aggregation => {
-      aggregation.set(`attributes.${fieldName}`, value);
+      fields.forEach(field => {
+        let name = field.get('name');
+        let value = field.get('value');
+        let fieldPath = `attributes.${name}`;
+        let forceSet = field.getWithDefault('forceSet', false);
+        if (forceSet || Ember.isEmpty(aggregation.get(fieldPath))) {
+          aggregation.set(fieldPath, value);
+        }
+      });
       return aggregation.save();
-    });
-  },
-
-  setNonEmptyAggregationAttribute(query, fieldName, value) {
-    return query.get('aggregation').then(aggregation => {
-      let fieldPath = `attributes.${fieldName}`;
-      if (Ember.isEmpty(aggregation.get(fieldPath))) {
-        aggregation.set(fieldPath, value);
-        return aggregation.save();
-      }
-      return Ember.RSVP.resolve();
     });
   },
 
