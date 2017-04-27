@@ -43,7 +43,7 @@
         <div class="fields-selection-container projections-container">
           {{#each query.projections as |projection|}}
             {{validated-field-selection model=projection columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                        forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-4" enableDeleting=canDeleteProjections
+                                        forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-4" enableDeleting=canDeleteProjections
                                         fieldModified=(action "modifyFieldLike" projection) deleteModel=(action "destroyModel" projection)}}
           {{/each}}
           <button {{action "addFieldLike" "projection" "query" "query"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-projection">
@@ -61,7 +61,7 @@
         <div class="subsection-header groups-header">Choose Group Fields</div>
         {{#each query.aggregation.groups as |group|}}
           {{validated-field-selection model=group columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                      forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-5"
+                                      forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-5"
                                       fieldModified=(action "modifyFieldLike" group) deleteModel=(action "destroyModel" group)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-group">
@@ -76,7 +76,7 @@
         <div class="subsection-header metrics-header">Choose Metric Fields</div>
         {{#each query.aggregation.metrics as |metric|}}
           {{#validated-field-selection model=metric columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                       forceDirty=true fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
+                                       forceDirty=forceDirty fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
                                        fieldModified=(action "modifyFieldLike" metric) deleteModel=(action "destroyModel" metric)}}
             <div class="col-xs-3 metrics-selection">
               <label class="power-select-label">Metric</label>
@@ -101,7 +101,7 @@
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
-                                      disabled=disabled forceDirty=true enableRenaming=false enableDeleting=canDeleteField fieldClasses="col-xs-10"
+                                      disabled=disabled forceDirty=forceDirty enableRenaming=false enableDeleting=canDeleteField fieldClasses="col-xs-10"
                                       fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
@@ -139,7 +139,7 @@
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
-                                      disabled=disabled forceDirty=true enableRenaming=false enableDeleting=false fieldClasses="col-xs-10"
+                                      disabled=disabled forceDirty=forceDirty enableRenaming=false enableDeleting=false fieldClasses="col-xs-10"
                                       fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
         {{/each}}
       </div>
@@ -184,7 +184,7 @@
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                      forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-5" enableDeleting=canDeleteField
+                                      forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-5" enableDeleting=canDeleteField
                                       fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">

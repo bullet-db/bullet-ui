@@ -12,6 +12,7 @@ export default Ember.Component.extend({
   query: null,
   columns: null,
   disabled: false,
+  forceDirty: false,
   subfieldSeparator: '',
   subfieldSuffix: '',
   queryManager: Ember.inject.service(),

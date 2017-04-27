@@ -4,20 +4,20 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <p>
-  You can see metadata for your results by clicking the expand caret at the bottom of this block. The fields shown here are configured by the maintainer of Bullet. Bullet uses Sketches to approximate results if it is computationally intractable to get the result exactly. For a primer on Sketches, please visit the <a href=https://datasketches.github.io/docs/TheChallenge.html>Sketches home page</a>.
+  You can see metadata for your results by clicking the expand caret at the bottom of this block. The fields shown here are configured by the maintainer of Bullet. Not all the fields shown here are described below and some are debugging information for the maintainer. Bullet uses Sketches to approximate results if it is computationally intractable to get the result exactly. For a primer on Sketches, please visit the <a href=https://datasketches.github.io/docs/TheChallenge.html>Sketches home page</a>.
 </p>
 
-<h5 class="content-header">Start Time</h5>
+<h5 class="content-header">Query Creation Time</h5>
 <p>
   <strong>{{settings.defaultValues.metadataKeyMapping.queryCreationTime}}</strong> is the start time of the query. This denotes the time Bullet received the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
 </p>
 
-<h5 class="content-header">Finish Time</h5>
+<h5 class="content-header">Query Termination Time</h5>
 <p>
   <strong>{{settings.defaultValues.metadataKeyMapping.queryTerminationTime}}</strong> is the finish time of the query. This denotes the time Bullet terminated the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
 </p>
 
-<h5 class="content-header">Was Estimated</h5>
+<h5 class="content-header">Result Estimated</h5>
 <p>
   You may notice a <strong>{{settings.defaultValues.metadataKeyMapping.estimatedResult}}</strong> entry which denotes whether the result was estimated or not. If the result was not estimated, the Standard Deviations section (see below) would show exact upper and lower bounds for the estimate.
 </p>
@@ -40,7 +40,27 @@
   The <strong>{{settings.defaultValues.metadataKeyMapping.uniquesEstimate}}</strong> key is present if you have Grouped Data and the number of unique groups exceeded the maximum number of rows returned (<strong>{{settings.defaultValues.sketches.groupByMaxEntries}}</strong> by default). If so, the value for the key denotes the approximate number of unique groups there were. You can use the Standard Deviations section as usual to estimate the true range of the estimate. You will have received a uniform sample of these unique groups (with the right values for your metrics) as the result.
 </p>
 
-<h5 class="content-header">Sketch Theta</h5>
+<h5 class="content-header">Theta</h5>
 <p>
   <strong>{{settings.defaultValues.metadataKeyMapping.theta}}</strong> denotes the theta value of the Sketch that was used underneath to perform a Count Distinct or a Group operation. This is particularly useful if you have Grouped Data and you have more groups than can be returned. If you have performed metrics like Sum or Count, you can add them up over the returned rows in the Result below and divide by this Sketch Theta. The resulting number is an estimate of the Sum or Count across <strong>all</strong> your unique values that could not be returned.
+</p>
+
+<h5 class="content-header">Minimum and Maximum</h5>
+<p>
+  <strong>{{settings.defaultValues.metadataKeyMapping.minimumValue}}</strong> and <strong>{{settings.defaultValues.metadataKeyMapping.minimumValue}}</strong> denote the minimum and maximum value seen for a Distribution operation. This is useful if you still wanted to see the minimum and maximum but were looking at a narrower region of the domain.
+</p>
+
+<h5 class="content-header">Items Seen</h5>
+<p>
+  <strong>{{settings.defaultValues.metadataKeyMapping.itemsSeen}}</strong> denotes the number of data records seen for your query (that matched the filters). This is provided only for Distribution and Top K operations.
+</p>
+
+<h5 class="content-header">Normalized Rank Error</h5>
+<p>
+  <strong>{{settings.defaultValues.metadataKeyMapping.normalizedRankError}}</strong> represents the Normalized Rank Error for the Distribution operation. This value is only applicated if the result was estimated. This error is independent of amount of data seen or the distribution of your data. The normalized rank is obtained by taking the values of the field in your distribution, sorting them and dividing the resulting ranks by the number of values. This creates a rank ranging from 0 to 1 for each item. The normalized rank error refers to how off the rank of an item could be in this domain. For example, if you were obtaining the median or the 0.5 quantile value for an item and the normalized rank error was 0.005, this means that the value provided as the result had a normalized rank somewhere between 0.495 and 0.505 with 99% confidence. In practice, the smaller the number, the more accurate your result is (if it was estimated).
+</p>
+
+<h5 class="content-header">Maximum Count Error</h5>
+<p>
+  <strong>{{settings.defaultValues.metadataKeyMapping.maximumCountError}}</strong> represents the length of the interval for a count estimate in a Top K result. This is only applicable if the result was estimated. The count estimate provided by Bullet is the upper bound of the range. The true count lies somewhere between the upper bound and upper bound - the maximum count error. Note that if two items have counts that are closer than the maximum count error, it is possible that the one with the higher count may have a true count that is smaller than the true count of the lower one. Conversely, if two items are separated by more than this error, then you can be certain that the rank of the one with the higher count is indeed higher than the one with the lower count.
 </p>

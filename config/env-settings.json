@@ -40,7 +40,6 @@
         "standardDeviations": "standard_deviations",
         "normalizedRankError": "normalized_rank_error",
         "maximumCountError": "maximum_count_error",
-        "activeItems": "active_items",
         "itemsSeen": "items_seen",
         "minimumValue": "minimum_value",
         "maximumValue": "maximum_value"
