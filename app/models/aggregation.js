@@ -30,12 +30,12 @@ let RawTypes = Ember.Object.extend({ ALL: 'ALL', SELECT: 'SELECT' });
 
 let DistributionTypes = Ember.Object.extend({
   QUANTILE: 'Quantile',
-  PMF: 'PMF',
-  CDF: 'CDF',
+  PMF: 'Frequency',
+  CDF: 'Cumulative Frequency',
   INVERSE: {
     'Quantile': 'QUANTILE',
-    'PMF': 'PMF',
-    'CDF': 'CDF'
+    'Frequency': 'PMF',
+    'Cumulative Frequency': 'CDF'
   },
 
   invert(key) {
@@ -60,12 +60,14 @@ let Validations = buildValidations({
         allowString: true,
         gte: 1,
         message: 'Maximum results must be a positive integer'
-      })
+      }),
+      validator('aggregation-size')
     ]
   },
   groups: validator('has-many'),
   metrics: validator('has-many'),
   query: validator('belongs-to'),
+  validPoints: validator('points'),
   groupAndOrMetrics: validator('group-metric-presence')
 });
 

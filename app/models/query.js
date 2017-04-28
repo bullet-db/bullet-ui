@@ -19,7 +19,8 @@ let Validations = buildValidations({
         allowString: true,
         gte: 1,
         message: 'Duration must be a positive integer'
-      })
+      }),
+      validator('query-duration')
     ]
   },
   projections: validator('has-many'),
@@ -65,15 +66,28 @@ export default DS.Model.extend(Validations, {
     }).join(', ');
   }),
 
-  aggregationSummary: Ember.computed('aggregation.type', 'groupsSummary', 'metricsSummary', function() {
+  aggregationSummary: Ember.computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}',
+                                     'groupsSummary', 'metricsSummary', function() {
     let type = this.get('aggregation.type');
     if (type === AGGREGATIONS.get('RAW')) {
       return '';
     }
     let groupsSummary = this.get('groupsSummary');
     if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
-      return `${type}(${groupsSummary})`;
+      return `${type} of (${groupsSummary})`;
     }
+    if (type === AGGREGATIONS.get('DISTRIBUTION')) {
+      let distributionType = this.get('aggregation.attributes.type');
+      return `${distributionType} on ${groupsSummary}`;
+    }
+    if (type === AGGREGATIONS.get('TOP_K')) {
+      let k = this.get('aggregation.size');
+      let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
+      let summary = `TOP ${k} of (${groupsSummary})`;
+      let threshold = this.get('aggregation.attributes.threshold');
+      return Ember.isEmpty(threshold) ? summary : `${summary} with ${countField} >= ${threshold}`;
+    }
+    // Otherwise 'GROUP'
     let metricsSummary = this.get('metricsSummary');
 
     if (Ember.isEmpty(metricsSummary)) {
@@ -120,4 +134,3 @@ export default DS.Model.extend(Validations, {
     return Ember.isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => Ember.isEmpty(n)).join(', ');
   }
 });
-

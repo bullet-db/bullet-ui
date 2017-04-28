@@ -11,7 +11,7 @@ const MetricField = BaseValidator.extend({
   validate(value, options, model) {
     const COUNT = METRICS.get('COUNT');
     let type = model.get('type');
-    if (!Ember.isEmpty(value) || COUNT === type) {
+    if (!Ember.isEmpty(value) || Ember.isEqual(type, COUNT)) {
       return true;
     }
     return `All metrics but ${COUNT} require a field`;

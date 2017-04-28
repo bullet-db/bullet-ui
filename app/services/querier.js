@@ -137,7 +137,7 @@ export default CORSRequest.extend(Filterizer, {
   getPoints(points) {
     let json = [];
     if (!Ember.isEmpty(points)) {
-      points.split(',').map(s => s.trim()).filter(s => Ember.$.isNumeric(s)).forEach(n =>  json.push(parseFloat(n)));
+      points.split(',').map(s => s.trim()).forEach(n =>  json.push(parseFloat(n)));
     }
     return json;
   },

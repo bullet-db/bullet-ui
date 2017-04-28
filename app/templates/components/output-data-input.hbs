@@ -208,25 +208,24 @@
   {{/if}}
 
   <div class="help">
-    Need more help?
     {{#if isRawAggregation}}
-      {{#info-popover title="Raw Data"}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Raw Data"}}
         {{partial "partials/raw-data-help"}}
       {{/info-popover}}
     {{else if isGroupAggregation}}
-      {{#info-popover title="Group Data"}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Group Data"}}
         {{partial "partials/group-data-help"}}
       {{/info-popover}}
     {{else if isCountDistinctAggregation}}
-      {{#info-popover title="Count Distinct"}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Count Distinct"}}
         {{partial "partials/count-distinct-help"}}
       {{/info-popover}}
     {{else if isDistributionAggregation}}
-      {{#info-popover title="Distribution"}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Distribution"}}
         {{partial "partials/distribution-help"}}
       {{/info-popover}}
     {{else if isTopKAggregation}}
-      {{#info-popover title="Top K"}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Top K"}}
         {{partial "partials/top-k-help"}}
       {{/info-popover}}
     {{/if}}
