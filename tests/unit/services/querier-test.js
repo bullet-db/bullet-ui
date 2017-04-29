@@ -52,6 +52,7 @@ test('it overrides options correctly', function(assert) {
 test('it formats a defaulted query correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ foo: 'bar' });
+  query.set('aggregation', null);
   assert.deepEqual(service.reformat(query), { duration: 0 });
 });
 
@@ -130,7 +131,7 @@ test('it unwraps a filter if it is the only one at the top level', function(asse
 test('it formats a count distinct query with a new name query correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('COUNT_DISTINCT'), 100, { name: 'cnt' });
+  query.addAggregation(AGGREGATIONS.get('COUNT_DISTINCT'), 100, { newName: 'cnt' });
   query.addGroup('foo', '1');
   query.addGroup('bar', '2');
   assert.deepEqual(service.reformat(query), {

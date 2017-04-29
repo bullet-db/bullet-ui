@@ -74,18 +74,18 @@ export default DS.Model.extend(Validations, {
     }
     let groupsSummary = this.get('groupsSummary');
     if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
-      return `${type} of (${groupsSummary})`;
+      return `${type} ON (${groupsSummary})`;
     }
     if (type === AGGREGATIONS.get('DISTRIBUTION')) {
       let distributionType = this.get('aggregation.attributes.type');
-      return `${distributionType} on ${groupsSummary}`;
+      return `${distributionType} ON ${groupsSummary}`;
     }
     if (type === AGGREGATIONS.get('TOP_K')) {
       let k = this.get('aggregation.size');
       let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
-      let summary = `TOP ${k} of (${groupsSummary})`;
+      let summary = `TOP ${k} OF (${groupsSummary})`;
       let threshold = this.get('aggregation.attributes.threshold');
-      return Ember.isEmpty(threshold) ? summary : `${summary} with ${countField} >= ${threshold}`;
+      return Ember.isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
     }
     // Otherwise 'GROUP'
     let metricsSummary = this.get('metricsSummary');

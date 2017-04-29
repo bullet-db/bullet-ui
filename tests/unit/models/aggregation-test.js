@@ -9,8 +9,8 @@ import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 moduleForModel('aggregation', 'Unit | Model | aggregation', {
   needs: ['model:query', 'model:group', 'model:metric',
           'validator:presence', 'validator:belongsTo', 'validator:hasMany',
-          'validator:number', 'validator:countDistinctFieldPresence',
-          'validator:groupMetricPresence']
+          'validator:number', 'validator:aggregation-size',
+          'validator:points', 'validator:groupMetricPresence']
 });
 
 test('it sets its default values right', function(assert) {

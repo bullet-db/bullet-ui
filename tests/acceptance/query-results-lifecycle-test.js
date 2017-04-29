@@ -13,12 +13,15 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query results lifecycle', {
+  beforeEach() {
+    // Wipe out localstorage because we are creating queries here
+    window.localStorage.clear();
+  },
+
   afterEach() {
-    // Wipe out localstorage because we are creating here
     if (server) {
       server.shutdown();
     }
-    window.localStorage.clear();
   }
 });
 
@@ -46,7 +49,6 @@ test('query submission with raw output with projections opens the table view by 
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
   click('.submit-button');
   andThen(() => {
@@ -60,8 +62,8 @@ test('query submission with grouped data opens the table view by default', funct
   server = mockAPI(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
-  click('.output-container .group-option #grouped-data');
-  click('.output-container .group-option .groups-container .add-group');
+  click('.output-options #grouped-data');
+  click('.output-container .groups-container .add-group');
   selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
   click('.submit-button');
   andThen(() => {

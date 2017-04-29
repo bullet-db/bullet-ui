@@ -46,7 +46,7 @@ test('query showing aggregation validation messages', function(assert) {
     assert.equal(find('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
     assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
     assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
-                 'Maximum records must be a positive integer');
+                 'Maximum results must be a positive integer');
     assert.equal(find('.aggregation-size').siblings('.error-tooltip-link').length, 1);
   });
 });
@@ -69,13 +69,13 @@ test('selecting count distinct without adding fields is an error', function(asse
   assert.expect(3);
 
   visit('/queries/new');
-  click('.output-container .count-distinct-option #count-distinct');
+  click('.output-options #count-distinct');
   click('.save-button');
   andThen(() => {
     assert.equal(find('.validation-container .simple-alert').length, 1);
     assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
     assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
-                 'If you are counting distincts, you must add at least one Field to count distinct on');
+                 'A field needs to be selected first');
   });
 });
 
@@ -83,7 +83,7 @@ test('selecting grouped data without adding fields or metrics is an error', func
   assert.expect(3);
 
   visit('/queries/new');
-  click('.output-container .group-option #grouped-data');
+  click('.output-options #grouped-data');
   click('.save-button');
   andThen(() => {
     assert.equal(find('.validation-container .simple-alert').length, 1);
@@ -97,7 +97,6 @@ test('query showing multiple error validation messages', function(assert) {
   assert.expect(4);
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
   fillIn('.options-container .query-duration input', '-1');
   click('.save-button');
 
@@ -106,6 +105,6 @@ test('query showing multiple error validation messages', function(assert) {
     assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
     let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
     assert.ok(text.includes('Duration must be a positive integer'));
-    assert.ok(text.includes('No Raw data field selected'));
+    assert.ok(text.includes('No field selected'));
   });
 });

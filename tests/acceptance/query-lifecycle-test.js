@@ -172,26 +172,28 @@ test('raw data output with all columns is selected by default', function(assert)
 
   visit('/queries/new');
   andThen(() => {
-    assert.ok(find('.output-container .raw-option #raw').parent().hasClass('checked'));
-    assert.equal(find('.output-container .raw-sub-options .projections-container .add-projection').length, 0);
+    assert.ok(find('.output-options #raw').parent().hasClass('checked'));
+    assert.equal(find('.output-container .projections-container .add-projection').length, 0);
     assert.equal(find('.projections-container').length, 0);
   });
 });
 
 test('adding and removing raw data output projections', function(assert) {
-  assert.expect(2);
+  assert.expect(3);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
-  fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
+  click('.output-container .projections-container .add-projection');
+  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
   andThen(() => {
-    assert.equal(find('.projections-container .column-onlyfield').length, 1);
+    assert.equal(find('.projections-container .column-onlyfield').length, 2);
   });
-  click('.projections-container .field-selection-container .delete-button');
+  click('.projections-container .field-selection-container:eq(1) .delete-button');
   andThen(() => {
-    assert.equal(find('.projections-container .fields-selection-container').length, 0);
+    assert.equal(find('.projections-container .field-selection-container').length, 1);
+    // The last one cannot be removed
+    assert.equal(find('.projections-container .field-selection-container .delete-button').length, 0);
   });
 });
 
@@ -200,7 +202,6 @@ test('filling out projection name even when there are errors', function(assert) 
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
   andThen(() => {
     assert.equal(find('.projections-container .column-onlyfield').length, 1);
@@ -218,7 +219,6 @@ test('adding a projection with a subfield column', function(assert) {
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
   fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
   andThen(() => {
@@ -242,13 +242,12 @@ test('switching to another output data type wipes selected columns', function(as
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
   fillIn('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
   fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
 
-  click('.output-container .raw-sub-options .projections-container .add-projection');
+  click('.output-container .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container:eq(1) .field-selection', 'simple_column');
   click('.save-button');
   andThen(() => {
@@ -259,31 +258,41 @@ test('switching to another output data type wipes selected columns', function(as
     // This means that save was also successful
     assert.equal(find('.projections-container .field-selection-container:eq(1) .field-name input').val(), 'simple_column');
   });
-  click('.output-container .count-distinct-option #count-distinct');
-  click('.output-container .raw-option #raw');
+  click('.output-options #count-distinct');
+  click('.output-options #raw');
   click('.output-container .raw-sub-options #select');
   andThen(() => {
-    assert.equal(find('.projections-container .fields-selection-container').length, 0);
+    assert.equal(find('.projections-container .field-selection-container').length, 1);
   });
 });
 
 test('aggregation size is only visible when selecting the raw output option', function(assert) {
-  assert.expect(7);
+  assert.expect(11);
 
   visit('/queries/new');
   andThen(() => {
-    assert.ok(find('.output-container .raw-option #raw').parent().hasClass('checked'));
+    assert.ok(find('.output-options #raw').parent().hasClass('checked'));
     assert.ok(find('.output-container .raw-sub-options #all').parent().hasClass('checked'));
     assert.equal(find('.aggregation-size input').length, 1);
   });
-  click('.output-container .group-option #grouped-data');
+  click('.output-options #grouped-data');
   andThen(() => {
-    assert.ok(find('.output-container .group-option #grouped-data').parent().hasClass('checked'));
+    assert.ok(find('.output-options #grouped-data').parent().hasClass('checked'));
     assert.equal(find('.aggregation-size input').length, 0);
   });
-  click('.output-container .count-distinct-option #count-distinct');
+  click('.output-options #count-distinct');
   andThen(() => {
-    assert.ok(find('.output-container .count-distinct-option #count-distinct').parent().hasClass('checked'));
+    assert.ok(find('.output-options #count-distinct').parent().hasClass('checked'));
+    assert.equal(find('.aggregation-size input').length, 0);
+  });
+  click('.output-options #distribution');
+  andThen(() => {
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.equal(find('.aggregation-size input').length, 0);
+  });
+  click('.output-options #top-k');
+  andThen(() => {
+    assert.ok(find('.output-options #top-k').parent().hasClass('checked'));
     assert.equal(find('.aggregation-size input').length, 0);
   });
 });
@@ -298,13 +307,12 @@ test('copying a full query with filters, raw data output with projections and a 
     find('.filter-container .rule-filter-container select').val('complex_list_column').trigger('change');
   });
   click('.output-container .raw-sub-options #select');
-  click('.output-container .raw-sub-options .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
   fillIn('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
   fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
 
-  click('.output-container .raw-sub-options .projections-container .add-projection');
+  click('.output-container .projections-container .add-projection');
   selectChoose('.projections-container .field-selection-container:eq(1) .field-selection', 'simple_column');
 
   fillIn('.options-container .aggregation-size input', '40');
@@ -340,9 +348,9 @@ test('copying a full query with filters, grouped data output with groups and fie
   andThen(() => {
     find('.filter-container .rule-filter-container select').val('complex_list_column').trigger('change');
   });
-  click('.output-container .group-option #grouped-data');
-  click('.output-container .group-option .groups-container .add-group');
-  click('.output-container .group-option .groups-container .add-group');
+  click('.output-options #grouped-data');
+  click('.output-container .groups-container .add-group');
+  click('.output-container .groups-container .add-group');
   selectChoose('.output-container .groups-container .field-selection-container:eq(0) .field-selection', 'complex_map_column');
   selectChoose('.output-container .groups-container .field-selection-container:eq(1) .field-selection', 'simple_column');
   fillIn('.output-container .groups-container .field-selection-container:eq(1) .field-name input', 'bar');
@@ -369,15 +377,15 @@ test('copying a full query with filters, grouped data output with groups and fie
   click('.queries-table .query-name-entry:eq(1)');
   andThen(() => {
     assert.equal(find('.filter-container .rule-filter-container select').val(), 'complex_list_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(0) .field-name input').val(), 'complex_map_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(1) .field-name input').val(), 'bar');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(0) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Count');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(0) .field-selection').length, 0);
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(0) .field-name input').val(), '');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(1) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Average');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(1) .field-selection .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(1) .field-name input').val(), 'avg_bar');
+    assert.equal(find('.groups-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
+    assert.equal(find('.groups-container .field-selection-container:eq(0) .field-name input').val(), 'complex_map_column');
+    assert.equal(find('.groups-container .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.groups-container .field-selection-container:eq(1) .field-name input').val(), 'bar');
+    assert.equal(find('.metrics-container .field-selection-container:eq(0) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Count');
+    assert.equal(find('.metrics-container .field-selection-container:eq(0) .field-selection').length, 0);
+    assert.equal(find('.metrics-container .field-selection-container:eq(0) .field-name input').val(), '');
+    assert.equal(find('.metrics-container .field-selection-container:eq(1) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Average');
+    assert.equal(find('.metrics-container .field-selection-container:eq(1) .field-selection .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.metrics-container .field-selection-container:eq(1) .field-name input').val(), 'avg_bar');
   });
 });
