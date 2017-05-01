@@ -207,3 +207,152 @@ test('it summarizes a grouped data query with groups first', function(assert) {
                  'Fields:  complex_map_column.foo, bar, Count(*), avg_bar');
   });
 });
+
+test('it summarizes a quantile distribution query', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+
+  selectChoose('.output-container .field-selection-container .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container .field-selection .column-subfield input', 'blur');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  Quantile ON complex_map_column.foo');
+  });
+});
+
+test('it summarizes a frequency distribution query', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #frequency');
+
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  Frequency ON simple_column');
+  });
+});
+
+test('it summarizes a cumulative frequency distribution query', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #cumulative');
+
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  Cumulative Frequency ON simple_column');
+  });
+});
+
+test('it summarizes a top k query', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  TOP 1 OF (simple_column)');
+  });
+});
+
+test('it summarizes a top k query with multiple fields', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+
+  click('.output-container .add-field');
+  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  TOP 1 OF (simple_column, complex_map_column.foo)');
+  });
+});
+
+test('it summarizes a top k query with custom k and threshold', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+
+  click('.output-container .add-field');
+  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
+
+  fillIn('.output-container .top-k-size input', '15');
+  fillIn('.output-container .top-k-min-count input', '1500');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  TOP 15 OF (simple_column, complex_map_column.foo) HAVING Count >= 1500');
+  });
+});
+
+test('it summarizes a top k query with custom k, threshold and name', function(assert) {
+  assert.expect(2);
+  server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+
+  click('.output-container .add-field');
+  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
+
+  fillIn('.output-container .top-k-size input', '15');
+  fillIn('.output-container .top-k-min-count input', '1500');
+  fillIn('.output-container .top-k-display-name input', 'cnt');
+
+  click('.submit-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description .filter-summary-text').text().trim(), 'Filters:  None');
+    assert.equal(find('.query-description .fields-summary-text').text().trim(),
+                 'Fields:  TOP 15 OF (simple_column, complex_map_column.foo) HAVING cnt >= 1500');
+  });
+});

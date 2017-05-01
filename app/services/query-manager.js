@@ -47,7 +47,7 @@ export default Ember.Service.extend({
     // Assume prefetched
     let promises = [
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
-      this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size']),
+      this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 

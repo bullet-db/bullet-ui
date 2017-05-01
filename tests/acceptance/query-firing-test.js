@@ -247,3 +247,64 @@ test('creating a query, adding groups and metrics for grouped data output fields
     assert.equal(find('.aggregation-size').length, 0);
   });
 });
+
+test('creating a distribution query, adding free-form points and saving on submit', function(assert) {
+  assert.expect(8);
+  server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.output-container .distribution-point-options #points');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  fillIn('.output-container .distribution-type-points input', '0,0.2,1');
+
+  click('.submit-button');
+  visit('queries');
+  click('.queries-table .query-name-entry');
+  andThen(() => {
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    // No names for fields for distribution
+    assert.equal(find('.output-container .field-selection-container .field-name').length, 0);
+    // No size field shown
+    assert.equal(find('.aggregation-size').length, 0);
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-type-options #quantile').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-points input').val(), '0,0.2,1');
+  });
+});
+
+test('creating a top k query, adding a custom k, threshold and name', function(assert) {
+  assert.expect(11);
+  server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+  click('.output-container .add-field');
+  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
+  fillIn('.output-container .field-selection-container:eq(1) .field-name input', 'new_name');
+  fillIn('.output-container .top-k-size input', '20');
+  fillIn('.output-container .top-k-min-count input', '2000');
+  fillIn('.output-container .top-k-display-name input', 'cnt');
+
+  click('.submit-button');
+  visit('queries');
+  click('.queries-table .query-name-entry');
+  andThen(() => {
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .field-selection-container .field-name').length, 2);
+    assert.equal(find('.aggregation-size').length, 0);
+    assert.ok(find('.output-options #top-k').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-subfield input').val(), 'foo');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .field-name input').val(), 'new_name');
+    assert.equal(find('.output-container .top-k-size input').val(), '20');
+    assert.equal(find('.output-container .top-k-min-count input').val(), '2000');
+    assert.equal(find('.output-container .top-k-display-name input').val(), 'cnt');
+  });
+});

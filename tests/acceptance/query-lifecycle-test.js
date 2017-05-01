@@ -389,3 +389,245 @@ test('copying a full query with filters, grouped data output with groups and fie
     assert.equal(find('.metrics-container .field-selection-container:eq(1) .field-name input').val(), 'avg_bar');
   });
 });
+
+test('distribution output selects quantiles and number of points by default', function(assert) {
+  assert.expect(6);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  andThen(() => {
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-type-options #quantile').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .fields-selection-container .add-field').length, 0);
+    assert.equal(find('.fields-selection-container .field-selection-container').length, 1);
+    assert.equal(find('.fields-selection-container .field-selection-container .delete-button').length, 0);
+  });
+});
+
+test('copying a distribution query with number of points works', function(assert) {
+  assert.expect(9);
+
+  visit('/queries/new');
+  fillIn('.name-container input', 'test query');
+  click('.output-options #distribution');
+  click('.distribution-type-options #cumulative');
+  click('.output-container .distribution-point-options #number-points');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  fillIn('.output-container .distribution-type-number-of-points input', '15');
+
+  click('.save-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description').text().trim(), 'test query');
+  });
+  triggerEvent('.queries-table .query-name-entry', 'mouseover');
+  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
+    assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
+  });
+  click('.queries-table .query-name-entry:eq(1)');
+  andThen(() => {
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-number-of-points input').val(), '15');
+  });
+});
+
+test('copying a distribution query with generated points works', function(assert) {
+  assert.expect(11);
+
+  visit('/queries/new');
+  fillIn('.name-container input', 'test query');
+  click('.output-options #distribution');
+  click('.distribution-type-options #frequency');
+  click('.output-container .distribution-point-options #generate-points');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '1.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '2.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '0.5');
+
+  click('.save-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description').text().trim(), 'test query');
+  });
+  triggerEvent('.queries-table .query-name-entry', 'mouseover');
+  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
+    assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
+  });
+  click('.queries-table .query-name-entry:eq(1)');
+  andThen(() => {
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-type-options #frequency').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #generate-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(0)').val(), '1.5');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(1)').val(), '2.5');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(2)').val(), '0.5');
+  });
+});
+
+test('copying a distribution query with points works', function(assert) {
+  assert.expect(9);
+
+  visit('/queries/new');
+  fillIn('.name-container input', 'test query');
+  click('.output-options #distribution');
+  click('.output-container .distribution-point-options #points');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  fillIn('.output-container .distribution-type-points input', '0,0.2,1');
+
+  click('.save-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description').text().trim(), 'test query');
+  });
+  triggerEvent('.queries-table .query-name-entry', 'mouseover');
+  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
+    assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
+  });
+  click('.queries-table .query-name-entry:eq(1)');
+  andThen(() => {
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-type-options #quantile').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-points input').val(), '0,0.2,1');
+  });
+});
+
+test('copying a top k query works', function(assert) {
+  assert.expect(12);
+
+  visit('/queries/new');
+  fillIn('.name-container input', 'test query');
+  click('.output-options #top-k');
+
+  click('.output-container .add-field');
+  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
+  fillIn('.output-container .field-selection-container:eq(1) .field-name input', 'new_name');
+
+  fillIn('.output-container .top-k-size input', '15');
+  fillIn('.output-container .top-k-min-count input', '1500');
+  fillIn('.output-container .top-k-display-name input', 'cnt');
+
+  click('.save-button');
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.query-description').text().trim(), 'test query');
+  });
+  triggerEvent('.queries-table .query-name-entry', 'mouseover');
+  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
+    assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
+  });
+  click('.queries-table .query-name-entry:eq(1)');
+  andThen(() => {
+    assert.ok(find('.output-options #top-k').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-subfield input').val(), 'foo');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .field-name input').val(), 'new_name');
+    assert.equal(find('.output-container .top-k-size input').val(), '15');
+    assert.equal(find('.output-container .top-k-min-count input').val(), '1500');
+    assert.equal(find('.output-container .top-k-display-name input').val(), 'cnt');
+  });
+});
+
+test('distribution queries are sticky when switching to and from frequency to cumulative frequency', function(assert) {
+  assert.expect(11);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+
+  click('.distribution-type-options #cumulative');
+  click('.output-container .distribution-point-options #number-points');
+  fillIn('.output-container .distribution-type-number-of-points input', '15');
+  click('.distribution-type-options #frequency');
+  andThen(() => {
+    assert.ok(find('.output-container .distribution-type-options #frequency').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .distribution-type-number-of-points input').val(), '15');
+  });
+
+  click('.distribution-type-options #frequency');
+  click('.output-container .distribution-point-options #points');
+  fillIn('.output-container .distribution-type-points input', '1,4,51,5');
+  click('.distribution-type-options #cumulative');
+  andThen(() => {
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .distribution-type-points input').val(), '1,4,51,5');
+  });
+
+  click('.distribution-type-options #frequency');
+  click('.output-container .distribution-point-options #generate-points');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '1.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '2.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '0.5');
+  click('.distribution-type-options #cumulative');
+  andThen(() => {
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #generate-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(0)').val(), '1.5');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(1)').val(), '2.5');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(2)').val(), '0.5');
+  });
+});
+
+test('quantile query point value fields are not sticky when switching to another distribution', function(assert) {
+  assert.expect(11);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+
+  click('.distribution-type-options #quantile');
+  click('.output-container .distribution-point-options #number-points');
+  fillIn('.output-container .distribution-type-number-of-points input', '15');
+  click('.distribution-type-options #frequency');
+  andThen(() => {
+    assert.ok(find('.output-container .distribution-type-options #frequency').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .distribution-type-number-of-points input').val(), '11');
+  });
+
+  click('.distribution-type-options #quantile');
+  click('.output-container .distribution-point-options #points');
+  fillIn('.output-container .distribution-type-points input', '0,0.5,0.4');
+  click('.distribution-type-options #cumulative');
+  andThen(() => {
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .distribution-type-points input').val(), '');
+  });
+
+  click('.distribution-type-options #quantile');
+  click('.output-container .distribution-point-options #generate-points');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '0.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '0.75');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '0.5');
+  click('.distribution-type-options #cumulative');
+  andThen(() => {
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #generate-points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(0)').val(), '');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(1)').val(), '');
+    assert.equal(find('.output-container .distribution-type-point-range input:eq(2)').val(), '');
+  });
+});

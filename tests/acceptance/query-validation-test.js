@@ -287,3 +287,17 @@ test('selecting quantiles with bad points is a validation error', function(asser
     assert.ok(text.includes('Quantiles requires points between 0 and 1. These are not: 1.5,-1'));
   });
 });
+
+test('selecting top k without fields is a validation error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('A field needs to be selected first'));
+  });
+});
