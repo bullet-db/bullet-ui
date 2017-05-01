@@ -32,7 +32,7 @@ test('it renders', function(assert) {
 
 test('it fully summarizes a query', function(assert) {
   let query = MockQuery.create({ duration: 1 });
-  query.addAggregation(AGGREGATIONS.get('LIMIT'), 1);
+  query.addAggregation(AGGREGATIONS.get('LIMIT'), 1, { points: '0.1,0.2' });
   query.addFilter({ }, 'An Actual Filter Summary');
   query.addProjection('foo', 'f');
   query.addProjection('bar', 'b');
@@ -40,5 +40,5 @@ test('it fully summarizes a query', function(assert) {
   this.render(hbs`{{query-blurb query=mockedQuery}}`);
   let actualText = this.$().text();
   let spaceLess = actualText.replace(/\s/g, '');
-  assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb');
+  assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb0.1,0.2');
 });

@@ -129,7 +129,9 @@ export default Ember.Object.extend({
     let projections = this.concatFieldLikes(this.get('_projections'));
     let groups = this.concatFieldLikes(this.get('_aggregation._groups'));
     let metrics = this.concatFieldLikes(this.get('_aggregation._metrics'));
-    return `${projections}${groups}${metrics}`;
+    let fields = ['newName', 'points', 'numberOfPoints', 'start', 'end', 'increment'];
+    let attributes = this.concatProperties(this.get('_aggregation.attributes'), fields);
+    return `${projections}${groups}${metrics}${attributes}`;
   }),
 
   latestResult: Ember.computed('_results.[]', function() {
@@ -142,6 +144,15 @@ export default Ember.Object.extend({
       return '';
     }
     return fieldLikes.reduce((p, c) => `${p}${c.name}`, '');
+  },
+
+  concatProperties(object, fields) {
+    if (Ember.isEmpty(object)) {
+      return '';
+    }
+    return fields.reduce((p, c) => {
+      let field = object[c];
+      return field ? `${p}${field}` : p;
+    }, '');
   }
 });
-

@@ -14,6 +14,8 @@ export default Ember.Component.extend({
   model: null,
   fieldName: '',
   valuePath: '',
+  type: 'text',
+  placeHolder: '',
   tooltipPosition: 'right',
   forceDirty: false,
   disabled: false,

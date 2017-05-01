@@ -4,25 +4,46 @@
   See the LICENSE file associated with the project for terms.
  --}}
 
-<div class="output-option raw-option">
-  {{#radio-button radioId="raw" value=OUTPUT_DATA_TYPES.RAW groupValue=outputDataType changed=(action "addRawAggregation") disabled=disabled}}
+<div class="output-options">
+  {{#radio-button radioId="raw" value=AGGREGATIONS.RAW groupValue=outputDataType changed=(action "addRawAggregation") disabled=disabled}}
     Raw Data
   {{/radio-button}}
+  {{#radio-button radioId="grouped-data" value=AGGREGATIONS.GROUP groupValue=outputDataType
+                  changed=(action "addGroupAggregation") disabled=disabled}}
+    Group Data
+  {{/radio-button}}
+  {{#radio-button radioId="count-distinct" value=AGGREGATIONS.COUNT_DISTINCT groupValue=outputDataType
+                  changed=(action "addOneOrMoreFieldAggregation" AGGREGATIONS.COUNT_DISTINCT) disabled=disabled}}
+    Count Distinct
+  {{/radio-button}}
+  {{#radio-button radioId="distribution" value=AGGREGATIONS.DISTRIBUTION groupValue=outputDataType
+                  changed=(action "addDistributionAggregation") disabled=disabled}}
+    Distribution
+  {{/radio-button}}
+  {{#radio-button radioId="top-k" value=AGGREGATIONS.TOP_K groupValue=outputDataType
+                  changed=(action "addOneOrMoreFieldAggregation" AGGREGATIONS.TOP_K) disabled=disabled}}
+    Top K
+  {{/radio-button}}
+</div>
+
+<div class="output-container">
 
   {{#if isRawAggregation}}
-    <div class="output-nested-container raw-sub-options">
-      {{#radio-button radioId="all" value=RAW_TYPES.ALL groupValue=rawType changed=(action "deleteProjections") disabled=disabled}}
+    <div class="subsection-header">Choose your Fields</div>
+    <div class="raw-sub-options inline-radio-buttons">
+      {{#radio-button radioId="all" value=RAWS.ALL groupValue=rawType changed=(action "deleteProjections") disabled=disabled}}
         Show All Fields
       {{/radio-button}}
-      {{#radio-button radioId="select" value=RAW_TYPES.SELECT groupValue=rawType changed=(action "addRawAggregation") disabled=disabled}}
+      {{#radio-button radioId="select" value=RAWS.SELECT groupValue=rawType changed=(action "addRawAggregation" true) disabled=disabled}}
         Select Fields
       {{/radio-button}}
-
+    </div>
+    <div class="output-nested-container">
       {{#if showRawSelections}}
         <div class="fields-selection-container projections-container">
           {{#each query.projections as |projection|}}
             {{validated-field-selection model=projection columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                        forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-4"
+                                        forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-4" enableDeleting=canDeleteProjections
                                         fieldModified=(action "modifyFieldLike" projection) deleteModel=(action "destroyModel" projection)}}
           {{/each}}
           <button {{action "addFieldLike" "projection" "query" "query"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-projection">
@@ -33,20 +54,14 @@
       {{/if}}
     </div>
   {{/if}}
-</div>
-
-<div class="output-option group-option">
-  {{#radio-button radioId="grouped-data" value=OUTPUT_DATA_TYPES.GROUP groupValue=outputDataType changed=(action "addGroupAggregation") disabled=disabled}}
-    Grouped Data
-  {{/radio-button}}
 
   {{#if isGroupAggregation}}
     <div class="output-nested-container">
       <div class="fields-selection-container groups-container">
-        <div class="groups-header">Group Fields</div>
+        <div class="subsection-header">Choose Group Fields</div>
         {{#each query.aggregation.groups as |group|}}
           {{validated-field-selection model=group columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                      forceDirty=true fieldClasses="col-xs-6" nameClasses="col-xs-5"
+                                      forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-5"
                                       fieldModified=(action "modifyFieldLike" group) deleteModel=(action "destroyModel" group)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-group">
@@ -58,15 +73,16 @@
       <br />
 
       <div class="fields-selection-container metrics-container">
-        <div class="metrics-header">Metric Fields</div>
+        <div class="subsection-header">Choose Metric Fields</div>
         {{#each query.aggregation.metrics as |metric|}}
           {{#validated-field-selection model=metric columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
-                                      forceDirty=true fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
-                                      fieldModified=(action "modifyFieldLike" metric) deleteModel=(action "destroyModel" metric)}}
+                                       forceDirty=forceDirty fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
+                                       fieldModified=(action "modifyFieldLike" metric) deleteModel=(action "destroyModel" metric)}}
             <div class="col-xs-3 metrics-selection">
               <label class="power-select-label">Metric</label>
-              {{#power-select disabled=disabled selected=(lift-string "name" metric.type) options=metricsList onchange=(action "handleMetricChange" metric) as |metricItem|}}
-              {{metricItem.name}}
+              {{#power-select disabled=disabled selected=(lift-string "name" metric.type) options=metricsList
+                              onchange=(action "handleMetricChange" metric) as |metricItem|}}
+                {{metricItem.name}}
               {{/power-select}}
             </div>
           {{/validated-field-selection}}
@@ -79,19 +95,13 @@
     </div>
   {{/if}}
 
-</div>
-
-<div class="output-option count-distinct-option">
-  {{#radio-button radioId="count-distinct" value=OUTPUT_DATA_TYPES.COUNT_DISTINCT groupValue=outputDataType changed=(action "addCountDistinctAggregation") disabled=disabled}}
-    Count Distinct
-  {{/radio-button}}
-
   {{#if isCountDistinctAggregation}}
     <div class="output-nested-container">
+      <div class="subsection-header">Choose your Fields</div>
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
-                                      disabled=disabled forceDirty=true enableRenaming=false fieldClasses="col-xs-10"
+                                      disabled=disabled forceDirty=forceDirty enableRenaming=false enableDeleting=canDeleteField fieldClasses="col-xs-10"
                                       fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
@@ -99,10 +109,125 @@
           Field
         </button>
       </div>
-      <div class="row count-distinct-display-name">
-        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.name
-          placeholder="Optional" disabled=disabled}}
+
+      <div class="subsection-header">Rename Count Field</div>
+      <div class="row narrow-row count-distinct-display-name">
+        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.newName placeholder="Optional" disabled=disabled}}
       </div>
     </div>
   {{/if}}
+
+  {{#if isDistributionAggregation}}
+    <div class="output-nested-container">
+      <div class="subsection-header">Choose Type</div>
+      <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
+        {{#radio-button radioId="quantile" value=DISTRIBUTIONS.QUANTILE groupValue=distributionType
+                        changed=(action "modifyDistributionType" DISTRIBUTIONS.QUANTILE) disabled=disabled}}
+          Quantiles
+        {{/radio-button}}
+        {{#radio-button radioId="frequency" value=DISTRIBUTIONS.PMF groupValue=distributionType
+                        changed=(action "modifyDistributionType" DISTRIBUTIONS.PMF) disabled=disabled}}
+          Frequencies (Histogram)
+        {{/radio-button}}
+        {{#radio-button radioId="cumulative" value=DISTRIBUTIONS.CDF groupValue=distributionType
+                        changed=(action "modifyDistributionType" DISTRIBUTIONS.CDF) disabled=disabled}}
+          Cumulative Frequencies
+        {{/radio-button}}
+      </div>
+
+      <div class="subsection-header">Choose a Field</div>
+      <div class="fields-selection-container fields-container">
+        {{#each query.aggregation.groups as |field|}}
+          {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
+                                      disabled=disabled forceDirty=forceDirty enableRenaming=false enableDeleting=false fieldClasses="col-xs-10"
+                                      fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
+        {{/each}}
+      </div>
+
+      <div class="subsection-header">Choose how the Domain is created</div>
+      <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
+        {{#radio-button radioId="number-points" value=DISTRIBUTION_POINTS.NUMBER groupValue=pointType
+                        changed=(action "modifyDistributionPointType" DISTRIBUTION_POINTS.NUMBER) disabled=disabled}}
+          Evenly spaced points
+        {{/radio-button}}
+        {{#radio-button radioId="generate-points" value=DISTRIBUTION_POINTS.GENERATED groupValue=pointType
+                        changed=(action "modifyDistributionPointType" DISTRIBUTION_POINTS.GENERATED) disabled=disabled}}
+          Evenly spaced points in a region
+        {{/radio-button}}
+        {{#radio-button radioId="points" value=DISTRIBUTION_POINTS.POINTS groupValue=pointType
+                        changed=(action "modifyDistributionPointType" DISTRIBUTION_POINTS.POINTS) disabled=disabled}}
+          Define points
+        {{/radio-button}}
+      </div>
+
+      {{#if isNumberOfPoints}}
+        <div class="row narrow-row distribution-type-number-of-points">
+          {{labeled-input classNames="col-xs-2" type="number" fieldName="Number of Points" fieldValue=query.aggregation.attributes.numberOfPoints placeholder="Number" disabled=disabled}}
+        </div>
+      {{else if isPoints}}
+        <div class="row narrow-row distribution-type-points">
+          {{labeled-input classNames="col-xs-4" fieldName="Points" fieldValue=query.aggregation.attributes.points placeholder="Comma separated numbers" disabled=disabled}}
+        </div>
+      {{else if isGeneratedPoints}}
+        <div class="row narrow-row distribution-type-point-range">
+          {{labeled-input classNames="col-xs-2" type="number" fieldName="Start" fieldValue=query.aggregation.attributes.start placeholder="Number" disabled=disabled}}
+          {{labeled-input classNames="col-xs-2" type="number" fieldName="End" fieldValue=query.aggregation.attributes.end placeholder="Number" disabled=disabled}}
+          {{labeled-input classNames="col-xs-2" type="number" fieldName="Increment" fieldValue=query.aggregation.attributes.increment placeholder="Number" disabled=disabled}}
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if isTopKAggregation}}
+    <div class="output-nested-container">
+      <div class="subsection-header">Choose Fields</div>
+      <div class="fields-selection-container fields-container">
+        {{#each query.aggregation.groups as |field|}}
+          {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
+                                      forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-5" enableDeleting=canDeleteField
+                                      fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
+        {{/each}}
+        <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
+          <i class="glyphicon glyphicon-plus"></i>
+          Field
+        </button>
+      </div>
+      <div class="subsection-header">Choose the maximum number of results</div>
+      <div class="row narrow-row top-k-size">
+        {{validated-input inputClassNames="col-xs-2" model=query.aggregation valuePath="size" fieldName="K" disabled=isListening}}
+      </div>
+      <div class="subsection-header">Having Minimum Count</div>
+      <div class="row narrow-row top-k-min-count">
+        {{labeled-input classNames="col-xs-2" type="number" fieldName="Minimum Count" fieldValue=query.aggregation.attributes.threshold placeholder="Optional" disabled=disabled}}
+      </div>
+      <div class="subsection-header">Rename Count Field</div>
+      <div class="row narrow-row top-k-display-name">
+        {{labeled-input classNames="col-xs-2" fieldName="Display Name" fieldValue=query.aggregation.attributes.newName placeholder="Optional" disabled=disabled}}
+      </div>
+    </div>
+  {{/if}}
+
+  <div class="help">
+    {{#if isRawAggregation}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Raw Data"}}
+        {{partial "partials/raw-data-help"}}
+      {{/info-popover}}
+    {{else if isGroupAggregation}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Group Data"}}
+        {{partial "partials/group-data-help"}}
+      {{/info-popover}}
+    {{else if isCountDistinctAggregation}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Count Distinct"}}
+        {{partial "partials/count-distinct-help"}}
+      {{/info-popover}}
+    {{else if isDistributionAggregation}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Distribution"}}
+        {{partial "partials/distribution-help"}}
+      {{/info-popover}}
+    {{else if isTopKAggregation}}
+      {{#info-popover isButton=false additionalText= "Need more help?" title="Top K"}}
+        {{partial "partials/top-k-help"}}
+      {{/info-popover}}
+    {{/if}}
+  </div>
 </div>

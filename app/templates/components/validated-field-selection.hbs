@@ -22,6 +22,8 @@
     {{labeled-input fieldName="Display Name" fieldValue=model.name placeholder="Optional" disabled=disabled}}
   </div>
 {{/if}}
-<button {{action "deleteClicked"}} disabled={{disabled}} class="btn btn-danger btn-xs delete-button pull-right">
-  <i class="glyphicon glyphicon-remove"></i>
-</button>
+{{#if enableDeleting}}
+  <button {{action "deleteClicked"}} disabled={{disabled}} class="btn btn-danger btn-xs delete-button pull-right">
+    <i class="glyphicon glyphicon-remove"></i>
+  </button>
+{{/if}}

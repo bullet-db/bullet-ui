@@ -36,7 +36,9 @@ export default Ember.Mixin.create({
 
   defaultExtractor(column) {
     return (row) => {
-      let value = row.get(column);
+      // Use regular instead of get in case column has '.' Only doing it here because the defaultExtractor is used
+      // for unknown column names. When we define columns, we should not add columns with '.' in the name
+      let value = row[column];
       let valueType = Ember.typeOf(value);
       if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
         return value;
@@ -95,5 +97,3 @@ export default Ember.Mixin.create({
     }
   }
 });
-
-

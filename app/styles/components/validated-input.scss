@@ -7,4 +7,10 @@
   .error-tooltip-link {
     @extend %error-icon;
   }
+  &.has-error > .labeled-input {
+    margin-left: -15px;
+    .form-control {
+      border-color: $error-icon-color;
+    }
+  }
 }

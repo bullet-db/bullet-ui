@@ -129,6 +129,55 @@ const RESULTS = {
         bar: 'value2'
       }
     ]
+  },
+  DISTRIBUTION: {
+    meta: {
+      wasEstimated: false,
+      normalizedRankError: 0.04,
+      minimum: 5.0,
+      maximum: 1005.0
+    },
+    records: [
+      {
+        Probability: 0.0,
+        Count: 0,
+        Range: '(-Inf to 5.0)'
+      },
+      {
+        Probability: 0.40,
+        Count: 10230,
+        Range: '[5.0 to 505.0)'
+      },
+      {
+        Probability: 0.60,
+        Count: 15345,
+        Range: '(505.0 to 1005.0)'
+      }
+    ]
+  },
+  TOP_K: {
+    meta: {
+      wasEstimated: false,
+      maximumCountError: 0,
+      activeItems: 3
+    },
+    records: [
+      {
+        foo: 'test',
+        bar: 'baz',
+        Count: 235
+      },
+      {
+        foo: 'bar',
+        bar: 'baz',
+        Count: 225
+      },
+      {
+        foo: 'test',
+        bar: null,
+        Count: 210
+      }
+    ]
   }
 };
 

@@ -8,7 +8,8 @@ import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('query', 'Unit | Model | query', {
   needs: ['model:filter', 'model:projection', 'model:aggregation', 'model:result',
-          'validator:presence', 'validator:belongsTo', 'validator:hasMany', 'validator:number']
+          'validator:presence', 'validator:belongsTo', 'validator:hasMany',
+          'validator:number', 'validator:queryMaxDuration']
 });
 
 test('it sets its default values right', function(assert) {

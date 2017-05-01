@@ -9,7 +9,7 @@ import { validator, buildValidations } from 'ember-cp-validations';
 let Validations = buildValidations({
   field: validator('presence', {
     presence: true,
-    message: 'A field needs to be selected to group on'
+    message: 'A field needs to be selected first'
   }),
   aggregation: validator('belongs-to')
 });

@@ -61,13 +61,12 @@ test('it lets you swap between raw and tabular forms', function(assert) {
   });
 });
 
-test('it lets you expand metadata can be expanded in results in raw format', function(assert) {
+test('it lets you expand metadata in results', function(assert) {
   assert.expect(7);
   server = mockAPI(RESULTS.COUNT_DISTINCT, COLUMNS.BASIC);
 
   visit('/queries/new');
-  click('.output-container .count-distinct-option #count-distinct');
-  click('.output-container .count-distinct-option .fields-selection-container .add-field');
+  click('.output-options #count-distinct');
   selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
   click('.submit-button');
   andThen(() => {

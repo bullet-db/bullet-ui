@@ -7,22 +7,49 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
-let Aggregation = Ember.Object.extend({
+let AggregationTypes = Ember.Object.extend({
   RAW: 'Raw',
   GROUP: 'Group',
   COUNT_DISTINCT: 'Count Distinct',
-  INVERSE: {
+  DISTRIBUTION: 'Distribution',
+  TOP_K: 'Top K',
+  API: {
     'Raw': 'RAW',
     'Group': 'GROUP',
-    'Count Distinct': 'COUNT_DISTINCT'
+    'Count Distinct': 'COUNT DISTINCT',
+    'Distribution': 'DISTRIBUTION',
+    'Top K': 'TOP K'
   },
 
-  invert(key) {
-    return this.get(`INVERSE.${key}`);
+  apiKey(key) {
+    return this.get(`API.${key}`);
   }
 });
 
-export const AGGREGATIONS = Aggregation.create();
+let RawTypes = Ember.Object.extend({ ALL: 'All', SELECT: 'Select' });
+
+let DistributionTypes = Ember.Object.extend({
+  QUANTILE: 'Quantile',
+  PMF: 'Frequency',
+  CDF: 'Cumulative Frequency',
+  API: {
+    'Quantile': 'QUANTILE',
+    'Frequency': 'PMF',
+    'Cumulative Frequency': 'CDF'
+  },
+
+  apiKey(key) {
+    return this.get(`API.${key}`);
+  }
+});
+
+let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'Number', POINTS: 'Points',
+                                                    GENERATED: 'Generated' });
+
+export const AGGREGATIONS = AggregationTypes.create();
+export const RAWS = RawTypes.create();
+export const DISTRIBUTIONS = DistributionTypes.create();
+export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
 let Validations = buildValidations({
   size: {
@@ -32,14 +59,15 @@ let Validations = buildValidations({
         integer: true,
         allowString: true,
         gte: 1,
-        message: 'Maximum records must be a positive integer'
-      })
+        message: 'Maximum results must be a positive integer'
+      }),
+      validator('aggregation-max-size')
     ]
   },
   groups: validator('has-many'),
   metrics: validator('has-many'),
   query: validator('belongs-to'),
-  countDistinctField: validator('count-distinct-field-presence'),
+  validPoints: validator('valid-points'),
   groupAndOrMetrics: validator('group-metric-presence')
 });
 

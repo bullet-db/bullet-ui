@@ -82,12 +82,11 @@ test('creating, deleting query filters and raw data projections and saving', fun
   andThen(() => {
     fillIn('.filter-container .rule-value-container input', 'foo,bar');
     click('.output-container .raw-sub-options #select');
-    click('.output-container .raw-sub-options .projections-container .add-projection');
+    click('.output-nested-container .projections-container .add-projection');
     // Deletes everything
     click('.output-container .raw-sub-options #all');
     click('.output-container .raw-sub-options #select');
-    click('.output-container .raw-sub-options .projections-container .add-projection');
-    selectChoose('.output-container .raw-sub-options .projections-container .field-selection-container .field-selection', 'simple_column');
+    selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
     click('.save-button');
     visit('queries');
     click('.queries-table .query-name-entry');
@@ -116,7 +115,6 @@ test('creating a query, adding filters and raw data projections, and save on sub
   andThen(() => {
     fillIn('.filter-container .rule-value-container input', 'foo,bar');
     click('.output-container .raw-sub-options #select');
-    click('.output-container .raw-sub-options .projections-container .add-projection');
     selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     fillIn('.projections-container .field-selection-container .field-selection .column-subfield input', 'foo');
     triggerEvent('.projections-container .field-selection-container .field-selection .column-subfield input', 'blur');
@@ -187,9 +185,9 @@ test('creating a query, adding count distinct output fields, and save on submit'
   server = mockAPI(RESULTS.COUNT_DISTINCT, COLUMNS.BASIC);
 
   visit('/queries/new');
-  click('.output-container .count-distinct-option #count-distinct');
-  click('.output-container .count-distinct-option .fields-selection-container .add-field');
-  click('.output-container .count-distinct-option .fields-selection-container .add-field');
+  click('.output-options #count-distinct');
+  click('.output-container .fields-selection-container .add-field');
+  click('.output-container .fields-selection-container .add-field');
   selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
   selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column');
   fillIn('.output-container .count-distinct-display-name input', 'cnt');
@@ -197,11 +195,11 @@ test('creating a query, adding count distinct output fields, and save on submit'
   visit('queries');
   click('.queries-table .query-name-entry');
   andThen(() => {
-    assert.equal(find('.count-distinct-option .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal(find('.count-distinct-option .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
-    assert.equal(find('.count-distinct-option .count-distinct-display-name input').val(), 'cnt');
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
+    assert.equal(find('.output-container .count-distinct-display-name input').val(), 'cnt');
     // No names for fields for count distinct
-    assert.equal(find('.count-distinct-option .field-selection-container .field-name').length, 0);
+    assert.equal(find('.output-container .field-selection-container .field-name').length, 0);
     // No size field shown
     assert.equal(find('.aggregation-size').length, 0);
   });
@@ -212,9 +210,9 @@ test('creating a query, adding groups and metrics for grouped data output fields
   server = mockAPI(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
-  click('.output-container .group-option #grouped-data');
-  click('.output-container .group-option .groups-container .add-group');
-  click('.output-container .group-option .groups-container .add-group');
+  click('.output-options #grouped-data');
+  click('.output-container .groups-container .add-group');
+  click('.output-container .groups-container .add-group');
   selectChoose('.output-container .groups-container .field-selection-container:eq(0) .field-selection', 'complex_map_column');
   selectChoose('.output-container .groups-container .field-selection-container:eq(1) .field-selection', 'simple_column');
   fillIn('.output-container .groups-container .field-selection-container:eq(1) .field-name input', 'bar');
@@ -231,21 +229,82 @@ test('creating a query, adding groups and metrics for grouped data output fields
   click('.queries-table .query-name-entry');
   andThen(() => {
     // Name was autofilled for simple_column
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(0) .field-name input').val(), 'complex_map_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal(find('.group-option .groups-container .field-selection-container:eq(1) .field-name input').val(), 'bar');
+    assert.equal(find('.groups-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
+    assert.equal(find('.groups-container .field-selection-container:eq(0) .field-name input').val(), 'complex_map_column');
+    assert.equal(find('.groups-container .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.groups-container .field-selection-container:eq(1) .field-name input').val(), 'bar');
 
     // No field and name for count
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(0) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Count');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(0) .field-selection').length, 0);
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(0) .field-name input').val(), '');
+    assert.equal(find('.metrics-container .field-selection-container:eq(0) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Count');
+    assert.equal(find('.metrics-container .field-selection-container:eq(0) .field-selection').length, 0);
+    assert.equal(find('.metrics-container .field-selection-container:eq(0) .field-name input').val(), '');
 
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(1) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Average');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(1) .field-selection .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal(find('.group-option .metrics-container .field-selection-container:eq(1) .field-name input').val(), 'avg_bar');
+    assert.equal(find('.metrics-container .field-selection-container:eq(1) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Average');
+    assert.equal(find('.metrics-container .field-selection-container:eq(1) .field-selection .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.metrics-container .field-selection-container:eq(1) .field-name input').val(), 'avg_bar');
 
     // No size field shown
     assert.equal(find('.aggregation-size').length, 0);
+  });
+});
+
+test('creating a distribution query, adding free-form points and saving on submit', function(assert) {
+  assert.expect(8);
+  server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.output-container .distribution-point-options #points');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  fillIn('.output-container .distribution-type-points input', '0,0.2,1');
+
+  click('.submit-button');
+  visit('queries');
+  click('.queries-table .query-name-entry');
+  andThen(() => {
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    // No names for fields for distribution
+    assert.equal(find('.output-container .field-selection-container .field-name').length, 0);
+    // No size field shown
+    assert.equal(find('.aggregation-size').length, 0);
+    assert.ok(find('.output-options #distribution').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-type-options #quantile').parent().hasClass('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-points input').val(), '0,0.2,1');
+  });
+});
+
+test('creating a top k query, adding a custom k, threshold and name', function(assert) {
+  assert.expect(11);
+  server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.output-options #top-k');
+  click('.output-container .add-field');
+  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
+  triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
+  fillIn('.output-container .field-selection-container:eq(1) .field-name input', 'new_name');
+  fillIn('.output-container .top-k-size input', '20');
+  fillIn('.output-container .top-k-min-count input', '2000');
+  fillIn('.output-container .top-k-display-name input', 'cnt');
+
+  click('.submit-button');
+  visit('queries');
+  click('.queries-table .query-name-entry');
+  andThen(() => {
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .field-selection-container .field-name').length, 2);
+    assert.equal(find('.aggregation-size').length, 0);
+    assert.ok(find('.output-options #top-k').parent().hasClass('checked'));
+    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .column-subfield input').val(), 'foo');
+    assert.equal(find('.output-container .field-selection-container:eq(1) .field-name input').val(), 'new_name');
+    assert.equal(find('.output-container .top-k-size input').val(), '20');
+    assert.equal(find('.output-container .top-k-min-count input').val(), '2000');
+    assert.equal(find('.output-container .top-k-display-name input').val(), 'cnt');
   });
 });

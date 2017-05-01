@@ -4,6 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
+import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 
 export default Ember.Service.extend({
   store: Ember.inject.service(),
@@ -46,7 +47,7 @@ export default Ember.Service.extend({
     // Assume prefetched
     let promises = [
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
-      this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size']),
+      this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
@@ -68,6 +69,21 @@ export default Ember.Service.extend({
     return childModel.save();
   },
 
+  setAggregationAttributes(query, fields) {
+    return query.get('aggregation').then(aggregation => {
+      fields.forEach(field => {
+        let name = field.get('name');
+        let value = field.get('value');
+        let fieldPath = `attributes.${name}`;
+        let forceSet = field.getWithDefault('forceSet', false);
+        if (forceSet || Ember.isEmpty(aggregation.get(fieldPath))) {
+          aggregation.set(fieldPath, value);
+        }
+      });
+      return aggregation.save();
+    });
+  },
+
   replaceAggregation(query, type, size = 1) {
     return query.get('aggregation').then(aggregation => {
       return Ember.RSVP.all([
@@ -76,9 +92,66 @@ export default Ember.Service.extend({
       ]).then(() => {
         aggregation.set('type', type);
         aggregation.set('size', size);
+        aggregation.set('attributes', Ember.Object.create());
         return aggregation.save();
       });
     });
+  },
+
+  fixFieldLikes(query, fieldLikesPath) {
+    return query.get(fieldLikesPath).then(e => {
+      e.forEach(i => {
+        if (Ember.isBlank(i.get('name'))) {
+          i.set('name', i.get('field'));
+        }
+      });
+      return Ember.RSVP.resolve();
+    });
+  },
+
+  removeAttributes(aggregation, ...fields) {
+    fields.forEach(field => {
+      aggregation.set(`attributes.${field}`, undefined);
+    });
+  },
+
+  fixAggregationSize(query) {
+    return query.get('aggregation').then(a => {
+      let type = a.get('type');
+      if (!(Ember.isEqual(type, AGGREGATIONS.get('RAW')) || Ember.isEqual(type, AGGREGATIONS.get('TOP_K')))) {
+        query.set('aggregation.size', this.get('settings.defaultValues.aggregationMaxSize'));
+      }
+      return Ember.RSVP.resolve();
+    });
+  },
+
+  autoFill(query) {
+    return Ember.RSVP.all([
+      this.fixFieldLikes(query, 'projections'),
+      this.fixFieldLikes(query, 'aggregation.groups')
+    ]);
+  },
+
+  fixDistributionPointType(query) {
+    return query.get('aggregation').then(aggregation => {
+      let pointType = aggregation.get('attributes.pointType');
+      if (Ember.isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
+        this.removeAttributes(aggregation, 'numberOfPoints', 'points');
+      } else if (Ember.isEqual(pointType, DISTRIBUTION_POINTS.NUMBER)) {
+        this.removeAttributes(aggregation, 'start', 'end', 'increment', 'points');
+      } else {
+        this.removeAttributes(aggregation, 'start', 'end', 'increment', 'numberOfPoints');
+      }
+      return Ember.RSVP.resolve();
+    });
+  },
+
+  cleanup(query) {
+    return Ember.RSVP.all([
+      this.autoFill(query),
+      this.fixAggregationSize(query),
+      this.fixDistributionPointType(query)
+    ]);
   },
 
   save(query, clause, summary) {

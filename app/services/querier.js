@@ -6,7 +6,7 @@
 import Ember from 'ember';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import CORSRequest from 'bullet-ui/services/cors-request';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
 export default CORSRequest.extend(Filterizer, {
@@ -77,7 +77,7 @@ export default CORSRequest.extend(Filterizer, {
     let fields = this.getFields(aggregation.get('groups'));
     let attributes = this.getAttributes(aggregation);
 
-    json.type = this.findType(aggregation.get('type'));
+    json.type = AGGREGATIONS.apiKey(aggregation.get('type'));
     json.size = Number(aggregation.get('size'));
     this.assignIfTruthy(json, 'fields', fields);
     this.assignIfTruthy(json, 'attributes', attributes);
@@ -99,12 +99,24 @@ export default CORSRequest.extend(Filterizer, {
   getAttributes(aggregation) {
     let json = {};
 
-    if (aggregation.get('type') === AGGREGATIONS.get('COUNT_DISTINCT')) {
-      return this.assignIfTruthy(json, 'newName', aggregation.get('attributes.name'));
-    }
-    // Otherwise, we only have GROUP (for now)
+    // COUNT_DISTINCT, TOP_K
+    this.assignIfTruthy(json, 'newName', aggregation.get('attributes.newName'));
+
+    // DISTRIBUTION
+    this.assignIfTruthyNumeric(json, 'start', aggregation.get('attributes.start'));
+    this.assignIfTruthyNumeric(json, 'end', aggregation.get('attributes.end'));
+    this.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
+    this.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
+    this.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
+    this.assignIfTruthy(json, 'type', DISTRIBUTIONS.apiKey(aggregation.get('attributes.type')));
+
+    // TOP_K
+    this.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
+
+    // GROUP
     let operations = this.getGroupOperations(aggregation.get('metrics'));
     this.assignIfTruthy(json, 'operations', operations);
+
     return Ember.$.isEmptyObject(json) ? false : json;
   },
 
@@ -122,12 +134,19 @@ export default CORSRequest.extend(Filterizer, {
     return json;
   },
 
-  findType(type) {
-    let apiType = AGGREGATIONS.invert(type);
-    if (apiType === 'COUNT_DISTINCT') {
-      return 'COUNT DISTINCT';
+  getPoints(points) {
+    let json = [];
+    if (!Ember.isEmpty(points)) {
+      points.split(',').map(s => s.trim()).forEach(n =>  json.push(parseFloat(n)));
     }
-    return apiType;
+    return json;
+  },
+
+  assignIfTruthyNumeric(json, key, value) {
+    if (!Ember.isEmpty(value)) {
+      json[key] = parseFloat(value);
+    }
+    return json;
   },
 
   assignIfTruthy(json, key, value) {
@@ -172,4 +191,3 @@ export default CORSRequest.extend(Filterizer, {
     return Ember.$.ajax(options);
   }
 });
-

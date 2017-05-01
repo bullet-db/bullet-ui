@@ -11,11 +11,17 @@
   vertical-align: middle;
 
   .info-popover-link {
-    outline: 0 !important;
-    text-decoration: none !important;
+    outline: 0;
+    text-decoration: none;
     color: $info-icon-color;
     font-size: $font-size-regular;
     &:hover {
+      .info-link-text {
+        // Text shouldn't change color on hover
+        color: $info-icon-color;
+        text-decoration: underline;
+      }
+      cursor: pointer;
       color: $info-icon-hover-color;
     }
   }

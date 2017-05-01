@@ -53,7 +53,7 @@
         {{/info-popover}}
       </div>
 
-      {{output-data-input subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator query=query disabled=isListening columns=columns}}
+      {{output-data-input subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator query=query forceDirty=hasError disabled=isListening columns=columns}}
     </div>
 
 
@@ -67,9 +67,9 @@
 
       <div class="row">
         {{#if showAggregationSize}}
-          {{validated-input inputClassNames="col-xs-2 aggregation-size" model=query.aggregation valuePath="size" fieldName="Maximum Result Count" disabled=isListening}}
+          {{validated-input inputClassNames="col-xs-2 aggregation-size" model=query.aggregation valuePath="size" fieldName="Maximum Result Count" type="number" placeholder="Number" disabled=isListening}}
         {{/if}}
-        {{validated-input inputClassNames="col-xs-2 query-duration" model=query valuePath="duration" fieldName="Maximum Duration (seconds)" disabled=isListening}}
+        {{validated-input inputClassNames="col-xs-2 query-duration" model=query valuePath="duration" fieldName="Maximum Duration (seconds)" type="number" placeholder="Number" disabled=isListening}}
       </div>
     </div>
 

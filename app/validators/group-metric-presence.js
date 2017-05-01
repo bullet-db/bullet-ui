@@ -12,7 +12,7 @@ const GroupMetricPresence = BaseValidator.extend({
     let type = model.get('type');
     let groups = model.get('groups');
     let metrics = model.get('metrics');
-    if (type === AGGREGATIONS.get('GROUP') && Ember.isEmpty(groups) && Ember.isEmpty(metrics)) {
+    if (Ember.isEqual(type, AGGREGATIONS.get('GROUP')) && Ember.isEmpty(groups) && Ember.isEmpty(metrics)) {
       return 'If you are grouping data, you must add at least one Group Field and/or Metric Field';
     }
     return true;

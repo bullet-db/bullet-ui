@@ -60,11 +60,12 @@ export default Ember.Mixin.create(Filterizer, {
         remove_rule: 'glyphicon glyphicon-remove',
         error: 'glyphicon glyphicon-exclamation-sign'
       },
+      // The non-empty strings are needed!
       lang: {
         add_rule: 'Rule',
         add_group: 'Group',
-        delete_rule: '',
-        delete_group: '',
+        delete_rule: ' ',
+        delete_group: ' ',
         operators: {
           rlike: 'regex matches'
         }

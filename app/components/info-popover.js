@@ -8,6 +8,9 @@ import ElementPopover from 'bullet-ui/mixins/element-popover';
 
 export default Ember.Component.extend(ElementPopover, {
   classNames: ['info-popover-wrapper'],
+  isButton: true,
+  buttonClasses: 'glyphicon glyphicon-info-sign',
+  additionalText: '',
   title: '',
 
   // ElementPopover properties

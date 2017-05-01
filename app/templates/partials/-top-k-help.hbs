@@ -1,0 +1,29 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+
+<p>
+  This option is used to get the most frequent items for a set of fields. Unlike doing a count after using the Group Data option, if the number of unique values for your set of fields exceeds the maximum (see below), this aggregation still gives you the most frequent items in your data stream (depending on the distribution), whereas Group Data gives you a random sample of the groups.
+</p>
+
+<p>
+  Use the <strong>K</strong> field to control the maximum number of results you see. Note that if the result is estimated, you are not guaranteed to get the number of results you specify here (even if your true data stream does indeed have K top values). See below for details.
+</p>
+
+<p>
+  Use the <strong>Minimum Count</strong> field to restrict your results to only contain items with counts greater or eequal to this value. If this value is lower than the error threshold for your data distribution if the result was estimated, the higher of the two is used.
+</p>
+
+<p>
+  You can use the <strong>Display Name </strong> field to give an optional name to the result field that will contain the counts for your chosen fields.
+</p>
+
+<h5 class="content-header">Constraints</h5>
+<p>
+  This is a Sketches based aggregation that has a configured maximum size of 75% of <strong>{{settings.defaultValues.sketches.topKMaxEntries}}</strong>. Once the unique items exceed this threshold, the results are dependent on the distribution of data and the number of matching data records. <a href="">This table</a> The Sketch guarantees to find the heavy hitters or frequent items in the data, however, the error range for the count for each item can begin overlapping, so the true order may not what the results indicate. The count for each item is actually the upper bound of the count and you can use the error offset in the Result Metadata to find the lower bound.
+</p>
+<p>
+  This Bullet instance uses the <strong>{{settings.defaultValues.sketches.topKErrorType}}</strong> mode of operation. No False Negatives means that items whose counts are low enough that their error ranges extend below the error threshold of the Sketch are provided as part of the results, whereas No False Positives only includes items whose counts are high enough that their the error ranges are clear of the error threshold of the Sketch.
+</p>

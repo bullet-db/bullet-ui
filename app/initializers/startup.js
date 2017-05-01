@@ -24,6 +24,7 @@ export default {
     application.inject('service', 'settings', 'settings:main');
     application.inject('adapter', 'settings', 'settings:main');
     application.inject('route', 'settings', 'settings:main');
+    application.inject('model', 'settings', 'settings:main');
     application.inject('controller', 'settings', 'settings:main');
     application.inject('component', 'settings', 'settings:main');
 
