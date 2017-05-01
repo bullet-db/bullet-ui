@@ -108,3 +108,182 @@ test('query showing multiple error validation messages', function(assert) {
     assert.ok(text.includes('No field selected'));
   });
 });
+
+test('selecting distributions without a field and no number of points show validation messages', function(assert) {
+  assert.expect(4);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  fillIn('.output-container .distribution-type-number-of-points input', '');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('A field needs to be selected first'));
+    assert.ok(text.includes('You must specify the Number of Points you want to generate'));
+  });
+});
+
+test('selecting distributions with a non-positive number of points is a validation error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  fillIn('.output-container .distribution-type-number-of-points input', '-25');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('You must specify a positive Number of Points'));
+  });
+});
+
+test('selecting distributions with too many points is a validation error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  fillIn('.output-container .distribution-type-number-of-points input', '2500');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('The maintainer has set the maximum number of points you can generate to be 100'));
+  });
+});
+
+test('selecting distributions without a field and no generated points show validation messages', function(assert) {
+  assert.expect(4);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  click('.distribution-point-options #generate-points');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('A field needs to be selected first'));
+    assert.ok(text.includes('You must specify the Start, End and Increment for the points you want to generate'));
+  });
+});
+
+test('selecting distributions with incorrectly generated points is an error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  click('.distribution-point-options #generate-points');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '0.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '0.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '0.05');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('You must specify Start less than End'));
+  });
+});
+
+test('selecting distributions with non positive increment is a validation error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #frequency');
+  click('.distribution-point-options #generate-points');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '1.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '2.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '-0.5');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('You must specify a positive Increment'));
+  });
+});
+
+test('selecting quantiles with incorrectly generated points is an error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  click('.distribution-point-options #generate-points');
+  fillIn('.output-container .distribution-type-point-range input:eq(0)', '1.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(1)', '2.5');
+  fillIn('.output-container .distribution-type-point-range input:eq(2)', '0.5');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('Quantiles requires that you specify a Start and End between 0 and 1'));
+  });
+});
+
+test('selecting distributions without a field and no points show validation messages', function(assert) {
+  assert.expect(4);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  click('.distribution-point-options #points');
+  fillIn('.output-container .distribution-type-points input', '');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('A field needs to be selected first'));
+    assert.ok(text.includes('You must specify a comma separated list of points for this option'));
+  });
+});
+
+test('selecting distributions with bad points is a validation error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #cumulative');
+  click('.distribution-point-options #points');
+  fillIn('.output-container .distribution-type-points input', '1,2,a,foo,n');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('These are not valid points: a,foo,n'));
+  });
+});
+
+test('selecting quantiles with bad points is a validation error', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.output-options #distribution');
+  click('.distribution-type-options #quantile');
+  click('.distribution-point-options #points');
+  selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
+  fillIn('.output-container .distribution-type-points input', '0,0.2,1.5,-1');
+  click('.save-button');
+  andThen(() => {
+    assert.equal(find('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    let text = find('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.ok(text.includes('Quantiles requires points between 0 and 1. These are not: 1.5,-1'));
+  });
+});
