@@ -23,6 +23,14 @@ test('it renders', function(assert) {
   assert.equal(this.$().text().trim(), 'template block text');
 });
 
+test('it can behave as a link', function(assert) {
+  this.set('asButton', false);
+  this.set('mockText', 'foo');
+  this.render(hbs`{{info-popover isButton=asButton additionalText=mockText}}`);
+  assert.notOk(this.$('.info-popover-link').hasClass('glyphicon-info-sign'));
+  assert.equal(this.$('.info-link-text').text().trim(), 'foo');
+});
+
 test('it hides the initial contents', function(assert) {
   this.render(hbs`
     {{#info-popover}}

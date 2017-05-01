@@ -346,3 +346,37 @@ test('it formats a distribution with free-form points', function(assert) {
     duration: 10000
   });
 });
+
+test('it formats a top k query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('TOP_K'), 500);
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'TOP K',
+      fields: { foo: 'foo' }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a top k query with threshold and new name correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('TOP_K'), 500, {
+    newName: 'bar',
+    threshold: 150
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'TOP K',
+      fields: { foo: 'foo' },
+      attributes: { newName: 'bar', threshold: 150 }
+    },
+    duration: 10000
+  });
+});

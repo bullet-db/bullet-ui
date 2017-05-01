@@ -120,3 +120,18 @@ test('it can disable renaming', function(assert) {
   assert.equal(this.$('.field-name').length, 0);
   assert.equal(this.$('.delete-button').length, 1);
 });
+
+test('it can disable deleting', function(assert) {
+  let model = mockModel(true, false, true);
+  this.set('mockModel', model);
+  this.set('mockColumns', MOCK_COLUMNS);
+  this.set('enableDeleting', false);
+  this.render(hbs`
+    {{validated-field-selection columns=mockColumns model=mockModel fieldClasses="custom-field" enableDeleting=enableDeleting}}
+  `);
+  assert.equal(this.$('.error-tooltip-link').length, 0);
+  assert.equal(this.$('.field-selection').length, 1);
+  assert.ok(this.$('.field-selection').hasClass('custom-field'));
+  assert.equal(this.$('.field-name').length, 1);
+  assert.equal(this.$('.delete-button').length, 0);
+});
