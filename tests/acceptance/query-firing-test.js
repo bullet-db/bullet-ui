@@ -249,7 +249,7 @@ test('creating a query, adding groups and metrics for grouped data output fields
 });
 
 test('creating a distribution query, adding free-form points and saving on submit', function(assert) {
-  assert.expect(8);
+  assert.expect(7);
   server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
 
   visit('/queries/new');
@@ -262,7 +262,6 @@ test('creating a distribution query, adding free-form points and saving on submi
   visit('queries');
   click('.queries-table .query-name-entry');
   andThen(() => {
-    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
     // No names for fields for distribution
     assert.equal(find('.output-container .field-selection-container .field-name').length, 0);
     // No size field shown
@@ -276,7 +275,7 @@ test('creating a distribution query, adding free-form points and saving on submi
 });
 
 test('creating a top k query, adding a custom k, threshold and name', function(assert) {
-  assert.expect(11);
+  assert.expect(10);
   server = mockAPI(RESULTS.TOP_K, COLUMNS.BASIC);
 
   visit('/queries/new');
@@ -295,7 +294,6 @@ test('creating a top k query, adding a custom k, threshold and name', function(a
   visit('queries');
   click('.queries-table .query-name-entry');
   andThen(() => {
-    assert.equal(find('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
     assert.equal(find('.output-container .field-selection-container .field-name').length, 2);
     assert.equal(find('.aggregation-size').length, 0);
     assert.ok(find('.output-options #top-k').parent().hasClass('checked'));
