@@ -13,38 +13,38 @@ let AggregationTypes = Ember.Object.extend({
   COUNT_DISTINCT: 'Count Distinct',
   DISTRIBUTION: 'Distribution',
   TOP_K: 'Top K',
-  INVERSE: {
+  API: {
     'Raw': 'RAW',
     'Group': 'GROUP',
-    'Count Distinct': 'COUNT_DISTINCT',
+    'Count Distinct': 'COUNT DISTINCT',
     'Distribution': 'DISTRIBUTION',
-    'Top K': 'TOP_K'
+    'Top K': 'TOP K'
   },
 
-  invert(key) {
-    return this.get(`INVERSE.${key}`);
+  apiKey(key) {
+    return this.get(`API.${key}`);
   }
 });
 
-let RawTypes = Ember.Object.extend({ ALL: 'ALL', SELECT: 'SELECT' });
+let RawTypes = Ember.Object.extend({ ALL: 'All', SELECT: 'Select' });
 
 let DistributionTypes = Ember.Object.extend({
   QUANTILE: 'Quantile',
   PMF: 'Frequency',
   CDF: 'Cumulative Frequency',
-  INVERSE: {
+  API: {
     'Quantile': 'QUANTILE',
     'Frequency': 'PMF',
     'Cumulative Frequency': 'CDF'
   },
 
-  invert(key) {
-    return this.get(`INVERSE.${key}`);
+  apiKey(key) {
+    return this.get(`API.${key}`);
   }
 });
 
-let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'NUMBER', POINTS: 'POINTS',
-                                                    GENERATED: 'GENERATED' });
+let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'Number', POINTS: 'Points',
+                                                    GENERATED: 'Generated' });
 
 export const AGGREGATIONS = AggregationTypes.create();
 export const RAWS = RawTypes.create();
@@ -61,13 +61,13 @@ let Validations = buildValidations({
         gte: 1,
         message: 'Maximum results must be a positive integer'
       }),
-      validator('aggregation-size')
+      validator('aggregation-max-size')
     ]
   },
   groups: validator('has-many'),
   metrics: validator('has-many'),
   query: validator('belongs-to'),
-  validPoints: validator('points'),
+  validPoints: validator('valid-points'),
   groupAndOrMetrics: validator('group-metric-presence')
 });
 

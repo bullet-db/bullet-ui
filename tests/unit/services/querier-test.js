@@ -7,7 +7,7 @@ import ENV from 'bullet-ui/config/environment';
 import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
 moduleFor('service:querier', 'Unit | Service | querier', {
@@ -226,6 +226,122 @@ test('it formats a group by query correctly', function(assert) {
           { type: 'MIN', field: 'foo' }
         ]
       }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a quantile distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    numberOfPoints: 15,
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a frequency distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    numberOfPoints: 15,
+    type: DISTRIBUTIONS.get('PMF')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'PMF', numberOfPoints: 15 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a cumulative frequency distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    numberOfPoints: 15,
+    type: DISTRIBUTIONS.get('CDF')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'CDF', numberOfPoints: 15 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distribution with generated points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    start: 0.4,
+    end: 0.6,
+    increment: 0.01,
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distribution with free-form points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    points: '0.5,0.2, 0.75,0.99',
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distribution with free-form points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    points: '0.5,0.2, 0.75,0.99',
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
     },
     duration: 10000
   });

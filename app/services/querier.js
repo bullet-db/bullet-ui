@@ -77,7 +77,7 @@ export default CORSRequest.extend(Filterizer, {
     let fields = this.getFields(aggregation.get('groups'));
     let attributes = this.getAttributes(aggregation);
 
-    json.type = this.findType(aggregation.get('type'));
+    json.type = AGGREGATIONS.apiKey(aggregation.get('type'));
     json.size = Number(aggregation.get('size'));
     this.assignIfTruthy(json, 'fields', fields);
     this.assignIfTruthy(json, 'attributes', attributes);
@@ -108,7 +108,7 @@ export default CORSRequest.extend(Filterizer, {
     this.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
     this.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
     this.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
-    this.assignIfTruthy(json, 'type', this.findDistributionType(aggregation.get('attributes.type')));
+    this.assignIfTruthy(json, 'type', DISTRIBUTIONS.apiKey(aggregation.get('attributes.type')));
 
     // TOP_K
     this.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
@@ -140,16 +140,6 @@ export default CORSRequest.extend(Filterizer, {
       points.split(',').map(s => s.trim()).forEach(n =>  json.push(parseFloat(n)));
     }
     return json;
-  },
-
-  findType(type) {
-    let apiType = AGGREGATIONS.invert(type);
-    apiType = apiType.replace(/_/g, ' ');
-    return apiType;
-  },
-
-  findDistributionType(type) {
-    return DISTRIBUTIONS.invert(type);
   },
 
   assignIfTruthyNumeric(json, key, value) {

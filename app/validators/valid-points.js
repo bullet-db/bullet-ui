@@ -7,7 +7,7 @@ import Ember from 'ember';
 import BaseValidator from 'ember-cp-validations/validators/base';
 import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 
-const Points = BaseValidator.extend({
+const Validoints = BaseValidator.extend({
   validateMaximumPoints(size, model) {
     let maxPoints = model.get('settings.defaultValues.sketches.distributionMaxNumberOfPoints');
     if (size > maxPoints) {
@@ -39,7 +39,7 @@ const Points = BaseValidator.extend({
   validateNumberOfPoints(model) {
     let numberOfPoints = model.get('attributes.numberOfPoints');
     if (Ember.isEmpty(numberOfPoints)) {
-      return `You must specify the number of points you want to generate`;
+      return `You must specify the Number of Points you want to generate`;
     }
     numberOfPoints = parseFloat(numberOfPoints);
     if (numberOfPoints <= 0) {
@@ -89,11 +89,11 @@ const Points = BaseValidator.extend({
   }
 });
 
-Points.reopenClass({
+Validoints.reopenClass({
   getDependentsFor() {
     return ['model.type', 'model.attributes.start', 'model.attributes.end', 'model.attributes.increment',
             'model.attributes.numberOfPoints', 'model.attributes.points', 'model.attributes.type', 'model.attributes.pointType'];
   }
 });
 
-export default Points;
+export default Validoints;

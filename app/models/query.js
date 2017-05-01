@@ -20,7 +20,7 @@ let Validations = buildValidations({
         gte: 1,
         message: 'Duration must be a positive integer'
       }),
-      validator('query-duration')
+      validator('query-max-duration')
     ]
   },
   projections: validator('has-many'),
