@@ -26,7 +26,7 @@ export default Ember.Component.extend({
   metricsList: METRICS.asList(),
 
   // These *Type computed properties exist because ember-radio-button will set their value locally. Once set,
-  // they are independent of the original property.
+  // they are independent of the original property. This means they are only used on initial component render.
   outputDataType: Ember.computed('query.aggregation.type', function() {
     return this.findOrDefault('query.aggregation.type', AGGREGATIONS.get('RAW'));
   }),
@@ -98,36 +98,56 @@ export default Ember.Component.extend({
     this.get('queryManager').setAggregationAttributes(this.get('query'), fields.map(f => Ember.Object.create(f)));
   },
 
-  changeToNonRawAggregation(type) {
+  resetOptions(type) {
+    if (!Ember.isEqual(type, AGGREGATIONS.get('RAW'))) {
+      this.set('rawType', RAWS.get('ALL'));
+    }
+    if (!Ember.isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
+      this.set('distributionType', DISTRIBUTIONS.get('QUANTILE'));
+      this.set('distributionPointType', DISTRIBUTION_POINTS.get('NUMBER'));
+    }
+  },
+
+  replaceAggregation(type) {
+    this.resetOptions(type);
     this.get('queryManager').deleteProjections(this.get('query'));
     return this.get('queryManager').replaceAggregation(this.get('query'), type);
   },
 
-  changeToNonRawAggregationWithField(type) {
-    return this.changeToNonRawAggregation(type).then(() => {
-      return this.get('queryManager').addFieldLike('group', 'aggregation', this.get('query.aggregation'));
+  replaceAggregationWithField(type, modelName, parentName, parentPath) {
+    return this.replaceAggregation(type).then(() => {
+      return this.get('queryManager').addFieldLike(modelName, parentName, this.get(parentPath));
     });
   },
 
+  replaceAggregationWithGroup(type) {
+    return this.replaceAggregationWithField(type, 'group', 'aggregation', 'query.aggregation');
+  },
+
+
   actions: {
-    addRawAggregation(addField = false) {
-      this.get('queryManager').replaceAggregation(this.get('query'), AGGREGATIONS.get('RAW')).then(() => {
-        if (addField) {
-          return this.get('queryManager').addFieldLike('projection', 'query', this.get('query'));
-        }
-      });
+    addRawAggregation(selectType = false) {
+      if (selectType) {
+        this.replaceAggregationWithField(AGGREGATIONS.get('RAW'), 'projection', 'query', 'query');
+      } else {
+        this.replaceAggregation(AGGREGATIONS.get('RAW'));
+      }
     },
 
     addGroupAggregation() {
-      this.changeToNonRawAggregation(AGGREGATIONS.get('GROUP'));
+      this.replaceAggregation(AGGREGATIONS.get('GROUP'));
     },
 
-    addOneOrMoreFieldAggregation(type) {
-      this.changeToNonRawAggregationWithField(type);
+    addCountDistinctAggregation() {
+      this.replaceAggregationWithGroup(AGGREGATIONS.get('COUNT_DISTINCT'));
+    },
+
+    addTopKAggregation() {
+      this.replaceAggregationWithGroup(AGGREGATIONS.get('TOP_K'));
     },
 
     addDistributionAggregation() {
-      this.changeToNonRawAggregationWithField(AGGREGATIONS.get('DISTRIBUTION')).then(() => {
+      this.replaceAggregationWithGroup(AGGREGATIONS.get('DISTRIBUTION')).then(() => {
         // Default type is Quantile, Number of Points
         this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
       });

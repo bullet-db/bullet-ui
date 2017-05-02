@@ -5,7 +5,7 @@
  --}}
 
 <div class="output-options">
-  {{#radio-button radioId="raw" value=AGGREGATIONS.RAW groupValue=outputDataType changed=(action "addRawAggregation") disabled=disabled}}
+  {{#radio-button radioId="raw" value=AGGREGATIONS.RAW groupValue=outputDataType changed=(action "addRawAggregation" false) disabled=disabled}}
     Raw Data
   {{/radio-button}}
   {{#radio-button radioId="grouped-data" value=AGGREGATIONS.GROUP groupValue=outputDataType
@@ -13,7 +13,7 @@
     Group Data
   {{/radio-button}}
   {{#radio-button radioId="count-distinct" value=AGGREGATIONS.COUNT_DISTINCT groupValue=outputDataType
-                  changed=(action "addOneOrMoreFieldAggregation" AGGREGATIONS.COUNT_DISTINCT) disabled=disabled}}
+                  changed=(action "addCountDistinctAggregation") disabled=disabled}}
     Count Distinct
   {{/radio-button}}
   {{#radio-button radioId="distribution" value=AGGREGATIONS.DISTRIBUTION groupValue=outputDataType
@@ -21,7 +21,7 @@
     Distribution
   {{/radio-button}}
   {{#radio-button radioId="top-k" value=AGGREGATIONS.TOP_K groupValue=outputDataType
-                  changed=(action "addOneOrMoreFieldAggregation" AGGREGATIONS.TOP_K) disabled=disabled}}
+                  changed=(action "addTopKAggregation") disabled=disabled}}
     Top K
   {{/radio-button}}
 </div>
@@ -127,7 +127,7 @@
         {{/radio-button}}
         {{#radio-button radioId="frequency" value=DISTRIBUTIONS.PMF groupValue=distributionType
                         changed=(action "modifyDistributionType" DISTRIBUTIONS.PMF) disabled=disabled}}
-          Frequencies (Histogram)
+          Frequencies
         {{/radio-button}}
         {{#radio-button radioId="cumulative" value=DISTRIBUTIONS.CDF groupValue=distributionType
                         changed=(action "modifyDistributionType" DISTRIBUTIONS.CDF) disabled=disabled}}
@@ -144,7 +144,7 @@
         {{/each}}
       </div>
 
-      <div class="subsection-header">Choose how the Domain is created</div>
+      <div class="subsection-header">Choose how your Points are created</div>
       <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
         {{#radio-button radioId="number-points" value=DISTRIBUTION_POINTS.NUMBER groupValue=pointType
                         changed=(action "modifyDistributionPointType" DISTRIBUTION_POINTS.NUMBER) disabled=disabled}}
