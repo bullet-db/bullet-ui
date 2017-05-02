@@ -124,7 +124,6 @@ export default Ember.Component.extend({
     return this.replaceAggregationWithField(type, 'group', 'aggregation', 'query.aggregation');
   },
 
-
   actions: {
     addRawAggregation(selectType = false) {
       if (selectType) {
