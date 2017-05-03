@@ -166,7 +166,7 @@
         </div>
       {{else if isPoints}}
         <div class="row narrow-row distribution-type-points">
-          {{labeled-input classNames="col-xs-4" fieldName="Points" fieldValue=query.aggregation.attributes.points placeholder="Comma separated numbers" disabled=disabled}}
+          {{labeled-input classNames="col-xs-4" fieldName="Points" fieldValue=query.aggregation.attributes.points maxlength=131072 placeholder="Comma separated numbers" disabled=disabled}}
         </div>
       {{else if isGeneratedPoints}}
         <div class="row narrow-row distribution-type-point-range">
