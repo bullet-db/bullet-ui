@@ -98,7 +98,6 @@ $information-wrapper-padding-right: 35px;
 }
 
 .result-container {
-  @import "components/pretty-json";
   @import "components/records-viewer";
   @import "components/no-results-help";
   pre {

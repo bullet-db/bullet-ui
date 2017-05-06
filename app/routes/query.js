@@ -7,6 +7,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   querier: Ember.inject.service(),
+  queryManager: Ember.inject.service(),
 
   resultHandler(data, context) {
     context.set('pendingRequest', null);
@@ -14,6 +15,14 @@ export default Ember.Route.extend({
       let result = context.store.createRecord('result', {
         metadata: data.meta,
         records: data.records,
+        querySnapshot: {
+          type: query.get('aggregation.type'),
+          groupsSize: query.get('aggregation.groups.length'),
+          metricsSize: query.get('aggregation.metrics.length'),
+          projectionsSize: query.get('projections.length'),
+          fieldsSummary: query.get('fieldsSummary'),
+          filterSummary: query.get('filterSummary')
+        },
         query: query
       });
       result.save();

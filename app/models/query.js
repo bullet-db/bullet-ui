@@ -126,10 +126,6 @@ export default DS.Model.extend(Validations, {
     return max;
   }).readOnly(),
 
-  isRawWithoutFields: Ember.computed('projections.[]', 'aggregation.type', function() {
-    return this.get('aggregation.type') === AGGREGATIONS.get('RAW') && Ember.isEmpty(this.get('projections'));
-  }),
-
   summarizeFieldLike(fieldLike) {
     return Ember.isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => Ember.isEmpty(n)).join(', ');
   }
