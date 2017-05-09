@@ -69,6 +69,28 @@ export default Ember.Service.extend({
     return childModel.save();
   },
 
+  addResult(id, data) {
+    return this.get('store').findRecord('query', id).then((query) => {
+      let result = this.get('store').createRecord('result', {
+        metadata: data.meta,
+        records: data.records,
+        querySnapshot: {
+          type: query.get('aggregation.type'),
+          groupsSize: query.get('aggregation.groups.length'),
+          metricsSize: query.get('aggregation.metrics.length'),
+          projectionsSize: query.get('projections.length'),
+          fieldsSummary: query.get('fieldsSummary'),
+          filterSummary: query.get('filterSummary')
+        },
+        query: query
+      });
+      result.save();
+      query.set('lastRun', result.get('created'));
+      query.save();
+      return result;
+    });
+  },
+
   setAggregationAttributes(query, fields) {
     return query.get('aggregation').then(aggregation => {
       fields.forEach(field => {
@@ -190,17 +212,21 @@ export default Ember.Service.extend({
 
   deleteMultiple(name, model, inverseName) {
     return model.get(name).then(items => {
-      items.toArray().forEach(item => {
+      let promises = items.toArray().map(item => {
         items.removeObject(item);
         item.set(inverseName, null);
         item.destroyRecord();
       });
+      return Ember.RSVP.all(promises);
     });
   },
 
   deleteProjections(query) {
     return query.get('projections').then((p) => {
-      p.forEach(i => i.destroyRecord());
+      let promises = p.toArray().map(item => {
+        item.destroyRecord();
+      })
+      return Ember.RSVP.all(promises);
     });
   },
 
@@ -214,15 +240,25 @@ export default Ember.Service.extend({
   },
 
   deleteResults(query) {
-    this.deleteMultiple('results', query, 'query');
-    query.save();
+    this.deleteMultiple('results', query, 'query').then(() => {
+      query.save();
+    });
   },
 
   deleteQuery(query) {
-    this.deleteSingle('filter', query, 'query');
-    this.deleteMultiple('projections', query, 'query');
-    this.deleteMultiple('results', query, 'query');
-    this.deleteAggregation(query);
-    query.destroyRecord();
+    return Ember.RSVP.all([
+      this.deleteSingle('filter', query, 'query'),
+      this.deleteMultiple('projections', query, 'query'),
+      this.deleteMultiple('results', query, 'query'),
+      this.deleteAggregation(query)
+    ]).then(() => {
+      query.destroyRecord();
+    })
+  },
+
+  deleteAllResults() {
+    this.get('store').findAll('query').then(queries => {
+      queries.forEach(q => this.deleteResults(q));
+    });
   }
 });

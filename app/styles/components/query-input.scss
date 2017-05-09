@@ -8,6 +8,7 @@
   $fill-icon-color: $inactive-grey;
   $error-icon-color: $error-red;
   $error-icon-hover-color: #FF9693;
+  $box-rectangle-color: #F6F6F6;
   $background-box-color: $background-grey;
   $background-box-error-color: #FFE1E0;
   $background-box-hover-color: $background-grey-darker;
@@ -173,7 +174,7 @@
         @import "validated-input";
 
         margin-top: 10px;
-        margin-left: 0;
+        margin-left: 5px;
         input {
           height: 45px;
         }

@@ -23,9 +23,6 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   // Query Builder
-  // app.import('bower_components/jquery/dist/jquery.js');
-  // app.import('bower_components/bootstrap/dist/js/bootstrap.js');
-  // app.import('bower_components/doT/doU.js');
   app.import('bower_components/jquery-extendext/jQuery.extendext.js');
   app.import('bower_components/doT/doT.js');
   app.import('bower_components/interact/interact.js');
@@ -37,6 +34,19 @@ module.exports = function(defaults) {
   app.import('bower_components/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
 
   app.import('bower_components/filesaver/FileSaver.js');
+
+  // pivottable
+  app.import('bower_components/c3/c3.js');
+  app.import('bower_components/c3/c3.css');
+  app.import('bower_components/d3/d3.js');
+  app.import('bower_components/jquery-ui/jquery-ui.js');
+  app.import('bower_components/pivottable/dist/pivot.js');
+  app.import('bower_components/pivottable/dist/pivot.css');
+  app.import('bower_components/pivottable/dist/c3_renderers.js');
+  app.import('bower_components/pivottable/dist/export_renderers.js');
+
+  // Must load after to replace jquery-ui tooltips with bootstrap
+  app.import('bower_components/bootstrap/dist/js/bootstrap.js');
 
   return app.toTree();
 };

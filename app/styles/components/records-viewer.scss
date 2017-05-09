@@ -5,8 +5,14 @@
  */
 .records-viewer {
   $records-header-color: #00C877;
-
   margin-right: $results-right-space;
+
+  // Make unselectable
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
 
   .records-title {
     @import "section-heading-with-help";

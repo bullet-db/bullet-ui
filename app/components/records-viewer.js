@@ -17,10 +17,6 @@ export default Ember.Component.extend({
   records: null,
   fileName: 'results',
 
-  enableCharting: Ember.computed('model', function() {
-    return this.get('model.isChartable');
-  }),
-
   columns: Ember.computed('records', function() {
     return Ember.A(this.extractUniqueColumns(this.get('records')));
   }).readOnly(),

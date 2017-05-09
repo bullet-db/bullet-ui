@@ -16,10 +16,8 @@ export default Ember.Component.extend({
   sampleRow: Ember.computed('rows', 'columns', function() {
     let typicalRow = { };
     let rows = this.get('rows');
-    let c = 0;
     this.get('columns').forEach(column => {
       for (let row of rows) {
-        c++;
         let value = row[column];
         if (!Ember.isEmpty(value)) {
           typicalRow[column] = value;
@@ -27,13 +25,12 @@ export default Ember.Component.extend({
         }
       }
     });
-    console.log(c);
-    console.log(typicalRow);
     return typicalRow;
   }),
 
   independentColumns: Ember.computed('model', 'sampleRow', 'columns', function() {
-    let { columns, sampleRow, isDistribution } = this.getProperties('columns', 'sampleRow', 'model.isDistribution');
+    let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
+    let isDistribution = this.get('model.isDistribution');
     if (isDistribution) {
       return Ember.A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
@@ -119,11 +116,8 @@ export default Ember.Component.extend({
   },
 
   randomColors(size) {
-    let colors = [];
-    for (let i = 0; i < size; ++i) {
-      colors.push(this.randomColor());
-    }
-    return colors;
+    let color = this.randomColor();
+    return new Array(size).fill(color);
   },
 
   isType(row, field, type) {

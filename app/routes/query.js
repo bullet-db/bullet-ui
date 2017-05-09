@@ -11,23 +11,7 @@ export default Ember.Route.extend({
 
   resultHandler(data, context) {
     context.set('pendingRequest', null);
-    context.store.findRecord('query', context.paramsFor('query').query_id).then((query) => {
-      let result = context.store.createRecord('result', {
-        metadata: data.meta,
-        records: data.records,
-        querySnapshot: {
-          type: query.get('aggregation.type'),
-          groupsSize: query.get('aggregation.groups.length'),
-          metricsSize: query.get('aggregation.metrics.length'),
-          projectionsSize: query.get('projections.length'),
-          fieldsSummary: query.get('fieldsSummary'),
-          filterSummary: query.get('filterSummary')
-        },
-        query: query
-      });
-      result.save();
-      query.set('lastRun', result.get('created'));
-      query.save();
+    context.get('queryManager').addResult(context.paramsFor('query').query_id, data).then(result => {
       context.transitionTo('result', result.get('id'));
     });
   },

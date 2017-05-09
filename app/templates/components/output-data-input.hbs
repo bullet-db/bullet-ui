@@ -4,6 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
 
+<div class="subsection-header">Select your Output Type</div>
 <div class="output-options">
   {{#radio-button radioId="raw" value=AGGREGATIONS.RAW groupValue=outputDataType changed=(action "addRawAggregation" false) disabled=disabled}}
     Raw Data
@@ -29,7 +30,7 @@
 <div class="output-container">
 
   {{#if isRawAggregation}}
-    <div class="subsection-header">Choose your Fields</div>
+    <div class="subsection-header">Select your Fields</div>
     <div class="raw-sub-options inline-radio-buttons">
       {{#radio-button radioId="all" value=RAWS.ALL groupValue=rawType changed=(action "deleteProjections") disabled=disabled}}
         Show All Fields
@@ -58,7 +59,7 @@
   {{#if isGroupAggregation}}
     <div class="output-nested-container">
       <div class="fields-selection-container groups-container">
-        <div class="subsection-header">Choose Group Fields</div>
+        <div class="subsection-header">Select Group Fields</div>
         {{#each query.aggregation.groups as |group|}}
           {{validated-field-selection model=group columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
                                       forceDirty=forceDirty fieldClasses="col-xs-6" nameClasses="col-xs-5"
@@ -73,7 +74,7 @@
       <br />
 
       <div class="fields-selection-container metrics-container">
-        <div class="subsection-header">Choose Metric Fields</div>
+        <div class="subsection-header">Select Metric Fields</div>
         {{#each query.aggregation.metrics as |metric|}}
           {{#validated-field-selection model=metric columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
                                        forceDirty=forceDirty fieldClasses="col-xs-5" nameClasses="col-xs-3" disableField=metric.hasNoField
@@ -97,7 +98,7 @@
 
   {{#if isCountDistinctAggregation}}
     <div class="output-nested-container">
-      <div class="subsection-header">Choose your Fields</div>
+      <div class="subsection-header">Select your Fields</div>
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
@@ -119,7 +120,7 @@
 
   {{#if isDistributionAggregation}}
     <div class="output-nested-container">
-      <div class="subsection-header">Choose Type</div>
+      <div class="subsection-header">Select Distribution</div>
       <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
         {{#radio-button radioId="quantile" value=DISTRIBUTIONS.QUANTILE groupValue=distributionType
                         changed=(action "modifyDistributionType" DISTRIBUTIONS.QUANTILE) disabled=disabled}}
@@ -135,7 +136,7 @@
         {{/radio-button}}
       </div>
 
-      <div class="subsection-header">Choose a Field</div>
+      <div class="subsection-header">Select a Field</div>
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator
@@ -144,7 +145,7 @@
         {{/each}}
       </div>
 
-      <div class="subsection-header">Choose how your Points are created</div>
+      <div class="subsection-header">Select how your Points are created</div>
       <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
         {{#radio-button radioId="number-points" value=DISTRIBUTION_POINTS.NUMBER groupValue=pointType
                         changed=(action "modifyDistributionPointType" DISTRIBUTION_POINTS.NUMBER) disabled=disabled}}
@@ -180,7 +181,7 @@
 
   {{#if isTopKAggregation}}
     <div class="output-nested-container">
-      <div class="subsection-header">Choose Fields</div>
+      <div class="subsection-header">Select Fields</div>
       <div class="fields-selection-container fields-container">
         {{#each query.aggregation.groups as |field|}}
           {{validated-field-selection model=field columns=columns subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator disabled=disabled
@@ -192,7 +193,7 @@
           Field
         </button>
       </div>
-      <div class="subsection-header">Choose the maximum number of results</div>
+      <div class="subsection-header">Select the maximum number of results</div>
       <div class="row narrow-row top-k-size">
         {{validated-input inputClassNames="col-xs-2" model=query.aggregation valuePath="size" fieldName="K" disabled=isListening}}
       </div>

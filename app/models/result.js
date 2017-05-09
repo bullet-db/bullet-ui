@@ -27,7 +27,7 @@ export default DS.Model.extend({
   querySnapshot: DS.attr(),
 
   isReallyRaw: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('RAW') && this.get('querySnapshot.projectionSize') === 0;
+    return this.get('querySnapshot.type') === AGGREGATIONS.get('RAW') && this.get('querySnapshot.projectionsSize') === 0;
   }),
 
   isDistribution: Ember.computed('querySnapshot', function() {
@@ -38,10 +38,11 @@ export default DS.Model.extend({
     return this.get('querySnapshot.type') === AGGREGATIONS.get('TOP_K');
   }),
 
-
   isGroupBy: Ember.computed('querySnapshot', function() {
     return this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }),
 
-  isChartable: Ember.computed.or('isDistribution', 'isGroupBy', 'isTopK')
+  isChartable: Ember.computed.or('isDistribution', 'isGroupBy', 'isTopK'),
+
+  isPivotable: Ember.computed.not('isChartable')
 });

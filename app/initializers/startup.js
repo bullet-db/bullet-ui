@@ -18,7 +18,7 @@ export default {
     // Merge into default settings, overriding them
     let settings = { };
     Ember.merge(settings, ENV.APP.SETTINGS);
-    Ember.merge(settings, decodedSettings);
+    Ember.$.extend(true, settings, decodedSettings);
 
     application.register('settings:main', Ember.Object.create(settings), { instantiate: false });
     application.inject('service', 'settings', 'settings:main');
@@ -27,24 +27,5 @@ export default {
     application.inject('model', 'settings', 'settings:main');
     application.inject('controller', 'settings', 'settings:main');
     application.inject('component', 'settings', 'settings:main');
-
-    let version = settings.modelVersion;
-    this.applyMigrations(version);
-    localStorage.modelVersion = version;
-  },
-
-  /**
-   * Applies any forced migrations for local storage. Currently, only wipes localStorage
-   * if version is greater than the stored version  or if stored version is not present.
-   * @param  {Number} version A numeric version to compare the current stored version against.
-   * @return {Boolean}        Denoting whether local storage was modified.
-   */
-  applyMigrations(version) {
-    let currentVersion = localStorage.modelVersion;
-    if (!currentVersion || version > currentVersion) {
-      localStorage.clear();
-      return true;
-    }
-    return false;
   }
 };
