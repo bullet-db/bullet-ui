@@ -3,4 +3,16 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
- {{ember-chart type=graphType data=data options=options}}
+ {{#if canModeSwitch}}
+   <div class="mode-toggle">
+     <button type="button" class="btn mode simple-view {{if simpleMode "selected"}}" {{action "toggleMode"}}>Chart</button>
+     <button type="button" class="btn mode advanced-view {{unless simpleMode "selected"}}" {{action "toggleMode"}}>Pivot</button>
+   </div>
+ {{/if}}
+ <div class="visual-container">
+   {{#if pivotMode}}
+     {{pivot-table rows=rows columns=columns}}
+   {{else}}
+     {{ember-chart type=chartType data=data options=options}}
+   {{/if}}
+ </div>

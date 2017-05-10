@@ -26,8 +26,20 @@ export default DS.Model.extend({
   query: DS.belongsTo('query', { autoSave: true }),
   querySnapshot: DS.attr(),
 
-  isReallyRaw: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('RAW') && this.get('querySnapshot.projectionsSize') === 0;
+  isRaw: Ember.computed('querySnapshot', function() {
+    return this.get('querySnapshot.type') === AGGREGATIONS.get('RAW');
+  }),
+
+  isReallyRaw: Ember.computed('isRaw', 'querySnapshot', function() {
+    return this.get('isRaw') && this.get('querySnapshot.projectionsSize') === 0;
+  }),
+
+  isCountDistinct: Ember.computed('querySnapshot', function() {
+    return this.get('querySnapshot.type') === AGGREGATIONS.get('COUNT_DISTINCT');
+  }),
+
+  isGroupAll: Ember.computed('querySnapshot', function() {
+    return this.get('querySnapshot.type') === AGGREGATIONS.get('GROUP') && this.get('querySnapshot.groupsSize') === 0;
   }),
 
   isDistribution: Ember.computed('querySnapshot', function() {
@@ -42,7 +54,5 @@ export default DS.Model.extend({
     return this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }),
 
-  isChartable: Ember.computed.or('isDistribution', 'isGroupBy', 'isTopK'),
-
-  isPivotable: Ember.computed.not('isChartable')
+  isSingleRow: Ember.computed.or('isCountDistinct', 'isGroupAll')
 });

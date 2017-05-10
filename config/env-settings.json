@@ -12,7 +12,7 @@
       }
     ],
     "bugLink": "https://github.com/yahoo/bullet-ui/issues",
-    "modelVersion": 1,
+    "modelVersion": 2,
     "migrations": {
       "deletions": "result"
     },

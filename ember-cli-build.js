@@ -39,14 +39,35 @@ module.exports = function(defaults) {
   app.import('bower_components/c3/c3.js');
   app.import('bower_components/c3/c3.css');
   app.import('bower_components/d3/d3.js');
-  app.import('bower_components/jquery-ui/jquery-ui.js');
+
+  // Manually importing jquery-ui dependencies to keep clashes with bootstrap a minimum
+  // Add all the core dependencies just in case
+  app.import('bower_components/jquery-ui/ui/version.js');
+  app.import('bower_components/jquery-ui/ui/widget.js');
+  app.import('bower_components/jquery-ui/ui/position.js');
+  app.import('bower_components/jquery-ui/ui/data.js');
+  app.import('bower_components/jquery-ui/ui/disable-selection.js');
+  app.import('bower_components/jquery-ui/ui/escape-selector.js');
+  app.import('bower_components/jquery-ui/ui/focusable.js');
+  app.import('bower_components/jquery-ui/ui/form-reset-mixin.js');
+  app.import('bower_components/jquery-ui/ui/jquery-1-7.js');
+  app.import('bower_components/jquery-ui/ui/keycode.js');
+  app.import('bower_components/jquery-ui/ui/labels.js');
+  app.import('bower_components/jquery-ui/ui/plugin.js');
+  app.import('bower_components/jquery-ui/ui/safe-active-element.js');
+  app.import('bower_components/jquery-ui/ui/safe-blur.js');
+  app.import('bower_components/jquery-ui/ui/scroll-parent.js');
+  app.import('bower_components/jquery-ui/ui/tabbable.js');
+  app.import('bower_components/jquery-ui/ui/unique-id.js');
+
+  app.import('bower_components/jquery-ui/ui/widgets/mouse.js');
+  app.import('bower_components/jquery-ui/ui/widgets/draggable.js');
+  app.import('bower_components/jquery-ui/ui/widgets/droppable.js');
+  app.import('bower_components/jquery-ui/ui/widgets/sortable.js');
+
   app.import('bower_components/pivottable/dist/pivot.js');
   app.import('bower_components/pivottable/dist/pivot.css');
   app.import('bower_components/pivottable/dist/c3_renderers.js');
-  app.import('bower_components/pivottable/dist/export_renderers.js');
-
-  // Must load after to replace jquery-ui tooltips with bootstrap
-  app.import('bower_components/bootstrap/dist/js/bootstrap.js');
 
   return app.toTree();
 };

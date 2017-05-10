@@ -8,10 +8,15 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['records-charter'],
   model: null,
-  metadata: null,
   columns: null,
   rows: null,
-  graphType: 'bar',
+  chartType: 'bar',
+  simpleMode: true,
+
+  cannotModeSwitch: Ember.computed.alias('model.isRaw').readOnly(),
+  canModeSwitch: Ember.computed.not('cannotModeSwitch').readOnly(),
+  notSimpleMode: Ember.computed.not('simpleMode').readOnly(),
+  pivotMode: Ember.computed.or('notSimpleMode', 'cannotModeSwitch').readOnly(),
 
   sampleRow: Ember.computed('rows', 'columns', function() {
     let typicalRow = { };
@@ -39,7 +44,8 @@ export default Ember.Component.extend({
   }),
 
   dependentColumns: Ember.computed('model', 'sampleRow', 'columns', function() {
-    let { columns, sampleRow, isDistribution } = this.getProperties('columns', 'sampleRow', 'model.isDistribution');
+    let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
+    let isDistribution = this.get('model.isDistribution');
     if (isDistribution) {
       return Ember.A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }
@@ -74,11 +80,10 @@ export default Ember.Component.extend({
     return this.zip(valuesList);
   }),
 
-  datasets: Ember.computed('graphType', 'dependentColumns', 'rows', function() {
+  datasets: Ember.computed('dependentColumns', 'rows', function() {
     let dependentColumns = this.get('dependentColumns');
     let rows = this.get('rows');
-    let graphType = this.get('graphType');
-    return dependentColumns.map((c, i) => this.dataset(graphType, c, rows, i));
+    return dependentColumns.map((c, i) => this.dataset(c, rows, i));
   }),
 
   data: Ember.computed('labels', 'datasets', function() {
@@ -88,7 +93,7 @@ export default Ember.Component.extend({
     };
   }),
 
-  dataset(graphType, column, rows, index) {
+  dataset(column, rows, index) {
     let values = this.getFieldValues(column, rows);
     let dataset = {
       label: column,
@@ -147,5 +152,11 @@ export default Ember.Component.extend({
       values = values.map(v => v.toFixed(4));
     }
     return values;
+  },
+
+  actions: {
+    toggleMode() {
+      this.toggleProperty('simpleMode');
+    }
   }
 });

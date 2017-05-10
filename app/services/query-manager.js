@@ -225,7 +225,7 @@ export default Ember.Service.extend({
     return query.get('projections').then((p) => {
       let promises = p.toArray().map(item => {
         item.destroyRecord();
-      })
+      });
       return Ember.RSVP.all(promises);
     });
   },
@@ -253,7 +253,7 @@ export default Ember.Service.extend({
       this.deleteAggregation(query)
     ]).then(() => {
       query.destroyRecord();
-    })
+    });
   },
 
   deleteAllResults() {
