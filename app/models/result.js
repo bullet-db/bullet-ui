@@ -42,16 +42,16 @@ export default DS.Model.extend({
     return this.get('querySnapshot.type') === AGGREGATIONS.get('GROUP') && this.get('querySnapshot.groupsSize') === 0;
   }),
 
+  isGroupBy: Ember.computed('querySnapshot', function() {
+    return this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
+  }),
+
   isDistribution: Ember.computed('querySnapshot', function() {
     return this.get('querySnapshot.type') === AGGREGATIONS.get('DISTRIBUTION');
   }),
 
   isTopK: Ember.computed('querySnapshot', function() {
     return this.get('querySnapshot.type') === AGGREGATIONS.get('TOP_K');
-  }),
-
-  isGroupBy: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }),
 
   isSingleRow: Ember.computed.or('isCountDistinct', 'isGroupAll')
