@@ -27,32 +27,22 @@ export default DS.Model.extend({
   querySnapshot: DS.attr(),
   pivotOptions: DS.attr('string'),
 
-  isRaw: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('RAW');
-  }),
+  isRaw: Ember.computed.equal('querySnapshot.type', AGGREGATIONS.get('RAW')),
+  isCountDistinct: Ember.computed.equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')),
+  isGroup: Ember.computed.equal('querySnapshot.type', AGGREGATIONS.get('GROUP')),
+  isDistribution: Ember.computed.equal('querySnapshot.type', AGGREGATIONS.get('DISTRIBUTION')),
+  isTopK: Ember.computed.equal('querySnapshot.type', AGGREGATIONS.get('TOP_K')),
 
-  isReallyRaw: Ember.computed('isRaw', 'querySnapshot', function() {
+  isReallyRaw: Ember.computed('isRaw', 'querySnapshot.projectionsSize', function() {
     return this.get('isRaw') && this.get('querySnapshot.projectionsSize') === 0;
   }),
 
-  isCountDistinct: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('COUNT_DISTINCT');
+  isGroupAll: Ember.computed('isGroup', 'querySnapshot.groupsSize', function() {
+    return this.get('isGroup') && this.get('querySnapshot.groupsSize') === 0;
   }),
 
-  isGroupAll: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('GROUP') && this.get('querySnapshot.groupsSize') === 0;
-  }),
-
-  isGroupBy: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
-  }),
-
-  isDistribution: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('DISTRIBUTION');
-  }),
-
-  isTopK: Ember.computed('querySnapshot', function() {
-    return this.get('querySnapshot.type') === AGGREGATIONS.get('TOP_K');
+  isGroupBy: Ember.computed('isGroup', 'querySnapshot.metricsSize', 'querySnapshot.groupsSize', function() {
+    return this.get('isGroup') && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }),
 
   isSingleRow: Ember.computed.or('isCountDistinct', 'isGroupAll')
