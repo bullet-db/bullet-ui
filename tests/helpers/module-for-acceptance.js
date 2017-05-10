@@ -20,8 +20,7 @@ export default function(name, options = {}) {
       this.application = startApp();
 
       if (options.suppressLogging) {
-        logger = Ember.Logger;
-        Ember.Logger = LOGGER;
+        [logger, Ember.Logger] = [Ember.Logger, LOGGER];
       }
 
       if (options.beforeEach) {
