@@ -36,12 +36,5 @@ export default Ember.Component.extend(PaginatedTable, {
     this._super(...arguments);
     this.set('table', new Table(this.get('columns')));
     this.addPages(1);
-  },
-
-  actions: {
-    resultClick(result) {
-      this.sendAction('resultClick', result);
-    }
   }
 });
-

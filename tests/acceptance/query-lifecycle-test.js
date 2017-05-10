@@ -12,6 +12,8 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query lifecycle', {
+  suppressLogging: true,
+
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();

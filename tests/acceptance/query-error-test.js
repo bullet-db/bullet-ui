@@ -12,6 +12,8 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query error', {
+  suppressLogging: true,
+
   beforeEach() {
     server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
   },

@@ -10,20 +10,16 @@ import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI, failAPI } from '../helpers/pretender';
 
-let server, logger;
+let server;
 
 moduleForAcceptance('Acceptance | query firing', {
-  beforeEach() {
-    logger = Ember.Logger.error;
-    Ember.Logger.error = function() { };
-  },
+  suppressLogging: true,
 
   afterEach() {
     // Wipe out localstorage because we are creating here
     if (server) {
       server.shutdown();
     }
-    Ember.Logger.error = logger;
     window.localStorage.clear();
   }
 });

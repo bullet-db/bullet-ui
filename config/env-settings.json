@@ -14,7 +14,7 @@
     "bugLink": "https://github.com/yahoo/bullet-ui/issues",
     "modelVersion": 2,
     "migrations": {
-      "deletions": "results"
+      "deletions": "result"
     },
     "defaultValues": {
       "aggregationMaxSize": 512,
