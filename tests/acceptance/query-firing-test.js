@@ -3,20 +3,27 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI, failAPI } from '../helpers/pretender';
 
-let server;
+let server, logger;
 
 moduleForAcceptance('Acceptance | query firing', {
+  beforeEach() {
+    logger = Ember.Logger.error;
+    Ember.Logger.error = function() { };
+  },
+
   afterEach() {
     // Wipe out localstorage because we are creating here
     if (server) {
       server.shutdown();
     }
+    Ember.Logger.error = logger;
     window.localStorage.clear();
   }
 });

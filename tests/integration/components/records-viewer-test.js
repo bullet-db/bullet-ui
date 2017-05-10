@@ -36,22 +36,28 @@ moduleForComponent('records-viewer', 'Integration | Component | records viewer',
 
 test('it renders the data by default in a pre tag', function(assert) {
   this.set('mockRecords', RESULTS.SINGLE.records);
-  this.render(hbs`{{records-viewer records=mockRecords}}`);
+  this.set('rawMode', true);
+  this.render(hbs`{{records-viewer records=mockRecords showRawData=rawMode}}`);
   assert.equal(this.$('.pretty-json-container').text().trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
 });
 
 test('it allows swapping between table and the raw views', function(assert) {
-  assert.expect(6);
+  assert.expect(10);
+  this.set('mockModel', { isSingleRow: true });
   this.set('mockRecords', RESULTS.SINGLE.records);
-  this.render(hbs`{{records-viewer records=mockRecords}}`);
+  this.render(hbs`{{records-viewer model=mockModel records=mockRecords}}`);
   this.$('.table-view').click();
   return wait().then(() => {
+    assert.equal(this.$('.chart-view').length, 0);
+    assert.ok(this.$('.table-view').hasClass('active'));
     assert.equal(this.$('.pretty-json-container').length, 0);
     assert.equal(this.$('.records-table').length, 1);
     assert.equal(this.$('.lt-column').length, 3);
     assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 3);
     this.$('.raw-view').click();
     return wait().then(() => {
+      assert.equal(this.$('.chart-view').length, 0);
+      assert.ok(this.$('.raw-view').hasClass('active'));
       assert.equal(this.$('.records-table').length, 0);
       assert.equal(this.$('.pretty-json-container').length, 1);
     });
@@ -106,4 +112,45 @@ test('it handles missing columns across rows when making CSVs', function(assert)
   this.set('mockRecords', RESULTS.MULTIPLE_MISSING.records);
   this.render(hbs`{{records-viewer records=mockRecords}}`);
   this.$('.download-option > a:eq(1)').click();
+});
+
+test('it enables charting mode if the results have more than one row', function(assert) {
+  assert.expect(9);
+  this.set('tableMode', true);
+  this.set('mockModel', { isSingleRow: false });
+  this.set('mockRecords', RESULTS.GROUP.records);
+  this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
+  assert.equal(this.$('.chart-view').length, 1);
+  assert.equal(this.$('.pretty-json-container').length, 0);
+  assert.equal(this.$('.records-table').length, 1);
+  assert.equal(this.$('.lt-column').length, 4);
+  assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 12);
+  this.$('.chart-view').click();
+  return wait().then(() => {
+    assert.equal(this.$('.records-table').length, 0);
+    assert.equal(this.$('.pretty-json-container').length, 0);
+    // Defaults to simple chart view
+    assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+    assert.equal(this.$('.visual-container canvas').length, 1);
+  });
+});
+
+test('it enables pivot mode if the results are raw', function(assert) {
+  assert.expect(9);
+  this.set('tableMode', true);
+  this.set('mockModel', { isRaw: true, isSingleRow: false });
+  this.set('mockRecords', RESULTS.MULTIPLE.records);
+  this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
+  assert.equal(this.$('.chart-view').length, 1);
+  assert.equal(this.$('.pretty-json-container').length, 0);
+  assert.equal(this.$('.records-table').length, 1);
+  assert.equal(this.$('.lt-column').length, 3);
+  assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 9);
+  this.$('.chart-view').click();
+  return wait().then(() => {
+    assert.equal(this.$('.records-table').length, 0);
+    assert.equal(this.$('.pretty-json-container').length, 0);
+    assert.equal(this.$('.mode-toggle').length, 0);
+    assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
+  });
 });

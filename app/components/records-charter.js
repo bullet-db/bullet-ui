@@ -40,7 +40,7 @@ export default Ember.Component.extend({
       return Ember.A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
     // Pick all string columns
-    return Ember.A(columns.filter(c => Ember.typeOf(sampleRow[c]) === 'string'));
+    return Ember.A(columns.filter(c => this.isType(sampleRow, c, 'string')));
   }),
 
   dependentColumns: Ember.computed('model', 'sampleRow', 'columns', function() {
@@ -50,7 +50,7 @@ export default Ember.Component.extend({
       return Ember.A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }
     // Pick all number columns
-    return Ember.A(columns.filter(c => Ember.typeOf(sampleRow[c]) === 'number'));
+    return Ember.A(columns.filter(c => this.isType(sampleRow, c, 'number')));
   }),
 
   options: Ember.computed('dependentColumns', function() {
@@ -77,6 +77,7 @@ export default Ember.Component.extend({
     let rows = this.get('rows');
     // [ [field1 values...], [field2 values...], ...]
     let valuesList = this.get('independentColumns').map(field => this.getFieldValues(field, rows));
+    // valuesList won't be empty because all non-Raw aggregations will have at least one string field
     return this.zip(valuesList);
   }),
 
@@ -139,19 +140,12 @@ export default Ember.Component.extend({
   },
 
   zip(arrayOfArrays, delimiter = '/') {
-    if (Ember.isEmpty(arrayOfArrays)) {
-      return [];
-    }
     let zipped =  arrayOfArrays[0].map((_, i) => arrayOfArrays.map(a => a[i]));
     return zipped.map(a => a.reduce((p, c) => `${p}${delimiter}${c}`), '');
   },
 
-  getFieldValues(field, rows, round = false) {
-    let values = rows.map(row => row[field]);
-    if (round) {
-      values = values.map(v => v.toFixed(4));
-    }
-    return values;
+  getFieldValues(field, rows) {
+    return rows.map(row => row[field]);
   },
 
   actions: {
