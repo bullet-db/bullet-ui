@@ -16,9 +16,7 @@ export default {
       decodedSettings = JSON.parse(decodeURIComponent(metaSettings));
     }
     // Merge into default settings, overriding them
-    let settings = { };
-    Ember.merge(settings, ENV.APP.SETTINGS);
-    Ember.$.extend(true, settings, decodedSettings);
+    let settings = this.deepMergeSettings(decodedSettings);
 
     application.register('settings:main', Ember.Object.create(settings), { instantiate: false });
     application.inject('service', 'settings', 'settings:main');
@@ -27,5 +25,17 @@ export default {
     application.inject('model', 'settings', 'settings:main');
     application.inject('controller', 'settings', 'settings:main');
     application.inject('component', 'settings', 'settings:main');
+  },
+
+  deepMergeSettings(overrides) {
+    let settings = JSON.parse(JSON.stringify(ENV.APP.SETTINGS));
+    Ember.$.extend(true, settings, overrides);
+
+    // Handle arrays manually
+    let helpLinks = [];
+    Ember.$.merge(helpLinks, ENV.APP.SETTINGS.helpLinks || []);
+    Ember.$.merge(helpLinks, overrides.helpLinks || []);
+    settings.helpLinks = helpLinks;
+    return settings;
   }
 };

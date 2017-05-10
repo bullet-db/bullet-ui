@@ -39,8 +39,11 @@ export let MockMetric = Ember.Object.extend({
 });
 
 export let MockResult = Ember.Object.extend({
+  metadata: null,
   records: null,
-  created: null
+  created: null,
+  querySnapshot: null,
+  pivotOptions: null
 });
 
 export default Ember.Object.extend({
@@ -110,8 +113,8 @@ export default Ember.Object.extend({
     this.nestedPropertyAsPromise('aggregation', 'metrics');
   },
 
-  addResult(records, created = new Date(Date.now())) {
-    this.get('_results').pushObject(MockResult.create({ records, created }));
+  addResult(records, created = new Date(Date.now()), metadata = null, querySnapshot = null, pivotOptions = null) {
+    this.get('_results').pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
     this.topLevelPropertyAsPromise('results');
   },
 

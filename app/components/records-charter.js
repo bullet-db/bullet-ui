@@ -17,6 +17,9 @@ export default Ember.Component.extend({
   canModeSwitch: Ember.computed.not('cannotModeSwitch').readOnly(),
   notSimpleMode: Ember.computed.not('simpleMode').readOnly(),
   pivotMode: Ember.computed.or('notSimpleMode', 'cannotModeSwitch').readOnly(),
+  pivotOptions: Ember.computed('model.pivotOptions', function() {
+    return JSON.parse(this.get('model.pivotOptions'));
+  }).readOnly(),
 
   sampleRow: Ember.computed('rows', 'columns', function() {
     let typicalRow = { };
@@ -151,6 +154,12 @@ export default Ember.Component.extend({
   actions: {
     toggleMode() {
       this.toggleProperty('simpleMode');
+    },
+
+    saveOptions(options) {
+      let model = this.get('model');
+      model.set('pivotOptions', JSON.stringify(options));
+      model.save();
     }
   }
 });

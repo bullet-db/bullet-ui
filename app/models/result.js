@@ -25,6 +25,7 @@ export default DS.Model.extend({
   }),
   query: DS.belongsTo('query', { autoSave: true }),
   querySnapshot: DS.attr(),
+  pivotOptions: DS.attr('string'),
 
   isRaw: Ember.computed('querySnapshot', function() {
     return this.get('querySnapshot.type') === AGGREGATIONS.get('RAW');

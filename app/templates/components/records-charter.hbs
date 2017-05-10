@@ -11,7 +11,7 @@
  {{/if}}
  <div class="visual-container">
    {{#if pivotMode}}
-     {{pivot-table rows=rows columns=columns}}
+     {{pivot-table rows=rows columns=columns initialOptions=pivotOptions onRefresh=(action "saveOptions")}}
    {{else}}
      {{ember-chart type=chartType data=data options=options}}
    {{/if}}

@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -135,17 +136,54 @@ test('it enables charting mode if the results have more than one row', function(
   });
 });
 
-test('it enables pivot mode if the results are raw', function(assert) {
-  assert.expect(9);
+test('it allows you to switch to pivot mode', function(assert) {
+  assert.expect(12);
   this.set('tableMode', true);
-  this.set('mockModel', { isRaw: true, isSingleRow: false });
-  this.set('mockRecords', RESULTS.MULTIPLE.records);
+  this.set('mockModel', Ember.Object.create({
+    isSingleRow: false,
+    pivotOptions: null,
+    save() {
+      assert.ok(true);
+    }
+  }));
+  this.set('mockRecords', RESULTS.DISTRIBUTION.records);
   this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
   assert.equal(this.$('.chart-view').length, 1);
   assert.equal(this.$('.pretty-json-container').length, 0);
   assert.equal(this.$('.records-table').length, 1);
   assert.equal(this.$('.lt-column').length, 3);
   assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 9);
+  this.$('.chart-view').click();
+  return wait().then(() => {
+    assert.equal(this.$('.records-table').length, 0);
+    assert.equal(this.$('.pretty-json-container').length, 0);
+    assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+    assert.equal(this.$('.visual-container canvas').length, 1);
+    this.$('.mode-toggle .advanced-view').click();
+    return wait().then(() => {
+      assert.ok(this.$('.mode-toggle .advanced-view').hasClass('selected'));
+      assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
+    });
+  });
+});
+
+test('it enables only pivot mode if the results are raw', function(assert) {
+  assert.expect(10);
+  this.set('tableMode', true);
+  this.set('mockModel', Ember.Object.create({
+    isRaw: true,
+    pivotOptions: null,
+    save() {
+      assert.ok(true);
+    }
+  }));
+  this.set('mockRecords', RESULTS.GROUP.records);
+  this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
+  assert.equal(this.$('.chart-view').length, 1);
+  assert.equal(this.$('.pretty-json-container').length, 0);
+  assert.equal(this.$('.records-table').length, 1);
+  assert.equal(this.$('.lt-column').length, 4);
+  assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 12);
   this.$('.chart-view').click();
   return wait().then(() => {
     assert.equal(this.$('.records-table').length, 0);
