@@ -12,6 +12,8 @@ import { mockAPI, failAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query firing', {
+  suppressLogging: true,
+
   afterEach() {
     // Wipe out localstorage because we are creating here
     if (server) {

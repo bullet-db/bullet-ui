@@ -1,11 +1,14 @@
 .output-data-input {
-  $box-rectangle-color: #F6F6F6;
   $border-rectangle-color: #DCDEE2;
+  $subsection-color: #8C8C8C;
 
   @import "info-popover";
-  padding-top: 5px;
-  padding-left: 10px;
+  padding: 15px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   max-width: 800px;
+  background-color: $box-rectangle-color;
+  position: relative;
 
   .ember-radio-button {
     display: block;
@@ -14,6 +17,9 @@
     font-size: $font-size-regular-small;
     font-family: $font-family-regular;
     font-weight: $font-weight-regular;
+    &.checked {
+      font-weight: $font-weight-strong;
+    }
     input {
       margin-right: 10px;
     }
@@ -29,18 +35,15 @@
   .output-options {
     display: flex;
     justify-content: space-between;
-    .ember-radio-button {
-      font-size: $font-size-regular;
-    }
   }
 
   .output-container {
     @import "validated-input";
-    margin-left: $output-option-indentation;
-    margin-bottom: 20px;
 
     .help {
-      float: right;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
       font-size: $font-size-regular-small;
       font-family: $font-family-regular;
       font-weight: $font-weight-regular;
@@ -70,15 +73,17 @@
     }
 
 
-    .subsection-header {
-      margin-top: 5px;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      font-weight: $font-weight-medium;
-    }
-
     .narrow-row {
       margin-top: 5px;
     }
+  }
+
+  .subsection-header {
+    margin: 5px 0;
+    text-transform: uppercase;
+    font-size: $font-size-small;
+    font-weight: $font-weight-medium;
+    color: $subsection-color;
+    opacity: 0.9;
   }
 }

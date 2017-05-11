@@ -7,18 +7,11 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   querier: Ember.inject.service(),
+  queryManager: Ember.inject.service(),
 
   resultHandler(data, context) {
     context.set('pendingRequest', null);
-    context.store.findRecord('query', context.paramsFor('query').query_id).then((query) => {
-      let result = context.store.createRecord('result', {
-        metadata: data.meta,
-        records: data.records,
-        query: query
-      });
-      result.save();
-      query.set('lastRun', result.get('created'));
-      query.save();
+    context.get('queryManager').addResult(context.paramsFor('query').query_id, data).then(result => {
       context.transitionTo('result', result.get('id'));
     });
   },

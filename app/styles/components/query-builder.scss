@@ -6,9 +6,9 @@
  // Overrides to the QueryBuilder styling
 
 .builder {
-  $logical-button-active-color: #6E54A2;
-  $logical-button-inactive-hover-color: #E9E9E9;
-  $logical-button-inactive-color: #D3D3D3;
+  $logical-button-active-color: $special-button-active-color;
+  $logical-button-inactive-hover-color: $special-button-inactive-hover-color;
+  $logical-button-inactive-color: $special-button-inactive-color;
   $rule-background-color: $background-box-color;
   $rule-background-hover-color: $background-box-hover-color;
   $rule-background-error-color: $background-box-error-color;
@@ -197,7 +197,6 @@
       select {
         appearance: none;
         -ms-appearance: none;
-        -o-appearance: none;
         -moz-appearance: none;
         -webkit-appearance: none;
         &::-ms-expand {

@@ -41,26 +41,26 @@ export default Ember.Component.extend({
   }),
 
   // Helper equalities for template
-  isRawAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('RAW')),
-  isGroupAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('GROUP')),
-  isCountDistinctAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')),
-  isDistributionAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')),
-  isTopKAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('TOP_K')),
+  isRawAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('RAW')).readOnly(),
+  isGroupAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('GROUP')).readOnly(),
+  isCountDistinctAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')).readOnly(),
+  isDistributionAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')).readOnly(),
+  isTopKAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('TOP_K')).readOnly(),
 
-  isSelectType: Ember.computed.equal('rawType', RAWS.get('SELECT')),
-  showRawSelections: Ember.computed.and('isRawAggregation', 'isSelectType'),
+  isSelectType: Ember.computed.equal('rawType', RAWS.get('SELECT')).readOnly(),
+  showRawSelections: Ember.computed.and('isRawAggregation', 'isSelectType').readOnly(),
 
-  isNumberOfPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')),
-  isPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('POINTS')),
-  isGeneratedPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')),
+  isNumberOfPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')).readOnly(),
+  isPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('POINTS')).readOnly(),
+  isGeneratedPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')).readOnly(),
 
   canDeleteProjections: Ember.computed('query.projections.[]', function() {
     return this.get('query.projections.length') > 1;
-  }),
+  }).readOnly(),
 
   canDeleteField: Ember.computed('query.aggregation.groups.[]', function() {
     return this.get('query.aggregation.groups.length') > 1;
-  }),
+  }).readOnly(),
 
   findOrDefault(valuePath, defaultValue) {
     let value = this.get(valuePath);

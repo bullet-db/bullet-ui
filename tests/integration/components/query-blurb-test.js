@@ -37,7 +37,7 @@ test('it fully summarizes a query', function(assert) {
   query.addProjection('foo', 'f');
   query.addProjection('bar', 'b');
   this.set('mockedQuery', query);
-  this.render(hbs`{{query-blurb query=mockedQuery}}`);
+  this.render(hbs`{{query-blurb summary=mockedQuery}}`);
   let actualText = this.$().text();
   let spaceLess = actualText.replace(/\s/g, '');
   assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb0.1,0.2');

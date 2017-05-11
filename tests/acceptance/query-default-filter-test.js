@@ -14,6 +14,8 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query default filter', {
+  suppressLogging: true,
+
   beforeEach() {
     // Inject into defaultValues in routes, our mock filter values
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });

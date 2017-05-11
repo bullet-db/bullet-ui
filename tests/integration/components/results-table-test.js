@@ -24,7 +24,7 @@ test('it displays a row with two cells in two columns', function(assert) {
   assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(1).text().trim(), '3');
 });
 
-test('it sorts a column on click', function(assert) {
+test('it sorts by the number of records column on click', function(assert) {
   assert.expect(2);
   this.set('mockResults', Ember.A([
                             Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) }),
@@ -38,4 +38,35 @@ test('it sorts a column on click', function(assert) {
     let spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, '01Feb12:00AM031Dec12:00AM3');
   });
+});
+
+test('it sorts by the date column on click', function(assert) {
+  assert.expect(2);
+  this.set('mockResults', Ember.A([
+                            Ember.Object.create({ created: new Date(2015, 1, 1), records: Ember.A() }),
+                            Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) })
+                           ]));
+  this.render(hbs`{{results-table results=mockResults}}`);
+  assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
+  this.$('.lt-head .lt-column.is-sortable').eq(0).click();
+  return wait().then(() => {
+    let text = this.$('.lt-body .lt-row .lt-cell').text();
+    let spaceLess = text.replace(/\s/g, '');
+    assert.equal(spaceLess, '31Dec12:00AM301Feb12:00AM0');
+  });
+});
+
+test('it sends the resultClick action on click', function(assert) {
+  assert.expect(2);
+  this.set('mockResultClick', (result) => {
+    assert.equal(result.get('records.length'), 3);
+  });
+  this.set('mockResults', Ember.A([
+                            Ember.Object.create({ created: new Date(2015, 1, 1), records: Ember.A() }),
+                            Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) })
+                           ]));
+  this.render(hbs`{{results-table results=mockResults resultClick=(action mockResultClick)}}`);
+  assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
+  this.$('.lt-body .lt-row .lt-cell .result-date-entry').eq(1).click();
+  return wait();
 });

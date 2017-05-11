@@ -9,8 +9,8 @@
   background-color: $background-box-color;
   padding: $spacing-vertical 0 $spacing-vertical 0;
   margin: 4px 0;
-  border: 1px solid $white;
   border-radius: 5px;
+  outline: none;
 
   &:hover {
     background-color: $background-box-hover-color;

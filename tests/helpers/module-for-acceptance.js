@@ -11,9 +11,17 @@ import destroyApp from '../helpers/destroy-app';
 const { RSVP: { Promise } } = Ember;
 
 export default function(name, options = {}) {
+  let logger;
+  const NOOP = () => { };
+  const LOGGER = { log: NOOP, warn: NOOP, error: NOOP, assert: NOOP, debug: NOOP, info: NOOP };
+
   module(name, {
     beforeEach() {
       this.application = startApp();
+
+      if (options.suppressLogging) {
+        [logger, Ember.Logger] = [Ember.Logger, LOGGER];
+      }
 
       if (options.beforeEach) {
         return options.beforeEach.apply(this, arguments);
@@ -21,6 +29,9 @@ export default function(name, options = {}) {
     },
 
     afterEach() {
+      if (options.suppressLogging) {
+        Ember.Logger = logger;
+      }
       let afterEach = options.afterEach && options.afterEach.apply(this, arguments);
       return Promise.resolve(afterEach).then(() => destroyApp(this.application));
     }

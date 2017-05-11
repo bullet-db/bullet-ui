@@ -6,7 +6,9 @@
 import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 
-moduleForAcceptance('Acceptance | result error');
+moduleForAcceptance('Acceptance | result error', {
+  suppressLogging: true
+});
 
 test('visiting a non-existant result', function(assert) {
   visit('/result/foo');
@@ -15,4 +17,3 @@ test('visiting a non-existant result', function(assert) {
     assert.equal(currentURL(), '/not-found');
   });
 });
-

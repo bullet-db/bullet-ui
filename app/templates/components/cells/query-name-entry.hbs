@@ -7,7 +7,7 @@
   {{#if row.name}}
    <p class="query-real-name"><strong>{{row.name}}</strong></p>
   {{else}}
-    {{query-blurb query=row}}
+    {{query-blurb summary=row}}
   {{/if}}
 </div>
 <div class="query-name-actions {{if hasHover 'is-visible'}}">

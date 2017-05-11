@@ -130,6 +130,49 @@ const RESULTS = {
       }
     ]
   },
+  GROUP_MULTIPLE_METRICS: {
+    meta: {
+      wasEstimated: false,
+      standardDeviations: {
+        1: {
+          upperBound: 3,
+          lowerBound: 3
+        },
+        2: {
+          upperBound: 3,
+          lowerBound: 3
+        },
+        3: {
+          upperBound: 3,
+          lowerBound: 3
+        }
+      },
+      uniquesEstimate: 3
+    },
+    records: [
+      {
+        avg_bar: 42.3424,
+        sum_foo: 12,
+        COUNT: 1342,
+        foo: 'value1',
+        bar: 'value2'
+      },
+      {
+        avg_bar: 22.02,
+        sum_foo: 92,
+        COUNT: 302,
+        foo: 'value1',
+        bar: null
+      },
+      {
+        avg_bar: 92.3424,
+        sum_foo: 123192,
+        COUNT: 234342,
+        foo: null,
+        bar: 'value2'
+      }
+    ]
+  },
   DISTRIBUTION: {
     meta: {
       wasEstimated: false,

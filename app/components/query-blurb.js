@@ -7,5 +7,5 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   classNames: ['query-blurb'],
-  query: null
+  summary: null
 });

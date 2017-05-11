@@ -8,9 +8,16 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   fileSaver: Ember.inject.service(),
   classNames: ['records-viewer'],
+  showRawData: false,
   showTable: false,
+  showChart: false,
+  // Copy of the model
+  model: null,
+  metadata: null,
   records: null,
   fileName: 'results',
+
+  enableCharting: Ember.computed.not('model.isSingleRow').readOnly(),
 
   columns: Ember.computed('records', function() {
     return Ember.A(this.extractUniqueColumns(this.get('records')));
@@ -98,13 +105,24 @@ export default Ember.Component.extend({
     return flattened;
   },
 
+  flipTo(field) {
+    this.set('showRawData', false);
+    this.set('showTable', false);
+    this.set('showChart', false);
+    this.set(field, true);
+  },
+
   actions: {
-    showRawData() {
-      this.set('showTable', false);
+    rawDataMode() {
+      this.flipTo('showRawData');
     },
 
-    showTable() {
-      this.set('showTable', true);
+    tableMode() {
+      this.flipTo('showTable');
+    },
+
+    chartMode() {
+      this.flipTo('showChart');
     },
 
     downloadAsJSON() {

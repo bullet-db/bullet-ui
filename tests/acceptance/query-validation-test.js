@@ -12,6 +12,8 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | query validation', {
+  suppressLogging: true,
+
   beforeEach() {
     // Wipe out localstorage because we are creating here
     window.localStorage.clear();

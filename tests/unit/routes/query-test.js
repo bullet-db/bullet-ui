@@ -6,7 +6,7 @@
 import { moduleFor, test } from 'ember-qunit';
 
 moduleFor('route:query', 'Unit | Route | query', {
-  needs: ['service:querier']
+  needs: ['service:querier', 'service:queryManager']
 });
 
 test('it aborts a pending request if one exists', function(assert) {

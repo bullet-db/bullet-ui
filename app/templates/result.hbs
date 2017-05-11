@@ -13,7 +13,7 @@
     <div class="information-wrapper query-blurb-wrapper" {{action "queryClick" model.query}}>
       <div class="information-text query-text">
         <h4>Query Definition</h4>
-        {{query-blurb query=model.query}}
+        {{query-blurb query=model.query summary=model.querySnapshot}}
       </div>
       <button class="btn btn-info btn-primary query-link-button" {{action "queryClick" model.query}}>
         Edit
@@ -36,14 +36,14 @@
   </div>
 
   <div class="result-container">
-      {{#if model.records}}
-        {{#if model.query.isRawWithoutFields}}
-          {{records-viewer records=model.records showTable=false}}
-        {{else}}
-          {{records-viewer records=model.records showTable=true}}
-        {{/if}}
+    {{#if model.records}}
+      {{#if model.isReallyRaw}}
+        {{records-viewer model=model records=model.records metadata=model.metadata showRawData=true}}
       {{else}}
-        {{partial "partials/no-results-help"}}
+        {{records-viewer model=model records=model.records metadata=model.metadata showTable=true}}
+      {{/if}}
+    {{else}}
+      {{partial "partials/no-results-help"}}
     {{/if}}
   </div>
 </div>

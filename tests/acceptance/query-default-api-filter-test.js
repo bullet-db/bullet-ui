@@ -16,6 +16,8 @@ let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
 
 moduleForAcceptance('Acceptance | query default api filter', {
+  suppressLogging: true,
+
   beforeEach() {
     // Inject into defaultValues in routes, our mock filter values
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: url }), { instantiate: false });

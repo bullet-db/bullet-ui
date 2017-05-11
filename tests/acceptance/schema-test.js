@@ -12,6 +12,8 @@ import { mockAPI } from '../helpers/pretender';
 let server;
 
 moduleForAcceptance('Acceptance | schema', {
+  suppressLogging: true,
+
   beforeEach() {
     server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
   },

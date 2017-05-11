@@ -23,9 +23,6 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   // Query Builder
-  // app.import('bower_components/jquery/dist/jquery.js');
-  // app.import('bower_components/bootstrap/dist/js/bootstrap.js');
-  // app.import('bower_components/doT/doU.js');
   app.import('bower_components/jquery-extendext/jQuery.extendext.js');
   app.import('bower_components/doT/doT.js');
   app.import('bower_components/interact/interact.js');
@@ -36,7 +33,27 @@ module.exports = function(defaults) {
   app.import('bower_components/jQuery-QueryBuilder-Subfield/query-builder-subfield.css');
   app.import('bower_components/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
 
+  // FileSaver
   app.import('bower_components/filesaver/FileSaver.js');
+
+  // pivottable
+  app.import('bower_components/c3/c3.js');
+  app.import('bower_components/c3/c3.css');
+  app.import('bower_components/d3/d3.js');
+  // Manually importing jquery-ui dependencies to keep clashes with bootstrap a minimum
+  // Just need the sortable plugin and all of its dependency chain
+  app.import('bower_components/jquery-ui/ui/version.js');
+  app.import('bower_components/jquery-ui/ui/widget.js');
+  app.import('bower_components/jquery-ui/ui/data.js');
+  app.import('bower_components/jquery-ui/ui/ie.js');
+  app.import('bower_components/jquery-ui/ui/plugin.js');
+  app.import('bower_components/jquery-ui/ui/scroll-parent.js');
+  app.import('bower_components/jquery-ui/ui/widgets/mouse.js');
+  app.import('bower_components/jquery-ui/ui/widgets/sortable.js');
+  // Core pivottable
+  app.import('bower_components/pivottable/dist/pivot.js');
+  app.import('bower_components/pivottable/dist/pivot.css');
+  app.import('bower_components/pivottable/dist/c3_renderers.js');
 
   return app.toTree();
 };
