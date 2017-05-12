@@ -4,12 +4,143 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .pivot-table-container {
+  $border-color: #EEE;
+  $attributes-unused-color: #F5F5F5;
+  $attributes-dragging-color: #B7B7B7;
+  $attributes-unused-text-color: #999999;
+  $attributes-row-color: #FF7A7D;
+  $attributes-column-color: #6ECABF;
+  $select-text-color: #868686;
+  $main-select-height: 30px;
+  $sub-select-height: 25px;
+
   width: 100%;
   overflow: auto;
-  font-size: $font-size-regular-small;
+  font-size: $font-size-small;
   font-family: $font-family-regular;
+  font-weight: $font-weight-regular;
 
   .pvtUi {
-    margin: auto;
+    // Top level table
+    & > tr, & > tr > td {
+      border: thin solid $border-color;
+    }
+
+    // Style all selects
+    select {
+      appearance: none;
+      -ms-appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+      &::-ms-expand {
+        display: none;
+      }
+      &:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 $black;
+      }
+      border: none;
+      border-radius: 4px;
+      padding: 4px;
+      font-size: $font-size-regular-small;
+      font-weight: $font-weight-regular-medium;
+      color: $select-text-color;
+      background-color: rgba($secondary-button-color, 0.1);
+      background-image: linear-gradient(45deg, transparent 50%, $grey 50%), linear-gradient(135deg, $grey 50%, transparent 50%);
+      background-position: calc(100% - 10px) 14px, calc(100% - 5px) 14px;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    .pvtAxisContainer, .pvtVals {
+      background: $white;
+    }
+
+    .pvtRenderer {
+      height: $main-select-height;
+    }
+
+    .pvtVals {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      width: 260px;
+
+      .pvtAggregator {
+        height: $main-select-height;
+        min-width: 200px;
+      }
+      .pvtAttrDropdown {
+        height: $main-select-height;
+        min-width: 110px;
+      }
+      .pvtAttrDropdown  ~ .pvtAttrDropdown {
+        margin-left: 10px;
+      }
+      .pvtRowOrder, .pvtColOrder {
+        align-self: flex-end;
+        margin-bottom: 10px;
+        font-size: $font-size-regular;
+      }
+    }
+    // Style the pvtRenderer container
+    & > tr:first-of-type > td:first-of-type {
+      border-right: none;
+      padding: 25px 10px 5px 10px;
+    }
+    // Style the pvtAggregator container
+    .pvtVals {
+      border-left: none;
+      border-bottom: none;
+      border-right: none;
+      padding: 5px 10px;
+    }
+
+    // The draggable attributes
+    .ui-sortable-handle .pvtAttr {
+      padding: 5px 10px;
+      border: none;
+      color: $white;
+      .pvtTriangle {
+        margin-left: 5px;
+        color: $white;
+      }
+    }
+    .pvtUnused .pvtAttr {
+      background: $attributes-unused-color;
+      color: $attributes-unused-text-color;
+      .pvtTriangle {
+        color: $grey;
+      }
+    }
+    .pvtRows .pvtAttr {
+      background: $attributes-row-color;
+    }
+    .pvtCols .pvtAttr {
+      background: $attributes-column-color;
+    }
+    .ui-sortable-helper .pvtAttr {
+      background: $attributes-dragging-color;
+      color: $white;
+      .pvtTriangle {
+        color: $white;
+      }
+    }
+
+    .pvtFilterBox {
+      button {
+        @extend %primary-button;
+        border-width: 1px;
+        border-style: solid;
+        margin-right: 10px;
+        margin-top: 10px;
+        background-color: $primary-button-color;
+        color: $white;
+        &:hover {
+          background-color: $primary-button-hover-color;
+        }
+      }
+    }
+
   }
 }

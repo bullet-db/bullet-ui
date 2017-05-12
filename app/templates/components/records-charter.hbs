@@ -5,8 +5,8 @@
  --}}
  {{#if canModeSwitch}}
    <div class="mode-toggle">
-     <button type="button" class="btn mode simple-view {{if simpleMode "selected"}}" {{action "toggleMode"}}>Chart</button>
-     <button type="button" class="btn mode advanced-view {{unless simpleMode "selected"}}" {{action "toggleMode"}}>Pivot</button>
+     <button type="button" class="btn mode simple-view {{if simpleMode "selected"}}" {{action "toggleMode"}} disabled={{simpleMode}}>Chart</button>
+     <button type="button" class="btn mode advanced-view {{if notSimpleMode "selected"}}" {{action "toggleMode"}} disabled={{notSimpleMode}}>Pivot</button>
    </div>
  {{/if}}
  <div class="visual-container">

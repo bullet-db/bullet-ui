@@ -191,7 +191,7 @@
         height: 0;
         border-style: solid;
         border-width: 7px 4px 0 4px;
-        border-color:  #999 transparent transparent transparent;
+        border-color:  $grey transparent transparent transparent;
       }
       // Remove the default select styling and ensure spacing
       select {
@@ -204,7 +204,7 @@
         }
         &:-moz-focusring {
           color: transparent;
-          text-shadow: 0 0 0 #000;
+          text-shadow: 0 0 0 $black;
         }
         min-width: 130px;
         padding: 0 6px 2px 6px;
