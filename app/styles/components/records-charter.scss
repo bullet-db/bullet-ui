@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .records-charter {
-  $mode-active-color: $special-button-active-color;
+  $mode-active-color: $primary-button-color;
   $mode-inactive-hover-color: $special-button-inactive-hover-color;
   $mode-inactive-color: $special-button-inactive-color;
 
@@ -12,19 +12,19 @@
 
   .mode-toggle {
     display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    justify-content: flex-end;
+    margin: 10px 0;
 
     .mode {
-      width: 70px;
-      padding: 0;
+      width: 50px;
+      padding: 0 0 2px 0;
       background-color: $mode-inactive-color;
       color: $white;
-      height: 28px;
+      height: 18px;
       font-weight: $font-weight-regular;
       font-family: $font-family-regular;
-      font-size: $font-size-regular-small;
+      font-size: $font-size-small;
+      opacity: 1;
       &.selected {
         background-color: $mode-active-color;
       }
