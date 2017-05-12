@@ -4,28 +4,28 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .pivot-table-container {
-  $border-color: #EEE;
-  $attributes-unused-color: #F5F5F5;
+  $border-color: #BDBDBD;
+  $attributes-unused-color: #EEEEEE;
   $attributes-dragging-color: #B7B7B7;
-  $attributes-unused-text-color: #999999;
-  $attributes-row-color: #FF7A7D;
+  $attributes-unused-text-color: $black;
+  $attributes-row-color: #FFB761;
   $attributes-column-color: #6ECABF;
   $select-text-color: #868686;
-  $main-select-height: 30px;
-  $sub-select-height: 25px;
+  $main-select-height: 25;
+  $sub-select-height: 20px;
+  $table-header-color: #E7E7E7;
 
   width: 100%;
   overflow: auto;
-  font-size: $font-size-small;
+  font-size: $font-size-regular-small;
   font-family: $font-family-regular;
   font-weight: $font-weight-regular;
 
   .pvtUi {
     // Top level table
     & > tr, & > tr > td {
-      border: thin solid $border-color;
+      border: 2px solid $border-color;
     }
-
     // Style all selects
     select {
       appearance: none;
@@ -39,7 +39,7 @@
         color: transparent;
         text-shadow: 0 0 0 $black;
       }
-      border: none;
+      border: thin solid $primary-button-color;
       border-radius: 4px;
       padding: 4px;
       font-size: $font-size-regular-small;
@@ -64,7 +64,7 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      width: 260px;
+      width: 280px;
 
       .pvtAggregator {
         height: $main-select-height;
@@ -86,20 +86,17 @@
     // Style the pvtRenderer container
     & > tr:first-of-type > td:first-of-type {
       border-right: none;
-      padding: 25px 10px 5px 10px;
+      padding: 38px 10px 5px 10px;
     }
     // Style the pvtAggregator container
     .pvtVals {
-      border-left: none;
-      border-bottom: none;
-      border-right: none;
+      border: none;
       padding: 5px 10px;
     }
 
     // The draggable attributes
     .ui-sortable-handle .pvtAttr {
       padding: 5px 10px;
-      border: none;
       color: $white;
       .pvtTriangle {
         margin-left: 5px;
@@ -109,15 +106,18 @@
     .pvtUnused .pvtAttr {
       background: $attributes-unused-color;
       color: $attributes-unused-text-color;
+      border: 1px solid $inactive-grey;
       .pvtTriangle {
         color: $grey;
       }
     }
     .pvtRows .pvtAttr {
       background: $attributes-row-color;
+      border: none;
     }
     .pvtCols .pvtAttr {
       background: $attributes-column-color;
+      border: none;
     }
     .ui-sortable-helper .pvtAttr {
       background: $attributes-dragging-color;
@@ -132,14 +132,38 @@
         @extend %primary-button;
         border-width: 1px;
         border-style: solid;
+        border-color: $primary-button-color;
         margin-right: 10px;
         margin-top: 10px;
         background-color: $primary-button-color;
         color: $white;
         &:hover {
+          border-color: $primary-button-color;
           background-color: $primary-button-hover-color;
         }
       }
+      p:last-of-type button:last-of-type {
+        background-color: $delete-button-color;
+        border-color: $delete-button-color;
+        &:hover {
+          border-color: $delete-button-hover-color;
+          background-color: $delete-button-hover-color;
+        }
+      }
+    }
+
+    .pvtRendererArea {
+      padding: 15px;
+      .pvtTable {
+        th {
+          background-color: $white;
+        }
+        .pvtRowLabel, .pvtAxisLabel, .pvtColLabel, .pvtTotalLabel {
+          font-weight: $font-weight-medium;
+          background-color: $table-header-color;
+        }
+      }
+
     }
 
   }
