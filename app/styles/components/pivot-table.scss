@@ -11,8 +11,6 @@
   $attributes-row-color: #FFB761;
   $attributes-column-color: #6ECABF;
   $select-text-color: #868686;
-  $main-select-height: 25;
-  $sub-select-height: 20px;
   $table-header-color: #E7E7E7;
 
   width: 100%;
@@ -45,9 +43,10 @@
       font-size: $font-size-regular-small;
       font-weight: $font-weight-regular-medium;
       color: $select-text-color;
+      height: 30px;
       background-color: rgba($secondary-button-color, 0.1);
       background-image: linear-gradient(45deg, transparent 50%, $grey 50%), linear-gradient(135deg, $grey 50%, transparent 50%);
-      background-position: calc(100% - 10px) 14px, calc(100% - 5px) 14px;
+      background-position: calc(100% - 10px) 12px, calc(100% - 5px) 12px;
       background-size: 5px 5px, 5px 5px;
       background-repeat: no-repeat;
     }
@@ -57,22 +56,19 @@
     }
 
     .pvtRenderer {
-      height: $main-select-height;
     }
 
     .pvtVals {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      width: 280px;
+      width: 320px;
 
       .pvtAggregator {
-        height: $main-select-height;
         min-width: 200px;
       }
       .pvtAttrDropdown {
-        height: $main-select-height;
-        min-width: 110px;
+        min-width: 130px;
       }
       .pvtAttrDropdown  ~ .pvtAttrDropdown {
         margin-left: 10px;
