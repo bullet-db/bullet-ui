@@ -9,7 +9,8 @@ export default Ember.Component.extend({
     menuLimit: 200,
     renderers: Ember.$.extend(
       Ember.$.pivotUtilities.renderers,
-      Ember.$.pivotUtilities.c3_renderers
+      Ember.$.pivotUtilities.c3_renderers,
+      Ember.$.pivotUtilities.export_renderers
     )
   },
 

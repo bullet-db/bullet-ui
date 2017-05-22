@@ -54,6 +54,7 @@ module.exports = function(defaults) {
   app.import('bower_components/pivottable/dist/pivot.js');
   app.import('bower_components/pivottable/dist/pivot.css');
   app.import('bower_components/pivottable/dist/c3_renderers.js');
+  app.import('bower_components/pivottable/dist/export_renderers.js');
 
   return app.toTree();
 };
