@@ -10,6 +10,12 @@
 
   margin: auto;
 
+  // Make unselectable
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
   .mode-toggle {
     display: flex;
     justify-content: flex-end;
