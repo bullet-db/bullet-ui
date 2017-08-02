@@ -3,9 +3,18 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
+
+{{#if (await isUnsaved)}}
+  <div class="query-unsaved">
+    <i class="unsaved-icon glyphicon glyphicon-exclamation-sign">
+      {{#tooltip-on-element}}Your query needs to be saved{{/tooltip-on-element}}
+    </i>
+  </div>
+{{/if}}
+
 <div class="query-description">
   {{#if row.name}}
-   <p class="query-real-name"><strong>{{row.name}}</strong></p>
+    <p class="query-real-name"><strong>{{row.name}}</strong></p>
   {{else}}
     {{query-blurb summary=row}}
   {{/if}}

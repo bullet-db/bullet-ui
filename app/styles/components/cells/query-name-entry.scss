@@ -10,9 +10,28 @@
   display: flex;
   align-items: center;
 
+  .glyphicon {
+    color: $inactive-grey;
+    font-size: $font-size-regular;
+    &:hover {
+      color: $black;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .query-unsaved {
+    flex: 1 1 auto;
+    max-width: 20px;
+    .unsaved-icon {
+      vertical-align: -1px;
+    }
+  }
+
   .query-description {
     flex: 2 1 auto;
-    max-width: 75%;
+    max-width: 70%;
     margin-right: 20px;
     .query-real-name {
       white-space: nowrap;
@@ -34,6 +53,13 @@
   }
 
   .query-name-actions.is-visible {
+
+    .query-name-action-icon {
+      &:not(:last-of-type) {
+        margin-right: 10px;
+      }
+    }
+
     display: inline-block;
     // Prevent selection from showing up when clicking
     -webkit-user-select: none;
@@ -44,20 +70,5 @@
     margin-left: auto;
     margin-right: 20px;
     max-width: 20%;
-
-    .query-name-action-icon {
-      color: $inactive-grey;
-      font-size: $font-size-regular;
-      &:hover {
-        cursor: pointer;
-        color: $black;
-      }
-      &:focus {
-        outline: none;
-      }
-      &:not(:last-of-type) {
-        margin-right: 10px;
-      }
-    }
   }
 }

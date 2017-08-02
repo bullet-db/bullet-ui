@@ -10,7 +10,11 @@ export default Ember.Route.extend({
 
   model() {
     return Ember.RSVP.hash({
-      queries: this.store.findAll('query')
+      queries: this.store.findAll('query'),
+      groups: this.store.findAll('group'),
+      aggregations: this.store.findAll('aggregation'),
+      projections: this.store.findAll('projection'),
+      metrics: this.store.findAll('metric')
     });
   },
 

@@ -6,7 +6,7 @@
 .simple-alert {
   $error-alert-background-color: $error-red;
   $success-alert-background-color: $success-green;
-  $warning-alert-background-color: #FFD600;
+  $warning-alert-background-color: $warning-yellow;
   $alert-close-background-color: $white;
 
   font-size: $font-size-regular-large;

@@ -10,6 +10,14 @@ export default Ember.Component.extend({
   tagName: 'div',
   hasHover: false,
 
+  isUnsaved: Ember.computed('row', function() {
+    let query = this.get('row.content');
+    if (query.get('hasDirtyAttributes') || query.get('hasUnsavedFields')) {
+      return Ember.RSVP.resolve(true);
+    }
+    return query.validate().then(hash => !hash.validations.get('isValid'));
+  }),
+
   click() {
     this.get('tableActions.queryClick')(this.get('row'));
   },
