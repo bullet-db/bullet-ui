@@ -62,7 +62,6 @@
         }
       }
 
-
       .download-wrapper {
         .download  {
           padding-right: 6px;
@@ -116,10 +115,6 @@
         }
       }
 
-      .table-view > i {
-        padding-left: 2px;
-      }
-
       .raw-view {
         display: flex;
         justify-content: center;
@@ -139,7 +134,7 @@
     }
   }
   .records-display {
-    @import "pretty-json";
+    @import "records-raw-viewer";
     @import "records-table";
     @import "records-charter";
   }

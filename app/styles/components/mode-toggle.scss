@@ -1,0 +1,42 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.mode-toggle {
+  $mode-active-color: $primary-button-color;
+  $mode-inactive-hover-color: $special-button-inactive-hover-color;
+  $mode-inactive-color: $special-button-inactive-color;
+
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
+
+  .mode {
+    width: 60px;
+    padding: 0 0 2px 0;
+    background-color: $mode-inactive-color;
+    color: $white;
+    height: 18px;
+    font-weight: $font-weight-regular;
+    font-family: $font-family-regular;
+    font-size: $font-size-small;
+    opacity: 1;
+    &.selected {
+      background-color: $mode-active-color;
+    }
+    &:hover:not(.selected) {
+      background-color: $mode-inactive-hover-color
+    }
+    &:focus {
+      outline: 0;
+    }
+    // Two buttons, first is curved to left, second to the right
+    &.left-view {
+      border-radius: $button-radius-large 0 0 $button-radius-large;
+    }
+    &.right-view {
+      border-radius: 0 $button-radius-large $button-radius-large 0;
+    }
+  }
+}

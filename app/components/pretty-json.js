@@ -4,16 +4,18 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
+import JSONFormatterModule from 'npm:json-formatter-js';
 
 export default Ember.Component.extend({
   classNames: ['pretty-json-container'],
+  tagName: 'pre',
   data: null,
-  spacing: 4,
-  formattedData:  Ember.computed('data', function() {
-    let data = this.get('data');
-    if (Ember.isEmpty(data)) {
-      return '';
-    }
-    return JSON.stringify(data, null, parseFloat(this.get('spacing')));
-  }).readOnly()
+  defaultLevels: 2,
+
+  didInsertElement() {
+    this._super(...arguments);
+    const JSONFormatter = JSONFormatterModule.default;
+    let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels') , { hoverPreviewEnabled: true });
+    this.$().append(formatter.render());
+  }
 });

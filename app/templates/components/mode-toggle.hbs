@@ -1,0 +1,10 @@
+{{!--
+  Copyright 2017, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+
+<div class="mode-toggle">
+ <button type="button" class="btn mode left-view {{if isToggled "selected"}}" {{action "toggle"}} disabled={{isToggled}}>{{toggledText}}</button>
+ <button type="button" class="btn mode right-view {{if notToggled "selected"}}" {{action "toggle"}} disabled={{notToggled}}>{{notToggledText}}</button>
+</div>

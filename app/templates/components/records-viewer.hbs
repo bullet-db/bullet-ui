@@ -53,7 +53,7 @@
 
 <div class="records-display">
   {{#if showRawData}}
-    {{pretty-json data=records}}
+    {{records-raw-viewer data=records}}
   {{else if showTable}}
     {{records-table columnNames=columns rawRows=records}}
   {{else if showChart}}
