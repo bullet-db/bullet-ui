@@ -5,6 +5,7 @@
  */
 import Ember from 'ember';
 import JSONFormatterModule from 'npm:json-formatter-js';
+const JSONFormatter = JSONFormatterModule.default;
 
 export default Ember.Component.extend({
   classNames: ['pretty-json-container'],
@@ -14,7 +15,6 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    const JSONFormatter = JSONFormatterModule.default;
     let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels') , { hoverPreviewEnabled: true });
     this.$().append(formatter.render());
   }

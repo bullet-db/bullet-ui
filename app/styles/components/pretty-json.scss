@@ -36,6 +36,7 @@
     .json-formatter-value > span  span {
       color: $inactive-grey;
       font-size: $font-size-regular-small;
+      user-select: none;
     }
 
     .json-formatter-preview-text {

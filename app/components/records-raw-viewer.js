@@ -10,6 +10,13 @@ export default Ember.Component.extend({
   isToggled: true,
   spacing: 4,
   data: null,
+  maxlevels: 3,
+
+  numberOflevels: Ember.computed('data', 'maxLevels', function() {
+    let rows = this.get('data.length');
+    let max = this.get('maxlevels');
+    return Math.max(1, (max - (rows / 20)));
+  }),
 
   formattedData:  Ember.computed('data', function() {
     let data = this.get('data');
