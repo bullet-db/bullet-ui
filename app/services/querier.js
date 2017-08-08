@@ -26,8 +26,37 @@ export default CORSRequest.extend(Filterizer, {
     return this.get('settings.drpcPath');
   }),
 
+  /**
+   * Recreates a Ember Data like representation from an API query specification.
+   * @param  {Object} json The API Bullet query.
+   * @return {Object}      A vanilla Object that looks like the Ember Data representation.
+   */
+  recreate(json) {
+    let query = { };
+    let clause = this.recreateFilter(json.filters);
+    let projection = this.recreateProjections(json.projection);
+    let aggregation = this.recreateAggregation(json.aggregation);
+
+    let filter = { };
+    this.assignIfTruthy(filter, 'clause', clause);
+    // One additional non-API key placed into the object for summarizing. Copy the summary as is
+    this.assignIfTruthy(filter, 'summary', json.filterSummary);
+
+    this.assignIfTruthy(query, 'filter', filter);
+    this.assignIfTruthy(query, 'projections', projection);
+    this.assignIfTruthy(query, 'aggregation', aggregation);
+    query.duration = Number(query.duration / 1000);
+
+    return query;
+  },
+
+  /**
+   * Converts an internal Ember Bullet query to the API query specification.
+   * @param  {Object} query An Ember Data object representing the query.
+   * @return {Object}       The API Bullet query.
+   */
   reformat(query) {
-    let json = {};
+    let json = { };
     let filter = this.reformatFilter(query.get('filter'));
     let projection = this.reformatProjections(query.get('projections'));
     let aggregation = this.reformatAggregation(query.get('aggregation'));
@@ -41,6 +70,14 @@ export default CORSRequest.extend(Filterizer, {
     this.assignIfTruthy(json, 'aggregation', aggregation);
     json.duration = Number(query.get('duration')) * 1000;
     return json;
+  },
+
+  recreateFilter(json) {
+    if (Ember.isNone(json)) {
+      return false;
+    }
+    let rule = json[0];
+    return this.convertClauseToRule(rule);
   },
 
   reformatFilter(filter) {
@@ -65,15 +102,37 @@ export default CORSRequest.extend(Filterizer, {
     return converted;
   },
 
+  recreateProjections(json) {
+    return this.makeFields(json);
+  },
+
   reformatProjections(projections) {
     return this.getFields(projections);
+  },
+
+  recreateAggregation(json) {
+    if (Ember.isEmpty(json)) {
+      return false;
+    }
+    let aggregation = { };
+    let groups = this.makeFields(json.fields);
+    let metrics = this.makeMetrics(json.attributes);
+    let attributes = this.makeAttributes(json.attributes);
+
+    aggregation.type = AGGREGATIONS.get(json.type);
+    this.assignIfTruthy(aggregation, 'groups', groups);
+    this.assignIfTruthy(aggregation, 'metrics', metrics);
+    this.assignIfTruthy(aggregation, 'attributes', attributes);
+    aggregation.size = Number(json.size);
+
+    return json;
   },
 
   reformatAggregation(aggregation) {
     if (Ember.isEmpty(aggregation)) {
       return false;
     }
-    let json = {};
+    let json = { };
     let fields = this.getFields(aggregation.get('groups'));
     let attributes = this.getAttributes(aggregation);
 
@@ -85,19 +144,57 @@ export default CORSRequest.extend(Filterizer, {
     return json;
   },
 
+  makeFields(json, fieldName = 'field', valueName = 'name') {
+    if (Ember.isEmpty(json)) {
+      return false;
+    }
+    let fields = [];
+    for (let key in json) {
+      let field = { };
+      field[fieldName] = key;
+      field[valueName] = json[key];
+      fields.push(field);
+    }
+    return fields;
+  },
+
   getFields(enumerable, sourceName = 'field', targetName = 'name') {
     if (Ember.isEmpty(enumerable)) {
       return false;
     }
-    let json = {};
+    let json = { };
     enumerable.forEach(item => {
       json[item.get(sourceName)] = item.get(targetName);
     });
     return json;
   },
 
+  makeAttributes(json) {
+    if (Ember.isEmpty(json)) {
+      return false;
+    }
+
+    let attributes = { };
+
+    // COUNT_DISTINCT, TOP_K
+    this.assignIfTruthy(attributes, 'newName', json.newName);
+
+    // DISTRIBUTION
+    this.assignIfTruthyNumeric(attributes, 'start', json.start);
+    this.assignIfTruthyNumeric(attributes, 'end', json.end);
+    this.assignIfTruthyNumeric(attributes, 'increment', json.increment);
+    this.assignIfTruthyNumeric(attributes, 'numberOfPoints', json.numberOfPoints);
+    this.assignIfTruthy(attributes, 'points', this.makePoints(json.points));
+    this.assignIfTruthy(attributes, 'type', DISTRIBUTIONS.get(json.type));
+
+    // TOP_K
+    this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
+
+    return Ember.$.isEmptyObject(attributes) ? false : attributes;
+  },
+
   getAttributes(aggregation) {
-    let json = {};
+    let json = { };
 
     // COUNT_DISTINCT, TOP_K
     this.assignIfTruthy(json, 'newName', aggregation.get('attributes.newName'));
@@ -120,18 +217,49 @@ export default CORSRequest.extend(Filterizer, {
     return Ember.$.isEmptyObject(json) ? false : json;
   },
 
-  getGroupOperations(metrics) {
-    let json = [];
-    if (!Ember.isEmpty(metrics)) {
-      metrics.forEach(item => {
-        let invertedType = METRICS.invert(item.get('type'));
-        let metric = { type: invertedType };
-        this.assignIfTruthy(metric, 'field', item.get('field'));
-        this.assignIfTruthy(metric, 'newName', item.get('name'));
-        json.push(metric);
-      });
+  makeMetrics(attributes) {
+    if (Ember.isEmpty(attributes)) {
+      return false;
     }
+    return this.makeGroupOperations(attributes.operations);
+  },
+
+  makeGroupOperations(json) {
+    if (Ember.isEmpty(json)) {
+      return false;
+    }
+    let groupOperations = [];
+    json.forEach(item => {
+      let type = METRICS.get(item.type);
+      let operation = { type };
+      this.assignIfTruthy(operation, 'field', item.field);
+      this.assignIfTruthy(operation, 'name', item.newName);
+      groupOperations.push(operation);
+    });
+    return groupOperations;
+  },
+
+  getGroupOperations(metrics) {
+    if (Ember.isEmpty(metrics)) {
+      return false;
+    }
+    let json = [];
+    metrics.forEach(item => {
+      let invertedType = METRICS.invert(item.get('type'));
+      let metric = { type: invertedType };
+      this.assignIfTruthy(metric, 'field', item.get('field'));
+      this.assignIfTruthy(metric, 'newName', item.get('name'));
+      json.push(metric);
+    });
     return json;
+  },
+
+  makePoints(points) {
+    let joined = '';
+    if (!Ember.isEmpty(points)) {
+      joined = points.join(',');
+    }
+    return joined;
   },
 
   getPoints(points) {
@@ -150,6 +278,7 @@ export default CORSRequest.extend(Filterizer, {
   },
 
   assignIfTruthy(json, key, value) {
+    // Also works for boolean false -> Object.keys(false) = []
     if (!Ember.isEmpty(value) && Object.keys(value).length !== 0) {
       json[key] = value;
     }
