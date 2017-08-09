@@ -32,7 +32,7 @@
   .query-description {
     flex: 1 1 75%;
     max-width: 75%;
-    min-width: 75%;
+    // min-width: 60%;
     margin-right: 20px;
     .query-real-name {
       white-space: nowrap;
@@ -54,21 +54,17 @@
   }
 
   .query-name-actions.is-visible {
-
     .query-name-action-icon {
       &:not(:last-of-type) {
         margin-right: 10px;
       }
     }
-
     display: inline-block;
     // Prevent selection from showing up when clicking
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
-
-    margin-left: auto;
-    margin-right: 20px;
+    margin: auto;
     max-width: 20%;
   }
 }
