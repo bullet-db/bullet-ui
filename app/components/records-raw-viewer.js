@@ -15,8 +15,8 @@ export default Ember.Component.extend({
   numberOflevels: Ember.computed('data', 'maxLevels', function() {
     let rows = this.get('data.length');
     let max = this.get('maxlevels');
-    return Math.max(1, (max - (rows / 20)));
-  }),
+    return Math.max(1, parseInt((max - (rows / 20))));
+  }).readOnly(),
 
   formattedData:  Ember.computed('data', function() {
     let data = this.get('data');

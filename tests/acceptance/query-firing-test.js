@@ -189,7 +189,6 @@ test('creating a query, adding count distinct output fields, and save on submit'
   visit('/queries/new');
   click('.output-options #count-distinct');
   click('.output-container .fields-selection-container .add-field');
-  click('.output-container .fields-selection-container .add-field');
   selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
   selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column');
   fillIn('.output-container .count-distinct-display-name input', 'cnt');

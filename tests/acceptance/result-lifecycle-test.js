@@ -85,7 +85,7 @@ test('it lets you expand metadata in results', function(assert) {
   });
 });
 
-test('it lets swap between a row, tabular and advanced chart views when it is a raw query', function(assert) {
+test('it lets swap between a row, tabular and pivot chart views when it is a raw query', function(assert) {
   assert.expect(12);
 
   server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
@@ -116,7 +116,7 @@ test('it lets swap between a row, tabular and advanced chart views when it is a 
   });
 });
 
-test('it lets swap between a row, tabular, simple and advanced chart views when it is not a raw query', function(assert) {
+test('it lets swap between a row, tabular, simple and pivot chart views when it is not a raw query', function(assert) {
   assert.expect(15);
 
   server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
@@ -146,12 +146,12 @@ test('it lets swap between a row, tabular, simple and advanced chart views when 
     assert.equal(find('.pretty-json-container').length, 0);
     assert.equal(find('.records-charter').length, 1);
     assert.equal(find('.records-charter .mode-toggle').length, 1);
-    assert.ok(find('.mode-toggle .simple-view').hasClass('selected'));
+    assert.ok(find('.mode-toggle .left-view').hasClass('selected'));
     assert.equal(find('.records-charter canvas').length, 1);
   });
-  click('.mode-toggle .advanced-view');
+  click('.mode-toggle .right-view');
   andThen(() => {
-    assert.ok(find('.mode-toggle .advanced-view').hasClass('selected'));
+    assert.ok(find('.mode-toggle .right-view').hasClass('selected'));
     assert.equal(find('.pivot-table-container').length, 1);
     assert.equal(find('.pvtUi').length, 1);
   });
@@ -170,9 +170,9 @@ test('it saves and restores pivot table options', function(assert) {
   click('.submit-button');
 
   click('.chart-view');
-  click('.mode-toggle .advanced-view');
+  click('.mode-toggle .right-view');
   andThen(() => {
-    assert.ok(find('.mode-toggle .advanced-view').hasClass('selected'));
+    assert.ok(find('.mode-toggle .right-view').hasClass('selected'));
     assert.equal(find('.pivot-table-container').length, 1);
     assert.equal(find('.pvtUi').length, 1);
     assert.equal(find('.pvtUi select.pvtRenderer').val(), 'Table');
@@ -186,7 +186,7 @@ test('it saves and restores pivot table options', function(assert) {
   click('.queries-table .query-results-entry');
   click('.query-results-entry-popover .results-table .result-date-entry');
   click('.chart-view');
-  click('.mode-toggle .advanced-view');
+  click('.mode-toggle .right-view');
   andThen(() => {
     assert.equal(find('.pvtUi select.pvtRenderer').val(), 'Bar Chart');
     assert.equal(find('.pvtUi select.pvtAggregator').val(), 'Sum');
