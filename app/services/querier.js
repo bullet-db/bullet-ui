@@ -15,15 +15,15 @@ export default CORSRequest.extend(Filterizer, {
   delimiter: ',',
 
   host: Ember.computed('settings', function() {
-    return this.get('settings.drpcHost');
+    return this.get('settings.queryHost');
   }),
 
   namespace: Ember.computed('settings', function() {
-    return this.get('settings.drpcNamespace');
+    return this.get('settings.queryNamespace');
   }),
 
   path: Ember.computed('settings', function() {
-    return this.get('settings.drpcPath');
+    return this.get('settings.queryPath');
   }),
 
   /**

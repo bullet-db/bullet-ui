@@ -22,16 +22,16 @@ test('it has the application hostname, namespace and path', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   assert.ok(service);
-  assert.equal(service.get('host'), ENV.APP.SETTINGS.drpcHost);
-  assert.equal(service.get('namespace'), ENV.APP.SETTINGS.drpcNamespace);
-  assert.equal(service.get('path'), ENV.APP.SETTINGS.drpcPath);
+  assert.equal(service.get('host'), ENV.APP.SETTINGS.queryHost);
+  assert.equal(service.get('namespace'), ENV.APP.SETTINGS.queryNamespace);
+  assert.equal(service.get('path'), ENV.APP.SETTINGS.queryPath);
 });
 
 test('it defaults options correctly', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   let options = service.options('/foo');
-  assert.equal(options.url, `${ENV.APP.SETTINGS.drpcHost}/${ENV.APP.SETTINGS.drpcNamespace}/foo`);
+  assert.equal(options.url, `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/foo`);
   assert.equal(options.type, 'GET');
   assert.equal(options.dataType, 'json');
   assert.equal(options.crossDomain, true);
@@ -42,7 +42,7 @@ test('it overrides options correctly', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   let options = service.options('/foo', { type: 'POST', dataType: 'text' });
-  assert.equal(options.url, `${ENV.APP.SETTINGS.drpcHost}/${ENV.APP.SETTINGS.drpcNamespace}/foo`);
+  assert.equal(options.url, `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/foo`);
   assert.equal(options.type, 'POST');
   assert.equal(options.dataType, 'text');
   assert.equal(options.crossDomain, true);

@@ -56,5 +56,5 @@ test('the application has the settings injected', function(assert) {
   let instance = application.buildInstance();
   let settings = instance.lookup('settings:main');
   assert.notOk(Ember.isEmpty(settings));
-  assert.notOk(Ember.isBlank(settings.get('drpcNamespace')));
+  assert.notOk(Ember.isBlank(settings.get('queryNamespace')));
 });

@@ -7,9 +7,10 @@
   "keywords": [
     "Big Data",
     "Streaming",
-    "Storm DRPC",
-    "ember",
-    "ember 2"
+    "Query Engine",
+    "Look Forward",
+    "No Persistence",
+    "Ember 2"
   ],
   "directories": {
     "doc": "doc",

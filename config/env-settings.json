@@ -1,8 +1,8 @@
 {
   "default": {
-    "drpcHost": "https://foo.bar.com:4443",
-    "drpcNamespace": "bullet/api",
-    "drpcPath": "drpc",
+    "queryHost": "https://foo.bar.com:4443",
+    "queryNamespace": "bullet/api",
+    "queryPath": "drpc",
     "schemaHost": "https://foo.bar.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [

@@ -7,7 +7,7 @@ import Ember from 'ember';
 import Pretender from 'pretender';
 import ENV from 'bullet-ui/config/environment';
 
-const DRPC_ENDPOINT = `${ENV.APP.SETTINGS.drpcHost}/${ENV.APP.SETTINGS.drpcNamespace}/${ENV.APP.SETTINGS.drpcPath}`;
+const QUERY_ENDPOINT = `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/${ENV.APP.SETTINGS.queryPath}`;
 const SCHEMA_ENDPOINT = `${ENV.APP.SETTINGS.schemaHost}/${ENV.APP.SETTINGS.schemaNamespace}/columns`;
 
 export function wrap(statusCode, contentType, response) {
@@ -24,7 +24,7 @@ export function jsonAPIWrap(statusCode, response) {
 
 export function requiredRoutes(data, columns, delay) {
   return function() {
-    this.post(DRPC_ENDPOINT, () => {
+    this.post(QUERY_ENDPOINT, () => {
       return jsonWrap(200, data);
     }, delay);
     this.get(SCHEMA_ENDPOINT, () => {
@@ -53,7 +53,7 @@ export function mockAPI(data, columns, delay = 0) {
 export function failAPI(columns) {
   let pretender = emptyAPI();
   pretender.map(function() {
-    this.post(DRPC_ENDPOINT, () => {
+    this.post(QUERY_ENDPOINT, () => {
       return jsonWrap(500);
     });
     this.get(SCHEMA_ENDPOINT, () => {
@@ -62,4 +62,3 @@ export function failAPI(columns) {
   });
   return pretender;
 }
-
