@@ -1,9 +1,9 @@
 {
   "default": {
-    "queryHost": "https://foo.bar.com:4443",
+    "queryHost": "https://bullet-dev-api.data.yahoo.com:4443",
     "queryNamespace": "bullet/api",
     "queryPath": "drpc",
-    "schemaHost": "https://foo.bar.com:4443",
+    "schemaHost": "https://bullet-dev-api.data.yahoo.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {

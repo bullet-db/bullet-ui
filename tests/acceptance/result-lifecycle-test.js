@@ -192,3 +192,27 @@ test('it saves and restores pivot table options', function(assert) {
     assert.equal(find('.pvtUi select.pvtAggregator').val(), 'Sum');
   });
 });
+
+test('it lets you swap between raw and collapsible json forms', function(assert) {
+  assert.expect(10);
+
+  server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.submit-button');
+  andThen(() => {
+    assert.equal(find('.records-charter').length, 0);
+    assert.equal(find('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(find('.raw-display').length, 1);
+    assert.equal(find('.pretty-json-container').length, 1);
+    assert.equal(find('.raw-json-display').length, 0);
+  });
+  click('.mode-toggle .right-view');
+  andThen(() => {
+    assert.equal(find('.records-charter').length, 0);
+    assert.equal(find('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(find('.raw-display').length, 1);
+    assert.equal(find('.pretty-json-container').length, 0);
+    assert.equal(find('.raw-json-display').length, 1);
+  });
+});

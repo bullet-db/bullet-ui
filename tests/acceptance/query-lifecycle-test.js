@@ -69,6 +69,22 @@ test('creating a query and copying it', function(assert) {
   });
 });
 
+test('creating an invalid query and failing to copy it', function(assert) {
+  assert.expect(2);
+
+  visit('/queries/new');
+  click('.output-container .raw-sub-options #select');
+  click('.output-container .projections-container .add-projection');
+  visit('queries').then(() => {
+    assert.equal(find('.query-description').length, 1);
+  });
+  triggerEvent('.queries-table .query-name-entry', 'mouseover');
+  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  andThen(() => {
+    assert.equal(find('.query-description').length, 1);
+  });
+});
+
 test('creating multiple queries and deleting them', function(assert) {
   assert.expect(3);
 
@@ -631,5 +647,82 @@ test('quantile query point value fields are not sticky when switching to another
     assert.equal(find('.output-container .distribution-type-point-range input:eq(0)').val(), '');
     assert.equal(find('.output-container .distribution-type-point-range input:eq(1)').val(), '');
     assert.equal(find('.output-container .distribution-type-point-range input:eq(2)').val(), '');
+  });
+});
+
+test('creating a valid query and checking if it is indicated as needing attention', function(assert) {
+  assert.expect(2);
+
+  visit('/queries/new');
+  click('.save-button');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 0);
+  });
+});
+
+test('editing a query field and checking if it is indicated as needing attention', function(assert) {
+  assert.expect(4);
+
+  visit('/queries/new');
+  click('.save-button');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 0);
+  });
+  click('.queries-table .query-name-entry .query-description');
+  fillIn('.name-container input', 'test query');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 1);
+  });
+});
+
+test('adding a projection field and checking if it is indicated as needing attention', function(assert) {
+  assert.expect(4);
+
+  visit('/queries/new');
+  click('.save-button');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 0);
+  });
+  click('.queries-table .query-name-entry .query-description');
+  click('.output-container .raw-sub-options #select');
+  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 1);
+  });
+});
+
+test('adding a group field and checking if it is indicated as needing attention', function(assert) {
+  assert.expect(4);
+
+  visit('/queries/new');
+  click('.save-button');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 0);
+  });
+  click('.queries-table .query-name-entry .query-description');
+  click('.output-options #grouped-data');
+  click('.output-container .groups-container .add-group');
+  selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'simple_column');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 1);
+  });
+});
+
+test('creating an invalid query and checking if it is indicated as needing attention', function(assert) {
+  assert.expect(2);
+
+  visit('/queries/new');
+  click('.output-container .raw-sub-options #select');
+  click('.output-container .projections-container .add-projection');
+  visit('queries').then(() => {
+    assert.equal(find('.query-name-entry').length, 1);
+    assert.equal(find('.query-unsaved').length, 1);
   });
 });
