@@ -152,10 +152,6 @@ export default Ember.Component.extend({
   },
 
   actions: {
-    toggleMode() {
-      this.toggleProperty('simpleMode');
-    },
-
     saveOptions(options) {
       let model = this.get('model');
       model.set('pivotOptions', JSON.stringify(options));

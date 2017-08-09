@@ -74,6 +74,21 @@ test('it collapses json properly when the rows and the max levels are greater th
   assert.equal(this.$('.json-formatter-open').length, 1);
 });
 
+test('it renders raw json in a pre tag', function(assert) {
+  assert.expect(5);
+  this.set('mockData', null);
+
+  this.render(hbs`{{records-raw-viewer data=mockData}}`);
+  assert.equal(this.$('.raw-display .pretty-json-container').length, 1);
+  assert.equal(this.$('.raw-display .raw-json-display').length, 0);
+  this.$('.mode-toggle .right-view').click();
+  return wait().then(() => {
+    assert.equal(this.$('.raw-display .pretty-json-container').length, 0);
+    assert.equal(this.$('.raw-display .raw-json-display').length, 1);
+    assert.equal(this.$('.raw-display .raw-json-display').text().trim(), '');
+  });
+});
+
 test('it renders raw json in a pre tag with the given spacing', function(assert) {
   assert.expect(5);
   let data = repeat(2, { foo: { bar: 'baz', test: 'foo' } });
