@@ -45,7 +45,7 @@ export default CORSRequest.extend(Filterizer, {
     this.assignIfTruthy(query, 'filter', filter);
     this.assignIfTruthy(query, 'projections', projection);
     this.assignIfTruthy(query, 'aggregation', aggregation);
-    query.duration = Number(query.duration / 1000);
+    query.duration = Number(json.duration) / 1000;
 
     return query;
   },
@@ -103,7 +103,10 @@ export default CORSRequest.extend(Filterizer, {
   },
 
   recreateProjections(json) {
-    return this.makeFields(json);
+    if (Ember.isEmpty(json)) {
+      return false;
+    }
+    return this.makeFields(json.fields);
   },
 
   reformatProjections(projections) {
@@ -119,13 +122,13 @@ export default CORSRequest.extend(Filterizer, {
     let metrics = this.makeMetrics(json.attributes);
     let attributes = this.makeAttributes(json.attributes);
 
-    aggregation.type = AGGREGATIONS.get(json.type);
+    aggregation.type = AGGREGATIONS.get(this.snakeCase(json.type));
     this.assignIfTruthy(aggregation, 'groups', groups);
     this.assignIfTruthy(aggregation, 'metrics', metrics);
     this.assignIfTruthy(aggregation, 'attributes', attributes);
     aggregation.size = Number(json.size);
 
-    return json;
+    return aggregation;
   },
 
   reformatAggregation(aggregation) {
@@ -185,8 +188,9 @@ export default CORSRequest.extend(Filterizer, {
     this.assignIfTruthyNumeric(attributes, 'increment', json.increment);
     this.assignIfTruthyNumeric(attributes, 'numberOfPoints', json.numberOfPoints);
     this.assignIfTruthy(attributes, 'points', this.makePoints(json.points));
-    this.assignIfTruthy(attributes, 'type', DISTRIBUTIONS.get(json.type));
-
+    if (!Ember.isEmpty(json.type)) {
+      this.assignIfTruthy(attributes, 'type', DISTRIBUTIONS.get(json.type));
+    }
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
@@ -255,11 +259,10 @@ export default CORSRequest.extend(Filterizer, {
   },
 
   makePoints(points) {
-    let joined = '';
-    if (!Ember.isEmpty(points)) {
-      joined = points.join(',');
+    if (Ember.isEmpty(points)) {
+      return false;
     }
-    return joined;
+    return points.join(',');
   },
 
   getPoints(points) {
@@ -268,6 +271,10 @@ export default CORSRequest.extend(Filterizer, {
       points.split(',').map(s => s.trim()).forEach(n =>  json.push(parseFloat(n)));
     }
     return json;
+  },
+
+  snakeCase(string) {
+    return string.replace(/ /g, '_');
   },
 
   assignIfTruthyNumeric(json, key, value) {

@@ -380,3 +380,385 @@ test('it formats a top k query with threshold and new name correctly', function(
     duration: 10000
   });
 });
+
+test('it recreates a raw query with no filters', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 20000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 20
+  });
+});
+
+test('it recreates projections correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: { size: 10, type: 'RAW' },
+    projection: { fields: { foo: 'goo', timestamp: 'ts' } },
+    duration: 1000
+  };
+  assert.deepEqual(service.recreate(query), {
+    projections: [{ field: 'foo', name: 'goo' }, { field: 'timestamp', name: 'ts' }],
+    aggregation: { size: 10, type: 'Raw' },
+    duration: 1
+  });
+});
+
+test('it recreates a filter correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    filters: [FILTERS.OR_FREEFORM],
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  };
+  assert.deepEqual(service.recreate(query), {
+    filter: {
+      clause: {
+        condition: 'OR',
+        rules: [
+          { id: 'complex_map_column.subfield1', operator: 'not_in', value: '1,2,3' },
+          { id: 'simple_column', operator: 'in', value: 'foo,bar' }
+        ]
+      }
+    },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 0
+  });
+});
+
+test('it recreates a filter not created in api mode correctly', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = {
+    filters: [{
+      operation: 'OR',
+      clauses: [
+        {
+          operation: '!=' ,
+          field: 'complex_map_column.subfield1',
+          subfield: true,
+          values: ['1', '2', '3']
+        },
+        {
+          operation: '==',
+          field: 'simple_column',
+          values: ['foo', 'bar']
+        }
+      ]
+    }],
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  };
+  assert.deepEqual(service.recreate(query), {
+    filter: {
+      clause: {
+        condition: 'OR',
+        rules: [
+          { id: 'complex_map_column.*', subfield: 'subfield1', operator: 'not_in', value: '1,2,3' },
+          { id: 'simple_column', operator: 'in', value: 'foo,bar' }
+        ]
+      }
+    },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 0
+  });
+});
+
+test('it recreates and nests a simple filter if it is the only one at the top level', function(assert) {
+  let service = this.subject();
+  let query = {
+    filters: [{ field: 'foo', operation: '!=', values: ['1'] }],
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  };
+  assert.deepEqual(service.recreate(query), {
+    filter: {
+      clause: {
+        condition: 'AND',
+        rules: [{ id: 'foo', operator: 'not_equal', value: '1' }]
+      }
+    },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 0
+  });
+});
+
+test('it recreates a count distinct query with a new name query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 100,
+      type: 'COUNT DISTINCT',
+      fields: { foo: '1', bar: '2' },
+      attributes: { newName: 'cnt' }
+    },
+    duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 100,
+      type: 'Count Distinct',
+      groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }],
+      attributes: { newName: 'cnt' }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a count distinct query without a new name query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 100,
+      type: 'COUNT DISTINCT',
+      fields: { foo: '1', bar: '2' }
+    },
+    duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 100,
+      type: 'Count Distinct',
+      groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a distinct query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      fields: { foo: '1', bar: '2' }
+    },
+    duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Group',
+      groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a group all query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      attributes: {
+        operations: [
+          { type: 'COUNT', newName: 'cnt' },
+          { type: 'SUM', field: 'baz', newName: 'sum' },
+          { type: 'MAX', field: 'foo' },
+          { type: 'AVG', field: 'bar' },
+          { type: 'MIN', field: 'foo' }
+        ]
+      }
+    },
+    duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Group',
+      metrics: [
+        { type: 'Count', name: 'cnt' },
+        { type: 'Sum', field: 'baz', name: 'sum' },
+        { type: 'Maximum', field: 'foo' },
+        { type: 'Average', field: 'bar' },
+        { type: 'Minimum', field: 'foo' }
+      ]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a group by query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
+      attributes: {
+        operations: [
+          { type: 'COUNT' },
+          { type: 'SUM', field: 'baz', newName: 'sum' },
+          { type: 'MIN', field: 'foo' }
+        ]
+      }
+    },
+    duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Group',
+      groups: [{ field: 'foo', name: 'foo' }, { field: 'complex_map_column.foo', name: 'bar' }],
+      metrics: [
+        { type: 'Count' },
+        { type: 'Sum', field: 'baz', name: 'sum' },
+        { type: 'Minimum', field: 'foo' }
+      ]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a quantile distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    numberOfPoints: 15,
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a frequency distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    numberOfPoints: 15,
+    type: DISTRIBUTIONS.get('PMF')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'PMF', numberOfPoints: 15 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a cumulative frequency distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    numberOfPoints: 15,
+    type: DISTRIBUTIONS.get('CDF')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'CDF', numberOfPoints: 15 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distribution with generated points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    start: 0.4,
+    end: 0.6,
+    increment: 0.01,
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distribution with free-form points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    points: '0.5,0.2, 0.75,0.99',
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a distribution with free-form points', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    points: '0.5,0.2, 0.75,0.99',
+    type: DISTRIBUTIONS.get('QUANTILE')
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a top k query correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('TOP_K'), 500);
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'TOP K',
+      fields: { foo: 'foo' }
+    },
+    duration: 10000
+  });
+});
+
+test('it formats a top k query with threshold and new name correctly', function(assert) {
+  let service = this.subject();
+  let query = MockQuery.create({ duration: 10 });
+  query.addAggregation(AGGREGATIONS.get('TOP_K'), 500, {
+    newName: 'bar',
+    threshold: 150
+  });
+  query.addGroup('foo', 'foo');
+  assert.deepEqual(service.reformat(query), {
+    aggregation: {
+      size: 500,
+      type: 'TOP K',
+      fields: { foo: 'foo' },
+      attributes: { newName: 'bar', threshold: 150 }
+    },
+    duration: 10000
+  });
+});

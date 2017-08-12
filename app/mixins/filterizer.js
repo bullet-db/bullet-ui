@@ -36,6 +36,12 @@ export default Ember.Mixin.create({
   emptyClause: { condition: 'AND', rules: [] },
 
   /**
+   * If in apiMode, all converted or created filters interoperate with strict API definition
+   * If this is not true, additional metadata (subfield in particular) may be added for helping with some operations.
+   */
+  apiMode: true,
+
+  /**
    * Converts an API filter clause to its QueryBuilder rule. Basic
    * filter clauses (no logical operation at the top level) will be
    * wrapped in an AND.
@@ -92,24 +98,31 @@ export default Ember.Mixin.create({
   },
 
   /**
-   * Converts a Base API filter to a QueryBuilder rule.
+   * Converts a Base API filter to a QueryBuilder rule. Subfields can only be handled if the filter was not generated
+   * in apiMode since we cannot distinguish an enumerated subfield from a free-form subfield.
    * @private
    * @param  {Object} filter The base API filter.
    * @return {Object}        The corresponding QueryBuilder rule.
    */
   convertFilterToRule(filter) {
+    let field = filter.field;
     let op = filter.operation;
     let values = filter.values;
     if (Ember.isEmpty(values)) {
       throw new Error(`No values found for ${filter}`);
     }
+    if (Ember.isEmpty(field)) {
+      throw new Error(`No field found for ${filter}`);
+    }
     let rule = {
-      id:  filter.field,
+      id:  field,
       value: values.join(this.get('multipleValueSeparator'))
     };
-    // Not part of the API spec but allowing it
-    if (filter.subfield) {
-      rule.subfield = filter.subfield;
+    // If we have a subfield param set, subfield separated field, set the field and subfield again
+    if (filter.subfield && field.indexOf(this.get('subfieldSeparator')) !== -1) {
+      let split = field.split(this.get('subfieldSeparator'));
+      rule.id = `${split[0]}${this.get('subfieldSuffix')}`;
+      rule.subfield = split[1];
     }
 
     if (op === '==') {
@@ -201,14 +214,18 @@ export default Ember.Mixin.create({
     let op = rule.operator;
     let value = rule.value;
     let field = rule.field;
-    if (field && rule.subfield) {
-      let index = rule.field.lastIndexOf(this.get('subfieldSuffix'));
-      field = `${field.substring(0, index)}${this.get('subfieldSeparator')}${rule.subfield}`;
-    }
     let filter = {
       field:  field,
       values: [value]
     };
+    if (field && rule.subfield) {
+      let index = rule.field.lastIndexOf(this.get('subfieldSuffix'));
+      filter.field = `${field.substring(0, index)}${this.get('subfieldSeparator')}${rule.subfield}`;
+      // We'll add this to make sure our inverse function works but only if we're not in apiMode
+      if (!this.get('apiMode')) {
+        filter.subfield = true;
+      }
+    }
 
     if (op === 'equal') {
       filter.operation = '==';
