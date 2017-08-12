@@ -328,25 +328,6 @@ test('it formats a distribution with free-form points', function(assert) {
   });
 });
 
-test('it formats a distribution with free-form points', function(assert) {
-  let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    points: '0.5,0.2, 0.75,0.99',
-    type: DISTRIBUTIONS.get('QUANTILE')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
-    aggregation: {
-      size: 500,
-      type: 'DISTRIBUTION',
-      fields: { foo: 'foo' },
-      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
-    },
-    duration: 10000
-  });
-});
-
 test('it formats a top k query correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ duration: 10 });
@@ -392,6 +373,18 @@ test('it recreates a raw query with no filters', function(assert) {
     duration: 20
   });
 });
+
+test('it recreates a query with no aggregations', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: null,
+    duration: 20000
+  };
+  assert.deepEqual(service.recreate(query), {
+    duration: 20
+  });
+});
+
 
 test('it recreates projections correctly', function(assert) {
   let service = this.subject();
@@ -615,13 +608,7 @@ test('it recreates a group by query correctly', function(assert) {
 
 test('it recreates a quantile distribution with number of points', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    numberOfPoints: 15,
-    type: DISTRIBUTIONS.get('QUANTILE')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'DISTRIBUTION',
@@ -629,18 +616,21 @@ test('it recreates a quantile distribution with number of points', function(asse
       attributes: { type: 'QUANTILE', numberOfPoints: 15 }
     },
     duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Quantile', numberOfPoints: 15 }
+    },
+    duration: 10
   });
 });
 
-test('it formats a frequency distribution with number of points', function(assert) {
+test('it recreates a frequency distribution with number of points', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    numberOfPoints: 15,
-    type: DISTRIBUTIONS.get('PMF')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'DISTRIBUTION',
@@ -648,18 +638,21 @@ test('it formats a frequency distribution with number of points', function(asser
       attributes: { type: 'PMF', numberOfPoints: 15 }
     },
     duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Frequency', numberOfPoints: 15 }
+    },
+    duration: 10
   });
 });
 
-test('it formats a cumulative frequency distribution with number of points', function(assert) {
+test('it recreates a cumulative frequency distribution with number of points', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    numberOfPoints: 15,
-    type: DISTRIBUTIONS.get('CDF')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'DISTRIBUTION',
@@ -667,20 +660,21 @@ test('it formats a cumulative frequency distribution with number of points', fun
       attributes: { type: 'CDF', numberOfPoints: 15 }
     },
     duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Cumulative Frequency', numberOfPoints: 15 }
+    },
+    duration: 10
   });
 });
 
-test('it formats a distribution with generated points', function(assert) {
+test('it recreates a distribution with generated points', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    start: 0.4,
-    end: 0.6,
-    increment: 0.01,
-    type: DISTRIBUTIONS.get('QUANTILE')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'DISTRIBUTION',
@@ -688,18 +682,21 @@ test('it formats a distribution with generated points', function(assert) {
       attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
     },
     duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Quantile', start: 0.4, end: 0.6, increment: 0.01 }
+    },
+    duration: 10
   });
 });
 
-test('it formats a distribution with free-form points', function(assert) {
+test('it recreates a distribution with free-form points', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    points: '0.5,0.2, 0.75,0.99',
-    type: DISTRIBUTIONS.get('QUANTILE')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'DISTRIBUTION',
@@ -707,52 +704,41 @@ test('it formats a distribution with free-form points', function(assert) {
       attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
     },
     duration: 10000
-  });
-});
-
-test('it formats a distribution with free-form points', function(assert) {
-  let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    points: '0.5,0.2, 0.75,0.99',
-    type: DISTRIBUTIONS.get('QUANTILE')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  };
+  assert.deepEqual(service.recreate(query), {
     aggregation: {
       size: 500,
-      type: 'DISTRIBUTION',
-      fields: { foo: 'foo' },
-      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Quantile', points: '0.5,0.2,0.75,0.99' }
     },
-    duration: 10000
+    duration: 10
   });
 });
 
-test('it formats a top k query correctly', function(assert) {
+test('it recreates a top k query correctly', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('TOP_K'), 500);
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'TOP K',
       fields: { foo: 'foo' }
     },
     duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Top K',
+      groups: [{ field: 'foo', name: 'foo' }]
+    },
+    duration: 10
   });
 });
 
-test('it formats a top k query with threshold and new name correctly', function(assert) {
+test('it recreates a top k query with threshold and new name correctly', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('TOP_K'), 500, {
-    newName: 'bar',
-    threshold: 150
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
+  let query = {
     aggregation: {
       size: 500,
       type: 'TOP K',
@@ -760,5 +746,14 @@ test('it formats a top k query with threshold and new name correctly', function(
       attributes: { newName: 'bar', threshold: 150 }
     },
     duration: 10000
+  };
+  assert.deepEqual(service.recreate(query), {
+    aggregation: {
+      size: 500,
+      type: 'Top K',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { newName: 'bar', threshold: 150 }
+    },
+    duration: 10
   });
 });
