@@ -30,12 +30,19 @@ export default {
   deepMergeSettings(overrides) {
     let settings = JSON.parse(JSON.stringify(ENV.APP.SETTINGS));
     Ember.$.extend(true, settings, overrides);
-
-    // Handle arrays manually
-    let helpLinks = [];
-    Ember.$.merge(helpLinks, ENV.APP.SETTINGS.helpLinks || []);
-    Ember.$.merge(helpLinks, overrides.helpLinks || []);
-    settings.helpLinks = helpLinks;
+    // Handle help links manually
+    settings.helpLinks = this.getHelpLinks(ENV.APP.SETTINGS.helpLinks, overrides.helpLinks);
     return settings;
+  },
+
+  getHelpLinks(originalLinks, overrides) {
+    let helpLinks = [];
+    Ember.$.merge(helpLinks, originalLinks || []);
+    let names = new Set();
+    originalLinks.forEach(link => names.add(link.name));
+    if (overrides) {
+      overrides.filter(link => !names.has(link.name)).forEach(link => helpLinks.push(link));
+    }
+    return helpLinks;
   }
 };
