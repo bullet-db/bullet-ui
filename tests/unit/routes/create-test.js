@@ -1,8 +1,12 @@
+/*
+ *  Copyright 2017, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
 import { moduleFor, test } from 'ember-qunit';
 
 moduleFor('route:create', 'Unit | Route | create', {
-  // Specify the other units that are required for this test.
-  // needs: ['controller:foo']
+  needs: ['service:querier', 'service:queryManager']
 });
 
 test('it exists', function(assert) {

@@ -32,7 +32,7 @@ test('it wraps a simple API clause into an AND builder rule', function(assert) {
   let FilterizerObject = Ember.Object.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let clause = { field: 'foo', operation: '<', values: [5] };
-  let expected = { condition: 'AND', rules: [{ id: 'foo', operator: 'less', value: '5' }] };
+  let expected = { condition: 'AND', rules: [{ id: 'foo', field: 'foo', operator: 'less', value: '5' }] };
   assert.deepEqual(subject.convertClauseToRule(clause), expected);
 });
 
@@ -137,24 +137,24 @@ const CONVERTED_RULE = {
     {
       condition: 'OR',
       rules: [
-        { id: 'second_level_0', operator: 'is_null' },
-        { id: 'second_level_0', operator: 'is_empty' },
-        { id: 'second_level_0', value: 'foo', operator: 'equal' },
-        { id: 'second_level_0', value: 'foo,bar', operator: 'in' },
-        { id: 'second_level_1', operator: 'is_not_null' },
-        { id: 'second_level_1', operator: 'is_not_empty' },
-        { id: 'second_level_1', value: 'foo', operator: 'not_equal' },
-        { id: 'second_level_1', value: 'foo,bar', operator: 'not_in' },
-        { id: 'second_level_2.foo', value: 'foo,bar', operator: 'in' },
-        { id: 'second_level_3', value: '1', operator: 'greater' },
-        { id: 'second_level_4', value: '-1', operator: 'less' },
-        { id: 'second_level_5', value: '2', operator: 'greater_or_equal' },
-        { id: 'second_level_6', value: '-2', operator: 'less_or_equal' },
-        { id: 'second_level_7.bar', value: 'f.*', operator: 'rlike' },
-        { id: 'second_level_8', value: 'null', operator: 'rlike' }
+        { field: 'second_level_0', id: 'second_level_0', operator: 'is_null' },
+        { field: 'second_level_0', id: 'second_level_0', operator: 'is_empty' },
+        { field: 'second_level_0', id: 'second_level_0', value: 'foo', operator: 'equal' },
+        { field: 'second_level_0', id: 'second_level_0', value: 'foo,bar', operator: 'in' },
+        { field: 'second_level_1', id: 'second_level_1', operator: 'is_not_null' },
+        { field: 'second_level_1', id: 'second_level_1', operator: 'is_not_empty' },
+        { field: 'second_level_1', id: 'second_level_1', value: 'foo', operator: 'not_equal' },
+        { field: 'second_level_1', id: 'second_level_1', value: 'foo,bar', operator: 'not_in' },
+        { field: 'second_level_2.foo', id: 'second_level_2.foo', value: 'foo,bar', operator: 'in' },
+        { field: 'second_level_3', id: 'second_level_3', value: '1', operator: 'greater' },
+        { field: 'second_level_4', id: 'second_level_4', value: '-1', operator: 'less' },
+        { field: 'second_level_5', id: 'second_level_5', value: '2', operator: 'greater_or_equal' },
+        { field: 'second_level_6', id: 'second_level_6', value: '-2', operator: 'less_or_equal' },
+        { field: 'second_level_7.bar', id: 'second_level_7.bar', value: 'f.*', operator: 'rlike' },
+        { field: 'second_level_8', id: 'second_level_8', value: 'null', operator: 'rlike' }
       ]
     },
-    { id: 'top_level', value: '2.*,.*3.*', operator: 'rlike' }
+    { field: 'top_level', id: 'top_level', value: '2.*,.*3.*', operator: 'rlike' }
   ]
 };
 
@@ -232,24 +232,24 @@ const CONVERTED_RULE_FROM_API_MODE = {
     {
       condition: 'OR',
       rules: [
-        { id: 'second_level_0', operator: 'is_null' },
-        { id: 'second_level_0', operator: 'is_empty' },
-        { id: 'second_level_0', value: 'foo', operator: 'equal' },
-        { id: 'second_level_0', value: 'foo,bar', operator: 'in' },
-        { id: 'second_level_1', operator: 'is_not_null' },
-        { id: 'second_level_1', operator: 'is_not_empty' },
-        { id: 'second_level_1', value: 'foo', operator: 'not_equal' },
-        { id: 'second_level_1', value: 'foo,bar', operator: 'not_in' },
-        { id: 'second_level_2.foo', value: 'foo,bar', operator: 'in' },
-        { id: 'second_level_3', value: '1', operator: 'greater' },
-        { id: 'second_level_4', value: '-1', operator: 'less' },
-        { id: 'second_level_5', value: '2', operator: 'greater_or_equal' },
-        { id: 'second_level_6', value: '-2', operator: 'less_or_equal' },
-        { id: 'second_level_7.*', value: 'f.*', subfield: 'bar', operator: 'rlike' },
-        { id: 'second_level_8', value: 'null', operator: 'rlike' }
+        { field: 'second_level_0', id: 'second_level_0', operator: 'is_null' },
+        { field: 'second_level_0', id: 'second_level_0', operator: 'is_empty' },
+        { field: 'second_level_0', id: 'second_level_0', value: 'foo', operator: 'equal' },
+        { field: 'second_level_0', id: 'second_level_0', value: 'foo,bar', operator: 'in' },
+        { field: 'second_level_1', id: 'second_level_1', operator: 'is_not_null' },
+        { field: 'second_level_1', id: 'second_level_1', operator: 'is_not_empty' },
+        { field: 'second_level_1', id: 'second_level_1', value: 'foo', operator: 'not_equal' },
+        { field: 'second_level_1', id: 'second_level_1', value: 'foo,bar', operator: 'not_in' },
+        { field: 'second_level_2.foo', id: 'second_level_2.foo', value: 'foo,bar', operator: 'in' },
+        { field: 'second_level_3', id: 'second_level_3', value: '1', operator: 'greater' },
+        { field: 'second_level_4', id: 'second_level_4', value: '-1', operator: 'less' },
+        { field: 'second_level_5', id: 'second_level_5', value: '2', operator: 'greater_or_equal' },
+        { field: 'second_level_6', id: 'second_level_6', value: '-2', operator: 'less_or_equal' },
+        { field: 'second_level_7.*', id: 'second_level_7.*', value: 'f.*', subfield: 'bar', operator: 'rlike' },
+        { field: 'second_level_8', id: 'second_level_8', value: 'null', operator: 'rlike' }
       ]
     },
-    { id: 'top_level', value: '2.*,.*3.*', operator: 'rlike' }
+    { field: 'top_level', id: 'top_level', value: '2.*,.*3.*', operator: 'rlike' }
   ]
 };
 

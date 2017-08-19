@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import ENV from 'bullet-ui/config/environment';
 import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
@@ -12,6 +13,41 @@ import { METRICS } from 'bullet-ui/models/metric';
 
 moduleFor('service:querier', 'Unit | Service | querier', {
 });
+
+function arrayChecker(assert, emArray) {
+  return (v, i) => assertEmberEqual(assert, emArray.objectAt(i), v);
+}
+
+function assertEmberEqual(assert, emObject, object) {
+  if (Ember.isEmpty(emObject) && !Ember.isEmpty(object)) {
+    assert.ok(false, `Expected ${JSON.stringify(object)} but found empty`);
+    return;
+  }
+  for (let key in object) {
+    let emValue = emObject.get(key);
+    let value = object[key];
+    let type = Ember.typeOf(value);
+
+    if (type === 'string' || type === 'number' || type === 'boolean') {
+      assert.equal(emValue, value);
+    } else if (type === 'object') {
+      // Special case for filter.clause
+      if (key === 'clause' && Ember.typeOf(emValue) === 'object') {
+        assert.deepEqual(emValue, value);
+        return;
+      }
+      assertEmberEqual(assert, emValue, value);
+    } else if (type === 'array') {
+      if (!Ember.isArray(emValue)) {
+        assert.ok(false, `Expected array ${JSON.stringify(value)} but found ${emValue}`);
+        return;
+      }
+      value.forEach(arrayChecker(assert, emValue));
+    } else {
+      assert.ok(false, 'Unknown type ${type}. Do not know how to check');
+    }
+  }
+}
 
 test('it turns on', function(assert) {
   let service = this.subject();
@@ -91,7 +127,20 @@ test('it ignores a removed filter', function(assert) {
   assert.deepEqual(service.reformat(query), { aggregation: { size: 1, type: 'RAW' }, duration: 0 });
 });
 
-test('it formats a filter correctly', function(assert) {
+test('it formats a filter correctly with a summary', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = MockQuery.create();
+  let filter = { condition: 'OR', rules: [] };
+  query.addAggregation(AGGREGATIONS.get('RAW'));
+  query.addFilter(filter, 'foo');
+  assert.deepEqual(service.reformat(query), {
+    filterSummary: 'foo',
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  });
+});
+
+test('it formats a filter correctly without a summary in apiMode', function(assert) {
   let service = this.subject();
   let query = MockQuery.create();
   let filter = {
@@ -368,7 +417,8 @@ test('it recreates a raw query with no filters', function(assert) {
     aggregation: { size: 1, type: 'RAW' },
     duration: 20000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: { size: 1, type: 'Raw' },
     duration: 20
   });
@@ -380,7 +430,8 @@ test('it recreates a query with no aggregations', function(assert) {
     aggregation: null,
     duration: 20000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     duration: 20
   });
 });
@@ -393,7 +444,8 @@ test('it recreates projections correctly', function(assert) {
     projection: { fields: { foo: 'goo', timestamp: 'ts' } },
     duration: 1000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     projections: [{ field: 'foo', name: 'goo' }, { field: 'timestamp', name: 'ts' }],
     aggregation: { size: 10, type: 'Raw' },
     duration: 1
@@ -407,13 +459,13 @@ test('it recreates a filter correctly', function(assert) {
     aggregation: { size: 1, type: 'RAW' },
     duration: 0
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
     filter: {
       clause: {
         condition: 'OR',
         rules: [
-          { id: 'complex_map_column.subfield1', operator: 'not_in', value: '1,2,3' },
-          { id: 'simple_column', operator: 'in', value: 'foo,bar' }
+          { id: 'complex_map_column.subfield1', field: 'complex_map_column.subfield1', operator: 'not_in', value: '1,2,3' },
+          { id: 'simple_column', field: 'simple_column', operator: 'in', value: 'foo,bar' }
         ]
       }
     },
@@ -444,13 +496,13 @@ test('it recreates a filter not created in api mode correctly', function(assert)
     aggregation: { size: 1, type: 'RAW' },
     duration: 0
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
     filter: {
       clause: {
         condition: 'OR',
         rules: [
-          { id: 'complex_map_column.*', subfield: 'subfield1', operator: 'not_in', value: '1,2,3' },
-          { id: 'simple_column', operator: 'in', value: 'foo,bar' }
+          { id: 'complex_map_column.*', field: 'complex_map_column.*', subfield: 'subfield1', operator: 'not_in', value: '1,2,3' },
+          { id: 'simple_column', field: 'simple_column', operator: 'in', value: 'foo,bar' }
         ]
       }
     },
@@ -466,11 +518,11 @@ test('it recreates and nests a simple filter if it is the only one at the top le
     aggregation: { size: 1, type: 'RAW' },
     duration: 0
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
     filter: {
       clause: {
         condition: 'AND',
-        rules: [{ id: 'foo', operator: 'not_equal', value: '1' }]
+        rules: [{ id: 'foo', field: 'foo', operator: 'not_equal', value: '1' }]
       }
     },
     aggregation: { size: 1, type: 'Raw' },
@@ -489,7 +541,8 @@ test('it recreates a count distinct query with a new name query correctly', func
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 100,
       type: 'Count Distinct',
@@ -510,7 +563,8 @@ test('it recreates a count distinct query without a new name query correctly', f
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 100,
       type: 'Count Distinct',
@@ -530,7 +584,8 @@ test('it recreates a distinct query correctly', function(assert) {
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Group',
@@ -558,7 +613,8 @@ test('it recreates a group all query correctly', function(assert) {
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Group',
@@ -591,7 +647,8 @@ test('it recreates a group by query correctly', function(assert) {
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Group',
@@ -617,7 +674,8 @@ test('it recreates a quantile distribution with number of points', function(asse
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Distribution',
@@ -639,7 +697,8 @@ test('it recreates a frequency distribution with number of points', function(ass
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Distribution',
@@ -661,7 +720,8 @@ test('it recreates a cumulative frequency distribution with number of points', f
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Distribution',
@@ -683,7 +743,8 @@ test('it recreates a distribution with generated points', function(assert) {
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Distribution',
@@ -705,7 +766,8 @@ test('it recreates a distribution with free-form points', function(assert) {
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Distribution',
@@ -726,7 +788,8 @@ test('it recreates a top k query correctly', function(assert) {
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Top K',
@@ -747,7 +810,8 @@ test('it recreates a top k query with threshold and new name correctly', functio
     },
     duration: 10000
   };
-  assert.deepEqual(service.recreate(query), {
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
     aggregation: {
       size: 500,
       type: 'Top K',

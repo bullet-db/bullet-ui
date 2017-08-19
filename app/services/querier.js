@@ -66,7 +66,9 @@ export default CORSRequest.extend(Filterizer, {
 
     if (filter) {
       json.filters = [filter];
-      json.filterSummary = query.get('filter.summary');
+    }
+    if (!this.get('apiMode')) {
+      this.assignIfTruthy(json, 'filterSummary', query.get('filter.summary'));
     }
     if (projection) {
       json.projection = { fields: projection };
