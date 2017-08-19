@@ -18,6 +18,15 @@ export default Ember.Route.extend({
     });
   },
 
+  validate(query) {
+    return query.validate().then(hash => {
+      if (!hash.validations.get('isValid')) {
+        return Ember.RSVP.reject();
+      }
+      return Ember.RSVP.resolve(query);
+    });
+  },
+
   actions: {
     queryClick(query) {
       // Force the model hook to fire in query. This is needed since that uses a RSVP hash.
@@ -25,14 +34,17 @@ export default Ember.Route.extend({
     },
 
     copyQueryClick(query, callback) {
-      query.validate().then((hash) => {
-        if (!hash.validations.get('isValid')) {
-          return Ember.RSVP.reject();
-        }
-        this.get('queryManager').copyQuery(query).then((copied) => {
-          callback(copied);
-        });
-      });
+      this.validate(query).then(query => this.get('queryManager').copyQuery(query)).then(copy => callback(copy));
+    },
+
+    linkQueryClick(query, callback) {
+      this.validate(query)
+          .then(query => this.get('queryManager').encodeQuery(query))
+          .then(encoded => {
+            let host = window.location.host;
+            let path = this.router.generate('create', Ember.Object.create({ hash: encoded }));
+            callback(`${host}${path}`);
+          });
     },
 
     resultClick(result) {

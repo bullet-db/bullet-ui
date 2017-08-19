@@ -13,6 +13,7 @@ export default CORSRequest.extend(Filterizer, {
   subfieldSuffix: '.*',
   subfieldSeparator: '.',
   delimiter: ',',
+  apiMode: true,
 
   host: Ember.computed('settings', function() {
     return this.get('settings.queryHost');
@@ -29,24 +30,26 @@ export default CORSRequest.extend(Filterizer, {
   /**
    * Recreates a Ember Data like representation from an API query specification.
    * @param  {Object} json The API Bullet query.
-   * @return {Object}      A vanilla Object that looks like the Ember Data representation.
+   * @return {Object}      An Ember Object that looks like the Ember Data representation.
    */
   recreate(json) {
-    let query = { };
+    let query = Ember.Object.create();
     let clause = this.recreateFilter(json.filters);
     let projection = this.recreateProjections(json.projection);
     let aggregation = this.recreateAggregation(json.aggregation);
 
-    let filter = { };
-    this.assignIfTruthy(filter, 'clause', clause);
+    let filter = Ember.Object.create();
+    if (!this.isTruthy(clause)) {
+      clause = this.get('emptyClause');
+    }
+    filter.set('clause', clause);
     // One additional non-API key placed into the object for summarizing. Copy the summary as is
-    this.assignIfTruthy(filter, 'summary', json.filterSummary);
+    this.setIfTruthy(filter, 'summary', json.filterSummary);
 
-    this.assignIfTruthy(query, 'filter', filter);
-    this.assignIfTruthy(query, 'projections', projection);
-    this.assignIfTruthy(query, 'aggregation', aggregation);
-    query.duration = Number(json.duration) / 1000;
-
+    this.setIfTruthy(query, 'filter', filter);
+    this.setIfTruthy(query, 'projections', projection);
+    this.setIfTruthy(query, 'aggregation', aggregation);
+    query.set('duration', Number(json.duration) / 1000);
     return query;
   },
 
@@ -63,6 +66,7 @@ export default CORSRequest.extend(Filterizer, {
 
     if (filter) {
       json.filters = [filter];
+      json.filterSummary = query.get('filter.summary');
     }
     if (projection) {
       json.projection = { fields: projection };
@@ -117,16 +121,16 @@ export default CORSRequest.extend(Filterizer, {
     if (Ember.isEmpty(json)) {
       return false;
     }
-    let aggregation = { };
+    let aggregation = Ember.Object.create();
     let groups = this.makeFields(json.fields);
     let metrics = this.makeMetrics(json.attributes);
     let attributes = this.makeAttributes(json.attributes);
 
-    aggregation.type = AGGREGATIONS.get(this.snakeCase(json.type));
-    this.assignIfTruthy(aggregation, 'groups', groups);
-    this.assignIfTruthy(aggregation, 'metrics', metrics);
-    this.assignIfTruthy(aggregation, 'attributes', attributes);
-    aggregation.size = Number(json.size);
+    aggregation.set('type', AGGREGATIONS.get(this.snakeCase(json.type)));
+    this.setIfTruthy(aggregation, 'groups', groups);
+    this.setIfTruthy(aggregation, 'metrics', metrics);
+    this.setIfTruthy(aggregation, 'attributes', attributes);
+    aggregation.set('size', Number(json.size));
 
     return aggregation;
   },
@@ -151,12 +155,12 @@ export default CORSRequest.extend(Filterizer, {
     if (Ember.isEmpty(json)) {
       return false;
     }
-    let fields = [];
+    let fields = Ember.A();
     for (let key in json) {
-      let field = { };
-      field[fieldName] = key;
-      field[valueName] = json[key];
-      fields.push(field);
+      let field = Ember.Object.create();
+      this.setIfTruthy(field, fieldName, key);
+      this.setIfTruthy(field, valueName, json[key]);
+      fields.pushObject(field);
     }
     return fields;
   },
@@ -183,6 +187,7 @@ export default CORSRequest.extend(Filterizer, {
     this.assignIfTruthy(attributes, 'newName', json.newName);
 
     // DISTRIBUTION
+    this.assignIfTruthy(attributes, 'pointType', json.pointType);
     this.assignIfTruthyNumeric(attributes, 'start', json.start);
     this.assignIfTruthyNumeric(attributes, 'end', json.end);
     this.assignIfTruthyNumeric(attributes, 'increment', json.increment);
@@ -194,7 +199,7 @@ export default CORSRequest.extend(Filterizer, {
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
-    return Ember.$.isEmptyObject(attributes) ? false : attributes;
+    return Ember.$.isEmptyObject(attributes) ? false : Ember.Object.create(attributes);
   },
 
   getAttributes(aggregation) {
@@ -209,6 +214,9 @@ export default CORSRequest.extend(Filterizer, {
     this.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
     this.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
     this.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
+    if (!this.get('apiMode')) {
+      this.assignIfTruthy(json, 'pointType', aggregation.get('attributes.pointType'));
+    }
     this.assignIfTruthy(json, 'type', DISTRIBUTIONS.apiKey(aggregation.get('attributes.type')));
 
     // TOP_K
@@ -232,13 +240,13 @@ export default CORSRequest.extend(Filterizer, {
     if (Ember.isEmpty(json)) {
       return false;
     }
-    let groupOperations = [];
+    let groupOperations = Ember.A();
     json.forEach(item => {
       let type = METRICS.get(item.type);
-      let operation = { type };
-      this.assignIfTruthy(operation, 'field', item.field);
-      this.assignIfTruthy(operation, 'name', item.newName);
-      groupOperations.push(operation);
+      let operation = Ember.Object.create({ type });
+      this.setIfTruthy(operation, 'field', item.field);
+      this.setIfTruthy(operation, 'name', item.newName);
+      groupOperations.pushObject(operation);
     });
     return groupOperations;
   },
@@ -284,13 +292,32 @@ export default CORSRequest.extend(Filterizer, {
     return json;
   },
 
-  assignIfTruthy(json, key, value) {
+  setIfTruthyNumeric(object, key, value) {
+    if (!Ember.isEmpty(value)) {
+      object.set(parseFloat(value));
+    }
+    return object;
+  },
+
+  isTruthy(value) {
     // Also works for boolean false -> Object.keys(false) = []
-    if (!Ember.isEmpty(value) && Object.keys(value).length !== 0) {
+    return !Ember.isEmpty(value) && Object.keys(value).length !== 0;
+  },
+
+  assignIfTruthy(json, key, value) {
+    if (this.isTruthy(value)) {
       json[key] = value;
     }
     return json;
   },
+
+  setIfTruthy(object, key, value) {
+    if (this.isTruthy(value)) {
+      object.set(key, value);
+    }
+    return object;
+  },
+
 
   /**
    * Exposes the low-level XMLHTTPRequest response object in order to abort. In order to not expose the parsing

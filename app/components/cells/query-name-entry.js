@@ -39,6 +39,10 @@ export default Ember.Component.extend({
       this.get('tableActions.copyQueryClick')(this.get('row'));
     },
 
+    linkClick() {
+      this.get('tableActions.linkQueryClick')(this.get('row'));
+    },
+
     deleteClick() {
       this.get('tableActions.deleteQueryClick')(this.get('row'));
     }

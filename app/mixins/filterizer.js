@@ -4,9 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
-
-// TODO: Clean this up and make it more sustainable for addition of new operations
-
 /**
  * Responsible for converting between the formats of filter rules - QueryBuilder
  * to and from API Query filter.
@@ -109,19 +106,22 @@ export default Ember.Mixin.create({
     let op = filter.operation;
     let values = filter.values;
     if (Ember.isEmpty(values)) {
-      throw new Error(`No values found for ${filter}`);
+      throw new Error(`No values found for ${JSON.stringify(filter)}`);
     }
     if (Ember.isEmpty(field)) {
-      throw new Error(`No field found for ${filter}`);
+      throw new Error(`No field found for ${JSON.stringify(filter)}`);
     }
     let rule = {
       id:  field,
+      field: field,
       value: values.join(this.get('multipleValueSeparator'))
     };
     // If we have a subfield param set, subfield separated field, set the field and subfield again
     if (filter.subfield && field.indexOf(this.get('subfieldSeparator')) !== -1) {
       let split = field.split(this.get('subfieldSeparator'));
-      rule.id = `${split[0]}${this.get('subfieldSuffix')}`;
+      let fieldOnly = `${split[0]}${this.get('subfieldSuffix')}`;
+      rule.id = fieldOnly;
+      rule.field = fieldOnly;
       rule.subfield = split[1];
     }
 
@@ -160,7 +160,7 @@ export default Ember.Mixin.create({
     } else if (op === 'RLIKE') {
       rule.operator = 'rlike';
     } else {
-      throw new Error(`Unknown operation: ${op} in filter: ${filter}`);
+      throw new Error(`Unknown operation: ${op} in filter: ${JSON.stringify(filter)}`);
     }
     return rule;
   },
@@ -261,7 +261,7 @@ export default Ember.Mixin.create({
       filter.operation = 'RLIKE';
       filter.values = value.split(this.get('multipleValueSeparator')).map(i => i.trim());
     } else {
-      throw new Error(`Unknown operator: ${op} in rule: ${rule}`);
+      throw new Error(`Unknown operator: ${op} in rule: ${JSON.stringify(rule)}`);
     }
     return filter;
   },

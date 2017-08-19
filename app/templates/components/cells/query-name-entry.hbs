@@ -7,7 +7,7 @@
 {{#if (await isUnsaved)}}
   <div class="query-unsaved">
     <i class="unsaved-icon glyphicon glyphicon-alert">
-      {{#tooltip-on-element}}Your query needs to be saved{{/tooltip-on-element}}
+      {{#tooltip-on-element}}Your query needs to be saved or has issues{{/tooltip-on-element}}
     </i>
   </div>
 {{/if}}
@@ -21,12 +21,15 @@
 </div>
 <div class="query-name-actions {{if hasHover 'is-visible'}}">
   <i class="query-name-action-icon edit-icon glyphicon glyphicon-edit" {{action "editClick" bubbles=false}}>
-    {{#tooltip-on-element}}Edit{{/tooltip-on-element}}
+    {{#tooltip-on-element}}Edit this query{{/tooltip-on-element}}
+  </i>
+  <i class="query-name-action-icon copy-icon glyphicon glyphicon-share" {{action "linkClick" bubbles=false}}>
+    {{#tooltip-on-element}}Create a link to this query that you can share{{/tooltip-on-element}}
   </i>
   <i class="query-name-action-icon copy-icon glyphicon glyphicon-duplicate" {{action "copyClick" bubbles=false}}>
-    {{#tooltip-on-element}}Copy{{/tooltip-on-element}}
+    {{#tooltip-on-element}}Make a copy of this query without results{{/tooltip-on-element}}
   </i>
   <i class="query-name-action-icon delete-icon glyphicon glyphicon-trash" {{action "deleteClick" bubbles=false}}>
-    {{#tooltip-on-element}}Delete Query and Historical Results{{/tooltip-on-element}}
+    {{#tooltip-on-element}}Delete this query and all results{{/tooltip-on-element}}
   </i>
 </div>

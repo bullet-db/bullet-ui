@@ -1,0 +1,57 @@
+/*
+ *  Copyright 2017, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.query-shareable-link {
+  .link-wrapper {
+    $right-space: 40px;
+
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 80%;
+
+    input {
+      width: 90%;
+      height: 40px;
+      padding-left: 10px;
+      padding-right: $right-space;
+      font-size: $font-size-regular;
+      font-family: $font-family-regular;
+      font-weight: $font-weight-regular;
+      border: 1px solid $background-grey;
+      border-radius: $input-radius-regular;
+      box-shadow: none;
+    }
+
+    .copy-btn {
+      margin-left: (-$right-space);
+      .glyphicon {
+        color: $inactive-grey;
+        font-size: $font-size-regular-large;
+        &:hover {
+          color: $black;
+        }
+        &:focus {
+          outline: none;
+        }
+      }
+      background-color: white;
+      border: none;
+    }
+  }
+  .collapse-icon {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+    width: 20px;
+    color: $inactive-grey;
+    &:hover {
+      color: $black;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+}

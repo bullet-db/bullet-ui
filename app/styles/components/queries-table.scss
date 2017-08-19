@@ -25,5 +25,9 @@
         @import "cells/date-entry";
       }
     }
+    .lt-expanded-row {
+      height: 80px;
+      @import "query-shareable-link";
+    }
   }
 }
