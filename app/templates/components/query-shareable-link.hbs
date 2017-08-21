@@ -7,7 +7,7 @@
   {{input id=queryID value=queryLink type="text" readonly=true maxlength=16384}}
   {{#if (is-clipboard-supported)}}
     {{#copy-button clipboardTarget=queryIDSelector}}
-      <i class="glyphicon glyphicon-copy">
+      <i class="copy-icon glyphicon glyphicon-copy">
         {{#tooltip-on-element}}Copy to your clipboard{{/tooltip-on-element}}
       </i>
     {{/copy-button}}

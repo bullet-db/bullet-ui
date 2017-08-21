@@ -5,42 +5,57 @@
  */
 .query-shareable-link {
   .link-wrapper {
-    $right-space: 40px;
+    $row-height: 40px;
+
+    display: flex;
+    align-items: center;
 
     margin: auto;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    width: 80%;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    width: 50%;
 
     input {
       width: 90%;
-      height: 40px;
-      padding-left: 10px;
-      padding-right: $right-space;
+      height: $row-height;
+      padding: 0 10px;
       font-size: $font-size-regular;
       font-family: $font-family-regular;
       font-weight: $font-weight-regular;
       border: 1px solid $background-grey;
-      border-radius: $input-radius-regular;
+      border-radius: $input-radius-regular 0 0 $input-radius-regular;
       box-shadow: none;
     }
 
     .copy-btn {
-      margin-left: (-$right-space);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background-color: $background-grey-darker;
+      border-radius: 0 $input-radius-regular $input-radius-regular 0;
+      width: 35px;
+      height: $row-height;
+      border: none;
       .glyphicon {
-        color: $inactive-grey;
+        color: darken($grey, 20%);
         font-size: $font-size-regular-large;
-        &:hover {
-          color: $black;
-        }
         &:focus {
           outline: none;
         }
       }
-      background-color: white;
-      border: none;
+      &:hover {
+        background-color: $background-grey;
+        .glyphicon {
+          color: $inactive-grey;
+        }
+      }
+      &:focus {
+        outline: none;
+      }
     }
   }
+
   .collapse-icon {
     display: block;
     margin: auto;

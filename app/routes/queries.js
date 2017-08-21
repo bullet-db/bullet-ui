@@ -27,6 +27,12 @@ export default Ember.Route.extend({
     });
   },
 
+  getOrigin() {
+    let { protocol, hostname, port } = window.location;
+    port = port ? `:${port}` : '';
+    return `${protocol}//${hostname}${port}`;
+  },
+
   actions: {
     queryClick(query) {
       // Force the model hook to fire in query. This is needed since that uses a RSVP hash.
@@ -41,9 +47,9 @@ export default Ember.Route.extend({
       this.validate(query)
           .then(query => this.get('queryManager').encodeQuery(query))
           .then(encoded => {
-            let host = window.location.host;
+            let origin = this.getOrigin();
             let path = this.router.generate('create', Ember.Object.create({ hash: encoded }));
-            callback(`${host}${path}`);
+            callback(`${origin}${path}`);
           });
     },
 

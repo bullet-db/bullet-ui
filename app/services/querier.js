@@ -294,13 +294,6 @@ export default CORSRequest.extend(Filterizer, {
     return json;
   },
 
-  setIfTruthyNumeric(object, key, value) {
-    if (!Ember.isEmpty(value)) {
-      object.set(parseFloat(value));
-    }
-    return object;
-  },
-
   isTruthy(value) {
     // Also works for boolean false -> Object.keys(false) = []
     return !Ember.isEmpty(value) && Object.keys(value).length !== 0;

@@ -126,6 +126,22 @@ test('it calls the table action copyQueryClick on clicking copy', function(asser
   return wait();
 });
 
+test('it calls the table action linkQueryClick on clicking link', function(assert) {
+  assert.expect(1);
+  let query = MockQuery.create({ duration: 1 });
+  query.addProjection('foo', 'f');
+  this.set('mockTableActions', {
+    linkQueryClick(value) {
+      assert.equal(value.get('content'), query);
+    }
+  });
+  this.set('mockRow', wrap(query));
+
+  this.render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+  this.$('.link-icon').click();
+  return wait();
+});
+
 test('it displays an unsaved icon if the query is dirty', function(assert) {
   let query = MockQuery.create({ duration: 1 });
   query.set('hasDirtyAttributes', true);
