@@ -24,6 +24,9 @@ export function initialize(application) {
  * @param  {Object} migrations An object containing migrations to apply.
  */
 export function applyMigrations(manager, migrations) {
+  if (!manager) {
+    return;
+  }
   let deletions = migrations.deletions;
   // Only support clearing everything or results at the moment
   if (Ember.isEqual(deletions, 'result')) {

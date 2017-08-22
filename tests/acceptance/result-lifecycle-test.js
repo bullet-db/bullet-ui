@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
@@ -85,7 +86,31 @@ test('it lets you expand metadata in results', function(assert) {
   });
 });
 
-test('it lets swap between a row, tabular and advanced chart views when it is a raw query', function(assert) {
+test('it lets you expand result entries in a popover', function(assert) {
+  assert.expect(4);
+  server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.submit-button');
+  click('.table-view');
+  andThen(() => {
+    assert.equal(find('.lt-body .lt-row .lt-cell').length, 3);
+  });
+  click('.records-table .lt-body .lt-row .record-entry .plain-entry:contains("test")');
+  andThen(() => {
+    assert.equal(find('.record-entry-popover').length, 1);
+    assert.equal(find('.record-entry-popover .record-popover-body pre').text().trim(), 'test');
+  });
+  click('.record-entry-popover .close-button');
+  // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
+  Ember.run.next(() => {
+    andThen(() => {
+      assert.equal(find('.record-entry-popover').length, 0);
+    });
+  });
+});
+
+test('it lets swap between a row, tabular and pivot chart views when it is a raw query', function(assert) {
   assert.expect(12);
 
   server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
@@ -116,7 +141,7 @@ test('it lets swap between a row, tabular and advanced chart views when it is a 
   });
 });
 
-test('it lets swap between a row, tabular, simple and advanced chart views when it is not a raw query', function(assert) {
+test('it lets swap between a row, tabular, simple and pivot chart views when it is not a raw query', function(assert) {
   assert.expect(15);
 
   server = mockAPI(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
@@ -146,12 +171,12 @@ test('it lets swap between a row, tabular, simple and advanced chart views when 
     assert.equal(find('.pretty-json-container').length, 0);
     assert.equal(find('.records-charter').length, 1);
     assert.equal(find('.records-charter .mode-toggle').length, 1);
-    assert.ok(find('.mode-toggle .simple-view').hasClass('selected'));
+    assert.ok(find('.mode-toggle .left-view').hasClass('selected'));
     assert.equal(find('.records-charter canvas').length, 1);
   });
-  click('.mode-toggle .advanced-view');
+  click('.mode-toggle .right-view');
   andThen(() => {
-    assert.ok(find('.mode-toggle .advanced-view').hasClass('selected'));
+    assert.ok(find('.mode-toggle .right-view').hasClass('selected'));
     assert.equal(find('.pivot-table-container').length, 1);
     assert.equal(find('.pvtUi').length, 1);
   });
@@ -170,9 +195,9 @@ test('it saves and restores pivot table options', function(assert) {
   click('.submit-button');
 
   click('.chart-view');
-  click('.mode-toggle .advanced-view');
+  click('.mode-toggle .right-view');
   andThen(() => {
-    assert.ok(find('.mode-toggle .advanced-view').hasClass('selected'));
+    assert.ok(find('.mode-toggle .right-view').hasClass('selected'));
     assert.equal(find('.pivot-table-container').length, 1);
     assert.equal(find('.pvtUi').length, 1);
     assert.equal(find('.pvtUi select.pvtRenderer').val(), 'Table');
@@ -186,9 +211,33 @@ test('it saves and restores pivot table options', function(assert) {
   click('.queries-table .query-results-entry');
   click('.query-results-entry-popover .results-table .result-date-entry');
   click('.chart-view');
-  click('.mode-toggle .advanced-view');
+  click('.mode-toggle .right-view');
   andThen(() => {
     assert.equal(find('.pvtUi select.pvtRenderer').val(), 'Bar Chart');
     assert.equal(find('.pvtUi select.pvtAggregator').val(), 'Sum');
+  });
+});
+
+test('it lets you swap between raw and collapsible json forms', function(assert) {
+  assert.expect(10);
+
+  server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.submit-button');
+  andThen(() => {
+    assert.equal(find('.records-charter').length, 0);
+    assert.equal(find('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(find('.raw-display').length, 1);
+    assert.equal(find('.pretty-json-container').length, 1);
+    assert.equal(find('.raw-json-display').length, 0);
+  });
+  click('.mode-toggle .right-view');
+  andThen(() => {
+    assert.equal(find('.records-charter').length, 0);
+    assert.equal(find('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(find('.raw-display').length, 1);
+    assert.equal(find('.pretty-json-container').length, 0);
+    assert.equal(find('.raw-json-display').length, 1);
   });
 });

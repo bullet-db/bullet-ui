@@ -10,26 +10,47 @@ moduleForComponent('pretty-json', 'Integration | Component | pretty json', {
   integration: true
 });
 
-test('it renders', function(assert) {
+test('it renders edge cases', function(assert) {
   this.render(hbs`{{pretty-json}}`);
-  assert.equal(this.$().text().trim(), '');
+  assert.equal(this.$().text().trim(), 'null');
 
   this.render(hbs`
     {{#pretty-json}}
       template block text
     {{/pretty-json}}
   `);
-  assert.equal(this.$().text().trim(), '');
+  assert.equal(this.$().text().trim(), 'null');
+
+  this.set('json', undefined);
+  this.render(hbs`{{pretty-json data=json}}`);
+  assert.equal(this.$().text().trim(), 'undefined');
+
+  this.set('json', []);
+  this.render(hbs`{{pretty-json data=json}}`);
+  assert.equal(this.$().text().trim(), 'Array[0][]');
+
+  this.set('json', { });
+  this.render(hbs`{{pretty-json data=json}}`);
+  assert.equal(this.$().text().trim(), 'Object{}');
 });
 
-test('it formats json', function(assert) {
+test('it wraps content in a pre tag', function(assert) {
+  this.render(hbs`{{pretty-json}}`);
+  assert.equal(this.$('pre.pretty-json-container').length, 1);
+});
+
+test('it formats json and opens to two levels by default', function(assert) {
   let json = { foo: { bar: 'baz', test: 'foo' } };
   this.set('json', json);
-  this.render(hbs`{{pretty-json data=json spacing=4}}`);
-  assert.equal(this.$('pre').html(), JSON.stringify(json, null, 4));
+  this.render(hbs`{{pretty-json data=json}}`);
+  assert.equal(this.$('.json-formatter-open').length, 2);
+  assert.equal(this.$('.json-formatter-row').length, 4);
 });
 
-test('it wraps content in a div', function(assert) {
-  this.render(hbs`{{pretty-json}}`);
-  assert.equal(this.$('div.pretty-json-container').length, 1);
+test('it collapses json to the given levels', function(assert) {
+  let json = { foo: { bar: 'baz', test: 'foo' } };
+  this.set('json', json);
+  this.set('mockLevels', 1);
+  this.render(hbs`{{pretty-json data=json defaultLevels=mockLevels}}`);
+  assert.equal(this.$('.json-formatter-open').length, 1);
 });

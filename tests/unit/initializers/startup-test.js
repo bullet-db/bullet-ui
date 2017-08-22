@@ -48,6 +48,38 @@ test('it can deep merge settings', function(assert) {
   assert.deepEqual(merged, expected);
 });
 
+test('it can deep merge empty help links', function(assert) {
+  let overrides = { };
+  let merged = StartupInitializer.deepMergeSettings(overrides);
+
+  let expected = JSON.parse(JSON.stringify(ENV.APP.SETTINGS));
+  expected.helpLinks = [
+    { name: 'Tutorials', link: 'https://yahoo.github.io/bullet-docs/ui/usage' }
+  ];
+  expected.defaultValues.aggregationMaxSize = 512;
+
+  assert.deepEqual(merged, expected);
+});
+
+test('it can deep merge duplicate help links', function(assert) {
+  let overrides = {
+    helpLinks: [
+      { name: 'Tutorials', link: 'https://yahoo.github.io/bullet-docs/ui/usage' },
+      { name: 'foo', link: 'http://foo.bar.com' }
+    ]
+  };
+  let merged = StartupInitializer.deepMergeSettings(overrides);
+
+  let expected = JSON.parse(JSON.stringify(ENV.APP.SETTINGS));
+  expected.helpLinks = [
+    { name: 'Tutorials', link: 'https://yahoo.github.io/bullet-docs/ui/usage' },
+    { name: 'foo', link: 'http://foo.bar.com' }
+  ];
+  expected.defaultValues.aggregationMaxSize = 512;
+
+  assert.deepEqual(merged, expected);
+});
+
 test('it registers the settings factory', function(assert) {
   assert.ok(application.hasRegistration('settings:main'));
 });
@@ -56,5 +88,5 @@ test('the application has the settings injected', function(assert) {
   let instance = application.buildInstance();
   let settings = instance.lookup('settings:main');
   assert.notOk(Ember.isEmpty(settings));
-  assert.notOk(Ember.isBlank(settings.get('drpcNamespace')));
+  assert.notOk(Ember.isBlank(settings.get('queryNamespace')));
 });

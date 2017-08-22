@@ -5,9 +5,12 @@
  */
 import Ember from 'ember';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import ZLib from 'npm:browserify-zlib';
+import Base64 from 'npm:urlsafe-base64';
 
 export default Ember.Service.extend({
   store: Ember.inject.service(),
+  querier: Ember.inject.service(),
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -59,6 +62,28 @@ export default Ember.Service.extend({
         this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
       ]);
     }).then(() => copied.save()).then(() => copied);
+  },
+
+  encodeQuery(query) {
+    let querier = this.get('querier');
+    querier.set('apiMode', false);
+    let json = querier.reformat(query);
+    querier.set('apiMode', true);
+    let string = JSON.stringify(json);
+    return new Ember.RSVP.Promise((resolve) => {
+      ZLib.deflate(string, (_, result) => resolve(Base64.encode(result)));
+    });
+  },
+
+  decodeQuery(hash) {
+    let querier = this.get('querier');
+    let buffer = Base64.decode(hash);
+    return new Ember.RSVP.Promise((resolve) => {
+      ZLib.inflate(buffer, (_, result) => {
+        let json = JSON.parse(result.toString());
+        resolve(querier.recreate(json));
+      });
+    });
   },
 
   addFieldLike(childModelName, modelFieldName, model) {

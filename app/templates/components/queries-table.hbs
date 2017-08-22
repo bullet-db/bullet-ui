@@ -6,19 +6,26 @@
 {{#light-table table height="inherit" tableActions=(hash resultClick=(action "resultClick")
                                                        deleteResultsClick=(action "deleteResultsClick")
                                                        copyQueryClick=(action "copyQueryClick")
+                                                       linkQueryClick=(action "linkQueryClick")
                                                        queryClick=(action "queryClick")
                                                        deleteQueryClick=(action "deleteQueryClick"))
   as |t|}}
   {{t.head onColumnClick=(action "onColumnClick")
-         iconAscending="glyphicon glyphicon-menu-up" iconDescending="glyphicon glyphicon-menu-down"
+           iconAscending="glyphicon glyphicon-menu-up" iconDescending="glyphicon glyphicon-menu-down"
            fixed=true}}
 
-  {{#t.body canSelect=false scrollBuffer=1000 onScrolledToBottom=(action "onScrolledToBottom") as |b|}}
+  {{#t.body canSelect=false canExpand=true expandOnClick=false scrollBuffer=1000
+            onScrolledToBottom=(action "onScrolledToBottom") as |b|}}
+
+    {{#b.expanded-row as |e|}}
+      {{query-shareable-link row=e}}
+    {{/b.expanded-row}}
 
     {{#if table.isEmpty}}
       {{#b.no-data}}
         {{partial "components/cells/no-queries"}}
       {{/b.no-data}}
     {{/if}}
+    
   {{/t.body}}
 {{/light-table}}

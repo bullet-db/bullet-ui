@@ -204,3 +204,19 @@ test('it calls the copyQueryClick action on clicking the copy icon', function(as
   return wait();
 });
 
+test('it calls the linkQueryClick action on clicking the link icon', function(assert) {
+  assert.expect(1);
+
+  let query = MockQuery.create({ duration: 1 });
+  query.addResult([]);
+  query.set('name', 'foo');
+  this.set('mockQueries', Ember.A([query]));
+
+  this.set('mockLinkQueryClick', (value) => {
+    assert.equal(value.get('name'), 'foo');
+  });
+
+  this.render(hbs`{{queries-table queries=mockQueries linkQueryClick=(action mockLinkQueryClick)}}`);
+  this.$('.query-name-entry .link-icon').click();
+  return wait();
+});

@@ -17,6 +17,8 @@ Router.map(function() {
   });
   this.route('query', { path: 'query/:query_id' });
 
+  this.route('create', { path: 'create/:hash' });
+
   this.route('result', { path: 'result/:result_id' });
 
   this.route('errored');

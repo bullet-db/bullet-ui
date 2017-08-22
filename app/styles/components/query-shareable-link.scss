@@ -1,0 +1,72 @@
+/*
+ *  Copyright 2017, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.query-shareable-link {
+  .link-wrapper {
+    $row-height: 40px;
+
+    display: flex;
+    align-items: center;
+
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    width: 50%;
+
+    input {
+      width: 90%;
+      height: $row-height;
+      padding: 0 10px;
+      font-size: $font-size-regular;
+      font-family: $font-family-regular;
+      font-weight: $font-weight-regular;
+      border: 1px solid $background-grey;
+      border-radius: $input-radius-regular 0 0 $input-radius-regular;
+      box-shadow: none;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background-color: $background-grey-darker;
+      border-radius: 0 $input-radius-regular $input-radius-regular 0;
+      width: 35px;
+      height: $row-height;
+      border: none;
+      .glyphicon {
+        color: darken($grey, 20%);
+        font-size: $font-size-regular-large;
+        &:focus {
+          outline: none;
+        }
+      }
+      &:hover {
+        background-color: $background-grey;
+        .glyphicon {
+          color: $inactive-grey;
+        }
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .collapse-icon {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+    width: 20px;
+    color: $inactive-grey;
+    &:hover {
+      color: $black;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+}

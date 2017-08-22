@@ -1,0 +1,20 @@
+/*
+ *  Copyright 2017, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+.records-raw-viewer {
+  @import 'mode-toggle';
+  @import 'pretty-json';
+
+  .raw-display {
+    pre {
+      background-color: $white;
+      overflow: auto;
+      max-height: 60vh;
+      font-family: $font-family-regular;
+      font-weight: $font-weight-regular;
+      font-size: $font-size-regular-large;
+    }
+  }
+}

@@ -11,11 +11,11 @@ export default Ember.Component.extend({
   columns: null,
   rows: null,
   chartType: 'bar',
-  simpleMode: true,
 
+  simpleMode: true,
+  notSimpleMode: Ember.computed.not('simpleMode').readOnly(),
   cannotModeSwitch: Ember.computed.alias('model.isRaw').readOnly(),
   canModeSwitch: Ember.computed.not('cannotModeSwitch').readOnly(),
-  notSimpleMode: Ember.computed.not('simpleMode').readOnly(),
   pivotMode: Ember.computed.or('notSimpleMode', 'cannotModeSwitch').readOnly(),
   pivotOptions: Ember.computed('model.pivotOptions', function() {
     return JSON.parse(this.get('model.pivotOptions'));
@@ -152,10 +152,6 @@ export default Ember.Component.extend({
   },
 
   actions: {
-    toggleMode() {
-      this.toggleProperty('simpleMode');
-    },
-
     saveOptions(options) {
       let model = this.get('model');
       model.set('pivotOptions', JSON.stringify(options));

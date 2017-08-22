@@ -49,11 +49,18 @@ export default Ember.Component.extend(PaginatedTable, {
     this.addPages(1);
   },
 
-  resolveRow(currentRow) {
+  insertNewRowAfter(currentRow) {
     let table = this.get('table');
     let index = table.get('rows').indexOf(currentRow);
     return (row) => {
       table.insertRowAt(index + 1, row);
+    };
+  },
+
+  expandRowWithLink(row) {
+    return (link) => {
+      row.set('expanded', true);
+      row.set('queryLink', link);
     };
   },
 
@@ -71,7 +78,15 @@ export default Ember.Component.extend(PaginatedTable, {
     },
 
     copyQueryClick(row) {
-      this.sendAction('copyQueryClick', row.get('content'), this.resolveRow(row));
+      this.sendAction('copyQueryClick', row.get('content'), this.insertNewRowAfter(row));
+    },
+
+    linkQueryClick(row) {
+      if (row.get('expanded')) {
+        row.set('expanded', false);
+      } else {
+        this.sendAction('linkQueryClick', row.get('content'), this.expandRowWithLink(row));
+      }
     },
 
     deleteQueryClick(row) {

@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import ENV from 'bullet-ui/config/environment';
 import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
@@ -13,6 +14,41 @@ import { METRICS } from 'bullet-ui/models/metric';
 moduleFor('service:querier', 'Unit | Service | querier', {
 });
 
+function arrayChecker(assert, emArray) {
+  return (v, i) => assertEmberEqual(assert, emArray.objectAt(i), v);
+}
+
+function assertEmberEqual(assert, emObject, object) {
+  if (Ember.isEmpty(emObject) && !Ember.isEmpty(object)) {
+    assert.ok(false, `Expected ${JSON.stringify(object)} but found empty`);
+    return;
+  }
+  for (let key in object) {
+    let emValue = emObject.get(key);
+    let value = object[key];
+    let type = Ember.typeOf(value);
+
+    if (type === 'string' || type === 'number' || type === 'boolean') {
+      assert.equal(emValue, value);
+    } else if (type === 'object') {
+      // Special case for filter.clause
+      if (key === 'clause' && Ember.typeOf(emValue) === 'object') {
+        assert.deepEqual(emValue, value);
+        return;
+      }
+      assertEmberEqual(assert, emValue, value);
+    } else if (type === 'array') {
+      if (!Ember.isArray(emValue)) {
+        assert.ok(false, `Expected array ${JSON.stringify(value)} but found ${emValue}`);
+        return;
+      }
+      value.forEach(arrayChecker(assert, emValue));
+    } else {
+      assert.ok(false, 'Unknown type ${type}. Do not know how to check');
+    }
+  }
+}
+
 test('it turns on', function(assert) {
   let service = this.subject();
   assert.ok(service);
@@ -22,16 +58,16 @@ test('it has the application hostname, namespace and path', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   assert.ok(service);
-  assert.equal(service.get('host'), ENV.APP.SETTINGS.drpcHost);
-  assert.equal(service.get('namespace'), ENV.APP.SETTINGS.drpcNamespace);
-  assert.equal(service.get('path'), ENV.APP.SETTINGS.drpcPath);
+  assert.equal(service.get('host'), ENV.APP.SETTINGS.queryHost);
+  assert.equal(service.get('namespace'), ENV.APP.SETTINGS.queryNamespace);
+  assert.equal(service.get('path'), ENV.APP.SETTINGS.queryPath);
 });
 
 test('it defaults options correctly', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   let options = service.options('/foo');
-  assert.equal(options.url, `${ENV.APP.SETTINGS.drpcHost}/${ENV.APP.SETTINGS.drpcNamespace}/foo`);
+  assert.equal(options.url, `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/foo`);
   assert.equal(options.type, 'GET');
   assert.equal(options.dataType, 'json');
   assert.equal(options.crossDomain, true);
@@ -42,7 +78,7 @@ test('it overrides options correctly', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   let options = service.options('/foo', { type: 'POST', dataType: 'text' });
-  assert.equal(options.url, `${ENV.APP.SETTINGS.drpcHost}/${ENV.APP.SETTINGS.drpcNamespace}/foo`);
+  assert.equal(options.url, `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/foo`);
   assert.equal(options.type, 'POST');
   assert.equal(options.dataType, 'text');
   assert.equal(options.crossDomain, true);
@@ -51,7 +87,7 @@ test('it overrides options correctly', function(assert) {
 
 test('it formats a defaulted query correctly', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ foo: 'bar' });
+  let query = MockQuery.create({ name: 'baz', foo: 'bar' });
   query.set('aggregation', null);
   assert.deepEqual(service.reformat(query), { duration: 0 });
 });
@@ -91,7 +127,34 @@ test('it ignores a removed filter', function(assert) {
   assert.deepEqual(service.reformat(query), { aggregation: { size: 1, type: 'RAW' }, duration: 0 });
 });
 
-test('it formats a filter correctly', function(assert) {
+test('it formats a query correctly with a name', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = MockQuery.create({ name: 'foo' });
+  let filter = { condition: 'OR', rules: [] };
+  query.addAggregation(AGGREGATIONS.get('RAW'));
+  query.addFilter(filter, 'foo');
+  assert.deepEqual(service.reformat(query), {
+    name: 'foo',
+    filterSummary: 'foo',
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  });
+});
+
+test('it formats a filter correctly with a summary', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = MockQuery.create();
+  let filter = { condition: 'OR', rules: [] };
+  query.addAggregation(AGGREGATIONS.get('RAW'));
+  query.addFilter(filter, 'foo');
+  assert.deepEqual(service.reformat(query), {
+    filterSummary: 'foo',
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  });
+});
+
+test('it formats a filter correctly without a summary in apiMode', function(assert) {
   let service = this.subject();
   let query = MockQuery.create();
   let filter = {
@@ -328,25 +391,6 @@ test('it formats a distribution with free-form points', function(assert) {
   });
 });
 
-test('it formats a distribution with free-form points', function(assert) {
-  let service = this.subject();
-  let query = MockQuery.create({ duration: 10 });
-  query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
-    points: '0.5,0.2, 0.75,0.99',
-    type: DISTRIBUTIONS.get('QUANTILE')
-  });
-  query.addGroup('foo', 'foo');
-  assert.deepEqual(service.reformat(query), {
-    aggregation: {
-      size: 500,
-      type: 'DISTRIBUTION',
-      fields: { foo: 'foo' },
-      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
-    },
-    duration: 10000
-  });
-});
-
 test('it formats a top k query correctly', function(assert) {
   let service = this.subject();
   let query = MockQuery.create({ duration: 10 });
@@ -378,5 +422,432 @@ test('it formats a top k query with threshold and new name correctly', function(
       attributes: { newName: 'bar', threshold: 150 }
     },
     duration: 10000
+  });
+});
+
+test('it recreates a query with a name not created in api mode correctly', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = {
+    name: 'foo',
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 20000
+  };
+
+  assertEmberEqual(assert, service.recreate(query), {
+    name: 'foo',
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 20
+  });
+});
+
+test('it recreates a raw query with no filters', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 20000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 20
+  });
+});
+
+test('it recreates a query with no aggregations', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: null,
+    duration: 20000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    duration: 20
+  });
+});
+
+
+test('it recreates projections correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: { size: 10, type: 'RAW' },
+    projection: { fields: { foo: 'goo', timestamp: 'ts' } },
+    duration: 1000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    projections: [{ field: 'foo', name: 'goo' }, { field: 'timestamp', name: 'ts' }],
+    aggregation: { size: 10, type: 'Raw' },
+    duration: 1
+  });
+});
+
+test('it recreates a filter correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    filters: [FILTERS.OR_FREEFORM],
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: {
+      clause: {
+        condition: 'OR',
+        rules: [
+          { id: 'complex_map_column.subfield1', field: 'complex_map_column.subfield1', operator: 'not_in', value: '1,2,3' },
+          { id: 'simple_column', field: 'simple_column', operator: 'in', value: 'foo,bar' }
+        ]
+      }
+    },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 0
+  });
+});
+
+test('it recreates a filter not created in api mode correctly', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = {
+    filters: [{
+      operation: 'OR',
+      clauses: [
+        {
+          operation: '!=' ,
+          field: 'complex_map_column.subfield1',
+          subfield: true,
+          values: ['1', '2', '3']
+        },
+        {
+          operation: '==',
+          field: 'simple_column',
+          values: ['foo', 'bar']
+        }
+      ]
+    }],
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: {
+      clause: {
+        condition: 'OR',
+        rules: [
+          { id: 'complex_map_column.*', field: 'complex_map_column.*', subfield: 'subfield1', operator: 'not_in', value: '1,2,3' },
+          { id: 'simple_column', field: 'simple_column', operator: 'in', value: 'foo,bar' }
+        ]
+      }
+    },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 0
+  });
+});
+
+test('it recreates and nests a simple filter if it is the only one at the top level', function(assert) {
+  let service = this.subject();
+  let query = {
+    filters: [{ field: 'foo', operation: '!=', values: ['1'] }],
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: {
+      clause: {
+        condition: 'AND',
+        rules: [{ id: 'foo', field: 'foo', operator: 'not_equal', value: '1' }]
+      }
+    },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 0
+  });
+});
+
+test('it recreates a count distinct query with a new name query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 100,
+      type: 'COUNT DISTINCT',
+      fields: { foo: '1', bar: '2' },
+      attributes: { newName: 'cnt' }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 100,
+      type: 'Count Distinct',
+      groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }],
+      attributes: { newName: 'cnt' }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a count distinct query without a new name query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 100,
+      type: 'COUNT DISTINCT',
+      fields: { foo: '1', bar: '2' }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 100,
+      type: 'Count Distinct',
+      groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a distinct query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      fields: { foo: '1', bar: '2' }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Group',
+      groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a group all query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      attributes: {
+        operations: [
+          { type: 'COUNT', newName: 'cnt' },
+          { type: 'SUM', field: 'baz', newName: 'sum' },
+          { type: 'MAX', field: 'foo' },
+          { type: 'AVG', field: 'bar' },
+          { type: 'MIN', field: 'foo' }
+        ]
+      }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Group',
+      metrics: [
+        { type: 'Count', name: 'cnt' },
+        { type: 'Sum', field: 'baz', name: 'sum' },
+        { type: 'Maximum', field: 'foo' },
+        { type: 'Average', field: 'bar' },
+        { type: 'Minimum', field: 'foo' }
+      ]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a group by query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'GROUP',
+      fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
+      attributes: {
+        operations: [
+          { type: 'COUNT' },
+          { type: 'SUM', field: 'baz', newName: 'sum' },
+          { type: 'MIN', field: 'foo' }
+        ]
+      }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Group',
+      groups: [{ field: 'foo', name: 'foo' }, { field: 'complex_map_column.foo', name: 'bar' }],
+      metrics: [
+        { type: 'Count' },
+        { type: 'Sum', field: 'baz', name: 'sum' },
+        { type: 'Minimum', field: 'foo' }
+      ]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a quantile distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Quantile', numberOfPoints: 15 }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a frequency distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'PMF', numberOfPoints: 15 }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Frequency', numberOfPoints: 15 }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a cumulative frequency distribution with number of points', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'CDF', numberOfPoints: 15 }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Cumulative Frequency', numberOfPoints: 15 }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a distribution with generated points', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Quantile', start: 0.4, end: 0.6, increment: 0.01 }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a distribution with free-form points', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'DISTRIBUTION',
+      fields: { foo: 'foo' },
+      attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Distribution',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { type: 'Quantile', points: '0.5,0.2,0.75,0.99' }
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a top k query correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'TOP K',
+      fields: { foo: 'foo' }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Top K',
+      groups: [{ field: 'foo', name: 'foo' }]
+    },
+    duration: 10
+  });
+});
+
+test('it recreates a top k query with threshold and new name correctly', function(assert) {
+  let service = this.subject();
+  let query = {
+    aggregation: {
+      size: 500,
+      type: 'TOP K',
+      fields: { foo: 'foo' },
+      attributes: { newName: 'bar', threshold: 150 }
+    },
+    duration: 10000
+  };
+  assertEmberEqual(assert, service.recreate(query), {
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: {
+      size: 500,
+      type: 'Top K',
+      groups: [{ field: 'foo', name: 'foo' }],
+      attributes: { newName: 'bar', threshold: 150 }
+    },
+    duration: 10
   });
 });

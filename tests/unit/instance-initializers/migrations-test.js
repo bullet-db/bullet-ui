@@ -29,6 +29,12 @@ test('it initializes', function(assert) {
   assert.ok(true);
 });
 
+test('it functions even if the manager cannot be looked up', function(assert) {
+  assert.expect(1);
+  applyMigrations(null, null);
+  assert.ok(true);
+});
+
 test('it applies the delete results migration', function(assert) {
   assert.expect(1);
 
@@ -48,6 +54,6 @@ test('it applies the delete queries migration', function(assert) {
   let migrations = { deletions: 'query' };
   window.localStorage.foo = 'bar';
 
-  applyMigrations(null, migrations);
+  applyMigrations({ }, migrations);
   assert.notOk(window.localStorage.foo);
 });

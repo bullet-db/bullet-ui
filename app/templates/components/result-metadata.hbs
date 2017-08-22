@@ -5,7 +5,7 @@
  --}}
 
 {{#if expanded}}
-  {{pretty-json data=metadata}}
+  {{pretty-json data=metadata defaultLevels=4}}
 {{/if}}
 <div class="expand-bar" onclick={{action "toggleExpanded"}}>
   <i class="{{expansionIconClasses}}"></i>

@@ -35,15 +35,17 @@ moduleForComponent('records-viewer', 'Integration | Component | records viewer',
   }
 });
 
-test('it renders the data by default in a pre tag', function(assert) {
+test('it renders the data by default in pretty json ', function(assert) {
   this.set('mockRecords', RESULTS.SINGLE.records);
   this.set('rawMode', true);
   this.render(hbs`{{records-viewer records=mockRecords showRawData=rawMode}}`);
-  assert.equal(this.$('.pretty-json-container').text().trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
+  assert.equal(this.$('.raw-display').length, 1);
+  assert.equal(this.$('.pretty-json-container').length, 1);
+  assert.ok(this.$('.pretty-json-container').text().trim().startsWith('Array[1]'));
 });
 
 test('it allows swapping between table and the raw views', function(assert) {
-  assert.expect(10);
+  assert.expect(11);
   this.set('mockModel', { isSingleRow: true });
   this.set('mockRecords', RESULTS.SINGLE.records);
   this.render(hbs`{{records-viewer model=mockModel records=mockRecords}}`);
@@ -51,7 +53,7 @@ test('it allows swapping between table and the raw views', function(assert) {
   return wait().then(() => {
     assert.equal(this.$('.chart-view').length, 0);
     assert.ok(this.$('.table-view').hasClass('active'));
-    assert.equal(this.$('.pretty-json-container').length, 0);
+    assert.equal(this.$('.raw-display').length, 0);
     assert.equal(this.$('.records-table').length, 1);
     assert.equal(this.$('.lt-column').length, 3);
     assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 3);
@@ -60,6 +62,7 @@ test('it allows swapping between table and the raw views', function(assert) {
       assert.equal(this.$('.chart-view').length, 0);
       assert.ok(this.$('.raw-view').hasClass('active'));
       assert.equal(this.$('.records-table').length, 0);
+      assert.equal(this.$('.raw-display').length, 1);
       assert.equal(this.$('.pretty-json-container').length, 1);
     });
   });
@@ -122,16 +125,16 @@ test('it enables charting mode if the results have more than one row', function(
   this.set('mockRecords', RESULTS.GROUP.records);
   this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
   assert.equal(this.$('.chart-view').length, 1);
-  assert.equal(this.$('.pretty-json-container').length, 0);
+  assert.equal(this.$('.raw-display').length, 0);
   assert.equal(this.$('.records-table').length, 1);
   assert.equal(this.$('.lt-column').length, 4);
   assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 12);
   this.$('.chart-view').click();
   return wait().then(() => {
     assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.pretty-json-container').length, 0);
+    assert.equal(this.$('.raw-display').length, 0);
     // Defaults to simple chart view
-    assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
     assert.equal(this.$('.visual-container canvas').length, 1);
   });
 });
@@ -149,19 +152,19 @@ test('it allows you to switch to pivot mode', function(assert) {
   this.set('mockRecords', RESULTS.DISTRIBUTION.records);
   this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
   assert.equal(this.$('.chart-view').length, 1);
-  assert.equal(this.$('.pretty-json-container').length, 0);
+  assert.equal(this.$('.raw-display').length, 0);
   assert.equal(this.$('.records-table').length, 1);
   assert.equal(this.$('.lt-column').length, 3);
   assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 9);
   this.$('.chart-view').click();
   return wait().then(() => {
     assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.pretty-json-container').length, 0);
-    assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+    assert.equal(this.$('.raw-display').length, 0);
+    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
     assert.equal(this.$('.visual-container canvas').length, 1);
-    this.$('.mode-toggle .advanced-view').click();
+    this.$('.mode-toggle .right-view').click();
     return wait().then(() => {
-      assert.ok(this.$('.mode-toggle .advanced-view').hasClass('selected'));
+      assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
       assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
     });
   });
@@ -180,15 +183,32 @@ test('it enables only pivot mode if the results are raw', function(assert) {
   this.set('mockRecords', RESULTS.GROUP.records);
   this.render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
   assert.equal(this.$('.chart-view').length, 1);
-  assert.equal(this.$('.pretty-json-container').length, 0);
+  assert.equal(this.$('.raw-display').length, 0);
   assert.equal(this.$('.records-table').length, 1);
   assert.equal(this.$('.lt-column').length, 4);
   assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 12);
   this.$('.chart-view').click();
   return wait().then(() => {
     assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.pretty-json-container').length, 0);
+    assert.equal(this.$('.raw-display').length, 0);
     assert.equal(this.$('.mode-toggle').length, 0);
     assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
+  });
+});
+
+test('it allows you to switch to raw json data mode', function(assert) {
+  assert.expect(7);
+  this.set('rawMode', true);
+  this.set('mockRecords', RESULTS.SINGLE.records);
+  this.render(hbs`{{records-viewer records=mockRecords showRawData=rawMode}}`);
+  assert.equal(this.$('.chart-view').length, 1);
+  assert.equal(this.$('.raw-display').length, 1);
+  assert.equal(this.$('.pretty-json-container').length, 1);
+  assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
+  assert.equal(this.$('.records-table').length, 0);
+  this.$('.mode-toggle .right-view').click();
+  return wait().then(() => {
+    assert.equal(this.$('pre').text().trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
+    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
   });
 });

@@ -40,6 +40,12 @@ export default DS.Model.extend(Validations, {
   }),
   results: DS.hasMany('result', { async: true, dependent: 'destroy' }),
 
+  hasUnsavedFields: Ember.computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
+    let projections = this.getWithDefault('projections', Ember.A());
+    let groups = this.getWithDefault('aggregation.groups', Ember.A());
+    return this.hasNoName(projections) || this.hasNoName(groups);
+  }).readOnly(),
+
   filterSummary: Ember.computed('filter.summary', function() {
     let summary = this.get('filter.summary');
     return Ember.isEmpty(summary) ? 'None' : summary;
@@ -128,5 +134,9 @@ export default DS.Model.extend(Validations, {
 
   summarizeFieldLike(fieldLike) {
     return Ember.isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => Ember.isEmpty(n)).join(', ');
+  },
+
+  hasNoName(fieldLike) {
+    return Ember.isEmpty(fieldLike) ? false : fieldLike.any(f => !Ember.isEmpty(f.get('field')) && Ember.isEmpty(f.get('name')));
   }
 });

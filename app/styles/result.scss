@@ -100,12 +100,6 @@ $information-wrapper-padding-right: 35px;
 .result-container {
   @import "components/records-viewer";
   @import "components/no-results-help";
-  pre {
-    padding-left: $results-inner-left-space;
-    padding-right: $results-inner-right-space;
-    overflow: auto;
-    max-height: 60vh;
-  }
   margin-left: $left-bar-separation-width;
   margin-bottom: 30px;
   .help-text {

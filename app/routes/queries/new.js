@@ -4,10 +4,15 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
+import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 
 export default Ember.Route.extend(Filterizer, {
   corsRequest: Ember.inject.service(),
+  // Filterizer mixins
+  subfieldSeparator: SUBFIELD_SEPARATOR,
+  subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
+  apiMode: false,
 
   beforeModel() {
     let aggregation = this.store.createRecord('aggregation');

@@ -20,11 +20,11 @@ test('it starts off in chart mode and allows you to switch to pivot mode', funct
   this.set('mockColumns', ['Probability', 'Count', 'Range']);
   this.render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
 
-  assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+  assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
   assert.equal(this.$('.visual-container canvas').length, 1);
-  this.$('.mode-toggle .advanced-view').click();
+  this.$('.mode-toggle .right-view').click();
   return wait().then(() => {
-    assert.ok(this.$('.mode-toggle .advanced-view').hasClass('selected'));
+    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
     assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
     assert.equal(this.$('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
@@ -36,7 +36,7 @@ test('it charts a single dependent column', function(assert) {
   this.set('mockRows', RESULTS.SINGLE.records);
   this.set('mockColumns', ['foo', 'timestamp', 'domain']);
   this.render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
-  assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+  assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
   assert.equal(this.$('.visual-container canvas').length, 1);
 });
 
@@ -46,7 +46,7 @@ test('it charts multiple dependent columns', function(assert) {
   this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
   this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
   this.render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
-  assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+  assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
   assert.equal(this.$('.visual-container canvas').length, 1);
 });
 
@@ -76,11 +76,11 @@ test('it saves pivot table configurations', function(assert) {
   this.set('mockColumns', ['Probability', 'Count', 'Range']);
   this.render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
 
-  assert.ok(this.$('.mode-toggle .simple-view').hasClass('selected'));
+  assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
   assert.equal(this.$('.visual-container canvas').length, 1);
-  this.$('.mode-toggle .advanced-view').click();
+  this.$('.mode-toggle .right-view').click();
   return wait().then(() => {
-    assert.ok(this.$('.mode-toggle .advanced-view').hasClass('selected'));
+    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
     assert.equal(this.$('.visual-container .pivot-table-container .pvtUi').length, 1);
     assert.equal(this.$('.pvtUi select.pvtRenderer').val(), 'Table');
     this.$('.pivot-table-container select.pvtRenderer').val('Bar Chart').trigger('change');
