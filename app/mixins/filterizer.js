@@ -112,7 +112,7 @@ export default Ember.Mixin.create({
       throw new Error(`No field found for ${JSON.stringify(filter)}`);
     }
     let rule = {
-      id:  field,
+      id: field,
       field: field,
       value: values.join(this.get('multipleValueSeparator'))
     };
@@ -215,7 +215,7 @@ export default Ember.Mixin.create({
     let value = rule.value;
     let field = rule.field;
     let filter = {
-      field:  field,
+      field: field,
       values: [value]
     };
     if (field && rule.subfield) {

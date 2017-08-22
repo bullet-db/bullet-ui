@@ -15,7 +15,7 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels') , { hoverPreviewEnabled: true });
+    let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels'), { hoverPreviewEnabled: true });
     this.$().append(formatter.render());
   }
 });

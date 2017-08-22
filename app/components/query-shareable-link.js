@@ -21,7 +21,7 @@ export default Ember.Component.extend({
 
   actions: {
     collapse() {
-      this.get('row').set('expanded', false);
+      this.set('row.expanded', false);
     }
   }
 });
