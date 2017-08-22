@@ -34,21 +34,49 @@ function getFragment(link) {
 }
 
 test('linking a query and navigating to it', function(assert) {
-  assert.expect(2);
+  assert.expect(5);
 
   visit('/queries/new');
+  click('.submit-button');
   visit('queries').then(() => {
     assert.equal(find('.query-description').length, 1);
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
   andThen(() => {
-    assert.equal(find('.query-description').length, 2);
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+    fragment = getFragment(find('.queries-table .lt-expanded-row .query-shareable-link input').val());
+    visit(`/create/${fragment}`);
+  });
+  visit('queries');
+  andThen(() => {
+    assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
+    assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
+  });
+});
+
+test('clicking the linking query button twice closes it', function(assert) {
+  assert.expect(3);
+
+  visit('/queries/new');
+  click('.submit-button');
+  visit('queries').then(() => {
+    assert.equal(find('.query-description').length, 1);
+  });
+  triggerEvent('.queries-table .query-name-entry', 'mouseover');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+  });
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 0);
   });
 });
 
 test('linking an invalid query fails', function(assert) {
-  assert.expect(2);
+  assert.expect(3);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
@@ -57,8 +85,9 @@ test('linking an invalid query fails', function(assert) {
     assert.equal(find('.query-description').length, 1);
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
   andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 0);
     assert.equal(find('.query-description').length, 1);
   });
 });
@@ -99,6 +128,7 @@ test('linking a full query with filters, raw data output with projections and a 
   andThen(() => {
     assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
     assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
+    // The one without any results is the newly created one
     assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
     assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
   });
@@ -112,7 +142,7 @@ test('linking a full query with filters, raw data output with projections and a 
 });
 
 test('linking a full query with filters, grouped data output with groups and fields works', function(assert) {
-  assert.expect(15);
+  assert.expect(17);
 
   visit('/queries/new');
   fillIn('.name-container input', 'test query');
@@ -134,15 +164,22 @@ test('linking a full query with filters, grouped data output with groups and fie
   selectChoose('.output-container .metrics-container .field-selection-container:eq(1) .field-selection', 'simple_column');
   fillIn('.output-container .metrics-container .field-selection-container:eq(1) .field-name input', 'avg_bar');
 
-  click('.save-button');
+  click('.submit-button');
   visit('queries');
   andThen(() => {
     assert.equal(find('.query-description').text().trim(), 'test query');
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+    fragment = getFragment(find('.queries-table .lt-expanded-row .query-shareable-link input').val());
+    visit(`/create/${fragment}`);
+  });
+  visit('queries');
   andThen(() => {
     assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
     assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
     assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
   });
@@ -163,7 +200,7 @@ test('linking a full query with filters, grouped data output with groups and fie
 });
 
 test('linking a distribution query with number of points works', function(assert) {
-  assert.expect(9);
+  assert.expect(11);
 
   visit('/queries/new');
   fillIn('.name-container input', 'test query');
@@ -173,15 +210,22 @@ test('linking a distribution query with number of points works', function(assert
   selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
   fillIn('.output-container .distribution-type-number-of-points input', '15');
 
-  click('.save-button');
+  click('.submit-button');
   visit('queries');
   andThen(() => {
     assert.equal(find('.query-description').text().trim(), 'test query');
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+    fragment = getFragment(find('.queries-table .lt-expanded-row .query-shareable-link input').val());
+    visit(`/create/${fragment}`);
+  });
+  visit('queries');
   andThen(() => {
     assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
     assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
     assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
   });
@@ -196,7 +240,7 @@ test('linking a distribution query with number of points works', function(assert
 });
 
 test('linking a distribution query with generated points works', function(assert) {
-  assert.expect(11);
+  assert.expect(13);
 
   visit('/queries/new');
   fillIn('.name-container input', 'test query');
@@ -208,15 +252,22 @@ test('linking a distribution query with generated points works', function(assert
   fillIn('.output-container .distribution-type-point-range input:eq(1)', '2.5');
   fillIn('.output-container .distribution-type-point-range input:eq(2)', '0.5');
 
-  click('.save-button');
+  click('.submit-button');
   visit('queries');
   andThen(() => {
     assert.equal(find('.query-description').text().trim(), 'test query');
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+    fragment = getFragment(find('.queries-table .lt-expanded-row .query-shareable-link input').val());
+    visit(`/create/${fragment}`);
+  });
+  visit('queries');
   andThen(() => {
     assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
     assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
     assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
   });
@@ -233,7 +284,7 @@ test('linking a distribution query with generated points works', function(assert
 });
 
 test('linking a distribution query with points works', function(assert) {
-  assert.expect(9);
+  assert.expect(11);
 
   visit('/queries/new');
   fillIn('.name-container input', 'test query');
@@ -242,15 +293,22 @@ test('linking a distribution query with points works', function(assert) {
   selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
   fillIn('.output-container .distribution-type-points input', '0,0.2,1');
 
-  click('.save-button');
+  click('.submit-button');
   visit('queries');
   andThen(() => {
     assert.equal(find('.query-description').text().trim(), 'test query');
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+    fragment = getFragment(find('.queries-table .lt-expanded-row .query-shareable-link input').val());
+    visit(`/create/${fragment}`);
+  });
+  visit('queries');
   andThen(() => {
     assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
     assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
     assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
   });
@@ -265,7 +323,7 @@ test('linking a distribution query with points works', function(assert) {
 });
 
 test('linking a top k query works', function(assert) {
-  assert.expect(12);
+  assert.expect(14);
 
   visit('/queries/new');
   fillIn('.name-container input', 'test query');
@@ -282,15 +340,23 @@ test('linking a top k query works', function(assert) {
   fillIn('.output-container .top-k-min-count input', '1500');
   fillIn('.output-container .top-k-display-name input', 'cnt');
 
-  click('.save-button');
+
+  click('.submit-button');
   visit('queries');
   andThen(() => {
     assert.equal(find('.query-description').text().trim(), 'test query');
   });
   triggerEvent('.queries-table .query-name-entry', 'mouseover');
-  click('.queries-table .query-name-entry .query-name-actions .copy-icon');
+  click('.queries-table .query-name-entry .query-name-actions .link-icon');
+  andThen(() => {
+    assert.equal(find('.queries-table .lt-expanded-row .query-shareable-link input').length, 1);
+    fragment = getFragment(find('.queries-table .lt-expanded-row .query-shareable-link input').val());
+    visit(`/create/${fragment}`);
+  });
+  visit('queries');
   andThen(() => {
     assert.equal(find('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(find('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
     assert.equal(find('.queries-table .query-results-entry').last().text().trim(), '--');
     assert.equal(find('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
   });

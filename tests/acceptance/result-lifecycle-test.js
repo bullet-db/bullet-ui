@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Ember from 'ember';
 import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
@@ -81,6 +82,30 @@ test('it lets you expand metadata in results', function(assert) {
     andThen(() => {
       assert.ok(find('.result-metadata').hasClass('is-expanded'));
       assert.equal(find('.result-metadata pre').length, 1);
+    });
+  });
+});
+
+test('it lets you expand result entries in a popover', function(assert) {
+  assert.expect(4);
+  server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
+
+  visit('/queries/new');
+  click('.submit-button');
+  click('.table-view');
+  andThen(() => {
+    assert.equal(find('.lt-body .lt-row .lt-cell').length, 3);
+  });
+  click('.records-table .lt-body .lt-row .record-entry .plain-entry:contains("test")');
+  andThen(() => {
+    assert.equal(find('.record-entry-popover').length, 1);
+    assert.equal(find('.record-entry-popover .record-popover-body pre').text().trim(), 'test');
+  });
+  click('.record-entry-popover .close-button');
+  // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
+  Ember.run.next(() => {
+    andThen(() => {
+      assert.equal(find('.record-entry-popover').length, 0);
     });
   });
 });
