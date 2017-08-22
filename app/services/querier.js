@@ -49,6 +49,7 @@ export default CORSRequest.extend(Filterizer, {
     this.setIfTruthy(query, 'filter', filter);
     this.setIfTruthy(query, 'projections', projection);
     this.setIfTruthy(query, 'aggregation', aggregation);
+    this.setIfTruthy(query, 'name', json.name);
     query.set('duration', Number(json.duration) / 1000);
     return query;
   },
@@ -68,6 +69,7 @@ export default CORSRequest.extend(Filterizer, {
       json.filters = [filter];
     }
     if (!this.get('apiMode')) {
+      this.assignIfTruthy(json, 'name', query.get('name'));
       this.assignIfTruthy(json, 'filterSummary', query.get('filter.summary'));
     }
     if (projection) {

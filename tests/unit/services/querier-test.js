@@ -87,7 +87,7 @@ test('it overrides options correctly', function(assert) {
 
 test('it formats a defaulted query correctly', function(assert) {
   let service = this.subject();
-  let query = MockQuery.create({ foo: 'bar' });
+  let query = MockQuery.create({ name: 'baz', foo: 'bar' });
   query.set('aggregation', null);
   assert.deepEqual(service.reformat(query), { duration: 0 });
 });
@@ -125,6 +125,20 @@ test('it ignores a removed filter', function(assert) {
   query.addAggregation(AGGREGATIONS.get('RAW'));
   query.set('filter', undefined);
   assert.deepEqual(service.reformat(query), { aggregation: { size: 1, type: 'RAW' }, duration: 0 });
+});
+
+test('it formats a query correctly with a name', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = MockQuery.create({ name: 'foo' });
+  let filter = { condition: 'OR', rules: [] };
+  query.addAggregation(AGGREGATIONS.get('RAW'));
+  query.addFilter(filter, 'foo');
+  assert.deepEqual(service.reformat(query), {
+    name: 'foo',
+    filterSummary: 'foo',
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 0
+  });
 });
 
 test('it formats a filter correctly with a summary', function(assert) {
@@ -408,6 +422,22 @@ test('it formats a top k query with threshold and new name correctly', function(
       attributes: { newName: 'bar', threshold: 150 }
     },
     duration: 10000
+  });
+});
+
+test('it recreates a query with a name not created in api mode correctly', function(assert) {
+  let service = this.subject({ apiMode: false });
+  let query = {
+    name: 'foo',
+    aggregation: { size: 1, type: 'RAW' },
+    duration: 20000
+  };
+
+  assertEmberEqual(assert, service.recreate(query), {
+    name: 'foo',
+    filter: { clause: { condition: 'AND', rules: [] } },
+    aggregation: { size: 1, type: 'Raw' },
+    duration: 20
   });
 });
 
