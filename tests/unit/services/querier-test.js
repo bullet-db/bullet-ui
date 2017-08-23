@@ -18,9 +18,13 @@ function arrayChecker(assert, emArray) {
   return (v, i) => assertEmberEqual(assert, emArray.objectAt(i), v);
 }
 
+function isEmptyObject(object) {
+  return Ember.isEmpty(object) || Object.keys(object.data) === 0;
+}
+
 function assertEmberEqual(assert, emObject, object) {
   if (Ember.isEmpty(emObject) && !Ember.isEmpty(object)) {
-    assert.ok(false, `Expected ${JSON.stringify(object)} but found empty`);
+    assert.ok(false, `Expected ${JSON.stringify(object)} but found empty: ${emObject}`);
     return;
   }
   for (let key in object) {
@@ -31,12 +35,17 @@ function assertEmberEqual(assert, emObject, object) {
     if (type === 'string' || type === 'number' || type === 'boolean') {
       assert.equal(emValue, value);
     } else if (type === 'object') {
+      let emType = Ember.typeOf(emValue);
       // Special case for filter.clause
-      if (key === 'clause' && Ember.typeOf(emValue) === 'object') {
+      if (key === 'clause' && emType === 'object') {
         assert.deepEqual(emValue, value);
         return;
       }
-      assertEmberEqual(assert, emValue, value);
+      if (emType === 'object' && isEmptyObject(emValue)) {
+        assert.ok(Ember.$.isEmptyObject(value), `Ember object: ${emValue} was empty but ${value} is not`);
+      } else {
+        assertEmberEqual(assert, emValue, value);
+      }
     } else if (type === 'array') {
       if (!Ember.isArray(emValue)) {
         assert.ok(false, `Expected array ${JSON.stringify(value)} but found ${emValue}`);
@@ -436,7 +445,7 @@ test('it recreates a query with a name not created in api mode correctly', funct
   assertEmberEqual(assert, service.recreate(query), {
     name: 'foo',
     filter: { clause: { condition: 'AND', rules: [] } },
-    aggregation: { size: 1, type: 'Raw' },
+    aggregation: { size: 1, type: 'Raw', attributes: { } },
     duration: 20
   });
 });
@@ -449,12 +458,12 @@ test('it recreates a raw query with no filters', function(assert) {
   };
   assertEmberEqual(assert, service.recreate(query), {
     filter: { clause: { condition: 'AND', rules: [] } },
-    aggregation: { size: 1, type: 'Raw' },
+    aggregation: { size: 1, type: 'Raw', attributes: { } },
     duration: 20
   });
 });
 
-test('it recreates a query with no aggregations', function(assert) {
+test('it recreates a query with no aggregations even though that should not be possible', function(assert) {
   let service = this.subject();
   let query = {
     aggregation: null,
@@ -477,7 +486,7 @@ test('it recreates projections correctly', function(assert) {
   assertEmberEqual(assert, service.recreate(query), {
     filter: { clause: { condition: 'AND', rules: [] } },
     projections: [{ field: 'foo', name: 'goo' }, { field: 'timestamp', name: 'ts' }],
-    aggregation: { size: 10, type: 'Raw' },
+    aggregation: { size: 10, type: 'Raw', attributes: { } },
     duration: 1
   });
 });
@@ -499,7 +508,7 @@ test('it recreates a filter correctly', function(assert) {
         ]
       }
     },
-    aggregation: { size: 1, type: 'Raw' },
+    aggregation: { size: 1, type: 'Raw', attributes: { } },
     duration: 0
   });
 });
@@ -523,7 +532,7 @@ test('it recreates a filter not created in api mode correctly', function(assert)
         }
       ]
     }],
-    aggregation: { size: 1, type: 'RAW' },
+    aggregation: { size: 1, type: 'RAW', attributes: { } },
     duration: 0
   };
   assertEmberEqual(assert, service.recreate(query), {
@@ -536,7 +545,7 @@ test('it recreates a filter not created in api mode correctly', function(assert)
         ]
       }
     },
-    aggregation: { size: 1, type: 'Raw' },
+    aggregation: { size: 1, type: 'Raw', attributes: { } },
     duration: 0
   });
 });
@@ -555,7 +564,7 @@ test('it recreates and nests a simple filter if it is the only one at the top le
         rules: [{ id: 'foo', field: 'foo', operator: 'not_equal', value: '1' }]
       }
     },
-    aggregation: { size: 1, type: 'Raw' },
+    aggregation: { size: 1, type: 'Raw', attributes: { } },
     duration: 0
   });
 });
@@ -598,6 +607,7 @@ test('it recreates a count distinct query without a new name query correctly', f
     aggregation: {
       size: 100,
       type: 'Count Distinct',
+      attributes: { },
       groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }]
     },
     duration: 10
@@ -610,6 +620,7 @@ test('it recreates a distinct query correctly', function(assert) {
     aggregation: {
       size: 500,
       type: 'GROUP',
+      attributes: { },
       fields: { foo: '1', bar: '2' }
     },
     duration: 10000
@@ -619,6 +630,7 @@ test('it recreates a distinct query correctly', function(assert) {
     aggregation: {
       size: 500,
       type: 'Group',
+      attributes: { },
       groups: [{ field: 'foo', name: '1' }, { field: 'bar', name: '2' }]
     },
     duration: 10
@@ -648,6 +660,7 @@ test('it recreates a group all query correctly', function(assert) {
     aggregation: {
       size: 500,
       type: 'Group',
+      attributes: { },
       metrics: [
         { type: 'Count', name: 'cnt' },
         { type: 'Sum', field: 'baz', name: 'sum' },
@@ -682,6 +695,7 @@ test('it recreates a group by query correctly', function(assert) {
     aggregation: {
       size: 500,
       type: 'Group',
+      attributes: { },
       groups: [{ field: 'foo', name: 'foo' }, { field: 'complex_map_column.foo', name: 'bar' }],
       metrics: [
         { type: 'Count' },
@@ -814,6 +828,7 @@ test('it recreates a top k query correctly', function(assert) {
     aggregation: {
       size: 500,
       type: 'TOP K',
+      attributes: { },
       fields: { foo: 'foo' }
     },
     duration: 10000
@@ -823,6 +838,7 @@ test('it recreates a top k query correctly', function(assert) {
     aggregation: {
       size: 500,
       type: 'Top K',
+      attributes: { },
       groups: [{ field: 'foo', name: 'foo' }]
     },
     duration: 10
