@@ -133,7 +133,7 @@ export default CORSRequest.extend(Filterizer, {
     aggregation.set('type', AGGREGATIONS.get(this.snakeCase(json.type)));
     this.setIfTruthy(aggregation, 'groups', groups);
     this.setIfTruthy(aggregation, 'metrics', metrics);
-    this.setIfTruthy(aggregation, 'attributes', attributes);
+    aggregation.set('attributes', attributes);
     aggregation.set('size', Number(json.size));
 
     return aggregation;
@@ -182,7 +182,7 @@ export default CORSRequest.extend(Filterizer, {
 
   makeAttributes(json) {
     if (Ember.isEmpty(json)) {
-      return false;
+      return Ember.Object.create();
     }
 
     let attributes = { };
@@ -203,7 +203,7 @@ export default CORSRequest.extend(Filterizer, {
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
-    return Ember.$.isEmptyObject(attributes) ? false : Ember.Object.create(attributes);
+    return Ember.Object.create(attributes);
   },
 
   getAttributes(aggregation) {
