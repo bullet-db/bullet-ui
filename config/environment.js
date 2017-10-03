@@ -45,6 +45,9 @@ module.exports = function(environment) {
     // Testem prefers this...
     ENV.locationType = 'none';
 
+    // Override settings with fixed settings
+    ENV.APP.SETTINGS = TEST_SETTINGS;
+
     // keep test console output quieter
     ENV.APP.LOG_ACTIVE_GENERATION = false;
     ENV.APP.LOG_VIEW_LOOKUPS = false;
@@ -56,3 +59,54 @@ module.exports = function(environment) {
   }
   return ENV;
 };
+
+const TEST_SETTINGS = {
+  queryHost: 'https://foo.bar.com:4443',
+  queryNamespace: 'bullet/api',
+  queryPath: 'drpc',
+  schemaHost: 'https://foo.bar.com:4443',
+  schemaNamespace: 'bullet/api',
+  helpLinks: [
+   {
+      name: 'Tutorials',
+      link: 'https://yahoo.github.io/bullet-docs/ui/usage'
+    }
+  ],
+  bugLink: 'https://github.com/yahoo/bullet-ui/issues',
+  modelVersion: 2,
+  migrations: {
+    deletions: 'result'
+  },
+  defaultValues: {
+    aggregationMaxSize: 512,
+    rawMaxSize: 100,
+    durationMaxSecs: 120,
+    distributionNumberOfPoints: 11,
+    distributionQuantilePoints: '0, 0.25, 0.5, 0.75, 0.9, 1',
+    distributionQuantileStart: 0,
+    distributionQuantileEnd: 1,
+    distributionQuantileIncrement: 0.1,
+    queryTimeoutSecs: 3,
+    sketches: {
+      countDistinctMaxEntries: 16384,
+      groupByMaxEntries: 512,
+      distributionMaxEntries: 1024,
+      distributionMaxNumberOfPoints: 100,
+      topKMaxEntries: 1024,
+      topKErrorType: 'No False Negatives'
+    },
+    metadataKeyMapping: {
+      theta: 'theta',
+      uniquesEstimate: 'uniques_estimate',
+      queryCreationTime: 'query_receive_time',
+      queryTerminationTime: 'query_finish_time',
+      estimatedResult: 'was_estimated',
+      standardDeviations: 'standard_deviations',
+      normalizedRankError: 'normalized_rank_error',
+      maximumCountError: 'maximum_count_error',
+      itemsSeen: 'items_seen',
+      minimumValue: 'minimum_value',
+      maximumValue: 'maximum_value'
+    }
+  }
+}
