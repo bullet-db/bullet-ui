@@ -9,6 +9,8 @@
     "chartjs": "2.5.0",
     "pivottable": "^2.13.0",
     "jquery-ui": "^1.12.1",
-    "c3": "^0.4.11"
+    "c3": "^0.4.11",
+    "localforage": "^1.5.5",
+    "localforage-sessionstoragewrapper": "^1.2.0"
   }
 }

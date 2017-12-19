@@ -4,5 +4,5 @@
  *  See the LICENSE file associated with the project for terms.
  */
 
-// The local storage ember-local-storage serializer
-export { default } from 'ember-local-storage/serializers/serializer';
+// The local storage ember-localforage serializer
+export { default } from 'ember-localforage/serializers/serializer';
