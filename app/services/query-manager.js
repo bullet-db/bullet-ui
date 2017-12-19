@@ -96,7 +96,7 @@ export default Ember.Service.extend({
 
   addResult(id, data) {
     return this.get('store').findRecord('query', id).then((query) => {
-      let result = this.get('store').createRecord('result', {
+      let result = Ember.run(this.get('store'), 'createRecord', 'result', {
         metadata: data.meta,
         records: data.records,
         querySnapshot: {
@@ -109,10 +109,10 @@ export default Ember.Service.extend({
         },
         query: query
       });
-      result.save();
       query.set('lastRun', result.get('created'));
-      query.save();
-      return result;
+      return query.save().then(() => {
+        return result.save();
+      });
     });
   },
 

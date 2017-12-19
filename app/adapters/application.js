@@ -4,6 +4,5 @@
  *  See the LICENSE file associated with the project for terms.
  */
 
-// The local storage ember-local-storage adapter
-export { default } from 'ember-local-storage/adapters/adapter';
-
+// The IndexedDB ember-local-storage adapter
+export { default } from 'ember-local-storage/adapters/indexeddb';

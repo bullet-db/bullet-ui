@@ -2,7 +2,7 @@
   "name": "bullet-ui",
   "dependencies": {
     "filesaver": "1.3.2",
-    "interact": "^1.2.8",
+    "interact": "~1.2.8",
     "jQuery-QueryBuilder": "2.4.3",
     "jQuery-QueryBuilder-Subfield": "yahoo/jQuery-QueryBuilder-Subfield#v1.0.1",
     "jQuery-QueryBuilder-Placeholders": "yahoo/jQuery-QueryBuilder-Placeholders#v1.0.0",
