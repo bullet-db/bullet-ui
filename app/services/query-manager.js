@@ -96,7 +96,7 @@ export default Ember.Service.extend({
 
   addResult(id, data) {
     return this.get('store').findRecord('query', id).then((query) => {
-      let result = Ember.run(this.get('store'), 'createRecord', 'result', {
+      let result = this.get('store').createRecord('result', {
         metadata: data.meta,
         records: data.records,
         querySnapshot: {
