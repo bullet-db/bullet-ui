@@ -282,7 +282,7 @@ export default Ember.Service.extend({
   },
 
   deleteAllResults() {
-    this.get('store').findAll('query').then(queries => {
+    return this.get('store').findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
   }
