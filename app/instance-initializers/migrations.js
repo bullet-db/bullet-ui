@@ -10,12 +10,15 @@ export function initialize(application) {
   let migrations = settings.get('migrations');
   let version = settings.get('modelVersion');
 
-  let currentVersion = window.localStorage.modelVersion;
-  if (!currentVersion || version > currentVersion) {
-    let manager = application.lookup('service:queryManager');
-    applyMigrations(manager, migrations);
-  }
-  window.localStorage.modelVersion = version;
+  const forage = window.localforage;
+  return forage.getItem('modelVersion').then((currentVersion) => {
+    if (!currentVersion || version > currentVersion) {
+      let manager = application.lookup('service:queryManager');
+      return applyMigrations(manager, migrations, forage);
+    }
+  }).then(() => {
+    return forage.setItem('modelVersion', version);
+  });
 }
 
 /**
@@ -23,7 +26,7 @@ export function initialize(application) {
  * @param  {Object} manager The query manager.
  * @param  {Object} migrations An object containing migrations to apply.
  */
-export function applyMigrations(manager, migrations) {
+export function applyMigrations(manager, migrations, forage) {
   if (!manager) {
     return;
   }
@@ -31,10 +34,12 @@ export function applyMigrations(manager, migrations) {
   // Only support clearing everything or results at the moment
   if (Ember.isEqual(deletions, 'result')) {
     Ember.Logger.log('Deleting all results');
-    manager.deleteAllResults();
+    return manager.deleteAllResults();
   } else if (Ember.isEqual(deletions, 'query')) {
     Ember.Logger.log('Deleting all queries');
-    window.localStorage.clear();
+    return forage.setDriver(forage.INDEXEDDB).then(() => {
+      return forage.clear();
+    });
   }
 }
 

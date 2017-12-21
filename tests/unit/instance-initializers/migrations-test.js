@@ -49,11 +49,20 @@ test('it applies the delete results migration', function(assert) {
 });
 
 test('it applies the delete queries migration', function(assert) {
-  assert.expect(1);
+  assert.expect(2);
 
   let migrations = { deletions: 'query' };
-  window.localStorage.foo = 'bar';
+  let forage = {
+    INDEXEDDB: window.localforage.INDEXEDDB,
+    setDriver(driver) {
+      assert.equal(driver, window.localforage.INDEXEDDB);
+      return Ember.RSVP.resolve();
+    },
+    clear() {
+      assert.ok(true);
+      return Ember.RSVP.resolve();
+    }
+  };
 
-  applyMigrations({ }, migrations);
-  assert.notOk(window.localStorage.foo);
+  applyMigrations({ }, migrations, forage);
 });

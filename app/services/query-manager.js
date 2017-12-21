@@ -109,10 +109,10 @@ export default Ember.Service.extend({
         },
         query: query
       });
-      result.save();
       query.set('lastRun', result.get('created'));
-      query.save();
-      return result;
+      return query.save().then(() => {
+        return result.save();
+      });
     });
   },
 
@@ -282,7 +282,7 @@ export default Ember.Service.extend({
   },
 
   deleteAllResults() {
-    this.get('store').findAll('query').then(queries => {
+    return this.get('store').findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
   }
