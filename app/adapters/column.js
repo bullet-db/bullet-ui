@@ -15,6 +15,13 @@ export default DS.JSONAPIAdapter.extend({
     return this.get('settings.schemaNamespace');
   }),
 
+  ajaxOptions() {
+    let hash = this._super(...arguments);
+    hash.crossDomain = true;
+    hash.xhrFields = { withCredentials: true };
+    return hash;
+  },
+
   shouldBackgroundReloadAll() {
     // Force the columns to be fetched only once per "session"
     return false;
