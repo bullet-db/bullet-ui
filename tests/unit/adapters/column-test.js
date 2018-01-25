@@ -14,10 +14,10 @@ test('it does not background reload', function(assert) {
 });
 
 test('it defaults options correctly', function(assert) {
-  let service = this.subject();
+  let adapter = this.subject();
   let url = 'example.com';
   let type = 'GET';
-  let options = service.ajaxOptions(url, type, {});
+  let options = adapter.ajaxOptions(url, type, {});
   assert.equal(options.url, url);
   assert.equal(options.type, type);
   assert.equal(options.crossDomain, true);

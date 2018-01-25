@@ -15,8 +15,8 @@ export default DS.JSONAPIAdapter.extend({
     return this.get('settings.schemaNamespace');
   }),
 
-  ajaxOptions: function(url, type, options) {
-    let hash = this._super(url, type, options);
+  ajaxOptions() {
+    let hash = this._super(...arguments);
     hash.crossDomain = true;
     hash.xhrFields = { withCredentials: true };
     return hash;
