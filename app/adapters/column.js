@@ -16,7 +16,7 @@ export default DS.JSONAPIAdapter.extend({
   }),
 
   ajaxOptions: function(url, type, options) {
-    let hash = this._super(...arguments);
+    let hash = this._super(url, type, options);
     hash.crossDomain = true;
     hash.xhrFields = { withCredentials: true };
     return hash;
