@@ -12,3 +12,14 @@ test('it does not background reload', function(assert) {
   let adapter = this.subject();
   assert.notOk(adapter.shouldBackgroundReloadAll());
 });
+
+test('it defaults options correctly', function(assert) {
+  let service = this.subject();
+  let url = 'example.com';
+  let type = 'GET';
+  let options = service.ajaxOptions(url, type, {});
+  assert.equal(options.url, url);
+  assert.equal(options.type, type);
+  assert.equal(options.crossDomain, true);
+  assert.deepEqual(options.xhrFields, { withCredentials: true });
+});
