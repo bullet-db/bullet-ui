@@ -13,7 +13,7 @@ test('it aborts a pending request if one exists', function(assert) {
   assert.expect(1);
   let route = this.subject();
   route.set('pendingRequest', {
-    abort() {
+    disconnect() {
       assert.ok(true);
     }
   });

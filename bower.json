@@ -11,6 +11,8 @@
     "jquery-ui": "^1.12.1",
     "c3": "^0.4.11",
     "localforage": "~1.5.5",
-    "localforage-sessionstoragewrapper": "~1.2.0"
+    "localforage-sessionstoragewrapper": "~1.2.0",
+    "stomp-websocket": "2.3.4",
+    "sockjs-client": "1.0.3"
   }
 }

@@ -3,7 +3,9 @@
     "document",
     "window",
     "-Promise",
-    "console"
+    "console",
+    "SockJS",
+    "Stomp"
   ],
   "browser": true,
   "boss": true,

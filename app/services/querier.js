@@ -5,11 +5,11 @@
  */
 import Ember from 'ember';
 import Filterizer from 'bullet-ui/mixins/filterizer';
-import CORSRequest from 'bullet-ui/services/cors-request';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
-export default CORSRequest.extend(Filterizer, {
+export default Ember.Service.extend(Filterizer, {
+  websocket: Ember.inject.service(),
   subfieldSuffix: '.*',
   subfieldSeparator: '.',
   delimiter: ',',
@@ -317,37 +317,41 @@ export default CORSRequest.extend(Filterizer, {
 
 
   /**
-   * Exposes the low-level XMLHTTPRequest response object in order to abort. In order to not expose the parsing
-   * logic, this method does not use Promises or the Promise API of the XMLHTTPRequest object.
+   * Exposes the low-level StompClient object in order to abort.
    *
    * @param  {Object} data             The Query model.
    * @param  {Function} successHandler The function to invoke on success.
    * @param  {Function} errorHandler   The function to invoke on failure.
    * @param  {Object} context          The this context for the success and error handlers.
-   * @return {Object}                  The XMLHTTPRequest object from JQuery representing the ajax call.
+   * @return {Object}                  The StompClient object to communicate with server via WebSocket.
    */
   send(data, successHandler, errorHandler, context) {
     data = this.reformat(data);
-    let path = this.get('path');
-    let options = {
-      data: JSON.stringify(data),
-      type: 'POST',
-      processData: false,
-      contentType: 'text/plain'
-    };
-    options = this.options(path, options);
-    let requestData = { type: 'POST', url: options.url };
-    options.success = (data, textStatus, jqXHR) => {
-      let response = this.handleResponse(jqXHR.status, this.parseHeaders(jqXHR.getAllResponseHeaders()), data, requestData);
-      Ember.run.join(null, this.hasAjaxError(response) ? errorHandler : successHandler,  response, context);
-    };
-    options.error = (jqXHR, textStatus, errorThrown) => {
-      let response = this.parseErrorResponse(jqXHR.responseText) || errorThrown;
-      // Ignore aborts.
-      if (textStatus !== 'abort') {
-        Ember.run.join(null, errorHandler, response, context);
-      }
-    };
-    return Ember.$.ajax(options);
+    let url = [this.get('host'), this.get('namespace'), this.get('path')].join('/');
+    let stompClient = this.get('websocket').createStompClient(url, [], {sessionId: 64});
+    stompClient.connect(
+      {},
+      function onStompConnect() {
+        stompClient.subscribe('/client/response', payload => {
+          let message = JSON.parse(payload.body);
+          if (message.type === 'ACK') {
+            console.log('Request has been ackowledged by server. Query ID is ' + message.content);
+          } else {
+            if (message.type === 'COMPLETE') {
+              stompClient.disconnect();
+           }
+           successHandler(JSON.parse(message.content), context);
+          }
+        });
+        let request = {
+          content: JSON.stringify(data),
+          type: 'NEW_QUERY'
+        };
+        stompClient.send('/server/request', {}, JSON.stringify(request));
+      },
+      function onStompError(...args) {
+        errorHandler('Error when connecting the server: ' + args, context);
+      });
+      return stompClient;
   }
 });

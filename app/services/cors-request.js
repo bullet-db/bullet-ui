@@ -4,8 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import AjaxService from 'ember-ajax/services/ajax';
-import parseResponseHeaders from 'ember-ajax/utils/parse-response-headers';
-import { isAjaxError } from 'ember-ajax/errors';
 
 export default AjaxService.extend({
   options(url, options) {
@@ -13,13 +11,5 @@ export default AjaxService.extend({
     hash.crossDomain = true;
     hash.xhrFields = { withCredentials: true };
     return hash;
-  },
-
-  parseHeaders() {
-    return parseResponseHeaders(...arguments);
-  },
-
-  hasAjaxError() {
-    return isAjaxError(...arguments);
   }
 });

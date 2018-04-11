@@ -9,13 +9,18 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI } from '../helpers/pretender';
+import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server;
+let server, mockSocket;
 
 moduleForAcceptance('Acceptance | query results lifecycle', {
   suppressLogging: true,
 
   beforeEach() {
+    this.application.register('service:mockWebsocket', mockWebsocket);
+    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
+    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
+
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
   },
@@ -29,7 +34,8 @@ moduleForAcceptance('Acceptance | query results lifecycle', {
 
 test('query submission and result navigation', function(assert) {
   assert.expect(3);
-  server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = mockAPI(COLUMNS.BASIC);
+  mockSocket.mockAPI(RESULTS.MULTIPLE);
   visit('queries/new');
   click('.submit-button');
 
@@ -47,7 +53,8 @@ test('query submission and result navigation', function(assert) {
 
 test('query submission with raw output with projections opens the table view by default', function(assert) {
   assert.expect(2);
-  server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
+  server = mockAPI(COLUMNS.BASIC);
+  mockSocket.mockAPI(RESULTS.SINGLE);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
@@ -61,7 +68,8 @@ test('query submission with raw output with projections opens the table view by 
 
 test('query submission with grouped data opens the table view by default', function(assert) {
   assert.expect(2);
-  server = mockAPI(RESULTS.GROUP, COLUMNS.BASIC);
+  server = mockAPI(COLUMNS.BASIC);
+  mockSocket.mockAPI(RESULTS.GROUP);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -76,7 +84,8 @@ test('query submission with grouped data opens the table view by default', funct
 
 test('result table popover open and close', function(assert) {
   assert.expect(3);
-  server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = mockAPI(COLUMNS.BASIC);
+  mockSocket.mockAPI(RESULTS.MULTIPLE);
   visit('queries/new');
   click('.submit-button');
 
@@ -99,7 +108,8 @@ test('result table popover open and close', function(assert) {
 
 test('query multiple submissions and results clearing', function(assert) {
   assert.expect(2);
-  server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = mockAPI(COLUMNS.BASIC);
+  mockSocket.mockAPI(RESULTS.MULTIPLE);
   visit('queries/new');
   click('.submit-button');
   visit('queries');
