@@ -323,6 +323,38 @@ export default Ember.Service.extend(Filterizer, {
     return object;
   },
 
+  makeStompMessageFunc(stompClient, successHandler, context) {
+    return function(payload) {
+      let message = JSON.parse(payload.body);
+      if (message.type === 'ACK') {
+        console.log('Request has been ackowledged by the server. Query ID is ' + message.content);
+      } else {
+        if (message.type === 'COMPLETE') {
+          stompClient.disconnect();
+        }
+        successHandler(JSON.parse(message.content), context);
+      }
+    };
+  },
+
+  makeStompConnectFunc(stompClient, data, onStompMessage, querier) {
+    let webSocketServerDestination = querier.get('webSocketServerDestination');
+    let webSocketClientDestination = querier.get('webSocketClientDestination');
+    return function() {
+      stompClient.subscribe(webSocketClientDestination, onStompMessage);
+      let request = {
+        content: JSON.stringify(data),
+        type: 'NEW_QUERY'
+      };
+      stompClient.send(webSocketServerDestination, {}, JSON.stringify(request));
+    };
+  },
+
+  makeStompErrorFunc(errorHandler, context) {
+    return function(...args) {
+      errorHandler('Error when connecting the server: ' + args, context);
+    };
+  },
 
   /**
    * Exposes the low-level StompClient object in order to abort.
@@ -336,32 +368,12 @@ export default Ember.Service.extend(Filterizer, {
   send(data, successHandler, errorHandler, context) {
     data = this.reformat(data);
     let url = [this.get('host'), this.get('namespace'), this.get('path')].join('/');
-    let stompClient = this.get('websocket').createStompClient(url, [], {sessionId: 64});
-    let webSocketServerDestination = this.get('webSocketServerDestination');
-    let webSocketClientDestination = this.get('webSocketClientDestination');
-    stompClient.connect(
-      {},
-      function onStompConnect() {
-        stompClient.subscribe(webSocketClientDestination, payload => {
-          let message = JSON.parse(payload.body);
-          if (message.type === 'ACK') {
-            console.log('Request has been ackowledged by the server. Query ID is ' + message.content);
-          } else {
-            if (message.type === 'COMPLETE') {
-              stompClient.disconnect();
-           }
-           successHandler(JSON.parse(message.content), context);
-          }
-        });
-        let request = {
-          content: JSON.stringify(data),
-          type: 'NEW_QUERY'
-        };
-        stompClient.send(webSocketServerDestination, {}, JSON.stringify(request));
-      },
-      function onStompError(...args) {
-        errorHandler('Error when connecting the server: ' + args, context);
-      });
-      return stompClient;
+    let stompClient = this.get('websocket').createStompClient(url, [], { sessionId: 64 });
+
+    let onStompMessage = this.makeStompMessageFunc(stompClient, successHandler, context);
+    let onStompConnect = this.makeStompConnectFunc(stompClient, data, onStompMessage, this);
+    let onStompError = this.makeStompErrorFunc(errorHandler, context);
+    stompClient.connect({}, onStompConnect, onStompError);
+    return stompClient;
   }
 });

@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
- import Ember from 'ember';
+import Ember from 'ember';
 
 let MockStompClient = Ember.Object.extend({
   connect(_, onStompConnect, onStompError) {
@@ -21,13 +21,13 @@ let MockStompClient = Ember.Object.extend({
   send() {
     let response = {
       body: JSON.stringify({
-        type : 'COMPLETE',
+        type: 'COMPLETE',
         content: JSON.stringify(this.get('data'))
       })
     };
     this.onStompMessage(response);
   },
-  
+
   disconnect() {
   }
 });
