@@ -27,6 +27,14 @@ export default Ember.Service.extend(Filterizer, {
     return this.get('settings.queryPath');
   }),
 
+  webSocketServerDestination: Ember.computed('settings', function() {
+    return this.get('settings.webSocketServerDestination');
+  }),
+
+  webSocketClientDestination: Ember.computed('settings', function() {
+    return this.get('settings.webSocketClientDestination');
+  }),
+
   /**
    * Recreates a Ember Data like representation from an API query specification.
    * @param  {Object} json The API Bullet query.
@@ -329,13 +337,15 @@ export default Ember.Service.extend(Filterizer, {
     data = this.reformat(data);
     let url = [this.get('host'), this.get('namespace'), this.get('path')].join('/');
     let stompClient = this.get('websocket').createStompClient(url, [], {sessionId: 64});
+    let webSocketServerDestination = this.get('webSocketServerDestination');
+    let webSocketClientDestination = this.get('webSocketClientDestination');
     stompClient.connect(
       {},
       function onStompConnect() {
-        stompClient.subscribe('/client/response', payload => {
+        stompClient.subscribe(webSocketClientDestination, payload => {
           let message = JSON.parse(payload.body);
           if (message.type === 'ACK') {
-            console.log('Request has been ackowledged by server. Query ID is ' + message.content);
+            console.log('Request has been ackowledged by the server. Query ID is ' + message.content);
           } else {
             if (message.type === 'COMPLETE') {
               stompClient.disconnect();
@@ -347,7 +357,7 @@ export default Ember.Service.extend(Filterizer, {
           content: JSON.stringify(data),
           type: 'NEW_QUERY'
         };
-        stompClient.send('/server/request', {}, JSON.stringify(request));
+        stompClient.send(webSocketServerDestination, {}, JSON.stringify(request));
       },
       function onStompError(...args) {
         errorHandler('Error when connecting the server: ' + args, context);

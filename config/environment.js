@@ -66,6 +66,8 @@ const TEST_SETTINGS = {
   queryPath: 'drpc',
   schemaHost: 'https://foo.bar.com:4443',
   schemaNamespace: 'bullet/api',
+  webSocketServerDestination: '/server/request',
+  webSocketClientDestination: '/client/response',
   helpLinks: [
    {
       name: 'Tutorials',
