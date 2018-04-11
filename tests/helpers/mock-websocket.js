@@ -15,38 +15,40 @@ let MockStompClient = Ember.Object.extend({
   },
 
   subscribe(_, onStompMessage) {
-    this.onStompMessage = onStompMessage;
+    this.set('onStompMessage', onStompMessage);
   },
 
   send() {
-    let response = {
-      body: JSON.stringify({
-        type: 'COMPLETE',
-        content: JSON.stringify(this.get('data'))
-      })
-    };
-    this.onStompMessage(response);
+    let onStompMessage = this.get('onStompMessage');
+    if (onStompMessage != null) {
+      let response = {
+        body: JSON.stringify({
+          type: 'COMPLETE',
+          content: JSON.stringify(this.get('data'))
+        })
+      };
+      onStompMessage(response);
+    }
   },
 
-  disconnect() {
-  }
+  disconnect() {}
 });
 
 export default Ember.Service.extend({
   mockAPI(data) {
-    this.type = 'mockAPI';
-    this.data = data;
+    this.set('type', 'mockAPI');
+    this.set('data', data);
   },
 
   failAPI() {
-    this.type = 'failAPI';
-    this.data = null;
+    this.set('type', 'failAPI');
+    this.set('data', null);
   },
 
   createStompClient() {
     let client = MockStompClient.create({
-      type: this.type,
-      data: this.data
+      type: this.get('type'),
+      data: this.get('data')
     });
     return client;
   }
