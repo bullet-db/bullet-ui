@@ -56,8 +56,5 @@ module.exports = function(defaults) {
   app.import('bower_components/pivottable/dist/c3_renderers.js');
   app.import('bower_components/pivottable/dist/export_renderers.js');
 
-  app.import('bower_components/stomp-websocket/lib/stomp.js');
-  app.import('bower_components/sockjs-client/dist/sockjs.min.js');
-
   return app.toTree();
 };

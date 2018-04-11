@@ -4,6 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
+import SockJS from 'npm:sockjs-client';
+import Stomp from 'npm:@stomp/stompjs';
 
 export default Ember.Service.extend({
   createStompClient() {
