@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | query validation', {
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-    this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
   }
 });
 

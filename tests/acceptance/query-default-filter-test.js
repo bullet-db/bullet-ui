@@ -18,7 +18,7 @@ moduleForAcceptance('Acceptance | query default filter', {
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
 
-    this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
   },
 
   afterEach() {

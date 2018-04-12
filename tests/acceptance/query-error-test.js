@@ -12,7 +12,7 @@ moduleForAcceptance('Acceptance | query error', {
   suppressLogging: true,
 
   beforeEach() {
-    this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
   }
 });
 

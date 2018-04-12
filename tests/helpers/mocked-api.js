@@ -8,12 +8,12 @@ import { mockAPI, failAPI } from './pretender';
 
 export default Ember.Object.extend({
   type: null,
-  data: null,
+  dataArray: null,
   server: null,
 
-  mock(data, columns, delay = 0) {
+  mock(dataArray, columns, delay = 0) {
     this.set('type', 'mockAPI');
-    this.set('data', data);
+    this.set('dataArray', dataArray);
     this.set('server', mockAPI(columns, delay));
   },
 
@@ -43,14 +43,22 @@ export default Ember.Object.extend({
 
   send() {
     let onStompMessage = this.get('onStompMessage');
-    if (onStompMessage) {
-      let response = {
-        body: JSON.stringify({
-          type: 'COMPLETE',
-          content: JSON.stringify(this.get('data'))
-        })
-      };
-      onStompMessage(response);
+    let dataArray = this.get('dataArray');
+    if (onStompMessage && !Ember.isEmpty(dataArray)) {
+      let lengh = dataArray.lengh;
+      dataArray.forEach((data, i) => {
+        let responeType = 'MESSAGE';
+        if (Ember.isEqual(i, lengh - 1)) {
+          responeType = 'COMPLETE';
+        }
+        let response = {
+          body: JSON.stringify({
+            type: responeType,
+            content: JSON.stringify(data)
+          })
+        };
+        onStompMessage(response);
+      });
     }
   },
 

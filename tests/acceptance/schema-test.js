@@ -12,7 +12,7 @@ moduleForAcceptance('Acceptance | schema', {
   suppressLogging: true,
 
   beforeEach() {
-    this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
   }
 });
 

@@ -23,7 +23,7 @@ moduleForAcceptance('Acceptance | query default api filter', {
     this.application.inject('route', 'settings', 'settings:mocked');
 
     // Extend regular API with a filter endpoint
-    this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     hit = 0;
     this.mockedAPI.get('server').map(function() {
       this.get(url, () => {
