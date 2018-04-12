@@ -45,10 +45,10 @@ export default Ember.Object.extend({
     let onStompMessage = this.get('onStompMessage');
     let dataArray = this.get('dataArray');
     if (onStompMessage && !Ember.isEmpty(dataArray)) {
-      let lengh = dataArray.lengh;
+      let length = dataArray.length;
       dataArray.forEach((data, i) => {
         let responeType = 'MESSAGE';
-        if (Ember.isEqual(i, lengh - 1)) {
+        if (Ember.isEqual(i, length - 1)) {
           responeType = 'COMPLETE';
         }
         let response = {
