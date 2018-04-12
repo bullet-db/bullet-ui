@@ -9,7 +9,7 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
-import { jsonWrap, mockAPI } from '../helpers/pretender';
+import { jsonWrap } from '../helpers/pretender';
 
 let server;
 let url = 'http://foo.bar.com/api/filter';
@@ -24,8 +24,7 @@ moduleForAcceptance('Acceptance | query default api filter', {
     this.application.inject('route', 'settings', 'settings:mocked');
 
     // Extend regular API with a filter endpoint
-    server = mockAPI(COLUMNS.BASIC);
-    this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
+    server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
     hit = 0;
     server.map(function() {
       this.get(url, () => {

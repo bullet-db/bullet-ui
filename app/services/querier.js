@@ -7,33 +7,17 @@ import Ember from 'ember';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
-import SockJS from 'npm:sockjs-client';
-import Stomp from 'npm:@stomp/stompjs';
 
 export default Ember.Service.extend(Filterizer, {
+  stompWebsocket: Ember.inject.service(),
+
   subfieldSuffix: '.*',
   subfieldSeparator: '.',
   delimiter: ',',
   apiMode: true,
 
-  host: Ember.computed('settings', function() {
-    return this.get('settings.queryHost');
-  }),
-
-  namespace: Ember.computed('settings', function() {
-    return this.get('settings.queryNamespace');
-  }),
-
-  path: Ember.computed('settings', function() {
-    return this.get('settings.queryPath');
-  }),
-
-  webSocketServerDestination: Ember.computed('settings', function() {
-    return this.get('settings.webSocketServerDestination');
-  }),
-
-  webSocketClientDestination: Ember.computed('settings', function() {
-    return this.get('settings.webSocketClientDestination');
+  url: Ember.computed('settings', function() {
+    return [this.get('settings.queryHost'), this.get('settings.queryNamespace'), this.get('settings.queryPath')].join('/');
   }),
 
   /**
@@ -324,39 +308,6 @@ export default Ember.Service.extend(Filterizer, {
     return object;
   },
 
-  makeStompMessageFunc(stompClient, successHandler, context) {
-    return function(payload) {
-      let message = JSON.parse(payload.body);
-      if (message.type === 'ACK') {
-        console.log('Request has been ackowledged by the server. Query ID is ' + message.content);
-      } else {
-        if (message.type === 'COMPLETE') {
-          stompClient.disconnect();
-        }
-        successHandler(JSON.parse(message.content), context);
-      }
-    };
-  },
-
-  makeStompConnectFunc(stompClient, data, onStompMessage, querier) {
-    let webSocketServerDestination = querier.get('webSocketServerDestination');
-    let webSocketClientDestination = querier.get('webSocketClientDestination');
-    return function() {
-      stompClient.subscribe(webSocketClientDestination, onStompMessage);
-      let request = {
-        content: JSON.stringify(data),
-        type: 'NEW_QUERY'
-      };
-      stompClient.send(webSocketServerDestination, {}, JSON.stringify(request));
-    };
-  },
-
-  makeStompErrorFunc(errorHandler, context) {
-    return function(...args) {
-      errorHandler('Error when connecting the server: ' + args, context);
-    };
-  },
-
   /**
    * Exposes the low-level StompClient object in order to abort.
    *
@@ -368,15 +319,8 @@ export default Ember.Service.extend(Filterizer, {
    */
   send(data, successHandler, errorHandler, context) {
     data = this.reformat(data);
-    let url = [this.get('host'), this.get('namespace'), this.get('path')].join('/');
-    let ws = new SockJS(url, [], { sessionId: 64 });
-    let stompClient = Stomp.over(ws);
-    stompClient.debug = null;
-
-    let onStompMessage = this.makeStompMessageFunc(stompClient, successHandler, context);
-    let onStompConnect = this.makeStompConnectFunc(stompClient, data, onStompMessage, this);
-    let onStompError = this.makeStompErrorFunc(errorHandler, context);
-    stompClient.connect({}, onStompConnect, onStompError);
-    return stompClient;
+    let url = this.get('url');
+    let stompWebsocket = this.get('stompWebsocket');
+    return stompWebsocket.createStompClient(url, data, successHandler, errorHandler, context);
   }
 });

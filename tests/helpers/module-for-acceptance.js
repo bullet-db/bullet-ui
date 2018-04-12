@@ -7,7 +7,7 @@ import { module } from 'qunit';
 import Ember from 'ember';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
-import MockStompCLient from '../../tests/helpers/mock-stompclient';
+import mockAPI from '../helpers/mock-api';
 import sinon from 'sinon';
 import Stomp from 'npm:@stomp/stompjs';
 
@@ -22,8 +22,8 @@ export default function(name, options = {}) {
     beforeEach() {
       this.application = startApp();
 
-      this.mockStompCLient = MockStompCLient.create();
-      this.stub = sinon.stub(Stomp, 'over').returns(this.mockStompCLient);
+      this.mockAPI = mockAPI.create();
+      this.stub = sinon.stub(Stomp, 'over').returns(this.mockAPI);
 
       if (options.suppressLogging) {
         [logger, Ember.Logger] = [Ember.Logger, LOGGER];

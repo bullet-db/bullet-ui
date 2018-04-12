@@ -8,7 +8,6 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
 
 let server;
 
@@ -29,8 +28,7 @@ moduleForAcceptance('Acceptance | query results lifecycle', {
 
 test('query submission and result navigation', function(assert) {
   assert.expect(3);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
+  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
 
@@ -48,8 +46,7 @@ test('query submission and result navigation', function(assert) {
 
 test('query submission with raw output with projections opens the table view by default', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
+  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
@@ -63,8 +60,7 @@ test('query submission with raw output with projections opens the table view by 
 
 test('query submission with grouped data opens the table view by default', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.GROUP);
+  server = this.mockAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -79,8 +75,7 @@ test('query submission with grouped data opens the table view by default', funct
 
 test('result table popover open and close', function(assert) {
   assert.expect(3);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
+  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
 
@@ -103,8 +98,7 @@ test('result table popover open and close', function(assert) {
 
 test('query multiple submissions and results clearing', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
+  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
   visit('queries');

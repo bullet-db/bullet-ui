@@ -64,10 +64,10 @@ const TEST_SETTINGS = {
   queryHost: 'https://foo.bar.com:4443',
   queryNamespace: 'bullet/api',
   queryPath: 'drpc',
+  queryStompRequestChannel: '/server/request',
+  queryStompResponseChannel: '/client/response',
   schemaHost: 'https://foo.bar.com:4443',
   schemaNamespace: 'bullet/api',
-  webSocketServerDestination: '/server/request',
-  webSocketClientDestination: '/client/response',
   helpLinks: [
    {
       name: 'Tutorials',

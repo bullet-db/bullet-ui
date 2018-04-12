@@ -9,7 +9,6 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
-import { mockAPI } from '../helpers/pretender';
 
 let server;
 
@@ -21,8 +20,7 @@ moduleForAcceptance('Acceptance | query default filter', {
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
 
-    server = mockAPI(COLUMNS.BASIC);
-    this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
+    server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   },
 
   afterEach() {

@@ -7,7 +7,6 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
 
 let server;
 
@@ -15,8 +14,7 @@ moduleForAcceptance('Acceptance | navigation', {
   suppressLogging: true,
 
   beforeEach() {
-    server = mockAPI(COLUMNS.BASIC);
-    this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
+    server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   },
 
   afterEach() {

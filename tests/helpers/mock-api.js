@@ -4,18 +4,21 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
+import { mockAPI, failAPI } from './pretender';
 
 export default Ember.Object.extend({
   type: null,
   data: null,
 
-  mockAPI(data) {
+  mock(data, columns, delay = 0) {
     this.set('type', 'mockAPI');
     this.set('data', data);
+    return mockAPI(columns, delay);
   },
 
-  failAPI() {
+  fail(columns) {
     this.set('type', 'failAPI');
+    return failAPI(columns);
   },
 
   connect(_, onStompConnect, onStompError) {

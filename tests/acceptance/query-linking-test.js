@@ -7,7 +7,6 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
 
 let server, fragment;
 
@@ -17,8 +16,7 @@ moduleForAcceptance('Acceptance | query linking', {
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-    server = mockAPI(COLUMNS.BASIC);
-    this.mockStompCLient.mockAPI(RESULTS.SINGLE);
+    server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
   },
 
   afterEach() {

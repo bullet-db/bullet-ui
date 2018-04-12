@@ -7,7 +7,6 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
 
 let server;
 
@@ -28,8 +27,7 @@ moduleForAcceptance('Acceptance | query summarization', {
 
 test('it summarizes a blank query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
+  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.save-button');
@@ -43,8 +41,7 @@ test('it summarizes a blank query', function(assert) {
 
 test('it summarizes a query with filters', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
+  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -66,8 +63,7 @@ test('it summarizes a query with filters', function(assert) {
 
 test('it summarizes a query with raw fields', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
+  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
@@ -97,8 +93,7 @@ test('it summarizes a query with raw fields', function(assert) {
 
 test('it summarizes a count distinct query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.COUNT_DISTINCT);
+  server = this.mockAPI.mock(RESULTS.COUNT_DISTINCT, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #count-distinct');
@@ -118,8 +113,7 @@ test('it summarizes a count distinct query', function(assert) {
 
 test('it summarizes a distinct query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.GROUP);
+  server = this.mockAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -144,8 +138,7 @@ test('it summarizes a distinct query', function(assert) {
 
 test('it summarizes a group all query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.GROUP);
+  server = this.mockAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -186,8 +179,7 @@ test('it summarizes a group all query', function(assert) {
 
 test('it summarizes a grouped data query with groups first', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.GROUP);
+  server = this.mockAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -219,8 +211,7 @@ test('it summarizes a grouped data query with groups first', function(assert) {
 
 test('it summarizes a quantile distribution query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.DISTRIBUTION);
+  server = this.mockAPI.mock(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -240,8 +231,7 @@ test('it summarizes a quantile distribution query', function(assert) {
 
 test('it summarizes a frequency distribution query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.DISTRIBUTION);
+  server = this.mockAPI.mock(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -260,8 +250,7 @@ test('it summarizes a frequency distribution query', function(assert) {
 
 test('it summarizes a cumulative frequency distribution query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.DISTRIBUTION);
+  server = this.mockAPI.mock(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -280,8 +269,7 @@ test('it summarizes a cumulative frequency distribution query', function(assert)
 
 test('it summarizes a top k query', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.TOP_K);
+  server = this.mockAPI.mock(RESULTS.TOP_K, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #top-k');
@@ -299,8 +287,7 @@ test('it summarizes a top k query', function(assert) {
 
 test('it summarizes a top k query with multiple fields', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.TOP_K);
+  server = this.mockAPI.mock(RESULTS.TOP_K, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #top-k');
@@ -322,8 +309,7 @@ test('it summarizes a top k query with multiple fields', function(assert) {
 
 test('it summarizes a top k query with custom k and threshold', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.TOP_K);
+  server = this.mockAPI.mock(RESULTS.TOP_K, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #top-k');
@@ -348,8 +334,7 @@ test('it summarizes a top k query with custom k and threshold', function(assert)
 
 test('it summarizes a top k query with custom k, threshold and name', function(assert) {
   assert.expect(2);
-  server = mockAPI(COLUMNS.BASIC);
-  this.mockStompCLient.mockAPI(RESULTS.TOP_K);
+  server = this.mockAPI.mock(RESULTS.TOP_K, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #top-k');
