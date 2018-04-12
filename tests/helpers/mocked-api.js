@@ -9,16 +9,24 @@ import { mockAPI, failAPI } from './pretender';
 export default Ember.Object.extend({
   type: null,
   data: null,
+  server: null,
 
   mock(data, columns, delay = 0) {
     this.set('type', 'mockAPI');
     this.set('data', data);
-    return mockAPI(columns, delay);
+    this.set('server', mockAPI(columns, delay));
   },
 
   fail(columns) {
     this.set('type', 'failAPI');
-    return failAPI(columns);
+    this.set('server', failAPI(columns));
+  },
+
+  shutdown() {
+    let server = this.get('server');
+    if (server !== null) {
+      server.shutdown();
+    }
   },
 
   connect(_, onStompConnect, onStompError) {

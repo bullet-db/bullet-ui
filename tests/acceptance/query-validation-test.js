@@ -8,21 +8,13 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 
-let server;
-
 moduleForAcceptance('Acceptance | query validation', {
   suppressLogging: true,
 
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-    server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
-  },
-
-  afterEach() {
-    if (server) {
-      server.shutdown();
-    }
+    this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
   }
 });
 

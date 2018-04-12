@@ -9,26 +9,18 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 
-let server;
-
 moduleForAcceptance('Acceptance | query results lifecycle', {
   suppressLogging: true,
 
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-  },
-
-  afterEach() {
-    if (server) {
-      server.shutdown();
-    }
   }
 });
 
 test('query submission and result navigation', function(assert) {
   assert.expect(3);
-  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
 
@@ -46,7 +38,7 @@ test('query submission and result navigation', function(assert) {
 
 test('query submission with raw output with projections opens the table view by default', function(assert) {
   assert.expect(2);
-  server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+  this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
@@ -60,7 +52,7 @@ test('query submission with raw output with projections opens the table view by 
 
 test('query submission with grouped data opens the table view by default', function(assert) {
   assert.expect(2);
-  server = this.mockedAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
+  this.mockedAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -75,7 +67,7 @@ test('query submission with grouped data opens the table view by default', funct
 
 test('result table popover open and close', function(assert) {
   assert.expect(3);
-  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
 
@@ -98,7 +90,7 @@ test('result table popover open and close', function(assert) {
 
 test('query multiple submissions and results clearing', function(assert) {
   assert.expect(2);
-  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
   visit('queries');

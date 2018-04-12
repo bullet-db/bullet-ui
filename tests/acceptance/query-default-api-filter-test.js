@@ -11,7 +11,6 @@ import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
 import { jsonWrap } from '../helpers/pretender';
 
-let server;
 let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
 
@@ -24,9 +23,9 @@ moduleForAcceptance('Acceptance | query default api filter', {
     this.application.inject('route', 'settings', 'settings:mocked');
 
     // Extend regular API with a filter endpoint
-    server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
     hit = 0;
-    server.map(function() {
+    this.mockedAPI.get('server').map(function() {
       this.get(url, () => {
         hit++;
         return jsonWrap(200, FILTERS.AND_ENUMERATED);
@@ -35,7 +34,6 @@ moduleForAcceptance('Acceptance | query default api filter', {
   },
 
   afterEach() {
-    server.shutdown();
     // Wipe out localstorage because we are creating here
     window.localStorage.clear();
   }

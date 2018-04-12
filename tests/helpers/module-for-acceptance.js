@@ -35,6 +35,7 @@ export default function(name, options = {}) {
     },
 
     afterEach() {
+      this.mockedAPI.shutdown();
       this.stub.restore();
       if (options.suppressLogging) {
         Ember.Logger = logger;
