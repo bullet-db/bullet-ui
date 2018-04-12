@@ -24,7 +24,7 @@ moduleForAcceptance('Acceptance | query firing', {
 
 test('query firing and redirecting to result', function(assert) {
   assert.expect(1);
-  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('queries/new');
   click('.submit-button');
@@ -37,7 +37,7 @@ test('query firing and result accessible through historical queries', function(a
   let data;
 
   assert.expect(6);
-  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
 
   visit('queries/new');
   click('.submit-button');
@@ -61,7 +61,7 @@ test('query firing and result accessible through historical queries', function(a
 
 test('query firing and redirecting to error', function(assert) {
   assert.expect(1);
-  server = this.mockAPI.fail(COLUMNS.BASIC);
+  server = this.mockedAPI.fail(COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
   andThen(() => {
@@ -71,7 +71,7 @@ test('query firing and redirecting to error', function(assert) {
 
 test('creating, deleting query filters and raw data projections and saving', function(assert) {
   assert.expect(6);
-  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -106,7 +106,7 @@ test('creating, deleting query filters and raw data projections and saving', fun
 
 test('creating a query, adding filters and raw data projections, and save on submit', function(assert) {
   assert.expect(7);
-  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -138,7 +138,7 @@ test('creating a query, adding filters and raw data projections, and save on sub
 
 test('creating a query with a filter subfield column filled', function(assert) {
   assert.expect(4);
-  server = this.mockAPI.mock(RESULTS.RAW, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.RAW, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -162,7 +162,7 @@ test('creating a query with a filter subfield column filled', function(assert) {
 
 test('creating a query with a filter subfield column not filled', function(assert) {
   assert.expect(4);
-  server = this.mockAPI.mock(RESULTS.RAW, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.RAW, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -183,7 +183,7 @@ test('creating a query with a filter subfield column not filled', function(asser
 
 test('creating a query, adding count distinct output fields, and save on submit', function(assert) {
   assert.expect(5);
-  server = this.mockAPI.mock(RESULTS.COUNT_DISTINCT, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.COUNT_DISTINCT, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #count-distinct');
@@ -207,7 +207,7 @@ test('creating a query, adding count distinct output fields, and save on submit'
 
 test('creating a query, adding groups and metrics for grouped data output fields, and save on submit', function(assert) {
   assert.expect(11);
-  server = this.mockAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -250,7 +250,7 @@ test('creating a query, adding groups and metrics for grouped data output fields
 
 test('creating a distribution query, adding free-form points and saving on submit', function(assert) {
   assert.expect(7);
-  server = this.mockAPI.mock(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.DISTRIBUTION, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -276,7 +276,7 @@ test('creating a distribution query, adding free-form points and saving on submi
 
 test('creating a top k query, adding a custom k, threshold and name', function(assert) {
   assert.expect(10);
-  server = this.mockAPI.mock(RESULTS.TOP_K, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.TOP_K, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #top-k');

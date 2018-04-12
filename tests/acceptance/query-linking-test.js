@@ -16,7 +16,7 @@ moduleForAcceptance('Acceptance | query linking', {
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-    server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+    server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
   },
 
   afterEach() {

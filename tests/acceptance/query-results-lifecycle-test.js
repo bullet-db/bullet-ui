@@ -28,7 +28,7 @@ moduleForAcceptance('Acceptance | query results lifecycle', {
 
 test('query submission and result navigation', function(assert) {
   assert.expect(3);
-  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
 
@@ -46,7 +46,7 @@ test('query submission and result navigation', function(assert) {
 
 test('query submission with raw output with projections opens the table view by default', function(assert) {
   assert.expect(2);
-  server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
@@ -60,7 +60,7 @@ test('query submission with raw output with projections opens the table view by 
 
 test('query submission with grouped data opens the table view by default', function(assert) {
   assert.expect(2);
-  server = this.mockAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.GROUP, COLUMNS.BASIC);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -75,7 +75,7 @@ test('query submission with grouped data opens the table view by default', funct
 
 test('result table popover open and close', function(assert) {
   assert.expect(3);
-  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
 
@@ -98,7 +98,7 @@ test('result table popover open and close', function(assert) {
 
 test('query multiple submissions and results clearing', function(assert) {
   assert.expect(2);
-  server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+  server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   visit('queries/new');
   click('.submit-button');
   visit('queries');

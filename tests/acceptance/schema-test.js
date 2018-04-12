@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | schema', {
   suppressLogging: true,
 
   beforeEach() {
-    server = this.mockAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
+    server = this.mockedAPI.mock(RESULTS.SINGLE, COLUMNS.BASIC);
   },
 
   afterEach() {

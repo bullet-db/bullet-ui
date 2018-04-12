@@ -14,7 +14,7 @@ moduleForAcceptance('Acceptance | navigation', {
   suppressLogging: true,
 
   beforeEach() {
-    server = this.mockAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    server = this.mockedAPI.mock(RESULTS.MULTIPLE, COLUMNS.BASIC);
   },
 
   afterEach() {
