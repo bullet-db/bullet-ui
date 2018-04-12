@@ -16,10 +16,6 @@ export default Ember.Service.extend(Filterizer, {
   delimiter: ',',
   apiMode: true,
 
-  url: Ember.computed('settings', function() {
-    return [this.get('settings.queryHost'), this.get('settings.queryNamespace'), this.get('settings.queryPath')].join('/');
-  }),
-
   /**
    * Recreates a Ember Data like representation from an API query specification.
    * @param  {Object} json The API Bullet query.
@@ -319,8 +315,6 @@ export default Ember.Service.extend(Filterizer, {
    */
   send(data, successHandler, errorHandler, context) {
     data = this.reformat(data);
-    let url = this.get('url');
-    let stompWebsocket = this.get('stompWebsocket');
-    return stompWebsocket.createStompClient(url, data, successHandler, errorHandler, context);
+    return this.get('stompWebsocket').createStompClient(data, successHandler, errorHandler, context);
   }
 });

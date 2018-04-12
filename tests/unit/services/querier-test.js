@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
-import ENV from 'bullet-ui/config/environment';
 import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
@@ -62,13 +61,6 @@ function assertEmberEqual(assert, emObject, object) {
 test('it turns on', function(assert) {
   let service = this.subject();
   assert.ok(service);
-});
-
-test('it has the application url', function(assert) {
-  let service = this.subject();
-  service.set('settings', ENV.APP.SETTINGS);
-  assert.ok(service);
-  assert.equal(service.get('url'), `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/${ENV.APP.SETTINGS.queryPath}`);
 });
 
 test('it formats a defaulted query correctly', function(assert) {

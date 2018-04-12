@@ -13,6 +13,10 @@ const NEW_QUERY_TYPE = 'NEW_QUERY';
 const SESSION_LENGTH = 64;
 
 export default Ember.Service.extend({
+  url: Ember.computed('settings', function() {
+    return [this.get('settings.queryHost'), this.get('settings.queryNamespace'), this.get('settings.queryPath')].join('/');
+  }),
+
   queryStompRequestChannel: Ember.computed('settings', function() {
     return this.get('settings.queryStompRequestChannel');
   }),
@@ -52,7 +56,8 @@ export default Ember.Service.extend({
     };
   },
 
-  createStompClient(url, data, successHandler, errorHandler, context) {
+  createStompClient(data, successHandler, errorHandler, context) {
+    let url = this.get('url');
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
     stompClient.debug = null;
