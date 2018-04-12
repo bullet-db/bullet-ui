@@ -9,18 +9,13 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI } from '../helpers/pretender';
-import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server, mockSocket;
+let server;
 
 moduleForAcceptance('Acceptance | result lifecycle', {
   suppressLogging: true,
 
   beforeEach() {
-    this.application.register('service:mockWebsocket', mockWebsocket);
-    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
-    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
-
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
   },
@@ -36,7 +31,7 @@ test('it has a link to go back to the query from the result', function(assert) {
   assert.expect(2);
 
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.SINGLE);
+  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
   let createdQuery;
   visit('/queries/new').then(() => {
     createdQuery = currentURL();
@@ -55,7 +50,7 @@ test('it lets you swap between raw and tabular forms', function(assert) {
   assert.expect(4);
 
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.MULTIPLE);
+  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
 
   visit('/queries/new');
   click('.submit-button');
@@ -74,7 +69,7 @@ test('it lets you swap between raw and tabular forms', function(assert) {
 test('it lets you expand metadata in results', function(assert) {
   assert.expect(7);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.COUNT_DISTINCT);
+  this.mockStompCLient.mockAPI(RESULTS.COUNT_DISTINCT);
 
   visit('/queries/new');
   click('.output-options #count-distinct');
@@ -97,7 +92,7 @@ test('it lets you expand metadata in results', function(assert) {
 test('it lets you expand result entries in a popover', function(assert) {
   assert.expect(4);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.SINGLE);
+  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
 
   visit('/queries/new');
   click('.submit-button');
@@ -123,7 +118,7 @@ test('it lets swap between a row, tabular and pivot chart views when it is a raw
   assert.expect(12);
 
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.MULTIPLE);
+  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
 
   visit('/queries/new');
   click('.submit-button');
@@ -155,7 +150,7 @@ test('it lets swap between a row, tabular, simple and pivot chart views when it 
   assert.expect(15);
 
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.DISTRIBUTION);
+  this.mockStompCLient.mockAPI(RESULTS.DISTRIBUTION);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -197,7 +192,7 @@ test('it saves and restores pivot table options', function(assert) {
   assert.expect(7);
 
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.DISTRIBUTION);
+  this.mockStompCLient.mockAPI(RESULTS.DISTRIBUTION);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -234,7 +229,7 @@ test('it lets you swap between raw and collapsible json forms', function(assert)
   assert.expect(10);
 
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.MULTIPLE);
+  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
 
   visit('/queries/new');
   click('.submit-button');

@@ -8,22 +8,17 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI } from '../helpers/pretender';
-import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server, fragment, mockSocket;
+let server, fragment;
 
 moduleForAcceptance('Acceptance | query linking', {
   suppressLogging: true,
 
   beforeEach() {
-    this.application.register('service:mockWebsocket', mockWebsocket);
-    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
-    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
-
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
     server = mockAPI(COLUMNS.BASIC);
-    mockSocket.mockAPI(RESULTS.SINGLE);
+    this.mockStompCLient.mockAPI(RESULTS.SINGLE);
   },
 
   afterEach() {

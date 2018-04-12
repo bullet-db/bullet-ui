@@ -5,7 +5,19 @@
  */
 import Ember from 'ember';
 
-let MockStompClient = Ember.Object.extend({
+export default Ember.Object.extend({
+  type: null,
+  data: null,
+
+  mockAPI(data) {
+    this.set('type', 'mockAPI');
+    this.set('data', data);
+  },
+
+  failAPI() {
+    this.set('type', 'failAPI');
+  },
+
   connect(_, onStompConnect, onStompError) {
     if (this.get('type') === 'mockAPI') {
       onStompConnect();
@@ -32,24 +44,4 @@ let MockStompClient = Ember.Object.extend({
   },
 
   disconnect() {}
-});
-
-export default Ember.Service.extend({
-  mockAPI(data) {
-    this.set('type', 'mockAPI');
-    this.set('data', data);
-  },
-
-  failAPI() {
-    this.set('type', 'failAPI');
-    this.set('data', null);
-  },
-
-  createStompClient() {
-    let client = MockStompClient.create({
-      type: this.get('type'),
-      data: this.get('data')
-    });
-    return client;
-  }
 });

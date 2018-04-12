@@ -10,12 +10,8 @@ import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
-import mockWebsocket from 'bullet-ui/tests/helpers/mock-websocket';
 
 moduleFor('service:querier', 'Unit | Service | querier', {
-  beforeEach() {
-    this.register('service:websocket', mockWebsocket);
-  }
 });
 
 function arrayChecker(assert, emArray) {

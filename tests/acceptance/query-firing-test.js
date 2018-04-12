@@ -8,18 +8,11 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI, failAPI } from '../helpers/pretender';
-import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server, mockSocket;
+let server;
 
 moduleForAcceptance('Acceptance | query firing', {
   suppressLogging: true,
-
-  beforeEach() {
-    this.application.register('service:mockWebsocket', mockWebsocket);
-    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
-    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
-  },
 
   afterEach() {
     // Wipe out localstorage because we are creating here
@@ -33,7 +26,7 @@ moduleForAcceptance('Acceptance | query firing', {
 test('query firing and redirecting to result', function(assert) {
   assert.expect(1);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.SINGLE);
+  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
 
   visit('queries/new');
   click('.submit-button');
@@ -47,7 +40,7 @@ test('query firing and result accessible through historical queries', function(a
 
   assert.expect(6);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.MULTIPLE);
+  this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
 
   visit('queries/new');
   click('.submit-button');
@@ -72,7 +65,7 @@ test('query firing and result accessible through historical queries', function(a
 test('query firing and redirecting to error', function(assert) {
   assert.expect(1);
   server = failAPI(COLUMNS.BASIC);
-  mockSocket.failAPI();
+  this.mockStompCLient.failAPI();
   visit('queries/new');
   click('.submit-button');
   andThen(() => {
@@ -83,7 +76,7 @@ test('query firing and redirecting to error', function(assert) {
 test('creating, deleting query filters and raw data projections and saving', function(assert) {
   assert.expect(6);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.SINGLE);
+  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -119,7 +112,7 @@ test('creating, deleting query filters and raw data projections and saving', fun
 test('creating a query, adding filters and raw data projections, and save on submit', function(assert) {
   assert.expect(7);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.SINGLE);
+  this.mockStompCLient.mockAPI(RESULTS.SINGLE);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -152,7 +145,7 @@ test('creating a query, adding filters and raw data projections, and save on sub
 test('creating a query with a filter subfield column filled', function(assert) {
   assert.expect(4);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.RAW);
+  this.mockStompCLient.mockAPI(RESULTS.RAW);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -177,7 +170,7 @@ test('creating a query with a filter subfield column filled', function(assert) {
 test('creating a query with a filter subfield column not filled', function(assert) {
   assert.expect(4);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.RAW);
+  this.mockStompCLient.mockAPI(RESULTS.RAW);
 
   visit('/queries/new');
   click('.filter-container button[data-add=\'rule\']');
@@ -199,7 +192,7 @@ test('creating a query with a filter subfield column not filled', function(asser
 test('creating a query, adding count distinct output fields, and save on submit', function(assert) {
   assert.expect(5);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.COUNT_DISTINCT);
+  this.mockStompCLient.mockAPI(RESULTS.COUNT_DISTINCT);
 
   visit('/queries/new');
   click('.output-options #count-distinct');
@@ -224,7 +217,7 @@ test('creating a query, adding count distinct output fields, and save on submit'
 test('creating a query, adding groups and metrics for grouped data output fields, and save on submit', function(assert) {
   assert.expect(11);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.GROUP);
+  this.mockStompCLient.mockAPI(RESULTS.GROUP);
 
   visit('/queries/new');
   click('.output-options #grouped-data');
@@ -268,7 +261,7 @@ test('creating a query, adding groups and metrics for grouped data output fields
 test('creating a distribution query, adding free-form points and saving on submit', function(assert) {
   assert.expect(7);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.DISTRIBUTION);
+  this.mockStompCLient.mockAPI(RESULTS.DISTRIBUTION);
 
   visit('/queries/new');
   click('.output-options #distribution');
@@ -295,7 +288,7 @@ test('creating a distribution query, adding free-form points and saving on submi
 test('creating a top k query, adding a custom k, threshold and name', function(assert) {
   assert.expect(10);
   server = mockAPI(COLUMNS.BASIC);
-  mockSocket.mockAPI(RESULTS.TOP_K);
+  this.mockStompCLient.mockAPI(RESULTS.TOP_K);
 
   visit('/queries/new');
   click('.output-options #top-k');

@@ -10,9 +10,8 @@ import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
 import { jsonWrap, mockAPI } from '../helpers/pretender';
-import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server, mockSocket;
+let server;
 let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
 
@@ -23,13 +22,10 @@ moduleForAcceptance('Acceptance | query default api filter', {
     // Inject into defaultValues in routes, our mock filter values
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: url }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
-    this.application.register('service:mockWebsocket', mockWebsocket);
-    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
-    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
 
     // Extend regular API with a filter endpoint
     server = mockAPI(COLUMNS.BASIC);
-    mockSocket.mockAPI(RESULTS.MULTIPLE);
+    this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
     hit = 0;
     server.map(function() {
       this.get(url, () => {

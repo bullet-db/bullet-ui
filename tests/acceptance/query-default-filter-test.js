@@ -10,9 +10,8 @@ import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
 import { mockAPI } from '../helpers/pretender';
-import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server, mockSocket;
+let server;
 
 moduleForAcceptance('Acceptance | query default filter', {
   suppressLogging: true,
@@ -21,12 +20,9 @@ moduleForAcceptance('Acceptance | query default filter', {
     // Inject into defaultValues in routes, our mock filter values
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
-    this.application.register('service:mockWebsocket', mockWebsocket);
-    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
-    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
 
     server = mockAPI(COLUMNS.BASIC);
-    mockSocket.mockAPI(RESULTS.MULTIPLE);
+    this.mockStompCLient.mockAPI(RESULTS.MULTIPLE);
   },
 
   afterEach() {

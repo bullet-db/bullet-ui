@@ -8,20 +8,15 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { mockAPI } from '../helpers/pretender';
-import mockWebsocket from '../../tests/helpers/mock-websocket';
 
-let server, mockSocket;
+let server;
 
 moduleForAcceptance('Acceptance | schema', {
   suppressLogging: true,
 
   beforeEach() {
-    this.application.register('service:mockWebsocket', mockWebsocket);
-    this.application.inject('service:querier', 'websocket', 'service:mockWebsocket');
-    mockSocket = this.application.__container__.lookup('service:mockWebsocket');
-
     server = mockAPI(COLUMNS.BASIC);
-    mockSocket.mockAPI(RESULTS.SINGLE);
+    this.mockStompCLient.mockAPI(RESULTS.SINGLE);
   },
 
   afterEach() {

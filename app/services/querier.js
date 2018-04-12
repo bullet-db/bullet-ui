@@ -7,9 +7,10 @@ import Ember from 'ember';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
+import SockJS from 'npm:sockjs-client';
+import Stomp from 'npm:@stomp/stompjs';
 
 export default Ember.Service.extend(Filterizer, {
-  websocket: Ember.inject.service(),
   subfieldSuffix: '.*',
   subfieldSeparator: '.',
   delimiter: ',',
@@ -368,7 +369,9 @@ export default Ember.Service.extend(Filterizer, {
   send(data, successHandler, errorHandler, context) {
     data = this.reformat(data);
     let url = [this.get('host'), this.get('namespace'), this.get('path')].join('/');
-    let stompClient = this.get('websocket').createStompClient(url, [], { sessionId: 64 });
+    let ws = new SockJS(url, [], { sessionId: 64 });
+    let stompClient = Stomp.over(ws);
+    stompClient.debug = null;
 
     let onStompMessage = this.makeStompMessageFunc(stompClient, successHandler, context);
     let onStompConnect = this.makeStompConnectFunc(stompClient, data, onStompMessage, this);
