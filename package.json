@@ -96,9 +96,9 @@
     "loader.js": "~4.6.0",
     "phantomjs-prebuilt": "2.1.14",
     "pretender": "1.4.0",
-    "urlsafe-base64": "~1.0.0",
     "sockjs-client": "^1.1.4",
-    "@stomp/stompjs": "^4.0.1"
+    "@stomp/stompjs": "^4.0.1",
+    "urlsafe-base64": "~1.0.0"
   },
   "dependencies": {
     "cheerio": "~0.19.0",
