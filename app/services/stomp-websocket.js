@@ -28,8 +28,8 @@ export default Ember.Service.extend({
   makeStompMessageHandler(stompClient, successHandler, context) {
     return (payload) => {
       let message = JSON.parse(payload.body);
-      if (message.type !== ACK_TYPE) {
-        if (message.type === COMPLETE_TYPE) {
+      if (!Ember.isEqual(message.type, ACK_TYPE)) {
+        if (Ember.isEqual(message.type, COMPLETE_TYPE)) {
           stompClient.disconnect();
         }
         successHandler(JSON.parse(message.content), context);

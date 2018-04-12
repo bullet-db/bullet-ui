@@ -24,13 +24,13 @@ export default Ember.Object.extend({
 
   shutdown() {
     let server = this.get('server');
-    if (server !== null) {
+    if (server) {
       server.shutdown();
     }
   },
 
   connect(_, onStompConnect, onStompError) {
-    if (this.get('type') === 'mockAPI') {
+    if (Ember.isEqual(this.get('type'), 'mockAPI')) {
       onStompConnect();
     } else {
       onStompError();
@@ -43,7 +43,7 @@ export default Ember.Object.extend({
 
   send() {
     let onStompMessage = this.get('onStompMessage');
-    if (onStompMessage != null) {
+    if (onStompMessage) {
       let response = {
         body: JSON.stringify({
           type: 'COMPLETE',
