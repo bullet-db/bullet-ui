@@ -7,7 +7,6 @@ import Ember from 'ember';
 import Pretender from 'pretender';
 import ENV from 'bullet-ui/config/environment';
 
-const QUERY_ENDPOINT = `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/${ENV.APP.SETTINGS.queryPath}`;
 const SCHEMA_ENDPOINT = `${ENV.APP.SETTINGS.schemaHost}/${ENV.APP.SETTINGS.schemaNamespace}/columns`;
 
 export function wrap(statusCode, contentType, response) {
@@ -22,11 +21,8 @@ export function jsonAPIWrap(statusCode, response) {
   return wrap(statusCode, 'application/vnd.api+json', JSON.stringify(response));
 }
 
-export function requiredRoutes(data, columns, delay) {
+export function requiredRoutes(columns, delay) {
   return function() {
-    this.post(QUERY_ENDPOINT, () => {
-      return jsonWrap(200, data);
-    }, delay);
     this.get(SCHEMA_ENDPOINT, () => {
       return jsonAPIWrap(200, columns);
     }, delay);
@@ -44,18 +40,15 @@ export function emptyAPI() {
   return pretender;
 }
 
-export function mockAPI(data, columns, delay = 0) {
+export function mockAPI(columns, delay = 0) {
   let pretender = emptyAPI();
-  pretender.map(requiredRoutes(data, columns, delay));
+  pretender.map(requiredRoutes(columns, delay));
   return pretender;
 }
 
 export function failAPI(columns) {
   let pretender = emptyAPI();
   pretender.map(function() {
-    this.post(QUERY_ENDPOINT, () => {
-      return jsonWrap(500);
-    });
     this.get(SCHEMA_ENDPOINT, () => {
       return jsonAPIWrap(200, columns);
     });

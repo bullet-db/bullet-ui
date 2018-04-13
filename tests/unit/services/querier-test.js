@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Ember from 'ember';
-import ENV from 'bullet-ui/config/environment';
 import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
@@ -12,6 +11,7 @@ import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
 moduleFor('service:querier', 'Unit | Service | querier', {
+  needs: ['service:stompWebsocket']
 });
 
 function arrayChecker(assert, emArray) {
@@ -61,37 +61,6 @@ function assertEmberEqual(assert, emObject, object) {
 test('it turns on', function(assert) {
   let service = this.subject();
   assert.ok(service);
-});
-
-test('it has the application hostname, namespace and path', function(assert) {
-  let service = this.subject();
-  service.set('settings', ENV.APP.SETTINGS);
-  assert.ok(service);
-  assert.equal(service.get('host'), ENV.APP.SETTINGS.queryHost);
-  assert.equal(service.get('namespace'), ENV.APP.SETTINGS.queryNamespace);
-  assert.equal(service.get('path'), ENV.APP.SETTINGS.queryPath);
-});
-
-test('it defaults options correctly', function(assert) {
-  let service = this.subject();
-  service.set('settings', ENV.APP.SETTINGS);
-  let options = service.options('/foo');
-  assert.equal(options.url, `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/foo`);
-  assert.equal(options.type, 'GET');
-  assert.equal(options.dataType, 'json');
-  assert.equal(options.crossDomain, true);
-  assert.deepEqual(options.xhrFields, { withCredentials: true });
-});
-
-test('it overrides options correctly', function(assert) {
-  let service = this.subject();
-  service.set('settings', ENV.APP.SETTINGS);
-  let options = service.options('/foo', { type: 'POST', dataType: 'text' });
-  assert.equal(options.url, `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/foo`);
-  assert.equal(options.type, 'POST');
-  assert.equal(options.dataType, 'text');
-  assert.equal(options.crossDomain, true);
-  assert.deepEqual(options.xhrFields, { withCredentials: true });
 });
 
 test('it formats a defaulted query correctly', function(assert) {

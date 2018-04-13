@@ -7,19 +7,15 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
-
-let server;
 
 moduleForAcceptance('Acceptance | navigation', {
   suppressLogging: true,
 
   beforeEach() {
-    server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
   },
 
   afterEach() {
-    server.shutdown();
     // Wipe out localstorage because we are creating here
     window.localStorage.clear();
   }

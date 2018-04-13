@@ -7,21 +7,12 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
-
-let server;
 
 moduleForAcceptance('Acceptance | schema', {
   suppressLogging: true,
 
   beforeEach() {
-    server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
-  },
-
-  afterEach() {
-    if (server) {
-      server.shutdown();
-    }
+    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
   }
 });
 

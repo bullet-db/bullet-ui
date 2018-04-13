@@ -7,9 +7,6 @@ import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import { mockAPI } from '../helpers/pretender';
-
-let server;
 
 moduleForAcceptance('Acceptance | query lifecycle', {
   suppressLogging: true,
@@ -17,13 +14,7 @@ moduleForAcceptance('Acceptance | query lifecycle', {
   beforeEach() {
     // Wipe out localstorage because we are creating queries here
     window.localStorage.clear();
-    server = mockAPI(RESULTS.SINGLE, COLUMNS.BASIC);
-  },
-
-  afterEach() {
-    if (server) {
-      server.shutdown();
-    }
+    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
   }
 });
 

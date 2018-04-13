@@ -9,9 +9,6 @@ import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
-import { mockAPI } from '../helpers/pretender';
-
-let server;
 
 moduleForAcceptance('Acceptance | query default filter', {
   suppressLogging: true,
@@ -20,11 +17,11 @@ moduleForAcceptance('Acceptance | query default filter', {
     // Inject into defaultValues in routes, our mock filter values
     this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
-    server = mockAPI(RESULTS.MULTIPLE, COLUMNS.BASIC);
+
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
   },
 
   afterEach() {
-    server.shutdown();
     // Wipe out localstorage because we are creating here
     window.localStorage.clear();
   }

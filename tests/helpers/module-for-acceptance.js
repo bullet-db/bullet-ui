@@ -7,6 +7,9 @@ import { module } from 'qunit';
 import Ember from 'ember';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
+import mockedAPI from '../helpers/mocked-api';
+import sinon from 'sinon';
+import Stomp from 'npm:@stomp/stompjs';
 
 const { RSVP: { Promise } } = Ember;
 
@@ -19,6 +22,9 @@ export default function(name, options = {}) {
     beforeEach() {
       this.application = startApp();
 
+      this.mockedAPI = mockedAPI.create();
+      this.stub = sinon.stub(Stomp, 'over').returns(this.mockedAPI);
+
       if (options.suppressLogging) {
         [logger, Ember.Logger] = [Ember.Logger, LOGGER];
       }
@@ -29,6 +35,8 @@ export default function(name, options = {}) {
     },
 
     afterEach() {
+      this.mockedAPI.shutdown();
+      this.stub.restore();
       if (options.suppressLogging) {
         Ember.Logger = logger;
       }

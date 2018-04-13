@@ -31,7 +31,7 @@ export default Ember.Route.extend({
     cancelQuery() {
       let pendingRequest = this.get('pendingRequest');
       if (pendingRequest) {
-        pendingRequest.abort();
+        pendingRequest.disconnect();
       }
     },
 

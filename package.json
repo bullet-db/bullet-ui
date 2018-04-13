@@ -87,6 +87,7 @@
     "ember-responsive": "2.0.2",
     "ember-route-action-helper": "2.0.2",
     "ember-scroll-to": "0.5.3",
+    "ember-sinon": "^2.1.0",
     "ember-source": "2.12.0",
     "ember-tether": "0.3.1",
     "ember-tooltips": "2.0.1",
@@ -95,6 +96,8 @@
     "loader.js": "~4.6.0",
     "phantomjs-prebuilt": "2.1.14",
     "pretender": "1.4.0",
+    "sockjs-client": "^1.1.4",
+    "@stomp/stompjs": "^4.0.1",
     "urlsafe-base64": "~1.0.0"
   },
   "dependencies": {
