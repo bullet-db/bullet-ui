@@ -16,7 +16,7 @@ test('it has the application url', function(assert) {
   assert.equal(service.get('url'), `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/${ENV.APP.SETTINGS.queryPath}`);
 });
 
-test('it has the query stomp rquest channel', function(assert) {
+test('it has the query stomp request channel', function(assert) {
   let service = this.subject();
   service.set('settings', ENV.APP.SETTINGS);
   assert.ok(service);

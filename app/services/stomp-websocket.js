@@ -14,7 +14,7 @@ const SESSION_LENGTH = 64;
 
 export default Ember.Service.extend({
   url: Ember.computed('settings', function() {
-    return [this.get('settings.queryHost'), this.get('settings.queryNamespace'), this.get('settings.queryPath')].join('/');
+    return `${this.get('settings.queryHost')}/${this.get('settings.queryNamespace')}/${this.get('settings.queryPath')}`;
   }),
 
   queryStompRequestChannel: Ember.computed('settings', function() {
@@ -52,7 +52,7 @@ export default Ember.Service.extend({
 
   makeStompErrorHandler(errorHandler, context) {
     return (...args) => {
-      errorHandler('Error when connecting the server: ' + args, context);
+      errorHandler(`Error when connecting the server: ${args}`, context);
     };
   },
 
