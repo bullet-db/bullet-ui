@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
 import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('column', 'Unit | Model | column', {
@@ -44,7 +44,7 @@ test('it flat maps enumerated columns', function(assert) {
                                 { name: 'bar' }
                               ]
                             });
-  let enumerations = Ember.A(model.get('enumeratedColumns'));
+  let enumerations = A(model.get('enumeratedColumns'));
   assert.equal(enumerations.length, 2);
   assert.equal(enumerations.objectAt(0).get('name'), 'test.foo');
   assert.equal(enumerations.objectAt(0).get('type'), 'STRING');
@@ -59,7 +59,7 @@ test('it returns itself when asked for all flattened columns', function(assert) 
                                 { name: 'bar' }
                               ]
                             });
-  let flattenedColumns = Ember.A(model.get('flattenedColumns'));
+  let flattenedColumns = A(model.get('flattenedColumns'));
   assert.equal(flattenedColumns.length, 3);
   assert.equal(flattenedColumns.objectAt(0).get('name'), 'test');
   assert.equal(flattenedColumns.objectAt(0).get('type'), 'MAP');

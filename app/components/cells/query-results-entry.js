@@ -3,10 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 import ElementPopover from 'bullet-ui/mixins/element-popover';
 
-export default Ember.Component.extend(ElementPopover, {
+export default Component.extend(ElementPopover, {
   classNames: ['query-results-entry'],
   classNameBindings: ['hasPopover:has-popover'],
   // ElementPopover properties
@@ -15,7 +16,7 @@ export default Ember.Component.extend(ElementPopover, {
   placeOn: 'left',
   additionalClass: 'query-results-entry-popover',
 
-  hasPopover: Ember.computed('value', function() {
+  hasPopover: computed('value', function() {
     return this.get('value.length') > 0;
   }),
 

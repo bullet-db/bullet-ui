@@ -3,14 +3,14 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import FilterizerMixin from 'bullet-ui/mixins/filterizer';
 import { module, test } from 'qunit';
 
 module('Unit | Mixin | filterizer');
 
 test('it recognizes nulls', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   assert.ok(subject.isNull('null'));
   assert.ok(subject.isNull('Null'));
@@ -19,7 +19,7 @@ test('it recognizes nulls', function(assert) {
 });
 
 test('it recognizes the logical operations', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   assert.ok(subject.isLogical('AND'));
   assert.ok(subject.isLogical('OR'));
@@ -29,7 +29,7 @@ test('it recognizes the logical operations', function(assert) {
 });
 
 test('it wraps a simple API clause into an AND builder rule', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let clause = { field: 'foo', operation: '<', values: [5] };
   let expected = { condition: 'AND', rules: [{ id: 'foo', field: 'foo', operator: 'less', value: '5' }] };
@@ -37,7 +37,7 @@ test('it wraps a simple API clause into an AND builder rule', function(assert) {
 });
 
 test('it accepts empty clauses', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let clause = { operation: 'AND', clauses: [] };
   let expected = { condition: 'AND', rules: [] };
@@ -45,7 +45,7 @@ test('it accepts empty clauses', function(assert) {
 });
 
 test('it does not accept empty fields for API clauses', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let clause = { operation: '<', values: [1] };
   assert.throws(() => {
@@ -58,7 +58,7 @@ test('it does not accept empty fields for API clauses', function(assert) {
 });
 
 test('it does not accept empty values for API clauses', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let clause = { field: 'foo', operation: '<' };
   assert.throws(() => {
@@ -71,7 +71,7 @@ test('it does not accept empty values for API clauses', function(assert) {
 });
 
 test('it does not allow unknown operations for API clauses', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let clause = { field: 'foo', values: [5] };
   assert.throws(() => {
@@ -84,7 +84,7 @@ test('it does not allow unknown operations for API clauses', function(assert) {
 });
 
 test('it accepts empty rules', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let rule = { condition: 'AND', rules: [] };
   let expected = { operation: 'AND', clauses: [] };
@@ -92,7 +92,7 @@ test('it accepts empty rules', function(assert) {
 });
 
 test('it does not allow unknown operators in builder rules', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let rule = { condition: 'OR', rules: [{ id: 'foo', value: 'bar' }] };
   assert.throws(() => {
@@ -213,14 +213,14 @@ const CONVERTED_CLAUSE = {
 };
 
 test('it can convert from an API filter specification to the builder specification', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create();
   let convertedRule = subject.convertClauseToRule(CANONICAL_CLAUSE);
   assert.deepEqual(convertedRule, CONVERTED_RULE);
 });
 
 test('it can convert from a builder specification to the API filter specification', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create({ subfieldSeparator: '.', subfieldSuffix: '.*' });
   let convertedClause = subject.convertRuleToClause(CANONICAL_RULE);
   assert.deepEqual(convertedClause, CONVERTED_CLAUSE);
@@ -281,14 +281,14 @@ const CONVERTED_CLAUSE_NOT_IN_API_MODE = {
 };
 
 test('it can convert from a builder specification to the API filter specification with subfield metadata', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   let subject = FilterizerObject.create({ subfieldSeparator: '.', subfieldSuffix: '.*', apiMode: false });
   let convertedClause = subject.convertRuleToClause(CANONICAL_RULE);
   assert.deepEqual(convertedClause, CONVERTED_CLAUSE_NOT_IN_API_MODE);
 });
 
 test('it can convert from an API filter with metadata specification to the builder specification', function(assert) {
-  let FilterizerObject = Ember.Object.extend(FilterizerMixin);
+  let FilterizerObject = EmberObject.extend(FilterizerMixin);
   // Does not matter if we're in apiMode or not
   let subject = FilterizerObject.create({ subfieldSeparator: '.', subfieldSuffix: '.*' });
   let convertedRule = subject.convertClauseToRule(CONVERTED_CLAUSE_NOT_IN_API_MODE);

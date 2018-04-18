@@ -3,13 +3,14 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['simple-alert'],
   type: null,
 
-  alertIconClass: Ember.computed('type', function() {
+  alertIconClass: computed('type', function() {
     switch (this.get('type')) {
       case 'error':
         return 'glyphicon glyphicon-ban-circle';
@@ -22,7 +23,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  alertClass: Ember.computed('type', function() {
+  alertClass: computed('type', function() {
     switch (this.get('type')) {
       case 'error':
         return 'alert-danger';

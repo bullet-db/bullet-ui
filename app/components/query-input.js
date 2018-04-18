@@ -3,25 +3,29 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { resolve, reject } from 'rsvp';
+import $ from 'jquery';
+import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
 
-export default Ember.Component.extend(BuilderAdapter, {
+export default Component.extend(BuilderAdapter, {
   queryBuilderClass: 'builder',
-  queryBuilderElement: Ember.computed('queryBuilderClass', function() {
+  queryBuilderElement: computed('queryBuilderClass', function() {
     return `.${this.get('queryBuilderClass')}`;
   }),
-  queryBuilderInputs: Ember.computed('queryBuilderElement', function() {
+  queryBuilderInputs: computed('queryBuilderElement', function() {
     let element = this.get('queryBuilderElement');
     return `${element} input, ${element} select, ${element} button`;
   }),
   subfieldSeparator: SUBFIELD_SEPARATOR,
   subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
   query: null,
-  queryManager: Ember.inject.service(),
-  scroller: Ember.inject.service(),
+  queryManager: service(),
+  scroller: service(),
   schema: null,
   isListening: false,
   listenDuration: 0,
@@ -29,12 +33,12 @@ export default Ember.Component.extend(BuilderAdapter, {
   hasSaved: false,
   hasCancelled: false,
 
-  columns: Ember.computed('schema', function() {
+  columns: computed('schema', function() {
     let schema = this.get('schema');
     return this.builderFilters(schema);
   }).readOnly(),
 
-  showAggregationSize: Ember.computed('query.aggregation.type', function() {
+  showAggregationSize: computed('query.aggregation.type', function() {
     return this.get('query.aggregation.type') === AGGREGATIONS.get('RAW');
   }),
 
@@ -47,7 +51,7 @@ export default Ember.Component.extend(BuilderAdapter, {
     this.$(element).queryBuilder(options);
 
     let rules = this.get('query.filter.clause');
-    if (rules && !Ember.$.isEmptyObject(rules)) {
+    if (rules && !$.isEmptyObject(rules)) {
       this.$(element).queryBuilder('setRules', rules);
     } else {
       this.$(element).queryBuilder('setRules', this.get('emptyClause'));
@@ -87,7 +91,7 @@ export default Ember.Component.extend(BuilderAdapter, {
     return this.get('queryManager').cleanup(query).then(() => {
       return query.validate().then((hash) => {
         let isValid = this.isCurrentFilterValid() && hash.validations.get('isValid');
-        return isValid ? Ember.RSVP.resolve() : Ember.RSVP.reject();
+        return isValid ? resolve() : reject();
       });
     });
   },
@@ -98,7 +102,7 @@ export default Ember.Component.extend(BuilderAdapter, {
     }, () => {
       this.set('hasError', true);
       this.get('scroller').scrollVertical('.validation-container');
-      return Ember.RSVP.reject();
+      return reject();
     });
   },
 

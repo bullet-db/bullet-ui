@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 
@@ -12,7 +12,7 @@ moduleForComponent('validated-input', 'Integration | Component | validated input
 });
 
 function mockModel(isValid, isValidating, isDirty) {
-  return Ember.Object.create({
+  return EmberObject.create({
     bar: 15,
     validations: {
       isValid: isValid,

@@ -98,13 +98,17 @@ test('linking a full query with filters, raw data output with projections and a 
     find('.filter-container .rule-filter-container select').val('complex_list_column').trigger('change');
   });
   click('.output-container .raw-sub-options #select');
-  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+  });
   fillIn('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
   fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
 
   click('.output-container .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
 
   fillIn('.options-container .aggregation-size input', '40');
   click('.submit-button');
@@ -149,15 +153,19 @@ test('linking a full query with filters, grouped data output with groups and fie
   click('.output-options #grouped-data');
   click('.output-container .groups-container .add-group');
   click('.output-container .groups-container .add-group');
-  selectChoose('.output-container .groups-container .field-selection-container:eq(0) .field-selection', 'complex_map_column');
-  selectChoose('.output-container .groups-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .groups-container .field-selection-container .field-selection')[0], 'complex_map_column');
+    selectChoose(find('.output-container .groups-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.output-container .groups-container .field-selection-container:eq(1) .field-name input', 'bar');
 
   click('.output-container .metrics-container .add-metric');
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(0) .metrics-selection', 'Count');
-  selectChoose('.output-container .metrics-container .metrics-selection:eq(1)', 'Average');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[0], 'Count');
+    selectChoose(find('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.output-container .metrics-container .field-selection-container:eq(1) .field-name input', 'avg_bar');
 
   click('.submit-button');
@@ -326,8 +334,10 @@ test('linking a top k query works', function(assert) {
   click('.output-options #top-k');
 
   click('.output-container .add-field');
-  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
-  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.output-container .field-selection-container .field-selection')[0], 'simple_column');
+    selectChoose(find('.output-container .field-selection-container .field-selection')[1], 'complex_map_column.*');
+  });
   fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
   triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
   fillIn('.output-container .field-selection-container:eq(1) .field-name input', 'new_name');

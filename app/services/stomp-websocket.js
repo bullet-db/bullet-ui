@@ -3,7 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEqual } from '@ember/utils';
+import { computed } from '@ember/object';
+import Service from '@ember/service';
 import SockJS from 'npm:sockjs-client';
 import Stomp from 'npm:@stomp/stompjs';
 
@@ -12,24 +14,24 @@ const COMPLETE_TYPE = 'COMPLETE';
 const NEW_QUERY_TYPE = 'NEW_QUERY';
 const SESSION_LENGTH = 64;
 
-export default Ember.Service.extend({
-  url: Ember.computed('settings', function() {
+export default Service.extend({
+  url: computed('settings', function() {
     return `${this.get('settings.queryHost')}/${this.get('settings.queryNamespace')}/${this.get('settings.queryPath')}`;
   }),
 
-  queryStompRequestChannel: Ember.computed('settings', function() {
+  queryStompRequestChannel: computed('settings', function() {
     return this.get('settings.queryStompRequestChannel');
   }),
 
-  queryStompResponseChannel: Ember.computed('settings', function() {
+  queryStompResponseChannel: computed('settings', function() {
     return this.get('settings.queryStompResponseChannel');
   }),
 
   makeStompMessageHandler(stompClient, successHandler, context) {
     return (payload) => {
       let message = JSON.parse(payload.body);
-      if (!Ember.isEqual(message.type, ACK_TYPE)) {
-        if (Ember.isEqual(message.type, COMPLETE_TYPE)) {
+      if (!isEqual(message.type, ACK_TYPE)) {
+        if (isEqual(message.type, COMPLETE_TYPE)) {
           stompClient.disconnect();
         }
         successHandler(JSON.parse(message.content), context);

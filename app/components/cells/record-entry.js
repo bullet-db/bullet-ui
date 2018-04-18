@@ -3,10 +3,13 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { next } from '@ember/runloop';
+import { isEmpty, typeOf } from '@ember/utils';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 import ElementPopover from 'bullet-ui/mixins/element-popover';
 
-export default Ember.Component.extend(ElementPopover, {
+export default Component.extend(ElementPopover, {
   classNames: ['record-entry'],
   classNameBindings: ['hasPopover:has-popover'],
   row: null,
@@ -19,27 +22,27 @@ export default Ember.Component.extend(ElementPopover, {
   placeOn: 'bottom',
   additionalClass: 'record-entry-popover',
 
-  data: Ember.computed('row', 'column', function() {
+  data: computed('row', 'column', function() {
     let columnName = this.get('column.label');
     // Deliberately not using Ember get to prevent '.' expansion
     return this.get('row.content')[columnName];
   }).readOnly(),
 
-  hasPopover: Ember.computed('data', function() {
-    return !Ember.isEmpty(this.get('data'));
+  hasPopover: computed('data', function() {
+    return !isEmpty(this.get('data'));
   }).readOnly(),
 
-  isComplex: Ember.computed('data', function() {
-    let type = Ember.typeOf(this.get('data'));
+  isComplex: computed('data', function() {
+    let type = typeOf(this.get('data'));
     return type === 'object' || type === 'array';
   }).readOnly(),
 
-  textValue: Ember.computed('isComplex', 'data', function() {
+  textValue: computed('isComplex', 'data', function() {
     let data = this.get('data');
     return this.get('isComplex') ? JSON.stringify(data) : data;
   }).readOnly(),
 
-  formattedValue: Ember.computed('isComplex', 'data', function() {
+  formattedValue: computed('isComplex', 'data', function() {
     let data = this.get('data');
     return this.get('isComplex') ? JSON.stringify(data, null, 2) : data;
   }).readOnly(),
@@ -51,7 +54,7 @@ export default Ember.Component.extend(ElementPopover, {
 
   click() {
     this.set('isActive', true);
-    Ember.run.next(() => {
+    next(() => {
       this.getPopover().popover('toggle');
     });
   },

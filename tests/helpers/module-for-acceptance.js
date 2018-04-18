@@ -4,30 +4,20 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { module } from 'qunit';
-import Ember from 'ember';
+import { resolve } from 'rsvp';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
 import mockedAPI from '../helpers/mocked-api';
 import sinon from 'sinon';
 import Stomp from 'npm:@stomp/stompjs';
 
-const { RSVP: { Promise } } = Ember;
-
 export default function(name, options = {}) {
-  let logger;
-  const NOOP = () => { };
-  const LOGGER = { log: NOOP, warn: NOOP, error: NOOP, assert: NOOP, debug: NOOP, info: NOOP };
-
   module(name, {
     beforeEach() {
       this.application = startApp();
 
       this.mockedAPI = mockedAPI.create();
       this.stub = sinon.stub(Stomp, 'over').returns(this.mockedAPI);
-
-      if (options.suppressLogging) {
-        [logger, Ember.Logger] = [Ember.Logger, LOGGER];
-      }
 
       if (options.beforeEach) {
         return options.beforeEach.apply(this, arguments);
@@ -37,11 +27,8 @@ export default function(name, options = {}) {
     afterEach() {
       this.mockedAPI.shutdown();
       this.stub.restore();
-      if (options.suppressLogging) {
-        Ember.Logger = logger;
-      }
       let afterEach = options.afterEach && options.afterEach.apply(this, arguments);
-      return Promise.resolve(afterEach).then(() => destroyApp(this.application));
+      return resolve(afterEach).then(() => destroyApp(this.application));
     }
   });
 }

@@ -1,11 +1,11 @@
 {
   "default": {
-    "queryHost": "https://foo.bar.com:4443",
+    "queryHost": "https://bullet-stg-api.data.yahoo.com:4443",
     "queryNamespace": "bullet/api",
-    "queryPath": "drpc",
+    "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://foo.bar.com:4443",
+    "schemaHost": "https://bullet-stg-api.data.yahoo.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
@@ -18,6 +18,7 @@
     "migrations": {
       "deletions": "result"
     },
+    "localStorage": "indexeddb",
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,

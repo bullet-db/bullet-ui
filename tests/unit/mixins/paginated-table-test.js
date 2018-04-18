@@ -3,29 +3,29 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import PaginatedTableMixin from 'bullet-ui/mixins/paginated-table';
 import { module, test } from 'qunit';
 
 module('Unit | Mixin | paginated table');
 
 test('it uses the default string extractor for unknown objects', function(assert) {
-  let PaginatedTableObject = Ember.Object.extend(PaginatedTableMixin);
+  let PaginatedTableObject = EmberObject.extend(PaginatedTableMixin);
   let subject = PaginatedTableObject.create();
   subject.set('useDefaultStringExtractor', false);
 
   let extractor = subject.getExtractor('foo');
-  let row = Ember.Object.create({ foo: [1, 2, 3] });
+  let row = EmberObject.create({ foo: [1, 2, 3] });
   let result = extractor(row);
   assert.equal(result, String([1, 2, 3]));
 });
 
 test('it sorts by direction', function(assert) {
-  let PaginatedTableObject = Ember.Object.extend(PaginatedTableMixin);
+  let PaginatedTableObject = EmberObject.extend(PaginatedTableMixin);
   let rows = [
-    Ember.Object.create({ a: 4, b: 'foo', c: false, d: [1, 2] }),
-    Ember.Object.create({ a: 2, b: 'bar', c: true, d: [2, 1] }),
-    Ember.Object.create({ a: -1, b: 'baz', c: null })
+    EmberObject.create({ a: 4, b: 'foo', c: false, d: [1, 2] }),
+    EmberObject.create({ a: 2, b: 'bar', c: true, d: [2, 1] }),
+    EmberObject.create({ a: -1, b: 'baz', c: null })
   ];
   let subject = PaginatedTableObject.create({ rows });
   subject.set('useDefaultStringExtractor', false);
@@ -51,9 +51,9 @@ test('it sorts by direction', function(assert) {
 });
 
 test('it can paginate a table', function(assert) {
-  let PaginatedTableObject = Ember.Object.extend(PaginatedTableMixin);
+  let PaginatedTableObject = EmberObject.extend(PaginatedTableMixin);
   let rows = Array(100).fill().map((_, i) => i + 1);
-  let table = Ember.Object.create({
+  let table = EmberObject.create({
     setRows(rows) {
       this.set('rows', rows);
     },

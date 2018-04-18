@@ -193,7 +193,9 @@ test('adding and removing raw data output projections', function(assert) {
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
   click('.output-container .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[0], 'simple_column');
+  });
   fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
   andThen(() => {
     assert.equal(find('.projections-container .column-onlyfield').length, 2);
@@ -251,13 +253,17 @@ test('switching to another output data type wipes selected columns', function(as
 
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
-  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+  });
   fillIn('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
   fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
 
   click('.output-container .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   click('.save-button');
   andThen(() => {
     assert.equal(find('.projections-container .field-selection-container').length, 2);
@@ -316,13 +322,17 @@ test('copying a full query with filters, raw data output with projections and a 
     find('.filter-container .rule-filter-container select').val('complex_list_column').trigger('change');
   });
   click('.output-container .raw-sub-options #select');
-  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+  });
   fillIn('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
   fillIn('.projections-container .field-selection-container:eq(0) .field-name input', 'new_name');
 
   click('.output-container .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
 
   fillIn('.options-container .aggregation-size input', '40');
   click('.submit-button');
@@ -360,15 +370,19 @@ test('copying a full query with filters, grouped data output with groups and fie
   click('.output-options #grouped-data');
   click('.output-container .groups-container .add-group');
   click('.output-container .groups-container .add-group');
-  selectChoose('.output-container .groups-container .field-selection-container:eq(0) .field-selection', 'complex_map_column');
-  selectChoose('.output-container .groups-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .groups-container .field-selection-container .field-selection')[0], 'complex_map_column');
+    selectChoose(find('.output-container .groups-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.output-container .groups-container .field-selection-container:eq(1) .field-name input', 'bar');
 
   click('.output-container .metrics-container .add-metric');
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(0) .metrics-selection', 'Count');
-  selectChoose('.output-container .metrics-container .metrics-selection:eq(1)', 'Average');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container:eq(0) .metrics-selection')[0], 'Count');
+    selectChoose(find('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.output-container .metrics-container .field-selection-container:eq(1) .field-name input', 'avg_bar');
 
   click('.save-button');
@@ -524,8 +538,10 @@ test('copying a top k query works', function(assert) {
   click('.output-options #top-k');
 
   click('.output-container .add-field');
-  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
-  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.output-container .field-selection-container .field-selection')[0], 'simple_column');
+    selectChoose(find('.output-container .field-selection-container .field-selection')[1], 'complex_map_column.*');
+  });
   fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
   triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
   fillIn('.output-container .field-selection-container:eq(1) .field-name input', 'new_name');
@@ -680,7 +696,9 @@ test('adding a projection field and checking if it is indicated as needing atten
   });
   click('.queries-table .query-name-entry .query-description');
   click('.output-container .raw-sub-options #select');
-  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container:eq(0) .field-selection')[0], 'simple_column');
+  });
   visit('queries').then(() => {
     assert.equal(find('.query-name-entry').length, 1);
     assert.equal(find('.query-unsaved').length, 1);

@@ -3,14 +3,15 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
+import Mixin from '@ember/object/mixin';
 /**
  * Responsible for converting between the formats of filter rules - QueryBuilder
  * to and from API Query filter.
  *
  * Add this mixin to any Object that requires to convert back and forth.
  */
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
    * The suffix that has been appended to fields that have free form subfields in the QueryBuilder rule.
    * Only needed to use methods that convert to the API format.
@@ -85,7 +86,7 @@ export default Ember.Mixin.create({
   convertClausesToRules(clauses) {
     let converted = [];
     // This may or may not need to be an error
-    if (Ember.isEmpty(clauses)) {
+    if (isEmpty(clauses)) {
       return converted;
     }
     clauses.forEach(function(item) {
@@ -105,10 +106,10 @@ export default Ember.Mixin.create({
     let field = filter.field;
     let op = filter.operation;
     let values = filter.values;
-    if (Ember.isEmpty(values)) {
+    if (isEmpty(values)) {
       throw new Error(`No values found for ${JSON.stringify(filter)}`);
     }
-    if (Ember.isEmpty(field)) {
+    if (isEmpty(field)) {
       throw new Error(`No field found for ${JSON.stringify(filter)}`);
     }
     let rule = {
@@ -195,7 +196,7 @@ export default Ember.Mixin.create({
   convertRulesToClauses(rules) {
     let converted = [];
     // This may or may not need to be an error.
-    if (Ember.isEmpty(rules)) {
+    if (isEmpty(rules)) {
       return converted;
     }
     rules.forEach(function(item) {

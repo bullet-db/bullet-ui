@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 
@@ -20,7 +20,7 @@ const MOCK_COLUMNS = [
 ];
 
 function mockModel(isValid, isValidating, isDirty, field = 'foo', message = null) {
-  return Ember.Object.create({
+  return EmberObject.create({
     field: field,
     name: null,
 

@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -15,7 +15,7 @@ moduleForComponent('schema-table', 'Integration | Component | schema table', {
 
 test('it renders the name, type and description of columns', function(assert) {
   let column = MockColumn.create({ name: 'foo', type: 'STRING', description: 'description' });
-  let columns = Ember.A([column]);
+  let columns = A([column]);
   this.set('mockColumns', columns);
 
   this.render(hbs`{{schema-table fields=mockColumns}}`);
@@ -30,7 +30,7 @@ test('it renders the name, type and description of columns', function(assert) {
 
 test('it does not expand non-complex columns', function(assert) {
   let column = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'BOOLEAN', description: 'description' });
-  let columns = Ember.A([column]);
+  let columns = A([column]);
   this.set('mockColumns', columns);
 
   this.render(hbs`{{schema-table fields=mockColumns}}`);
@@ -47,7 +47,7 @@ test('it renders and expands complex columns', function(assert) {
   let column = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'BOOLEAN', description: 'description' });
   column.addEnumeration('bar', 'nested 1');
   column.addEnumeration('baz', 'nested 2');
-  let columns = Ember.A([column]);
+  let columns = A([column]);
   this.set('mockColumns', columns);
 
   this.render(hbs`{{schema-table fields=mockColumns}}`);
@@ -81,7 +81,7 @@ test('it default sorts by name ascending and can sort', function(assert) {
   let columnA = MockColumn.create({ name: 'foo', type: 'STRING', description: 'description' });
   let columnB = MockColumn.create({ name: 'bar', type: 'STRING', description: 'description' });
   let columnC = MockColumn.create({ name: 'qux', type: 'STRING', description: 'description' });
-  let columns = Ember.A([columnA, columnB, columnC]);
+  let columns = A([columnA, columnB, columnC]);
   this.set('mockColumns', columns);
 
   this.render(hbs`{{schema-table fields=mockColumns}}`);

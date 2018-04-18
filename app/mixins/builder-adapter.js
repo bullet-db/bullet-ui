@@ -3,14 +3,16 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
+import { A } from '@ember/array';
+import Mixin from '@ember/object/mixin';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 
 /**
  * Provides methods to configure the QueryBuilder plugin with initial filters and options, given
  * an Enumerable of {@link Column}.
  */
-export default Ember.Mixin.create(Filterizer, {
+export default Mixin.create(Filterizer, {
   /**
    * Returns the default options for QueryBuilder. Does not include filters.
    * @return {Object} The Options to configure QueryBuilder
@@ -76,11 +78,11 @@ export default Ember.Mixin.create(Filterizer, {
   /**
    * Creates QueryBuilder version of Filters from an Enumerable of {@link Column}, flattening enumerated Columns.
    * @param  {Column} columns An Enumerable set of Columns
-   * @return {Ember.Array}    Ember Arrray of the corresponding filters.
+   * @return {EmberArray}     Ember Arrray of the corresponding filters.
    */
   builderFilters(columns) {
-    let filters = Ember.A();
-    if (Ember.isEmpty(columns)) {
+    let filters = A();
+    if (isEmpty(columns)) {
       return filters;
     }
     return columns.reduce((previous, item) => {

@@ -60,16 +60,21 @@ test('it summarizes a query with raw fields', function(assert) {
   visit('/queries/new');
   click('.output-container .raw-sub-options #select');
 
-  selectChoose('.projections-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+  });
   fillIn('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
   fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
 
   click('.output-container .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container:eq(1) .field-selection', 'simple_column');
-
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   click('.output-container .projections-container .add-projection');
-  selectChoose('.projections-container .field-selection-container:eq(2) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.projections-container .field-selection-container .field-selection')[2], 'complex_map_column.*');
+  });
   fillIn('.projections-container .field-selection-container:eq(2) .field-selection .column-subfield input', 'bar');
   triggerEvent('.projections-container .field-selection-container:eq(2) .field-selection .column-subfield input', 'blur');
 
@@ -91,8 +96,10 @@ test('it summarizes a count distinct query', function(assert) {
   click('.output-options #count-distinct');
   click('.output-container .fields-selection-container .add-field');
   click('.output-container .fields-selection-container .add-field');
-  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
-  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column');
+  andThen(() => {
+    selectChoose(find('.output-container .field-selection-container .field-selection')[0], 'simple_column');
+    selectChoose(find('.output-container .field-selection-container .field-selection')[1], 'complex_map_column');
+  });
   fillIn('.output-container .count-distinct-display-name input', 'cnt');
   click('.save-button');
   visit('queries');
@@ -111,12 +118,16 @@ test('it summarizes a distinct query', function(assert) {
   click('.output-options #grouped-data');
 
   click('.groups-container .add-group');
-  selectChoose('.groups-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.groups-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+  });
   fillIn('.groups-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.groups-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
 
   click('.groups-container .add-group');
-  selectChoose('.groups-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.groups-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.groups-container .field-selection-container:eq(1) .field-name input', 'bar');
 
   click('.save-button');
@@ -136,28 +147,40 @@ test('it summarizes a group all query', function(assert) {
   click('.output-options #grouped-data');
 
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(0) .metrics-selection', 'Count');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[0], 'Count');
+  });
 
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(1) .metrics-selection', 'Average');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[1], 'Average');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[0], 'simple_column');
+  });
   fillIn('.output-container .metrics-container .field-selection-container:eq(1) .field-name input', 'avg_s');
 
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(2) .metrics-selection', 'Average');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(2) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[2], 'Average');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
 
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(3) .metrics-selection', 'Sum');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(3) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[3], 'Sum');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[2], 'simple_column');
+  });
 
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(4) .metrics-selection', 'Minimum');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(4) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[4], 'Minimum');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[3], 'simple_column');
+  });
 
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(5) .metrics-selection', 'Maximum');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(5) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[5], 'Maximum');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[4], 'simple_column');
+  });
 
   click('.submit-button');
   visit('queries');
@@ -177,19 +200,25 @@ test('it summarizes a grouped data query with groups first', function(assert) {
   click('.output-options #grouped-data');
 
   click('.groups-container .add-group');
-  selectChoose('.groups-container .field-selection-container:eq(0) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.groups-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+  });
   fillIn('.groups-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'foo');
   triggerEvent('.groups-container .field-selection-container:eq(0) .field-selection .column-subfield input', 'blur');
 
   click('.groups-container .add-group');
-  selectChoose('.groups-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.groups-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.groups-container .field-selection-container:eq(1) .field-name input', 'bar');
 
   click('.output-container .metrics-container .add-metric');
   click('.output-container .metrics-container .add-metric');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(0) .metrics-selection', 'Count');
-  selectChoose('.output-container .metrics-container .metrics-selection:eq(1)', 'Average');
-  selectChoose('.output-container .metrics-container .field-selection-container:eq(1) .field-selection', 'simple_column');
+  andThen(() => {
+    selectChoose(find('.output-container .metrics-container .field-selection-container .metrics-selection')[0], 'Count');
+    selectChoose(find('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    selectChoose(find('.output-container .metrics-container .field-selection-container .field-selection')[1], 'simple_column');
+  });
   fillIn('.output-container .metrics-container .field-selection-container:eq(1) .field-name input', 'avg_bar');
 
   click('.submit-button');
@@ -285,8 +314,10 @@ test('it summarizes a top k query with multiple fields', function(assert) {
   click('.output-options #top-k');
 
   click('.output-container .add-field');
-  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
-  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.output-container .field-selection-container .field-selection')[0], 'simple_column');
+    selectChoose(find('.output-container .field-selection-container .field-selection')[1], 'complex_map_column.*');
+  });
   fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
   triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
 
@@ -307,8 +338,10 @@ test('it summarizes a top k query with custom k and threshold', function(assert)
   click('.output-options #top-k');
 
   click('.output-container .add-field');
-  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
-  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.output-container .field-selection-container .field-selection')[0], 'simple_column');
+    selectChoose(find('.output-container .field-selection-container .field-selection')[1], 'complex_map_column.*');
+  });
   fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
   triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
 
@@ -332,8 +365,10 @@ test('it summarizes a top k query with custom k, threshold and name', function(a
   click('.output-options #top-k');
 
   click('.output-container .add-field');
-  selectChoose('.output-container .field-selection-container:eq(0) .field-selection', 'simple_column');
-  selectChoose('.output-container .field-selection-container:eq(1) .field-selection', 'complex_map_column.*');
+  andThen(() => {
+    selectChoose(find('.output-container .field-selection-container .field-selection')[0], 'simple_column');
+    selectChoose(find('.output-container .field-selection-container .field-selection')[1], 'complex_map_column.*');
+  });
   fillIn('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'foo');
   triggerEvent('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input', 'blur');
 

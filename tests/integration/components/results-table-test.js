@@ -3,7 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
+import { A } from '@ember/array';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -14,8 +15,8 @@ moduleForComponent('results-table', 'Integration | Component | results table', {
 
 test('it displays a row with two cells in two columns', function(assert) {
   assert.expect(4);
-  this.set('mockResults', Ember.A([
-                            Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) })
+  this.set('mockResults', A([
+                            EmberObject.create({ created: new Date(2014, 11, 31), records: A([1, 2, 3]) })
                            ]));
   this.render(hbs`{{results-table results=mockResults}}`);
   assert.equal(this.$('.lt-head .lt-column').eq(0).text().trim(), 'Date');
@@ -26,9 +27,9 @@ test('it displays a row with two cells in two columns', function(assert) {
 
 test('it sorts by the number of records column on click', function(assert) {
   assert.expect(2);
-  this.set('mockResults', Ember.A([
-                            Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) }),
-                            Ember.Object.create({ created: new Date(2015, 1, 1), records: Ember.A() })
+  this.set('mockResults', A([
+                            EmberObject.create({ created: new Date(2014, 11, 31), records: A([1, 2, 3]) }),
+                            EmberObject.create({ created: new Date(2015, 1, 1), records: A() })
                            ]));
   this.render(hbs`{{results-table results=mockResults}}`);
   assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
@@ -42,9 +43,9 @@ test('it sorts by the number of records column on click', function(assert) {
 
 test('it sorts by the date column on click', function(assert) {
   assert.expect(2);
-  this.set('mockResults', Ember.A([
-                            Ember.Object.create({ created: new Date(2015, 1, 1), records: Ember.A() }),
-                            Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) })
+  this.set('mockResults', A([
+                            EmberObject.create({ created: new Date(2015, 1, 1), records: A() }),
+                            EmberObject.create({ created: new Date(2014, 11, 31), records: A([1, 2, 3]) })
                            ]));
   this.render(hbs`{{results-table results=mockResults}}`);
   assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
@@ -61,9 +62,9 @@ test('it sends the resultClick action on click', function(assert) {
   this.set('mockResultClick', (result) => {
     assert.equal(result.get('records.length'), 3);
   });
-  this.set('mockResults', Ember.A([
-                            Ember.Object.create({ created: new Date(2015, 1, 1), records: Ember.A() }),
-                            Ember.Object.create({ created: new Date(2014, 11, 31), records: Ember.A([1, 2, 3]) })
+  this.set('mockResults', A([
+                            EmberObject.create({ created: new Date(2015, 1, 1), records: A() }),
+                            EmberObject.create({ created: new Date(2014, 11, 31), records: A([1, 2, 3]) })
                            ]));
   this.render(hbs`{{results-table results=mockResults resultClick=(action mockResultClick)}}`);
   assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);

@@ -3,14 +3,14 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 
 let originalSave;
 
 moduleFor('service:file-saver', 'Unit | Service | file saver', {
   beforeEach() {
-    Ember.run(function() {
+    run(function() {
       originalSave = window.saveAs;
     });
   },

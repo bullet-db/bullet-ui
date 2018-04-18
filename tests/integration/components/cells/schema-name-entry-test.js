@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 
@@ -12,7 +12,7 @@ moduleForComponent('schema-name-entry', 'Integration | Component | Cell | schema
 });
 
 test('it displays a simple column', function(assert) {
-  this.set('mockRow', Ember.Object.create({
+  this.set('mockRow', EmberObject.create({
     name: 'foo'
   }));
   this.render(hbs`{{cells/schema-name-entry row=mockRow}}`);
@@ -22,7 +22,7 @@ test('it displays a simple column', function(assert) {
 });
 
 test('it displays an subfield column', function(assert) {
-  this.set('mockRow', Ember.Object.create({
+  this.set('mockRow', EmberObject.create({
     name: 'foo.bar',
     isSubfield: true
   }));
@@ -33,7 +33,7 @@ test('it displays an subfield column', function(assert) {
 });
 
 test('it displays an expand caret if the row has enumerations', function(assert) {
-  this.set('mockRow', Ember.Object.create({
+  this.set('mockRow', EmberObject.create({
     name: 'foo.bar',
     isSubfield: true,
     hasEnumerations: true
@@ -44,7 +44,7 @@ test('it displays an expand caret if the row has enumerations', function(assert)
 });
 
 test('it displays an expanded caret if the row is expanded', function(assert) {
-  this.set('mockRow', Ember.Object.create({
+  this.set('mockRow', EmberObject.create({
     name: 'foo.bar',
     isSubfield: true,
     hasEnumerations: true,

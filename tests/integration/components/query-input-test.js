@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -114,7 +114,7 @@ test('it saves and triggers the fire query action on a good query', function(ass
   this.set('mockSave', () => {
     // We should be saved if everything is ok.
     assert.ok(true);
-    return Ember.RSVP.Promise.resolve();
+    return EmberPromise.resolve();
   });
   this.set('mockFireQuery', () => {
     // We should be triggered if everything is ok.
@@ -143,7 +143,7 @@ test('it hides the save and submit button when listening', function(assert) {
 
   this.set('mockQuery', query);
   this.set('mockSave', () => {
-    return Ember.RSVP.Promise.resolve();
+    return EmberPromise.resolve();
   });
 
   this.render(hbs`{{query-input query=mockQuery schema=mockSchema save=mockSave}}`);
@@ -168,7 +168,7 @@ test('it triggers the cancel query action when cancelling', function(assert) {
 
   this.set('mockQuery', query);
   this.set('mockSave', () => {
-    return Ember.RSVP.Promise.resolve();
+    return EmberPromise.resolve();
   });
   this.set('mockFireQuery', () => {
     assert.ok(true);

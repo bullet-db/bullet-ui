@@ -3,11 +3,14 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
+import { typeOf } from '@ember/utils';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/mixins/paginated-table';
 
-export default Ember.Component.extend(PaginatedTable, {
+export default Component.extend(PaginatedTable, {
   classNames: ['schema-table'],
   classNameBindings: ['isNested'],
   queries: null,
@@ -21,13 +24,13 @@ export default Ember.Component.extend(PaginatedTable, {
    */
   isNested: false,
 
-  rows: Ember.computed('fields.[]', function() {
+  rows: computed('fields.[]', function() {
     let fields = this.get('fields');
     // This needs to handle arrays (for enumeratedColumns) and the model result collection
-    return Ember.typeOf(fields) === 'array' ? fields : fields.toArray();
+    return typeOf(fields) === 'array' ? fields : fields.toArray();
   }),
 
-  columns: Ember.A([
+  columns: A([
     { label: 'Field', width: '250px', valuePath: 'name', cellComponent: 'cells/schema-name-entry' },
     { label: 'Type', width: '250px', valuePath: 'qualifiedType', cellComponent: 'cells/schema-type-entry' },
     { label: 'Description', valuePath: 'description', cellComponent: 'cells/schema-description-entry' }

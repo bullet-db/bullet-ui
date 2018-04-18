@@ -3,9 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { typeOf } from '@ember/utils';
+import { computed } from '@ember/object';
+import Mixin from '@ember/object/mixin';
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   rows: null,
   columns: null,
   pageSize: 15,
@@ -13,11 +15,11 @@ export default Ember.Mixin.create({
   extractors: null,
   useDefaultStringExtractor: true,
 
-  numberOfRows: Ember.computed('rows.[]', function() {
+  numberOfRows: computed('rows.[]', function() {
     return this.get('rows.length');
   }),
 
-  haveMoreRows: Ember.computed('firstNewRow', 'numberOfRows', function() {
+  haveMoreRows: computed('firstNewRow', 'numberOfRows', function() {
     return this.get('firstNewRow') < this.get('numberOfRows');
   }),
 
@@ -39,7 +41,7 @@ export default Ember.Mixin.create({
       // Use regular instead of get in case column has '.' Only doing it here because the defaultExtractor is used
       // for unknown column names. When we define columns, we should not add columns with '.' in the name
       let value = row[column];
-      let valueType = Ember.typeOf(value);
+      let valueType = typeOf(value);
       if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
         return value;
       }

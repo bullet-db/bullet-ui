@@ -3,9 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import Service from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
   save(data, mimeType, name) {
     window.saveAs(new Blob([data], { type: mimeType }), name);
   }

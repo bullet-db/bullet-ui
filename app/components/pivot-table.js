@@ -1,24 +1,26 @@
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import $ from 'jquery';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   rows: null,
   columns: null,
   initialOptions: null,
   defaultOptions: {
     unusedAttrsVertical: true,
     menuLimit: 200,
-    renderers: Ember.$.extend(
-      Ember.$.pivotUtilities.renderers,
-      Ember.$.pivotUtilities.c3_renderers,
-      Ember.$.pivotUtilities.export_renderers
+    renderers: $.extend(
+      $.pivotUtilities.renderers,
+      $.pivotUtilities.c3_renderers,
+      $.pivotUtilities.export_renderers
     )
   },
 
-  options: Ember.computed('initialOptions', 'defaultOptions', function() {
+  options: computed('initialOptions', 'defaultOptions', function() {
     let deserialized = this.get('initialOptions');
     let options = this.get('defaultOptions');
     // Attach refresh handler
-    return Ember.$.extend({ onRefresh: this.refreshHandler(this) }, deserialized, options);
+    return $.extend({ onRefresh: this.refreshHandler(this) }, deserialized, options);
   }),
 
   didInsertElement() {

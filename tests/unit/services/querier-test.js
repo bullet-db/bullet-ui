@@ -3,7 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isArray } from '@ember/array';
+import $ from 'jquery';
+import { isEmpty, typeOf } from '@ember/utils';
 import { moduleFor, test } from 'ember-qunit';
 import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
@@ -19,35 +21,35 @@ function arrayChecker(assert, emArray) {
 }
 
 function isEmptyObject(object) {
-  return Ember.isEmpty(object) || Object.keys(object.data) === 0;
+  return isEmpty(object) || Object.keys(object.data) === 0;
 }
 
 function assertEmberEqual(assert, emObject, object) {
-  if (Ember.isEmpty(emObject) && !Ember.isEmpty(object)) {
+  if (isEmpty(emObject) && !isEmpty(object)) {
     assert.ok(false, `Expected ${JSON.stringify(object)} but found empty: ${emObject}`);
     return;
   }
   for (let key in object) {
     let emValue = emObject.get(key);
     let value = object[key];
-    let type = Ember.typeOf(value);
+    let type = typeOf(value);
 
     if (type === 'string' || type === 'number' || type === 'boolean') {
       assert.equal(emValue, value);
     } else if (type === 'object') {
-      let emType = Ember.typeOf(emValue);
+      let emType = typeOf(emValue);
       // Special case for filter.clause
       if (key === 'clause' && emType === 'object') {
         assert.deepEqual(emValue, value);
         return;
       }
       if (emType === 'object' && isEmptyObject(emValue)) {
-        assert.ok(Ember.$.isEmptyObject(value), `Ember object: ${emValue} was empty but ${value} is not`);
+        assert.ok($.isEmptyObject(value), `Ember object: ${emValue} was empty but ${value} is not`);
       } else {
         assertEmberEqual(assert, emValue, value);
       }
     } else if (type === 'array') {
-      if (!Ember.isArray(emValue)) {
+      if (!isArray(emValue)) {
         assert.ok(false, `Expected array ${JSON.stringify(value)} but found ${emValue}`);
         return;
       }

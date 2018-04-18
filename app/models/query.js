@@ -3,7 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
+import { A } from '@ember/array';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
@@ -40,27 +42,27 @@ export default DS.Model.extend(Validations, {
   }),
   results: DS.hasMany('result', { async: true, dependent: 'destroy' }),
 
-  hasUnsavedFields: Ember.computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
-    let projections = this.getWithDefault('projections', Ember.A());
-    let groups = this.getWithDefault('aggregation.groups', Ember.A());
+  hasUnsavedFields: computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
+    let projections = this.getWithDefault('projections', A());
+    let groups = this.getWithDefault('aggregation.groups', A());
     return this.hasNoName(projections) || this.hasNoName(groups);
   }).readOnly(),
 
-  filterSummary: Ember.computed('filter.summary', function() {
+  filterSummary: computed('filter.summary', function() {
     let summary = this.get('filter.summary');
-    return Ember.isEmpty(summary) ? 'None' : summary;
+    return isEmpty(summary) ? 'None' : summary;
   }).readOnly(),
 
-  projectionsSummary: Ember.computed('projections.@each.name', function() {
+  projectionsSummary: computed('projections.@each.name', function() {
     return this.summarizeFieldLike(this.get('projections'));
   }).readOnly(),
 
-  groupsSummary: Ember.computed('aggregation.groups.@each.name', function() {
+  groupsSummary: computed('aggregation.groups.@each.name', function() {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
   }),
 
-  metricsSummary: Ember.computed('aggregation.metrics.@each.type', 'aggregation.metrics.@each.name', function() {
-    let metrics = this.getWithDefault('aggregation.metrics', Ember.A());
+  metricsSummary: computed('aggregation.metrics.@each.type', 'aggregation.metrics.@each.name', function() {
+    let metrics = this.getWithDefault('aggregation.metrics', A());
     return metrics.map(m => {
       let type = m.get('type');
       let field = m.get('field');
@@ -68,11 +70,11 @@ export default DS.Model.extend(Validations, {
       if (type === METRICS.get('COUNT')) {
         field = '*';
       }
-      return Ember.isEmpty(name) ? `${type}(${field})` : name;
+      return isEmpty(name) ? `${type}(${field})` : name;
     }).join(', ');
   }),
 
-  aggregationSummary: Ember.computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}',
+  aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}',
                                      'groupsSummary', 'metricsSummary', function() {
     let type = this.get('aggregation.type');
     if (type === AGGREGATIONS.get('RAW')) {
@@ -91,32 +93,32 @@ export default DS.Model.extend(Validations, {
       let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
       let summary = `TOP ${k} OF (${groupsSummary})`;
       let threshold = this.get('aggregation.attributes.threshold');
-      return Ember.isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
+      return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
     }
     // Otherwise 'GROUP'
     let metricsSummary = this.get('metricsSummary');
 
-    if (Ember.isEmpty(metricsSummary)) {
+    if (isEmpty(metricsSummary)) {
       return groupsSummary;
-    } else if (Ember.isEmpty(groupsSummary)) {
+    } else if (isEmpty(groupsSummary)) {
       return metricsSummary;
     }
     return `${groupsSummary}, ${metricsSummary}`;
   }),
 
-  fieldsSummary: Ember.computed('projectionsSummary', 'aggregationSummary', function() {
+  fieldsSummary: computed('projectionsSummary', 'aggregationSummary', function() {
     let projectionsSummary = this.get('projectionsSummary');
     let aggregationSummary = this.get('aggregationSummary');
-    if (Ember.isEmpty(aggregationSummary)) {
+    if (isEmpty(aggregationSummary)) {
       // If All fields with Raw Aggregation
-      return Ember.isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
+      return isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
     }
     return this.get('aggregationSummary');
   }),
 
-  latestResult: Ember.computed('results.[]', function() {
+  latestResult: computed('results.[]', function() {
     let results = this.get('results');
-    if (Ember.isEmpty(results)) {
+    if (isEmpty(results)) {
       return null;
     }
     // Earliest date
@@ -133,10 +135,10 @@ export default DS.Model.extend(Validations, {
   }).readOnly(),
 
   summarizeFieldLike(fieldLike) {
-    return Ember.isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => Ember.isEmpty(n)).join(', ');
+    return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => isEmpty(n)).join(', ');
   },
 
   hasNoName(fieldLike) {
-    return Ember.isEmpty(fieldLike) ? false : fieldLike.any(f => !Ember.isEmpty(f.get('field')) && Ember.isEmpty(f.get('name')));
+    return isEmpty(fieldLike) ? false : fieldLike.any(f => !isEmpty(f.get('field')) && isEmpty(f.get('name')));
   }
 });

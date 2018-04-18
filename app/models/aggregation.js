@@ -3,11 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
-let AggregationTypes = Ember.Object.extend({
+let AggregationTypes = EmberObject.extend({
   RAW: 'Raw',
   GROUP: 'Group',
   COUNT_DISTINCT: 'Count Distinct',
@@ -26,9 +26,9 @@ let AggregationTypes = Ember.Object.extend({
   }
 });
 
-let RawTypes = Ember.Object.extend({ ALL: 'All', SELECT: 'Select' });
+let RawTypes = EmberObject.extend({ ALL: 'All', SELECT: 'Select' });
 
-let DistributionTypes = Ember.Object.extend({
+let DistributionTypes = EmberObject.extend({
   QUANTILE: 'Quantile',
   PMF: 'Frequency',
   CDF: 'Cumulative Frequency',
@@ -43,7 +43,7 @@ let DistributionTypes = Ember.Object.extend({
   }
 });
 
-let DistributionPointTypes = Ember.Object.extend({ NUMBER: 'Number', POINTS: 'Points',
+let DistributionPointTypes = EmberObject.extend({ NUMBER: 'Number', POINTS: 'Points',
                                                     GENERATED: 'Generated' });
 
 export const AGGREGATIONS = AggregationTypes.create();
@@ -76,6 +76,6 @@ export default DS.Model.extend(Validations, {
   size: DS.attr('number', { defaultValue: 1 }),
   groups: DS.hasMany('group', { dependent: 'destroy' }),
   metrics: DS.hasMany('metric', { dependent: 'destroy' }),
-  attributes: DS.attr({ defaultValue: () => Ember.Object.create() }),
+  attributes: DS.attr({ defaultValue: () => EmberObject.create() }),
   query: DS.belongsTo('query', { autoSave: true })
 });

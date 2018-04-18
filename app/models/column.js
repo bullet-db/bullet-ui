@@ -3,7 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
+import { isEmpty } from '@ember/utils';
+import EmberObject, { computed } from '@ember/object';
 import DS from 'ember-data';
 
 export const SUBFIELD_SEPARATOR = '.';
@@ -15,32 +17,32 @@ export default DS.Model.extend({
   description: DS.attr('string'),
   enumerations: DS.attr(),
 
-  qualifiedType: Ember.computed('type', 'subtype', function() {
+  qualifiedType: computed('type', 'subtype', function() {
     let type = this.get('type');
     let subType = this.get('subtype');
     let qualifiedType = type;
-    if (!Ember.isEmpty(subType)) {
+    if (!isEmpty(subType)) {
       qualifiedType = type === 'MAP' ? `MAP OF STRINGS TO ${subType}S` : `${type} OF ${subType}S`;
     }
     return qualifiedType;
   }),
 
-  hasEnumerations: Ember.computed('enumerations', function() {
-    return !Ember.isEmpty(this.get('enumerations'));
+  hasEnumerations: computed('enumerations', function() {
+    return !isEmpty(this.get('enumerations'));
   }).readOnly(),
 
-  hasFreeformField: Ember.computed('type', 'subtype', 'enumerations', function() {
-    return this.get('type') === 'MAP' && !Ember.isEmpty(this.get('subtype')) && Ember.isEmpty(this.get('enumerations'));
+  hasFreeformField: computed('type', 'subtype', 'enumerations', function() {
+    return this.get('type') === 'MAP' && !isEmpty(this.get('subtype')) && isEmpty(this.get('enumerations'));
   }).readOnly(),
 
-  enumeratedColumns: Ember.computed('name', 'subtype', 'enumerations', function() {
-    let subColumns = Ember.A(this.get('enumerations'));
-    if (Ember.isEmpty(subColumns)) {
+  enumeratedColumns: computed('name', 'subtype', 'enumerations', function() {
+    let subColumns = A(this.get('enumerations'));
+    if (isEmpty(subColumns)) {
       return false;
     }
     let subColumnType = this.get('subtype');
     return subColumns.map((item) => {
-      let subColumn = Ember.Object.create(item);
+      let subColumn = EmberObject.create(item);
       let name = this.get('name');
       subColumn.set('name', `${name}${SUBFIELD_SEPARATOR}${item.name}`);
       subColumn.set('type', subColumnType);
@@ -51,17 +53,17 @@ export default DS.Model.extend({
     }, this);
   }).readOnly(),
 
-  flattenedColumns: Ember.computed('type', 'subtype', 'enumeratedColumns', function() {
-    let simplifiedColumns = Ember.A();
+  flattenedColumns: computed('type', 'subtype', 'enumeratedColumns', function() {
+    let simplifiedColumns = A();
     // The main column
-    simplifiedColumns.pushObject(Ember.Object.create({
+    simplifiedColumns.pushObject(EmberObject.create({
       name: this.get('name'),
       type: this.get('type')
     }));
     // The free form subfield
     let hasFreeformField = this.get('hasFreeformField');
     if (hasFreeformField) {
-      simplifiedColumns.pushObject(Ember.Object.create({
+      simplifiedColumns.pushObject(EmberObject.create({
         name: this.get('name'),
         type: this.get('subtype'),
         description: this.get('description'),

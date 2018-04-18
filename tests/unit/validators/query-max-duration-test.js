@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleFor, test } from 'ember-qunit';
 
 moduleFor('validator:query-max-duration', 'Unit | Validator | query-max-duration', {
@@ -12,7 +12,7 @@ moduleFor('validator:query-max-duration', 'Unit | Validator | query-max-duration
 
 test('it does not let you exceed the maximum duration seconds', function(assert) {
   var validator = this.subject();
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     settings: {
       defaultValues: {
         durationMaxSecs: 120

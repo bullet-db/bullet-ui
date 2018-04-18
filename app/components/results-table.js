@@ -3,17 +3,19 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
+import EmberObject, { computed } from '@ember/object';
+import Component from '@ember/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/mixins/paginated-table';
 
-export default Ember.Component.extend(PaginatedTable, {
+export default Component.extend(PaginatedTable, {
   classNames: ['results-table'],
   results: null,
   pageSize: 5,
   isFixed: true,
 
-  extractors: Ember.Object.create({
+  extractors: EmberObject.create({
     created(row) {
       return row.get('created');
     },
@@ -23,11 +25,11 @@ export default Ember.Component.extend(PaginatedTable, {
     }
   }),
 
-  rows: Ember.computed('results.[]', function() {
+  rows: computed('results.[]', function() {
     return this.get('results').toArray();
   }),
 
-  columns: Ember.A([
+  columns: A([
     { label: 'Date', valuePath: 'created', width: '150px', cellComponent: 'cells/result-date-entry' },
     { label: '# Records', valuePath: 'records', width: '80px', cellComponent: 'cells/result-number-entry' }
   ]),

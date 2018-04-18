@@ -3,10 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import Component from '@ember/component';
 import ElementPopover from 'bullet-ui/mixins/element-popover';
 
-export default Ember.Component.extend(ElementPopover, {
+export default Component.extend(ElementPopover, {
   classNames: ['info-popover-wrapper'],
   isButton: true,
   buttonClasses: 'glyphicon glyphicon-info-sign',

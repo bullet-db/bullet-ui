@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -13,7 +13,7 @@ moduleForComponent('query-shareable-link', 'Integration | Component | query shar
 });
 
 test('it displays an input with the query id and query link as contents', function(assert) {
-  let row = Ember.Object.create({ content: { id: 'foo' }, queryLink: '/bar/as3FDS3dx' });
+  let row = EmberObject.create({ content: { id: 'foo' }, queryLink: '/bar/as3FDS3dx' });
   this.set('mockRow', row);
 
   this.render(hbs`{{query-shareable-link row=mockRow}}`);
@@ -25,7 +25,7 @@ test('it displays an input with the query id and query link as contents', functi
 });
 
 test('it displays an button that points to the input for clipboard copying', function(assert) {
-  let row = Ember.Object.create({ content: { id: 'foo' }, queryLink: '/bar/as3FDS3dx' });
+  let row = EmberObject.create({ content: { id: 'foo' }, queryLink: '/bar/as3FDS3dx' });
   this.set('mockRow', row);
 
   this.render(hbs`{{query-shareable-link row=mockRow}}`);
@@ -36,7 +36,7 @@ test('it displays an button that points to the input for clipboard copying', fun
 });
 
 test('it unsets the expanded property when the collapse icon is clicked', function(assert) {
-  let row = Ember.Object.create({ content: { id: 'foo' }, expanded: true, queryLink: '/bar/as3FDS3dx' });
+  let row = EmberObject.create({ content: { id: 'foo' }, expanded: true, queryLink: '/bar/as3FDS3dx' });
   this.set('mockRow', row);
 
   this.render(hbs`{{query-shareable-link row=mockRow}}`);
