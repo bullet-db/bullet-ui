@@ -1,11 +1,11 @@
 {
   "default": {
-    "queryHost": "https://bullet-stg-api.data.yahoo.com:4443",
+    "queryHost": "https://foo.bar.com:4443",
     "queryNamespace": "bullet/api",
-    "queryPath": "ws-query",
+    "queryPath": "drpc",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://bullet-stg-api.data.yahoo.com:4443",
+    "schemaHost": "https://foo.bar.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
