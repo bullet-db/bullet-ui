@@ -18,7 +18,6 @@
     "migrations": {
       "deletions": "result"
     },
-    "localStorage": "indexeddb",
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,

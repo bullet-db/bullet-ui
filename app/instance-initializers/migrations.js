@@ -4,17 +4,11 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual } from '@ember/utils';
-import { resolve } from 'rsvp';
 
 export function initialize(application) {
   let settings = application.lookup('settings:main');
   let migrations = settings.get('migrations');
   let version = settings.get('modelVersion');
-
-  // Do nothing when running tests where ENV.APP.SETTINGS.localStorage is local.
-  if (isEqual(settings.get('localStorage'), 'local')) {
-    return resolve();
-  }
 
   const forage = window.localforage;
   return forage.getItem('modelVersion').then((currentVersion) => {

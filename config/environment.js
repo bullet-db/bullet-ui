@@ -33,6 +33,9 @@ module.exports = function(environment) {
     }
   };
 
+  // Merge INTERNAL_APP_SETTINGS into ENV.APP.SETTINGS.
+  Object.assign(INTERNAL_APP_SETTINGS, ENV.APP.SETTINGS);
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
@@ -62,6 +65,10 @@ module.exports = function(environment) {
   return ENV;
 };
 
+const INTERNAL_APP_SETTINGS = {
+  adapter: 'indexeddb'
+};
+
 const TEST_SETTINGS = {
   queryHost: 'https://foo.bar.com:4443',
   queryNamespace: 'bullet/api',
@@ -79,9 +86,9 @@ const TEST_SETTINGS = {
   bugLink: 'https://github.com/yahoo/bullet-ui/issues',
   modelVersion: 2,
   migrations: {
-    deletions: 'result'
+    deletions: 'none'
   },
-  localStorage: 'local',
+  adapter: 'local',
   defaultValues: {
     aggregationMaxSize: 512,
     rawMaxSize: 100,

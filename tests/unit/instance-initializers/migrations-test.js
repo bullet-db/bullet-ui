@@ -21,14 +21,7 @@ module('Unit | Instance Initializer | migrations', {
   }
 });
 
-test('it initializes with local storage', function(assert) {
-  initialize(this.appInstance);
-  assert.ok(true);
-});
-
-test('it initializes with indexeddb', function(assert) {
-  let settings = this.appInstance.lookup('settings:main');
-  settings.set('localStorage', 'indexeddb');
+test('it initializes', function(assert) {
   initialize(this.appInstance);
   assert.ok(true);
 });
