@@ -3,9 +3,12 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { cancel, later } from '@ember/runloop';
+import { htmlSafe } from '@ember/string';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   duration: 10000,
   active: false,
   updateInterval: 500,
@@ -16,12 +19,12 @@ export default Ember.Component.extend({
   percentNow: 0,
   futureTimer: null,
 
-  progressWidth: Ember.computed('percentNow', function() {
+  progressWidth: computed('percentNow', function() {
     let percent = this.get('percentNow');
-    return Ember.String.htmlSafe(`width: ${percent}%`);
+    return htmlSafe(`width: ${percent}%`);
   }),
 
-  valueNow: Ember.computed('percentNow', 'timingDone', function() {
+  valueNow: computed('percentNow', 'timingDone', function() {
     if (this.get('timingDone')) {
       return 'Collecting results...';
     }
@@ -39,7 +42,7 @@ export default Ember.Component.extend({
 
   destroyTimer() {
     // Docs say this should return false or undefined if it doesn't exist
-    Ember.run.cancel(this.get('futureTimer'));
+    cancel(this.get('futureTimer'));
   },
 
   willDestroy() {
@@ -57,7 +60,7 @@ export default Ember.Component.extend({
       endTime: end,
       duration: magnitude,
       runTime: end - now,
-      futureTimer: Ember.run.later(this, this.timer, this.get('updateInterval'))
+      futureTimer: later(this, this.timer, this.get('updateInterval'))
     });
   },
 
@@ -70,6 +73,6 @@ export default Ember.Component.extend({
       this.sendAction('finished');
       return;
     }
-    this.set('futureTimer', Ember.run.later(this, this.timer, this.get('updateInterval')));
+    this.set('futureTimer', later(this, this.timer, this.get('updateInterval')));
   }
 });

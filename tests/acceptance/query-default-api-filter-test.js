@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { test } from 'qunit';
 import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
 import RESULTS from '../fixtures/results';
@@ -19,7 +19,7 @@ moduleForAcceptance('Acceptance | query default api filter', {
 
   beforeEach() {
     // Inject into defaultValues in routes, our mock filter values
-    this.application.register('settings:mocked', Ember.Object.create({ defaultFilter: url }), { instantiate: false });
+    this.application.register('settings:mocked', EmberObject.create({ defaultFilter: url }), { instantiate: false });
     this.application.inject('route', 'settings', 'settings:mocked');
 
     // Extend regular API with a filter endpoint

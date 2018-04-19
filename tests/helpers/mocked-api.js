@@ -3,10 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEqual, isEmpty } from '@ember/utils';
+import EmberObject from '@ember/object';
 import { mockAPI, failAPI } from './pretender';
 
-export default Ember.Object.extend({
+export default EmberObject.extend({
   type: null,
   dataArray: null,
   server: null,
@@ -30,7 +31,7 @@ export default Ember.Object.extend({
   },
 
   connect(_, onStompConnect, onStompError) {
-    if (Ember.isEqual(this.get('type'), 'mockAPI')) {
+    if (isEqual(this.get('type'), 'mockAPI')) {
       onStompConnect();
     } else {
       onStompError();
@@ -44,16 +45,13 @@ export default Ember.Object.extend({
   send() {
     let onStompMessage = this.get('onStompMessage');
     let dataArray = this.get('dataArray');
-    if (onStompMessage && !Ember.isEmpty(dataArray)) {
+    if (onStompMessage && !isEmpty(dataArray)) {
       let length = dataArray.length;
       dataArray.forEach((data, i) => {
-        let responeType = 'MESSAGE';
-        if (Ember.isEqual(i, length - 1)) {
-          responeType = 'COMPLETE';
-        }
+        let responseType = isEqual(i, length - 1) ? 'COMPLETE' : 'MESSAGE';
         let response = {
           body: JSON.stringify({
-            type: responeType,
+            type: responseType,
             content: JSON.stringify(data)
           })
         };

@@ -3,10 +3,16 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
+import { typeOf } from '@ember/utils';
+import { A } from '@ember/array';
+import { computed } from '@ember/object';
+import { not } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
-  fileSaver: Ember.inject.service(),
+export default Component.extend({
+  fileSaver: service(),
   classNames: ['records-viewer'],
   showRawData: false,
   showTable: false,
@@ -17,26 +23,26 @@ export default Ember.Component.extend({
   records: null,
   fileName: 'results',
 
-  enableCharting: Ember.computed.not('model.isSingleRow').readOnly(),
+  enableCharting: not('model.isSingleRow').readOnly(),
 
-  columns: Ember.computed('records', function() {
-    return Ember.A(this.extractUniqueColumns(this.get('records')));
+  columns: computed('records', function() {
+    return A(this.extractUniqueColumns(this.get('records')));
   }).readOnly(),
 
-  rows: Ember.computed('records', 'columns', function() {
-    return Ember.A(this.extractRows(this.get('records'), this.get('columns')));
+  rows: computed('records', 'columns', function() {
+    return A(this.extractRows(this.get('records'), this.get('columns')));
   }).readOnly(),
 
-  asJSON: Ember.computed('records', function() {
+  asJSON: computed('records', function() {
     let records = this.get('records');
     return JSON.stringify(records, null, 2);
   }).readOnly(),
 
-  asCSV: Ember.computed('columns', 'rows', function() {
+  asCSV: computed('columns', 'rows', function() {
     return this.makeCSVString(this.get('columns'), this.get('rows'));
   }).readOnly(),
 
-  asFlatCSV: Ember.computed('records', function() {
+  asFlatCSV: computed('records', function() {
     let records = this.get('records');
     let flattenedRows = records.map((item) => this.flatten(item), this);
     let columns = this.extractUniqueColumns(flattenedRows);
@@ -77,7 +83,7 @@ export default Ember.Component.extend({
   },
 
   cleanItem(item) {
-    let type = Ember.typeOf(item);
+    let type = typeOf(item);
     if (type === 'object' || type === 'array') {
       return JSON.stringify(item);
     }
@@ -91,7 +97,7 @@ export default Ember.Component.extend({
    */
   flatten(json, prefix) {
     let flattened = {};
-    let type = Ember.typeOf(json);
+    let type = typeOf(json);
     if (type !== 'array' && type !== 'object') {
       flattened[prefix] = json;
       return flattened;
@@ -100,7 +106,7 @@ export default Ember.Component.extend({
     prefix = prefix === undefined ? '' : `${prefix}:`;
     for (let item in json) {
       let nested = this.flatten(json[item], `${prefix}${item}`);
-      Ember.merge(flattened, nested);
+      merge(flattened, nested);
     }
     return flattened;
   },

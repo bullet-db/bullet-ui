@@ -1,25 +1,22 @@
-import Ember from 'ember';
+import { resolve } from 'rsvp';
+import Application from '@ember/application';
+import { run } from '@ember/runloop';
 import StartupInitializer from 'bullet-ui/initializers/startup';
 import { initialize, applyMigrations } from 'bullet-ui/instance-initializers/migrations';
 import { module, test } from 'qunit';
 import destroyApp from '../../helpers/destroy-app';
 
-let logger;
-
 module('Unit | Instance Initializer | migrations', {
   beforeEach() {
-    Ember.run(() => {
-      this.application = Ember.Application.create();
+    run(() => {
+      this.application = Application.create();
       StartupInitializer.initialize(this.application);
       this.appInstance = this.application.buildInstance();
     });
-    logger = Ember.Logger.log;
-    Ember.Logger.log = function() { };
   },
 
   afterEach() {
-    Ember.Logger.log = logger;
-    Ember.run(this.appInstance, 'destroy');
+    run(this.appInstance, 'destroy');
     destroyApp(this.application);
   }
 });
@@ -56,11 +53,11 @@ test('it applies the delete queries migration', function(assert) {
     INDEXEDDB: window.localforage.INDEXEDDB,
     setDriver(driver) {
       assert.equal(driver, window.localforage.INDEXEDDB);
-      return Ember.RSVP.resolve();
+      return resolve();
     },
     clear() {
       assert.ok(true);
-      return Ember.RSVP.resolve();
+      return resolve();
     }
   };
 

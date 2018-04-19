@@ -3,12 +3,15 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { resolve } from 'rsvp';
+import { typeOf } from '@ember/utils';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 
-export default Ember.Route.extend(Filterizer, {
-  corsRequest: Ember.inject.service(),
+export default Route.extend(Filterizer, {
+  corsRequest: service(),
   // Filterizer mixins
   subfieldSeparator: SUBFIELD_SEPARATOR,
   subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
@@ -45,7 +48,7 @@ export default Ember.Route.extend(Filterizer, {
     }
 
     // If we have a default filter in settings, use that. Assume it is in the API format.
-    if (Ember.typeOf(defaultFilter) === 'object') {
+    if (typeOf(defaultFilter) === 'object') {
       return this.createFilter(this.convertClauseToRule(defaultFilter), query);
     }
 
@@ -59,7 +62,7 @@ export default Ember.Route.extend(Filterizer, {
 
   createFilter(filter, query) {
     if (!filter) {
-      return Ember.RSVP.resolve();
+      return resolve();
     }
     let created = this.store.createRecord('filter', {
       clause: filter,

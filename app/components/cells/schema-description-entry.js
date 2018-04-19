@@ -3,14 +3,16 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { htmlSafe } from '@ember/string';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['schema-description-entry'],
   tagName: 'span',
 
   // As the user of this UI, you are expected to make sure any html in the description is safe.
-  htmlSafeValue: Ember.computed('value', function() {
-    return Ember.String.htmlSafe(this.get('value'));
+  htmlSafeValue: computed('value', function() {
+    return htmlSafe(this.get('value'));
   })
 });

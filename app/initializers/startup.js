@@ -3,14 +3,15 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
+import $ from 'jquery';
 import ENV from 'bullet-ui/config/environment';
 
 export default {
   name: 'settings',
 
   initialize(application) {
-    let metaSettings = Ember.$('head meta[name=app-settings]').attr('content');
+    let metaSettings = $('head meta[name=app-settings]').attr('content');
     let decodedSettings = { };
     if (metaSettings) {
       decodedSettings = JSON.parse(decodeURIComponent(metaSettings));
@@ -18,7 +19,7 @@ export default {
     // Merge into default settings, overriding them
     let settings = this.deepMergeSettings(decodedSettings);
 
-    application.register('settings:main', Ember.Object.create(settings), { instantiate: false });
+    application.register('settings:main', EmberObject.create(settings), { instantiate: false });
     application.inject('service', 'settings', 'settings:main');
     application.inject('adapter', 'settings', 'settings:main');
     application.inject('route', 'settings', 'settings:main');
@@ -29,7 +30,7 @@ export default {
 
   deepMergeSettings(overrides) {
     let settings = JSON.parse(JSON.stringify(ENV.APP.SETTINGS));
-    Ember.$.extend(true, settings, overrides);
+    $.extend(true, settings, overrides);
     // Handle help links manually
     settings.helpLinks = this.getHelpLinks(ENV.APP.SETTINGS.helpLinks, overrides.helpLinks);
     return settings;
@@ -37,7 +38,7 @@ export default {
 
   getHelpLinks(originalLinks, overrides) {
     let helpLinks = [];
-    Ember.$.merge(helpLinks, originalLinks || []);
+    $.merge(helpLinks, originalLinks || []);
     let names = new Set();
     originalLinks.forEach(link => names.add(link.name));
     if (overrides) {

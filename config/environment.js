@@ -7,8 +7,8 @@
 /* jshint node: true */
 
 module.exports = function(environment) {
-  var configuration = require('./env-settings.json');
-  var ENV = {
+  let configuration = require('./env-settings.json');
+  let ENV = {
     modulePrefix: 'bullet-ui',
     environment: environment,
     rootURL: '/',
@@ -27,7 +27,7 @@ module.exports = function(environment) {
 
     APP: {
       // Inject default static settings
-      SETTINGS: configuration.default
+      SETTINGS: Object.assign({ }, INTERNAL_APP_SETTINGS, configuration.default)
       // Here you can pass flags/options to your application instance
       // when it is created
     }
@@ -53,11 +53,17 @@ module.exports = function(environment) {
     ENV.APP.LOG_VIEW_LOOKUPS = false;
 
     ENV.APP.rootElement = '#ember-testing';
+
+    ENV.APP.autoboot = false;
   }
 
   if (environment === 'production') {
   }
   return ENV;
+};
+
+const INTERNAL_APP_SETTINGS = {
+  adapter: 'indexeddb'
 };
 
 const TEST_SETTINGS = {
@@ -77,8 +83,9 @@ const TEST_SETTINGS = {
   bugLink: 'https://github.com/yahoo/bullet-ui/issues',
   modelVersion: 2,
   migrations: {
-    deletions: 'result'
+    deletions: 'none'
   },
+  adapter: 'local',
   defaultValues: {
     aggregationMaxSize: 512,
     rawMaxSize: 100,

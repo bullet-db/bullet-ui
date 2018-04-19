@@ -3,11 +3,13 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { hash, resolve } from 'rsvp';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
-  querier: Ember.inject.service(),
-  queryManager: Ember.inject.service(),
+export default Route.extend({
+  querier: service(),
+  queryManager: service(),
 
   resultHandler(data, context) {
     context.set('pendingRequest', null);
@@ -18,7 +20,7 @@ export default Ember.Route.extend({
 
   errorHandler(error, context) {
     context.set('pendingRequest', null);
-    Ember.Logger.error(error);
+    console.error(error);
     context.transitionTo('errored');
   },
 
@@ -45,7 +47,7 @@ export default Ember.Route.extend({
   },
 
   model(params) {
-    return Ember.RSVP.hash({
+    return hash({
       schema: this.store.findAll('column'),
       query: this.store.findRecord('query', params.query_id)
     }).catch(() => {
@@ -57,9 +59,9 @@ export default Ember.Route.extend({
 
   // Force the fetching of filter because template doesn't render it since it's wrapped in QueryBuilder
   afterModel(model) {
-    return Ember.RSVP.hash({
-      schema: Ember.RSVP.resolve(model.schema),
-      query: Ember.RSVP.resolve(model.query),
+    return hash({
+      schema: resolve(model.schema),
+      query: resolve(model.query),
       filter: model.query.get('filter')
     });
   }

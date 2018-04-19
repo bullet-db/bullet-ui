@@ -3,11 +3,12 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject, { computed } from '@ember/object';
+import Component from '@ember/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/mixins/paginated-table';
 
-export default Ember.Component.extend(PaginatedTable, {
+export default Component.extend(PaginatedTable, {
   classNames: ['records-table'],
   columnNames: null,
   cellComponent: 'cells/record-entry',
@@ -18,9 +19,9 @@ export default Ember.Component.extend(PaginatedTable, {
 
   rawRows: null,
 
-  columns: Ember.computed('columnNames', function() {
+  columns: computed('columnNames', function() {
     let names = this.get('columnNames');
-    return names.map(item => Ember.Object.create({
+    return names.map(item => EmberObject.create({
       label: item,
       valuePath: item,
       resizable: true,
@@ -33,7 +34,7 @@ export default Ember.Component.extend(PaginatedTable, {
     this._super(...arguments);
     this.set('table', new Table(this.get('columns')));
 
-    this.set('rows', this.get('rawRows').map(row => Ember.Object.create(row)));
+    this.set('rows', this.get('rawRows').map(row => EmberObject.create(row)));
     this.addPages(1);
   }
 });

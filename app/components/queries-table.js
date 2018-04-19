@@ -3,19 +3,22 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
+import { isEmpty } from '@ember/utils';
+import EmberObject, { computed } from '@ember/object';
+import Component from '@ember/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/mixins/paginated-table';
 
-export default Ember.Component.extend(PaginatedTable, {
+export default Component.extend(PaginatedTable, {
   classNames: ['queries-table'],
   queries: null,
   pageSize: 10,
   isFixed: true,
-  extractors: Ember.Object.create({
+  extractors: EmberObject.create({
     name(row) {
       let name = row.get('name');
-      if (!Ember.isEmpty(name)) {
+      if (!isEmpty(name)) {
         return name;
       }
       // Stick a ~~~ in front so that generated summaries sort together toward one end
@@ -32,11 +35,11 @@ export default Ember.Component.extend(PaginatedTable, {
     }
   }),
 
-  rows: Ember.computed('queries.[]', function() {
+  rows: computed('queries.[]', function() {
     return this.get('queries').toArray();
   }),
 
-  columns: Ember.A([
+  columns: A([
     { label: 'Query', valuePath: 'name', cellComponent: 'cells/query-name-entry' },
     { label: 'Last Result', valuePath: 'latestResult', cellComponent: 'cells/query-date-entry', width: '20%' },
     { label: 'Historical Results', valuePath: 'results', cellComponent: 'cells/query-results-entry', width: '15%' }

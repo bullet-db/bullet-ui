@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -142,7 +142,7 @@ test('it enables charting mode if the results have more than one row', function(
 test('it allows you to switch to pivot mode', function(assert) {
   assert.expect(12);
   this.set('tableMode', true);
-  this.set('mockModel', Ember.Object.create({
+  this.set('mockModel', EmberObject.create({
     isSingleRow: false,
     pivotOptions: null,
     save() {
@@ -173,7 +173,7 @@ test('it allows you to switch to pivot mode', function(assert) {
 test('it enables only pivot mode if the results are raw', function(assert) {
   assert.expect(10);
   this.set('tableMode', true);
-  this.set('mockModel', Ember.Object.create({
+  this.set('mockModel', EmberObject.create({
     isRaw: true,
     pivotOptions: null,
     save() {

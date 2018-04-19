@@ -3,9 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { hash } from 'rsvp';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
   model(params) {
     return this.store.findRecord('result', params.result_id).catch(() => {
       return this.transitionTo('missing', 'not-found');
@@ -13,7 +14,7 @@ export default Ember.Route.extend({
   },
   // Force the fetching of query and filter
   afterModel(model) {
-    return Ember.RSVP.hash({
+    return hash({
       metadata: model.get('metadata'),
       records: model.get('records'),
       query: model.get('query'),

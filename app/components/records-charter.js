@@ -3,9 +3,14 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
 
-export default Ember.Component.extend({
+import { isEmpty, isEqual, typeOf } from '@ember/utils';
+import { computed } from '@ember/object';
+import { not, alias, or } from '@ember/object/computed';
+import Component from '@ember/component';
+
+export default Component.extend({
   classNames: ['records-charter'],
   model: null,
   columns: null,
@@ -13,21 +18,21 @@ export default Ember.Component.extend({
   chartType: 'bar',
 
   simpleMode: true,
-  notSimpleMode: Ember.computed.not('simpleMode').readOnly(),
-  cannotModeSwitch: Ember.computed.alias('model.isRaw').readOnly(),
-  canModeSwitch: Ember.computed.not('cannotModeSwitch').readOnly(),
-  pivotMode: Ember.computed.or('notSimpleMode', 'cannotModeSwitch').readOnly(),
-  pivotOptions: Ember.computed('model.pivotOptions', function() {
+  notSimpleMode: not('simpleMode').readOnly(),
+  cannotModeSwitch: alias('model.isRaw').readOnly(),
+  canModeSwitch: not('cannotModeSwitch').readOnly(),
+  pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),
+  pivotOptions: computed('model.pivotOptions', function() {
     return JSON.parse(this.get('model.pivotOptions'));
   }).readOnly(),
 
-  sampleRow: Ember.computed('rows', 'columns', function() {
+  sampleRow: computed('rows', 'columns', function() {
     let typicalRow = { };
     let rows = this.get('rows');
     this.get('columns').forEach(column => {
       for (let row of rows) {
         let value = row[column];
-        if (!Ember.isEmpty(value)) {
+        if (!isEmpty(value)) {
           typicalRow[column] = value;
           break;
         }
@@ -36,27 +41,27 @@ export default Ember.Component.extend({
     return typicalRow;
   }),
 
-  independentColumns: Ember.computed('model', 'sampleRow', 'columns', function() {
+  independentColumns: computed('model', 'sampleRow', 'columns', function() {
     let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
     let isDistribution = this.get('model.isDistribution');
     if (isDistribution) {
-      return Ember.A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
+      return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
     // Pick all string columns
-    return Ember.A(columns.filter(c => this.isType(sampleRow, c, 'string')));
+    return A(columns.filter(c => this.isType(sampleRow, c, 'string')));
   }),
 
-  dependentColumns: Ember.computed('model', 'sampleRow', 'columns', function() {
+  dependentColumns: computed('model', 'sampleRow', 'columns', function() {
     let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
     let isDistribution = this.get('model.isDistribution');
     if (isDistribution) {
-      return Ember.A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
+      return A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }
     // Pick all number columns
-    return Ember.A(columns.filter(c => this.isType(sampleRow, c, 'number')));
+    return A(columns.filter(c => this.isType(sampleRow, c, 'number')));
   }),
 
-  options: Ember.computed('dependentColumns', function() {
+  options: computed('dependentColumns', function() {
     let numberOfColumns = this.get('dependentColumns.length');
     if (numberOfColumns === 1) {
       return { };
@@ -75,7 +80,7 @@ export default Ember.Component.extend({
     };
   }),
 
-  labels: Ember.computed('independentColumns', 'rows', function() {
+  labels: computed('independentColumns', 'rows', function() {
     // Only one independent column for now
     let rows = this.get('rows');
     // [ [field1 values...], [field2 values...], ...]
@@ -84,13 +89,13 @@ export default Ember.Component.extend({
     return this.zip(valuesList);
   }),
 
-  datasets: Ember.computed('dependentColumns', 'rows', function() {
+  datasets: computed('dependentColumns', 'rows', function() {
     let dependentColumns = this.get('dependentColumns');
     let rows = this.get('rows');
     return dependentColumns.map((c, i) => this.dataset(c, rows, i));
   }),
 
-  data: Ember.computed('labels', 'datasets', function() {
+  data: computed('labels', 'datasets', function() {
     return {
       labels: this.get('labels'),
       datasets: this.get('datasets')
@@ -130,12 +135,12 @@ export default Ember.Component.extend({
   },
 
   isType(row, field, type) {
-    return Ember.isEqual(Ember.typeOf(row[field]), type);
+    return isEqual(typeOf(row[field]), type);
   },
 
   isAny(field, ...values) {
     for (let value of values) {
-      if (Ember.isEqual(field, value)) {
+      if (isEqual(field, value)) {
         return true;
       }
     }

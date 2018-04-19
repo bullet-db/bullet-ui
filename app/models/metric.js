@@ -3,11 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject, { computed } from '@ember/object';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
-let Metric = Ember.Object.extend({
+let Metric = EmberObject.extend({
   SUM: 'Sum',
   COUNT: 'Count',
   MIN: 'Minimum',
@@ -27,9 +27,9 @@ let Metric = Ember.Object.extend({
 
   asList() {
     return [
-      Ember.Object.create({ name: this.get('SUM') }), Ember.Object.create({ name: this.get('COUNT') }),
-      Ember.Object.create({ name: this.get('MIN') }), Ember.Object.create({ name: this.get('MAX') }),
-      Ember.Object.create({ name: this.get('AVG') })
+      EmberObject.create({ name: this.get('SUM') }), EmberObject.create({ name: this.get('COUNT') }),
+      EmberObject.create({ name: this.get('MIN') }), EmberObject.create({ name: this.get('MAX') }),
+      EmberObject.create({ name: this.get('AVG') })
     ];
   }
 });
@@ -47,7 +47,7 @@ export default DS.Model.extend(Validations, {
   name: DS.attr('string'),
   aggregation: DS.belongsTo('aggregation', { autoSave: true }),
 
-  hasNoField: Ember.computed('type', function() {
+  hasNoField: computed('type', function() {
     let type = this.get('type');
     return type === 'Count';
   })

@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleFor, test } from 'ember-qunit';
 import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 
@@ -21,7 +21,7 @@ const SETTINGS = {
 
 test('it ignores non distribution type aggregations', function(assert) {
   var validator = this.subject();
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('RAW')
   });
   assert.ok(validator.validate(null, null, mockModel));
@@ -32,7 +32,7 @@ test('it ignores non distribution type aggregations', function(assert) {
 test('it validates distribution type aggregations with a number of points', function(assert) {
   var validator = this.subject();
   let expected;
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('DISTRIBUTION'),
     settings: SETTINGS,
     attributes: {
@@ -59,7 +59,7 @@ test('it validates distribution type aggregations with a number of points', func
 test('it validates distribution type aggregations with generated points', function(assert) {
   var validator = this.subject();
   let expected;
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('DISTRIBUTION'),
     settings: SETTINGS,
     attributes: {
@@ -121,7 +121,7 @@ test('it validates distribution type aggregations with generated points', functi
 test('it validates distribution type aggregations with free-form points', function(assert) {
   var validator = this.subject();
   let expected;
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('DISTRIBUTION'),
     settings: SETTINGS,
     attributes: {

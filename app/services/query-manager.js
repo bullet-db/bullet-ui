@@ -3,14 +3,19 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
+import Service from '@ember/service';
+import { inject as service } from '@ember/service';
+import { isBlank, isEmpty, isEqual } from '@ember/utils';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import { pluralize } from 'ember-inflector';
 import ZLib from 'npm:browserify-zlib';
 import Base64 from 'npm:urlsafe-base64';
+import { all, Promise, resolve } from 'rsvp';
 
-export default Ember.Service.extend({
-  store: Ember.inject.service(),
-  querier: Ember.inject.service(),
+export default Service.extend({
+  store: service(),
+  querier: service(),
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -22,24 +27,24 @@ export default Ember.Service.extend({
 
   copySingle(source, target, name, inverseName, fields) {
     let original = source.get(name);
-    if (Ember.isEmpty(original)) {
-      return Ember.RSVP.resolve();
+    if (isEmpty(original)) {
+      return resolve();
     }
     let copy = this.get('store').createRecord(name);
     return this.copyModelRelationship(original, copy, fields, inverseName, target);
   },
 
   copyMultiple(source, target, name, inverseName, fields) {
-    let originals = source.get(Ember.Inflector.inflector.pluralize(name));
-    if (Ember.isEmpty(originals)) {
-      return Ember.RSVP.resolve();
+    let originals = source.get(pluralize(name));
+    if (isEmpty(originals)) {
+      return resolve();
     }
     let promises = [];
     originals.forEach(original => {
       let copy = this.get('store').createRecord(name);
       promises.push(this.copyModelRelationship(original, copy, fields, inverseName, target));
     });
-    return Ember.RSVP.all(promises);
+    return all(promises);
   },
 
   copyQuery(query) {
@@ -54,10 +59,10 @@ export default Ember.Service.extend({
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
-    return Ember.RSVP.all(promises).then(() => {
+    return all(promises).then(() => {
       let originalAggregation = query.get('aggregation');
       let copiedAggregation = copied.get('aggregation');
-      return Ember.RSVP.all([
+      return all([
         this.copyMultiple(originalAggregation, copiedAggregation, 'group', 'aggregation', ['field', 'name']),
         this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
       ]);
@@ -70,7 +75,7 @@ export default Ember.Service.extend({
     let json = querier.reformat(query);
     querier.set('apiMode', true);
     let string = JSON.stringify(json);
-    return new Ember.RSVP.Promise((resolve) => {
+    return new Promise((resolve) => {
       ZLib.deflate(string, (_, result) => resolve(Base64.encode(result)));
     });
   },
@@ -78,7 +83,7 @@ export default Ember.Service.extend({
   decodeQuery(hash) {
     let querier = this.get('querier');
     let buffer = Base64.decode(hash);
-    return new Ember.RSVP.Promise((resolve) => {
+    return new Promise((resolve) => {
       ZLib.inflate(buffer, (_, result) => {
         let json = JSON.parse(result.toString());
         resolve(querier.recreate(json));
@@ -123,7 +128,7 @@ export default Ember.Service.extend({
         let value = field.get('value');
         let fieldPath = `attributes.${name}`;
         let forceSet = field.getWithDefault('forceSet', false);
-        if (forceSet || Ember.isEmpty(aggregation.get(fieldPath))) {
+        if (forceSet || isEmpty(aggregation.get(fieldPath))) {
           aggregation.set(fieldPath, value);
         }
       });
@@ -133,13 +138,13 @@ export default Ember.Service.extend({
 
   replaceAggregation(query, type, size = 1) {
     return query.get('aggregation').then(aggregation => {
-      return Ember.RSVP.all([
+      return all([
         this.deleteMultiple('groups', aggregation, 'aggregation'),
         this.deleteMultiple('metrics', aggregation, 'aggregation')
       ]).then(() => {
         aggregation.set('type', type);
         aggregation.set('size', size);
-        aggregation.set('attributes', Ember.Object.create());
+        aggregation.set('attributes', EmberObject.create());
         return aggregation.save();
       });
     });
@@ -148,11 +153,11 @@ export default Ember.Service.extend({
   fixFieldLikes(query, fieldLikesPath) {
     return query.get(fieldLikesPath).then(e => {
       e.forEach(i => {
-        if (Ember.isBlank(i.get('name'))) {
+        if (isBlank(i.get('name'))) {
           i.set('name', i.get('field'));
         }
       });
-      return Ember.RSVP.resolve();
+      return resolve();
     });
   },
 
@@ -165,15 +170,15 @@ export default Ember.Service.extend({
   fixAggregationSize(query) {
     return query.get('aggregation').then(a => {
       let type = a.get('type');
-      if (!(Ember.isEqual(type, AGGREGATIONS.get('RAW')) || Ember.isEqual(type, AGGREGATIONS.get('TOP_K')))) {
+      if (!(isEqual(type, AGGREGATIONS.get('RAW')) || isEqual(type, AGGREGATIONS.get('TOP_K')))) {
         query.set('aggregation.size', this.get('settings.defaultValues.aggregationMaxSize'));
       }
-      return Ember.RSVP.resolve();
+      return resolve();
     });
   },
 
   autoFill(query) {
-    return Ember.RSVP.all([
+    return all([
       this.fixFieldLikes(query, 'projections'),
       this.fixFieldLikes(query, 'aggregation.groups')
     ]);
@@ -182,19 +187,19 @@ export default Ember.Service.extend({
   fixDistributionPointType(query) {
     return query.get('aggregation').then(aggregation => {
       let pointType = aggregation.get('attributes.pointType');
-      if (Ember.isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
+      if (isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
         this.removeAttributes(aggregation, 'numberOfPoints', 'points');
-      } else if (Ember.isEqual(pointType, DISTRIBUTION_POINTS.NUMBER)) {
+      } else if (isEqual(pointType, DISTRIBUTION_POINTS.NUMBER)) {
         this.removeAttributes(aggregation, 'start', 'end', 'increment', 'points');
       } else {
         this.removeAttributes(aggregation, 'start', 'end', 'increment', 'numberOfPoints');
       }
-      return Ember.RSVP.resolve();
+      return resolve();
     });
   },
 
   cleanup(query) {
-    return Ember.RSVP.all([
+    return all([
       this.autoFill(query),
       this.fixAggregationSize(query),
       this.fixDistributionPointType(query)
@@ -216,11 +221,11 @@ export default Ember.Service.extend({
               a.get('metrics').then(m => m.forEach(i => i.save())),
               a.save()
             ];
-        return Ember.RSVP.all(promises);
+        return all(promises);
       }),
       query.save()
     ];
-    return Ember.RSVP.all(promises);
+    return all(promises);
   },
 
   deleteModel(model) {
@@ -242,7 +247,7 @@ export default Ember.Service.extend({
         item.set(inverseName, null);
         item.destroyRecord();
       });
-      return Ember.RSVP.all(promises);
+      return all(promises);
     });
   },
 
@@ -251,7 +256,7 @@ export default Ember.Service.extend({
       let promises = p.toArray().map(item => {
         item.destroyRecord();
       });
-      return Ember.RSVP.all(promises);
+      return all(promises);
     });
   },
 
@@ -271,7 +276,7 @@ export default Ember.Service.extend({
   },
 
   deleteQuery(query) {
-    return Ember.RSVP.all([
+    return all([
       this.deleteSingle('filter', query, 'query'),
       this.deleteMultiple('projections', query, 'query'),
       this.deleteMultiple('results', query, 'query'),

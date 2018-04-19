@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleFor, test } from 'ember-qunit';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
@@ -13,7 +13,7 @@ moduleFor('validator:aggregation-max-size', 'Unit | Validator | aggregation-max-
 
 test('it does not let you exceed the maximum aggregation size', function(assert) {
   var validator = this.subject();
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('GROUP'),
     settings: {
       defaultValues: {
@@ -29,7 +29,7 @@ test('it does not let you exceed the maximum aggregation size', function(assert)
 
 test('it does not let you exceed the maximum size for the Raw aggregation', function(assert) {
   var validator = this.subject();
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('RAW'),
     settings: {
       defaultValues: {

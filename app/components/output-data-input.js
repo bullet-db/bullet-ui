@@ -3,11 +3,15 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { equal, and } from '@ember/object/computed';
+import { isEmpty, isEqual } from '@ember/utils';
+import EmberObject, { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['output-data-input'],
   query: null,
   columns: null,
@@ -15,7 +19,7 @@ export default Ember.Component.extend({
   forceDirty: false,
   subfieldSeparator: '',
   subfieldSuffix: '',
-  queryManager: Ember.inject.service(),
+  queryManager: service(),
 
   // Copy of the imports for the template
   AGGREGATIONS: AGGREGATIONS,
@@ -27,44 +31,44 @@ export default Ember.Component.extend({
 
   // These *Type computed properties exist because ember-radio-button will set their value locally. Once set,
   // they are independent of the original property. This means they are only used on initial component render.
-  outputDataType: Ember.computed('query.aggregation.type', function() {
+  outputDataType: computed('query.aggregation.type', function() {
     return this.findOrDefault('query.aggregation.type', AGGREGATIONS.get('RAW'));
   }),
-  rawType: Ember.computed('query.projections.[]', function() {
-    return Ember.isEmpty(this.get('query.projections')) ? RAWS.get('ALL') : RAWS.get('SELECT');
+  rawType: computed('query.projections.[]', function() {
+    return isEmpty(this.get('query.projections')) ? RAWS.get('ALL') : RAWS.get('SELECT');
   }),
-  distributionType: Ember.computed('query.aggregation.attributes', function() {
+  distributionType: computed('query.aggregation.attributes', function() {
     return this.findOrDefault('query.aggregation.attributes.type', DISTRIBUTIONS.get('QUANTILE'));
   }),
-  pointType: Ember.computed('query.aggregation.attributes', function() {
+  pointType: computed('query.aggregation.attributes', function() {
     return this.findOrDefault('query.aggregation.attributes.pointType', DISTRIBUTION_POINTS.get('NUMBER'));
   }),
 
   // Helper equalities for template
-  isRawAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('RAW')).readOnly(),
-  isGroupAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('GROUP')).readOnly(),
-  isCountDistinctAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')).readOnly(),
-  isDistributionAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')).readOnly(),
-  isTopKAggregation: Ember.computed.equal('outputDataType', AGGREGATIONS.get('TOP_K')).readOnly(),
+  isRawAggregation: equal('outputDataType', AGGREGATIONS.get('RAW')).readOnly(),
+  isGroupAggregation: equal('outputDataType', AGGREGATIONS.get('GROUP')).readOnly(),
+  isCountDistinctAggregation: equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')).readOnly(),
+  isDistributionAggregation: equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')).readOnly(),
+  isTopKAggregation: equal('outputDataType', AGGREGATIONS.get('TOP_K')).readOnly(),
 
-  isSelectType: Ember.computed.equal('rawType', RAWS.get('SELECT')).readOnly(),
-  showRawSelections: Ember.computed.and('isRawAggregation', 'isSelectType').readOnly(),
+  isSelectType: equal('rawType', RAWS.get('SELECT')).readOnly(),
+  showRawSelections: and('isRawAggregation', 'isSelectType').readOnly(),
 
-  isNumberOfPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')).readOnly(),
-  isPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('POINTS')).readOnly(),
-  isGeneratedPoints: Ember.computed.equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')).readOnly(),
+  isNumberOfPoints: equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')).readOnly(),
+  isPoints: equal('pointType', DISTRIBUTION_POINTS.get('POINTS')).readOnly(),
+  isGeneratedPoints: equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')).readOnly(),
 
-  canDeleteProjections: Ember.computed('query.projections.[]', function() {
+  canDeleteProjections: computed('query.projections.[]', function() {
     return this.get('query.projections.length') > 1;
   }).readOnly(),
 
-  canDeleteField: Ember.computed('query.aggregation.groups.[]', function() {
+  canDeleteField: computed('query.aggregation.groups.[]', function() {
     return this.get('query.aggregation.groups.length') > 1;
   }).readOnly(),
 
   findOrDefault(valuePath, defaultValue) {
     let value = this.get(valuePath);
-    if (Ember.isEmpty(value)) {
+    if (isEmpty(value)) {
       return defaultValue;
     }
     return value;
@@ -72,7 +76,7 @@ export default Ember.Component.extend({
 
   getDefaults(type) {
     let values = { points: '', start: '', end: '', increment: '', numberOfPoints: '' };
-    if (Ember.isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
+    if (isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
       values.points = this.get('settings.defaultValues.distributionQuantilePoints');
       values.start = this.get('settings.defaultValues.distributionQuantileStart');
       values.end = this.get('settings.defaultValues.distributionQuantileEnd');
@@ -85,8 +89,8 @@ export default Ember.Component.extend({
   setAttributes(type, pointType) {
     let fields = [];
     let defaults = this.getDefaults(type);
-    let lastQuantile = Ember.isEqual(this.get('query.aggregation.attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
-    let isQuantile = Ember.isEqual(type, DISTRIBUTIONS.get('QUANTILE'));
+    let lastQuantile = isEqual(this.get('query.aggregation.attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
+    let isQuantile = isEqual(type, DISTRIBUTIONS.get('QUANTILE'));
     for (let field in defaults) {
       // Wipe the current values if our last type or current type is Quantile but not both -> an XOR operation
       // If you're changing point types within particular distribution type, it shouldn't lose values entered
@@ -95,14 +99,14 @@ export default Ember.Component.extend({
     }
     fields.push({ name: 'type', value: type, forceSet: true });
     fields.push({ name: 'pointType', value: pointType, forceSet: true });
-    this.get('queryManager').setAggregationAttributes(this.get('query'), fields.map(f => Ember.Object.create(f)));
+    this.get('queryManager').setAggregationAttributes(this.get('query'), fields.map(f => EmberObject.create(f)));
   },
 
   resetOptions(type) {
-    if (!Ember.isEqual(type, AGGREGATIONS.get('RAW'))) {
+    if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
       this.set('rawType', RAWS.get('ALL'));
     }
-    if (!Ember.isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
+    if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
       this.set('distributionType', DISTRIBUTIONS.get('QUANTILE'));
       this.set('distributionPointType', DISTRIBUTION_POINTS.get('NUMBER'));
     }

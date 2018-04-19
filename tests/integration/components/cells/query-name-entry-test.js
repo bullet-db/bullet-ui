@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -14,7 +14,7 @@ moduleForComponent('query-name-entry', 'Integration | Component | Cell | query n
 });
 
 function wrap(query) {
-  return Ember.Object.create({ content: query });
+  return EmberObject.create({ content: query });
 }
 
 test('it displays the real name if it is available', function(assert) {

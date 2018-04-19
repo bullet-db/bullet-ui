@@ -3,13 +3,16 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import EmberObject from '@ember/object';
+import { hash, reject, resolve } from 'rsvp';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
-  queryManager: Ember.inject.service(),
+export default Route.extend({
+  queryManager: service(),
 
   model() {
-    return Ember.RSVP.hash({
+    return hash({
       queries: this.store.findAll('query'),
       groups: this.store.findAll('group'),
       aggregations: this.store.findAll('aggregation'),
@@ -21,9 +24,9 @@ export default Ember.Route.extend({
   validate(query) {
     return query.validate().then(hash => {
       if (!hash.validations.get('isValid')) {
-        return Ember.RSVP.reject();
+        return reject();
       }
-      return Ember.RSVP.resolve(query);
+      return resolve(query);
     });
   },
 
@@ -48,7 +51,7 @@ export default Ember.Route.extend({
           .then(query => this.get('queryManager').encodeQuery(query))
           .then(encoded => {
             let origin = this.getOrigin();
-            let path = this.router.generate('create', Ember.Object.create({ hash: encoded }));
+            let path = this.router.generate('create', EmberObject.create({ hash: encoded }));
             callback(`${origin}${path}`);
           });
     },

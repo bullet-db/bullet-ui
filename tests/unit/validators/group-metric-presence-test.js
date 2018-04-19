@@ -3,7 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
+import EmberObject from '@ember/object';
 import { moduleFor, test } from 'ember-qunit';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
@@ -13,18 +14,18 @@ moduleFor('validator:group-metric-presence', 'Unit | Validator | group-metric-pr
 
 test('it checks to see if grouped data has groups or metrics', function(assert) {
   var validator = this.subject();
-  let mockModel = Ember.Object.create({
+  let mockModel = EmberObject.create({
     type: AGGREGATIONS.get('GROUP')
   });
   let expected = 'If you are grouping data, you must add at least one Group Field and/or Metric Field';
   assert.equal(validator.validate(null, null, mockModel), expected);
 
-  mockModel.set('groups', Ember.A([1, 2]));
+  mockModel.set('groups', A([1, 2]));
   assert.ok(validator.validate(null, null, mockModel));
 
-  mockModel.set('groups', Ember.A());
+  mockModel.set('groups', A());
   assert.equal(validator.validate(null, null, mockModel), expected);
 
-  mockModel.set('metrics', Ember.A([1, 2]));
+  mockModel.set('metrics', A([1, 2]));
   assert.ok(validator.validate(null, null, mockModel));
 });

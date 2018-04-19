@@ -3,11 +3,12 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { not } from '@ember/object/computed';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   isToggled: true,
-  notToggled: Ember.computed.not('isToggled'),
+  notToggled: not('isToggled'),
   toggledText: 'Toggled',
   notToggledText: 'Not Toggled',
 

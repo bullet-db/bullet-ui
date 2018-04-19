@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isPresent } from '@ember/utils';
 import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('projection', 'Unit | Model | projection', {
@@ -12,6 +12,6 @@ moduleForModel('projection', 'Unit | Model | projection', {
 
 test('it sets its default values right', function(assert) {
   let model = this.subject();
-  assert.ok(!Ember.isPresent(model.get('field')));
-  assert.ok(!Ember.isPresent(model.get('name')));
+  assert.ok(!isPresent(model.get('field')));
+  assert.ok(!isPresent(model.get('name')));
 });

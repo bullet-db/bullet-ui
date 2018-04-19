@@ -3,13 +3,17 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
+import $ from 'jquery';
+import { isNone, isEmpty } from '@ember/utils';
+import EmberObject from '@ember/object';
+import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
-export default Ember.Service.extend(Filterizer, {
-  stompWebsocket: Ember.inject.service(),
+export default Service.extend(Filterizer, {
+  stompWebsocket: service(),
 
   subfieldSuffix: '.*',
   subfieldSeparator: '.',
@@ -22,12 +26,12 @@ export default Ember.Service.extend(Filterizer, {
    * @return {Object}      An Ember Object that looks like the Ember Data representation.
    */
   recreate(json) {
-    let query = Ember.Object.create();
+    let query = EmberObject.create();
     let clause = this.recreateFilter(json.filters);
     let projection = this.recreateProjections(json.projection);
     let aggregation = this.recreateAggregation(json.aggregation);
 
-    let filter = Ember.Object.create();
+    let filter = EmberObject.create();
     if (!this.isTruthy(clause)) {
       clause = this.get('emptyClause');
     }
@@ -70,7 +74,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   recreateFilter(json) {
-    if (Ember.isNone(json)) {
+    if (isNone(json)) {
       return false;
     }
     let rule = json[0];
@@ -78,16 +82,16 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   reformatFilter(filter) {
-    if (Ember.isNone(filter)) {
+    if (isNone(filter)) {
       return false;
     }
     let clause = filter.get('clause');
-    if (!clause || Ember.$.isEmptyObject(clause)) {
+    if (!clause || $.isEmptyObject(clause)) {
       return false;
     }
     let converted = this.convertRuleToClause(clause);
     let innerClauses = converted.clauses;
-    if (Ember.isEmpty(innerClauses)) {
+    if (isEmpty(innerClauses)) {
       return false;
     }
     // If we got here, we should have a valid clause.
@@ -100,7 +104,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   recreateProjections(json) {
-    if (Ember.isEmpty(json)) {
+    if (isEmpty(json)) {
       return false;
     }
     return this.makeFields(json.fields);
@@ -111,10 +115,10 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   recreateAggregation(json) {
-    if (Ember.isEmpty(json)) {
+    if (isEmpty(json)) {
       return false;
     }
-    let aggregation = Ember.Object.create();
+    let aggregation = EmberObject.create();
     let groups = this.makeFields(json.fields);
     let metrics = this.makeMetrics(json.attributes);
     let attributes = this.makeAttributes(json.attributes);
@@ -129,7 +133,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   reformatAggregation(aggregation) {
-    if (Ember.isEmpty(aggregation)) {
+    if (isEmpty(aggregation)) {
       return false;
     }
     let json = { };
@@ -145,12 +149,12 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   makeFields(json, fieldName = 'field', valueName = 'name') {
-    if (Ember.isEmpty(json)) {
+    if (isEmpty(json)) {
       return false;
     }
-    let fields = Ember.A();
+    let fields = A();
     for (let key in json) {
-      let field = Ember.Object.create();
+      let field = EmberObject.create();
       this.setIfTruthy(field, fieldName, key);
       this.setIfTruthy(field, valueName, json[key]);
       fields.pushObject(field);
@@ -159,7 +163,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   getFields(enumerable, sourceName = 'field', targetName = 'name') {
-    if (Ember.isEmpty(enumerable)) {
+    if (isEmpty(enumerable)) {
       return false;
     }
     let json = { };
@@ -170,8 +174,8 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   makeAttributes(json) {
-    if (Ember.isEmpty(json)) {
-      return Ember.Object.create();
+    if (isEmpty(json)) {
+      return EmberObject.create();
     }
 
     let attributes = { };
@@ -186,13 +190,13 @@ export default Ember.Service.extend(Filterizer, {
     this.assignIfTruthyNumeric(attributes, 'increment', json.increment);
     this.assignIfTruthyNumeric(attributes, 'numberOfPoints', json.numberOfPoints);
     this.assignIfTruthy(attributes, 'points', this.makePoints(json.points));
-    if (!Ember.isEmpty(json.type)) {
+    if (!isEmpty(json.type)) {
       this.assignIfTruthy(attributes, 'type', DISTRIBUTIONS.get(json.type));
     }
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
-    return Ember.Object.create(attributes);
+    return EmberObject.create(attributes);
   },
 
   getAttributes(aggregation) {
@@ -219,24 +223,24 @@ export default Ember.Service.extend(Filterizer, {
     let operations = this.getGroupOperations(aggregation.get('metrics'));
     this.assignIfTruthy(json, 'operations', operations);
 
-    return Ember.$.isEmptyObject(json) ? false : json;
+    return $.isEmptyObject(json) ? false : json;
   },
 
   makeMetrics(attributes) {
-    if (Ember.isEmpty(attributes)) {
+    if (isEmpty(attributes)) {
       return false;
     }
     return this.makeGroupOperations(attributes.operations);
   },
 
   makeGroupOperations(json) {
-    if (Ember.isEmpty(json)) {
+    if (isEmpty(json)) {
       return false;
     }
-    let groupOperations = Ember.A();
+    let groupOperations = A();
     json.forEach(item => {
       let type = METRICS.get(item.type);
-      let operation = Ember.Object.create({ type });
+      let operation = EmberObject.create({ type });
       this.setIfTruthy(operation, 'field', item.field);
       this.setIfTruthy(operation, 'name', item.newName);
       groupOperations.pushObject(operation);
@@ -245,7 +249,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   getGroupOperations(metrics) {
-    if (Ember.isEmpty(metrics)) {
+    if (isEmpty(metrics)) {
       return false;
     }
     let json = [];
@@ -260,7 +264,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   makePoints(points) {
-    if (Ember.isEmpty(points)) {
+    if (isEmpty(points)) {
       return false;
     }
     return points.join(',');
@@ -268,7 +272,7 @@ export default Ember.Service.extend(Filterizer, {
 
   getPoints(points) {
     let json = [];
-    if (!Ember.isEmpty(points)) {
+    if (!isEmpty(points)) {
       points.split(',').map(s => s.trim()).forEach(n =>  json.push(parseFloat(n)));
     }
     return json;
@@ -279,7 +283,7 @@ export default Ember.Service.extend(Filterizer, {
   },
 
   assignIfTruthyNumeric(json, key, value) {
-    if (!Ember.isEmpty(value)) {
+    if (!isEmpty(value)) {
       json[key] = parseFloat(value);
     }
     return json;
@@ -287,7 +291,7 @@ export default Ember.Service.extend(Filterizer, {
 
   isTruthy(value) {
     // Also works for boolean false -> Object.keys(false) = []
-    return !Ember.isEmpty(value) && Object.keys(value).length !== 0;
+    return !isEmpty(value) && Object.keys(value).length !== 0;
   },
 
   assignIfTruthy(json, key, value) {

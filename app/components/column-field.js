@@ -3,9 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
+import EmberObject, { computed } from '@ember/object';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['column-field'],
 
   initialValue: null,
@@ -17,12 +19,12 @@ export default Ember.Component.extend({
   subfieldSeparator: null,
   disabled: false,
 
-  subfieldEnabled: Ember.computed('selectedColumn', 'subfieldKey', function() {
+  subfieldEnabled: computed('selectedColumn', 'subfieldKey', function() {
     return this.get(`selectedColumn.${this.get('subfieldKey')}`);
   }).readOnly(),
 
   /** Reverse mapping from ids back to the columns for easy lookup. **/
-  columnMapping: Ember.computed('columns.[]', function() {
+  columnMapping: computed('columns.[]', function() {
     return this.get('columns').reduce((previous, current) => {
       previous[current.id] = current;
       return previous;
@@ -35,13 +37,13 @@ export default Ember.Component.extend({
     let initialValue = this.get('initialValue');
     // didInsertElement doesn't seem to be called when the values above are present, so we
     // want to make the following behave like a constructor - i.e. set only once at the beginning.
-    if (Ember.isEmpty(selection) && !Ember.isEmpty(initialValue)) {
+    if (isEmpty(selection) && !isEmpty(initialValue)) {
       let { field, subfield } = this.findField(initialValue);
       this.setField(field, subfield);
     }
   },
 
-  compositeField: Ember.computed('selectedColumn', 'subfield', function() {
+  compositeField: computed('selectedColumn', 'subfield', function() {
     let top = this.get('selectedColumn.id');
     let sub = this.get('subfield');
     let suffixPosition = top.lastIndexOf(this.get('subfieldSuffix'));
@@ -49,7 +51,7 @@ export default Ember.Component.extend({
       return top;
     }
     let mainField = top.substring(0, suffixPosition);
-    if (Ember.isEmpty(sub)) {
+    if (isEmpty(sub)) {
       return mainField;
     }
     return `${mainField}${this.get('subfieldSeparator')}${sub}`;
@@ -70,12 +72,12 @@ export default Ember.Component.extend({
     let field = this.get('columnMapping')[name];
     let subfield = '';
     // If we didn't find the full field, it is a field with a subfield
-    if (Ember.isEmpty(field)) {
+    if (isEmpty(field)) {
       let mainField = `${this.sliceToLastSeparator(name)}${this.get('subfieldSuffix')}`;
       field = this.get('columnMapping')[mainField];
       subfield = this.sliceFromLastSeparator(name);
     }
-    return { field: Ember.Object.create(field), subfield: subfield };
+    return { field: EmberObject.create(field), subfield: subfield };
   },
 
   setField(field, subfield) {

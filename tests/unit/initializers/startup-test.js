@@ -3,7 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEmpty, isBlank } from '@ember/utils';
+import Application from '@ember/application';
+import { run } from '@ember/runloop';
 import StartupInitializer from 'bullet-ui/initializers/startup';
 import { module, test } from 'qunit';
 import ENV from 'bullet-ui/config/environment';
@@ -12,8 +14,8 @@ let application;
 
 module('Unit | Initializer | startup', {
   beforeEach() {
-    Ember.run(function() {
-      application = Ember.Application.create();
+    run(function() {
+      application = Application.create();
       application.deferReadiness();
       StartupInitializer.initialize(application);
     });
@@ -87,6 +89,6 @@ test('it registers the settings factory', function(assert) {
 test('the application has the settings injected', function(assert) {
   let instance = application.buildInstance();
   let settings = instance.lookup('settings:main');
-  assert.notOk(Ember.isEmpty(settings));
-  assert.notOk(Ember.isBlank(settings.get('queryNamespace')));
+  assert.notOk(isEmpty(settings));
+  assert.notOk(isBlank(settings.get('queryNamespace')));
 });

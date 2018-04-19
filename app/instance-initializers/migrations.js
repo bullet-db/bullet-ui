@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { isEqual } from '@ember/utils';
 
 export function initialize(application) {
   let settings = application.lookup('settings:main');
@@ -32,11 +32,9 @@ export function applyMigrations(manager, migrations, forage) {
   }
   let deletions = migrations.deletions;
   // Only support clearing everything or results at the moment
-  if (Ember.isEqual(deletions, 'result')) {
-    Ember.Logger.log('Deleting all results');
+  if (isEqual(deletions, 'result')) {
     return manager.deleteAllResults();
-  } else if (Ember.isEqual(deletions, 'query')) {
-    Ember.Logger.log('Deleting all queries');
+  } else if (isEqual(deletions, 'query')) {
     return forage.setDriver(forage.INDEXEDDB).then(() => {
       return forage.clear();
     });

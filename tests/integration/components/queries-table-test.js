@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { A } from '@ember/array';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
@@ -21,7 +21,7 @@ test('it renders three columns when passed in a query', function(assert) {
   query.addResult([]);
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.render(hbs`{{queries-table queries=mockQueries}}`);
   assert.equal(this.$('.lt-head .lt-column').eq(0).text().trim(), 'Query');
@@ -44,7 +44,7 @@ test('it has a default sort by name and can manually sort on click', function(as
   let queryB = MockQuery.create({ duration: 1 });
   queryB.set('name', 'foo');
 
-  this.set('mockQueries', Ember.A([queryA, queryB]));
+  this.set('mockQueries', A([queryA, queryB]));
   this.render(hbs`{{queries-table queries=mockQueries}}`);
 
   assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 3);
@@ -79,7 +79,7 @@ test('it sorts by the latest result column on click', function(assert) {
   // Will be Jan 2
   queryB.addResult([]);
 
-  this.set('mockQueries', Ember.A([queryA, queryB]));
+  this.set('mockQueries', A([queryA, queryB]));
   this.render(hbs`{{queries-table queries=mockQueries}}`);
 
   assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(1).text().trim(), '04 Jan 12:00 AM');
@@ -104,7 +104,7 @@ test('it sorts by the number of results column on click', function(assert) {
   queryB.set('name', 'foo');
   queryB.addResult([]);
 
-  this.set('mockQueries', Ember.A([queryA, queryB]));
+  this.set('mockQueries', A([queryA, queryB]));
   this.render(hbs`{{queries-table queries=mockQueries}}`);
 
   assert.equal(this.$('.lt-body .lt-row .lt-cell .length-entry').eq(0).text().trim(), '3 Results');
@@ -122,7 +122,7 @@ test('it calls the queryClick action on clicking the query name', function(asser
   let query = MockQuery.create({ duration: 1 });
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.set('mockQueryClick', (value) => {
     assert.equal(value.get('name'), 'foo');
@@ -139,7 +139,7 @@ test('it calls the deleteQueryClick action on clicking the delete icon', functio
   let query = MockQuery.create({ duration: 1 });
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.set('mockDeleteQueryClick', (value) => {
     assert.equal(value.get('name'), 'foo');
@@ -156,7 +156,7 @@ test('it calls the deleteResultsClick action on clicking the clear results', fun
   let query = MockQuery.create({ duration: 1 });
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.set('mockDeleteResultsClick', (value) => {
     assert.equal(value.get('name'), 'foo');
@@ -175,7 +175,7 @@ test('it calls the resultsClick action on clicking the latest result', function(
   query.addResult([]);
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.set('mockResultClick', (value) => {
     // Will be 4 since we added 3 results
@@ -193,7 +193,7 @@ test('it calls the copyQueryClick action on clicking the copy icon', function(as
   let query = MockQuery.create({ duration: 1 });
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.set('mockCopyQueryClick', (value) => {
     assert.equal(value.get('name'), 'foo');
@@ -210,7 +210,7 @@ test('it calls the linkQueryClick action on clicking the link icon', function(as
   let query = MockQuery.create({ duration: 1 });
   query.addResult([]);
   query.set('name', 'foo');
-  this.set('mockQueries', Ember.A([query]));
+  this.set('mockQueries', A([query]));
 
   this.set('mockLinkQueryClick', (value) => {
     assert.equal(value.get('name'), 'foo');

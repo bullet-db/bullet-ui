@@ -3,10 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
-  queryManager: Ember.inject.service(),
+export default Route.extend({
+  queryManager: service(),
 
   serialize(model) {
     return { hash: model.get('hash') };
