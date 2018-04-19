@@ -27,14 +27,11 @@ module.exports = function(environment) {
 
     APP: {
       // Inject default static settings
-      SETTINGS: configuration.default
+      SETTINGS: Object.assign({ }, INTERNAL_APP_SETTINGS, configuration.default)
       // Here you can pass flags/options to your application instance
       // when it is created
     }
   };
-
-  // Merge INTERNAL_APP_SETTINGS into ENV.APP.SETTINGS.
-  ENV.APP.SETTINGS = Object.assign(INTERNAL_APP_SETTINGS, ENV.APP.SETTINGS);
 
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;

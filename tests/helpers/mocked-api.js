@@ -48,13 +48,10 @@ export default EmberObject.extend({
     if (onStompMessage && !isEmpty(dataArray)) {
       let length = dataArray.length;
       dataArray.forEach((data, i) => {
-        let responeType = 'MESSAGE';
-        if (isEqual(i, length - 1)) {
-          responeType = 'COMPLETE';
-        }
+        let responseType = isEqual(i, length - 1) ? 'COMPLETE' : 'MESSAGE';
         let response = {
           body: JSON.stringify({
-            type: responeType,
+            type: responseType,
             content: JSON.stringify(data)
           })
         };

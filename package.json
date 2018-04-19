@@ -48,7 +48,6 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@stomp/stompjs": "~4.0.1",
     "broccoli-asset-rev": "~2.4.5",
     "browserify-zlib": "~0.2.0",
     "ember-ajax": "~3.0.0",
@@ -94,9 +93,10 @@
     "ember-tooltips": "2.9.2",
     "jscs": "~3.0.7",
     "json-formatter-js": "~2.2.0",
-    "loader.js": "~4.2.3",
+    "loader.js": "~4.6.0",
     "pretender": "1.4.0",
     "sockjs-client": "~1.1.4",
+    "@stomp/stompjs": "~4.0.1",
     "urlsafe-base64": "~1.0.0"
   },
   "dependencies": {

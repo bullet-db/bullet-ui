@@ -19,7 +19,7 @@ export function getAdapterModule() {
   if (isEmpty(adapterName)) {
     return indexeddb;
   }
-  return adapters.getWithDefault(config.APP.SETTINGS.adapter, indexeddb);
+  return adapters.getWithDefault(adapterName, indexeddb);
 }
 
 export default getAdapterModule();
