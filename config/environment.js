@@ -34,7 +34,7 @@ module.exports = function(environment) {
   };
 
   // Merge INTERNAL_APP_SETTINGS into ENV.APP.SETTINGS.
-  Object.assign(INTERNAL_APP_SETTINGS, ENV.APP.SETTINGS);
+  ENV.APP.SETTINGS = Object.assign(INTERNAL_APP_SETTINGS, ENV.APP.SETTINGS);
 
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
