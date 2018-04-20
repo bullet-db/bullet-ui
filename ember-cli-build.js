@@ -24,7 +24,7 @@ module.exports = function(defaults) {
 
   // Query Builder
   app.import('node_modules/jquery-extendext/jQuery.extendext.js');
-  app.import('node_modules/doT/doT.js');
+  app.import('node_modules/dot/doT.js');
   app.import('node_modules/interactjs/interact.js');
   app.import('node_modules/jQuery-QueryBuilder/dist/js/query-builder.js');
   app.import('node_modules/jQuery-QueryBuilder/dist/css/query-builder.default.css');
