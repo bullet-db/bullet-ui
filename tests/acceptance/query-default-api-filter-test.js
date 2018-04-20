@@ -44,14 +44,14 @@ test('it creates new queries with two default filters', function(assert) {
   visit('/queries/new');
 
   andThen(function() {
-    assert.equal(find('.filter-container .builder .rules-list li').length, 2);
-    assert.equal(find('.filter-container .builder .rules-list li').first().find('.rule-filter-container select').val(),
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').length, 2);
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-filter-container select').val(),
                  'enumerated_map_column.nested_1');
-    assert.equal(find('.filter-container .builder .rules-list li').first().find('.rule-operator-container select').val(), 'not_in');
-    assert.equal(find('.filter-container .builder .rules-list li').first().find('.rule-value-container input').val(), '1,2,3');
-    assert.equal(find('.filter-container .builder .rules-list li').last().find('.rule-filter-container select').val(), 'simple_column');
-    assert.equal(find('.filter-container .builder .rules-list li').last().find('.rule-operator-container select').val(), 'in');
-    assert.equal(find('.filter-container .builder .rules-list li').last().find('.rule-value-container input').val(), 'foo,bar');
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-operator-container select').val(), 'not_in');
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-value-container input').val(), '1,2,3');
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-filter-container select').val(), 'simple_column');
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-operator-container select').val(), 'in');
+    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-value-container input').val(), 'foo,bar');
   });
 });
 

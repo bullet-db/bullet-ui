@@ -4,16 +4,14 @@ You will need the following things properly installed on your computer. You will
 
 * [Git](http://git-scm.com/)
 * [Node.js](http://nodejs.org/) (with NPM. Highly recommend using NVM to manage Node and NOT install node globally)
-* [Bower](http://bower.io/)
+* [Yarn](https://yarnpkg.com)
 * [Ember CLI](http://www.ember-cli.com/)
-* [PhantomJS](http://phantomjs.org/)
 
 ## Installation
 
 * git clone this repository
 * change into the new directory
-* `npm install`
-* `bower install`
+* `yarn`
 
 ### Building
 

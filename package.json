@@ -17,7 +17,7 @@
     "test": "tests"
   },
   "scripts": {
-    "clean": "rm -rf tmp dist node_modules bower_components",
+    "clean": "rm -rf tmp dist node_modules",
     "build": "ember build --environment=production",
     "test": "COVERAGE=true ember test",
     "local-build": "ember build",
@@ -25,7 +25,7 @@
     "start": "ember server",
     "lint": "jscs . --verbose",
     "lint-fix": "jscs . --fix --verbose",
-    "build-package": "npm install && npm run -s build &&  rm -rf node_modules && npm install --only=production && npm run -s archive",
+    "build-package": "yarn && yarn run -s build &&  rm -rf node_modules && yarn install --production && yarn run -s archive",
     "archive": "tar --exclude='.jshintrc' --exclude='.DS_Store' --exclude='coverage.js' --exclude='environment.js' -czf bullet-ui-v${BULLET_VERSION}.tar.gz dist express-server.js server config node_modules/"
   },
   "repository": {
@@ -50,7 +50,9 @@
   "devDependencies": {
     "broccoli-asset-rev": "~2.4.5",
     "browserify-zlib": "~0.2.0",
-    "ember-ajax": "~3.0.0",
+    "chart.js": "~2.7.2",
+    "c3": "~0.5.3",
+    "ember-ajax": "~3.1.0",
     "ember-browserify": "~1.2.2",
     "ember-cli": "~2.18.0",
     "ember-cli-app-version": "~3.0.0",
@@ -78,7 +80,7 @@
     "ember-export-application-global": "~2.0.0",
     "ember-light-table": "1.12.2",
     "ember-load-initializers": "~1.0.0",
-    "ember-localforage": "~1.5.7",
+    "ember-localforage": "1.5.8",
     "ember-moment": "7.0.1",
     "ember-power-select": "1.10.4",
     "ember-promise-helpers": "~1.0.3",
@@ -91,9 +93,15 @@
     "ember-source": "~2.18.0",
     "ember-tether": "0.4.1",
     "ember-tooltips": "2.9.2",
+    "file-saver": "~1.3.8",
+    "interactjs": "~1.2.8",
+    "jQuery-QueryBuilder-Subfield": "yahoo/jQuery-QueryBuilder-Subfield#v1.0.2",
+    "jQuery-QueryBuilder-Placeholders": "yahoo/jQuery-QueryBuilder-Placeholders#v1.0.1",
+    "jquery-ui": "~1.12.1",
     "jscs": "~3.0.7",
     "json-formatter-js": "~2.2.0",
     "loader.js": "~4.6.0",
+    "pivottable": "~2.20.0",
     "pretender": "1.4.0",
     "sockjs-client": "~1.1.4",
     "@stomp/stompjs": "~4.0.1",

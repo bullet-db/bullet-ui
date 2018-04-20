@@ -23,38 +23,38 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   // Query Builder
-  app.import('bower_components/jquery-extendext/jQuery.extendext.js');
-  app.import('bower_components/doT/doT.js');
-  app.import('bower_components/interact/interact.js');
-  app.import('bower_components/jQuery-QueryBuilder/dist/js/query-builder.js');
-  app.import('bower_components/jQuery-QueryBuilder/dist/css/query-builder.default.css');
+  app.import('node_modules/jquery-extendext/jQuery.extendext.js');
+  app.import('node_modules/doT/doT.js');
+  app.import('node_modules/interactjs/interact.js');
+  app.import('node_modules/jQuery-QueryBuilder/dist/js/query-builder.js');
+  app.import('node_modules/jQuery-QueryBuilder/dist/css/query-builder.default.css');
   // Query Builder Standalone plugins
-  app.import('bower_components/jQuery-QueryBuilder-Subfield/query-builder-subfield.js');
-  app.import('bower_components/jQuery-QueryBuilder-Subfield/query-builder-subfield.css');
-  app.import('bower_components/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
+  app.import('node_modules/jQuery-QueryBuilder-Subfield/query-builder-subfield.js');
+  app.import('node_modules/jQuery-QueryBuilder-Subfield/query-builder-subfield.css');
+  app.import('node_modules/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
 
   // FileSaver
-  app.import('bower_components/filesaver/FileSaver.js');
+  app.import('node_modules/file-saver/FileSaver.js');
 
   // pivottable
-  app.import('bower_components/c3/c3.js');
-  app.import('bower_components/c3/c3.css');
-  app.import('bower_components/d3/d3.js');
+  app.import('node_modules/c3/c3.js');
+  app.import('node_modules/c3/c3.css');
+  app.import('node_modules/d3/build/d3.js');
   // Manually importing jquery-ui dependencies to keep clashes with bootstrap a minimum
   // Just need the sortable plugin and all of its dependency chain
-  app.import('bower_components/jquery-ui/ui/version.js');
-  app.import('bower_components/jquery-ui/ui/widget.js');
-  app.import('bower_components/jquery-ui/ui/data.js');
-  app.import('bower_components/jquery-ui/ui/ie.js');
-  app.import('bower_components/jquery-ui/ui/plugin.js');
-  app.import('bower_components/jquery-ui/ui/scroll-parent.js');
-  app.import('bower_components/jquery-ui/ui/widgets/mouse.js');
-  app.import('bower_components/jquery-ui/ui/widgets/sortable.js');
+  app.import('node_modules/jquery-ui/ui/version.js');
+  app.import('node_modules/jquery-ui/ui/widget.js');
+  app.import('node_modules/jquery-ui/ui/data.js');
+  app.import('node_modules/jquery-ui/ui/ie.js');
+  app.import('node_modules/jquery-ui/ui/plugin.js');
+  app.import('node_modules/jquery-ui/ui/scroll-parent.js');
+  app.import('node_modules/jquery-ui/ui/widgets/mouse.js');
+  app.import('node_modules/jquery-ui/ui/widgets/sortable.js');
   // Core pivottable
-  app.import('bower_components/pivottable/dist/pivot.js');
-  app.import('bower_components/pivottable/dist/pivot.css');
-  app.import('bower_components/pivottable/dist/c3_renderers.js');
-  app.import('bower_components/pivottable/dist/export_renderers.js');
+  app.import('node_modules/pivottable/dist/pivot.js');
+  app.import('node_modules/pivottable/dist/pivot.css');
+  app.import('node_modules/pivottable/dist/c3_renderers.js');
+  app.import('node_modules/pivottable/dist/export_renderers.js');
 
   return app.toTree();
 };
