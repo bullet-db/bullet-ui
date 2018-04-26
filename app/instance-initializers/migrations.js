@@ -11,7 +11,7 @@ export function initialize(application) {
   let version = settings.get('modelVersion');
 
   const forage = window.localforage;
-  return forage.getItem('modelVersion').then((currentVersion) => {
+  return forage.getItem('modelVersion').then(currentVersion => {
     if (!currentVersion || version > currentVersion) {
       let manager = application.lookup('service:queryManager');
       return applyMigrations(manager, migrations, forage);

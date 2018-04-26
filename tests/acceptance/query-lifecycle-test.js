@@ -6,7 +6,7 @@
 import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import setupForAcceptanceTest from '../helpers/setup-for-acceptance-test';
+import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
 import { visit, click, fillIn, triggerEvent, currentURL } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import $ from 'jquery';

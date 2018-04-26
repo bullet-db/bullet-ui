@@ -74,37 +74,36 @@ export default DS.Model.extend(Validations, {
     }).join(', ');
   }),
 
-  aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}',
-    'groupsSummary', 'metricsSummary', function() {
-      let type = this.get('aggregation.type');
-      if (type === AGGREGATIONS.get('RAW')) {
-        return '';
-      }
-      let groupsSummary = this.get('groupsSummary');
-      if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
-        return `${type} ON (${groupsSummary})`;
-      }
-      if (type === AGGREGATIONS.get('DISTRIBUTION')) {
-        let distributionType = this.get('aggregation.attributes.type');
-        return `${distributionType} ON ${groupsSummary}`;
-      }
-      if (type === AGGREGATIONS.get('TOP_K')) {
-        let k = this.get('aggregation.size');
-        let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
-        let summary = `TOP ${k} OF (${groupsSummary})`;
-        let threshold = this.get('aggregation.attributes.threshold');
-        return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
-      }
-      // Otherwise 'GROUP'
-      let metricsSummary = this.get('metricsSummary');
+  aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary', function() {
+    let type = this.get('aggregation.type');
+    if (type === AGGREGATIONS.get('RAW')) {
+      return '';
+    }
+    let groupsSummary = this.get('groupsSummary');
+    if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
+      return `${type} ON (${groupsSummary})`;
+    }
+    if (type === AGGREGATIONS.get('DISTRIBUTION')) {
+      let distributionType = this.get('aggregation.attributes.type');
+      return `${distributionType} ON ${groupsSummary}`;
+    }
+    if (type === AGGREGATIONS.get('TOP_K')) {
+      let k = this.get('aggregation.size');
+      let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
+      let summary = `TOP ${k} OF (${groupsSummary})`;
+      let threshold = this.get('aggregation.attributes.threshold');
+      return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
+    }
+    // Otherwise 'GROUP'
+    let metricsSummary = this.get('metricsSummary');
 
-      if (isEmpty(metricsSummary)) {
-        return groupsSummary;
-      } else if (isEmpty(groupsSummary)) {
-        return metricsSummary;
-      }
-      return `${groupsSummary}, ${metricsSummary}`;
-    }),
+    if (isEmpty(metricsSummary)) {
+      return groupsSummary;
+    } else if (isEmpty(groupsSummary)) {
+      return metricsSummary;
+    }
+    return `${groupsSummary}, ${metricsSummary}`;
+  }),
 
   fieldsSummary: computed('projectionsSummary', 'aggregationSummary', function() {
     let projectionsSummary = this.get('projectionsSummary');
@@ -135,7 +134,7 @@ export default DS.Model.extend(Validations, {
   }).readOnly(),
 
   summarizeFieldLike(fieldLike) {
-    return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => isEmpty(n)).join(', ');
+    return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject(n => isEmpty(n)).join(', ');
   },
 
   hasNoName(fieldLike) {

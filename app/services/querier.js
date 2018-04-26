@@ -273,7 +273,7 @@ export default Service.extend(Filterizer, {
   getPoints(points) {
     let json = [];
     if (!isEmpty(points)) {
-      points.split(',').map(s => s.trim()).forEach((n) => json.push(parseFloat(n)));
+      points.split(',').map(s => s.trim()).forEach(n => json.push(parseFloat(n)));
     }
     return json;
   },

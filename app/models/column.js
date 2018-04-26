@@ -41,7 +41,7 @@ export default DS.Model.extend({
       return false;
     }
     let subColumnType = this.get('subtype');
-    return subColumns.map((item) => {
+    return subColumns.map(item => {
       let subColumn = EmberObject.create(item);
       let name = this.get('name');
       subColumn.set('name', `${name}${SUBFIELD_SEPARATOR}${item.name}`);

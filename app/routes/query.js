@@ -38,7 +38,7 @@ export default Route.extend({
     },
 
     fireQuery() {
-      this.store.findRecord('query', this.paramsFor('query').query_id).then((query) => {
+      this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
         let request = this.get('querier').send(query, this.resultHandler, this.errorHandler, this);
         // The low level XMLHTTPRequest
         this.set('pendingRequest', request);

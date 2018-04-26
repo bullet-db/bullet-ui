@@ -19,7 +19,7 @@ module('Integration | Component | pivot table', function(hooks) {
     this.set('mockOnRefresh', () => { });
 
     await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
-                                  onRefresh=(action mockOnRefresh)}}`);
+                                   onRefresh=(action mockOnRefresh)}}`);
     assert.equal(this.$('.pvtUi select.pvtRenderer').val(), 'Table');
   });
 
@@ -33,7 +33,7 @@ module('Integration | Component | pivot table', function(hooks) {
     this.set('mockOptions', { rendererName: 'Heatmap' });
 
     await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
-                                  onRefresh=(action mockOnRefresh)}}`);
+                                   onRefresh=(action mockOnRefresh)}}`);
   });
 
   test('it removes certain options before returning the configuration', async function(assert) {
@@ -49,6 +49,6 @@ module('Integration | Component | pivot table', function(hooks) {
     this.set('mockOptions', { rendererOptions: { foo: 'bar' }, localeStrings: { bar: 'foo' } });
 
     await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
-                                  onRefresh=(action mockOnRefresh)}}`);
+                                   onRefresh=(action mockOnRefresh)}}`);
   });
 });

@@ -7,7 +7,7 @@ import { later } from '@ember/runloop';
 import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import setupForAcceptanceTest from '../helpers/setup-for-acceptance-test';
+import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
 import { visit, click, fillIn, currentRouteName, currentURL } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import $ from 'jquery';

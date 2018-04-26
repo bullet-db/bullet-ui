@@ -80,7 +80,7 @@ export default Mixin.create(Filterizer, {
   /**
    * Creates QueryBuilder version of Filters from an Enumerable of {@link Column}, flattening enumerated Columns.
    * @param  {Column} columns An Enumerable set of Columns
-   * @return {Array}          Arrray of the corresponding filters.
+   * @return {Array}          Array of the corresponding filters.
    */
   builderFilters(columns) {
     let filters = [];
@@ -89,7 +89,7 @@ export default Mixin.create(Filterizer, {
     }
     return columns.reduce((previous, item) => {
       let flattenedColumns = item.get('flattenedColumns');
-      return previous.concat(flattenedColumns.map((flatColumn) => {
+      return previous.concat(flattenedColumns.map(flatColumn => {
         return this.rulify(flatColumn.name, flatColumn.type, flatColumn.hasFreeformField);
       }));
     }, filters);

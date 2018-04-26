@@ -34,7 +34,7 @@ export default Component.extend({
   },
 
   refreshHandler(context) {
-    return (configuration) => {
+    return configuration => {
       let copy = JSON.parse(JSON.stringify(configuration));
       // Deletes functions and defaults: http://nicolas.kruchten.com/pivottable/examples/onrefresh.html
       delete copy.aggregators;

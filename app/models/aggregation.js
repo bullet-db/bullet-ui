@@ -51,8 +51,7 @@ let DistributionTypes = EmberObject.extend({
   }
 });
 
-let DistributionPointTypes = EmberObject.extend({ NUMBER: 'Number', POINTS: 'Points',
-  GENERATED: 'Generated' });
+let DistributionPointTypes = EmberObject.extend({ NUMBER: 'Number', POINTS: 'Points', GENERATED: 'Generated' });
 
 export const AGGREGATIONS = AggregationTypes.create();
 export const RAWS = RawTypes.create();

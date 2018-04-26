@@ -3,13 +3,15 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
 import { jsonWrap } from '../helpers/pretender';
-import setupForAcceptanceTest from '../helpers/setup-for-acceptance-test';
+import mockedAPI from '../helpers/mocked-api';
+import sinon from 'sinon';
+import Stomp from 'npm:@stomp/stompjs';
+import { basicSetupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
 import { visit } from '@ember/test-helpers';
 import $ from 'jquery';
 
@@ -17,13 +19,13 @@ let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
 
 module('Acceptance | query default api filter', function(hooks) {
-  setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
+  basicSetupForAcceptanceTest(hooks);
+  setupForMockSettings(hooks, url);
 
   hooks.beforeEach(function() {
-    // Inject into defaultValues in routes, our mock filter values
-    this.owner.register('settings:mocked', EmberObject.create({ defaultFilter: url }), { instantiate: false });
-    this.owner.inject('route', 'settings', 'settings:mocked');
-
+    this.mockedAPI = mockedAPI.create();
+    this.stub = sinon.stub(Stomp, 'over').returns(this.mockedAPI);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     // Extend regular API with a filter endpoint
     hit = 0;
     this.mockedAPI.get('server').map(function() {
@@ -35,7 +37,8 @@ module('Acceptance | query default api filter', function(hooks) {
   });
 
   hooks.afterEach(function() {
-    this.owner.unregister('settings:mocked');
+    this.mockedAPI.shutdown();
+    this.stub.restore();
   });
 
   test('it creates new queries with two default filters', async function(assert) {
