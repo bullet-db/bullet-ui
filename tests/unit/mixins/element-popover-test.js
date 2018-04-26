@@ -7,10 +7,10 @@ import EmberObject from '@ember/object';
 import ElementPopoverMixin from 'bullet-ui/mixins/element-popover';
 import { module, test } from 'qunit';
 
-module('Unit | Mixin | element popover');
-
-test('it works', function(assert) {
-  let ElementPopoverObject = EmberObject.extend(ElementPopoverMixin);
-  let subject = ElementPopoverObject.create();
-  assert.ok(subject);
+module('Unit | Mixin | element popover', function() {
+  test('it works', function(assert) {
+    let ElementPopoverObject = EmberObject.extend(ElementPopoverMixin);
+    let subject = ElementPopoverObject.create();
+    assert.ok(subject);
+  });
 });

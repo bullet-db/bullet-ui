@@ -4,53 +4,55 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('schema-name-entry', 'Integration | Component | Cell | schema name entry', {
-  integration: true
-});
+module('Integration | Component | Cell | schema name entry', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it displays a simple column', function(assert) {
-  this.set('mockRow', EmberObject.create({
-    name: 'foo'
-  }));
-  this.render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+  test('it displays a simple column', async function(assert) {
+    this.set('mockRow', EmberObject.create({
+      name: 'foo'
+    }));
+    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-  assert.equal(this.$().text().trim(), 'foo');
-  assert.equal(this.$().find('.schema-enumeration-caret').length, 0);
-});
+    assert.equal(this.$().text().trim(), 'foo');
+    assert.equal(this.$().find('.schema-enumeration-caret').length, 0);
+  });
 
-test('it displays an subfield column', function(assert) {
-  this.set('mockRow', EmberObject.create({
-    name: 'foo.bar',
-    isSubfield: true
-  }));
-  this.render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+  test('it displays an subfield column', async function(assert) {
+    this.set('mockRow', EmberObject.create({
+      name: 'foo.bar',
+      isSubfield: true
+    }));
+    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-  assert.equal(this.$().text().trim(), 'bar');
-  assert.equal(this.$().find('.schema-enumeration-caret').length, 0);
-});
+    assert.equal(this.$().text().trim(), 'bar');
+    assert.equal(this.$().find('.schema-enumeration-caret').length, 0);
+  });
 
-test('it displays an expand caret if the row has enumerations', function(assert) {
-  this.set('mockRow', EmberObject.create({
-    name: 'foo.bar',
-    isSubfield: true,
-    hasEnumerations: true
-  }));
-  this.render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+  test('it displays an expand caret if the row has enumerations', async function(assert) {
+    this.set('mockRow', EmberObject.create({
+      name: 'foo.bar',
+      isSubfield: true,
+      hasEnumerations: true
+    }));
+    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-  assert.equal(this.$().find('.schema-enumeration-caret > .expand-caret').length, 1);
-});
+    assert.equal(this.$().find('.schema-enumeration-caret > .expand-caret').length, 1);
+  });
 
-test('it displays an expanded caret if the row is expanded', function(assert) {
-  this.set('mockRow', EmberObject.create({
-    name: 'foo.bar',
-    isSubfield: true,
-    hasEnumerations: true,
-    expanded: true
-  }));
-  this.render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+  test('it displays an expanded caret if the row is expanded', async function(assert) {
+    this.set('mockRow', EmberObject.create({
+      name: 'foo.bar',
+      isSubfield: true,
+      hasEnumerations: true,
+      expanded: true
+    }));
+    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-  assert.equal(this.$().find('.schema-enumeration-caret > .expanded-caret').length, 1);
+    assert.equal(this.$().find('.schema-enumeration-caret > .expanded-caret').length, 1);
+  });
 });

@@ -4,26 +4,27 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
-import { test } from 'qunit';
-import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
 import { jsonWrap } from '../helpers/pretender';
+import setupForAcceptanceTest from '../helpers/setup-for-acceptance-test';
+import { visit } from '@ember/test-helpers';
+import $ from 'jquery';
 
 let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
 
-moduleForAcceptance('Acceptance | query default api filter', {
-  suppressLogging: true,
+module('Acceptance | query default api filter', function(hooks) {
+  setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-  beforeEach() {
+  hooks.beforeEach(function() {
     // Inject into defaultValues in routes, our mock filter values
-    this.application.register('settings:mocked', EmberObject.create({ defaultFilter: url }), { instantiate: false });
-    this.application.inject('route', 'settings', 'settings:mocked');
+    this.owner.register('settings:mocked', EmberObject.create({ defaultFilter: url }), { instantiate: false });
+    this.owner.inject('route', 'settings', 'settings:mocked');
 
     // Extend regular API with a filter endpoint
-    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     hit = 0;
     this.mockedAPI.get('server').map(function() {
       this.get(url, () => {
@@ -31,36 +32,30 @@ moduleForAcceptance('Acceptance | query default api filter', {
         return jsonWrap(200, FILTERS.AND_ENUMERATED);
       });
     });
-  },
-
-  afterEach() {
-    // Wipe out localstorage because we are creating here
-    window.localStorage.clear();
-  }
-});
-
-test('it creates new queries with two default filters', function(assert) {
-  assert.expect(7);
-  visit('/queries/new');
-
-  andThen(function() {
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').length, 2);
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-filter-container select').val(),
-                 'enumerated_map_column.nested_1');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-operator-container select').val(), 'not_in');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-value-container input').val(), '1,2,3');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-filter-container select').val(), 'simple_column');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-operator-container select').val(), 'in');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-value-container input').val(), 'foo,bar');
   });
-});
 
-test('it reuses fetched values when creating new queries', function(assert) {
-  assert.expect(1);
-  visit('/queries/new');
-  visit('/queries/new');
-  visit('/queries/new');
-  andThen(function() {
+  hooks.afterEach(function() {
+    this.owner.unregister('settings:mocked');
+  });
+
+  test('it creates new queries with two default filters', async function(assert) {
+    assert.expect(7);
+    await visit('/queries/new');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').length, 2);
+    assert.equal($('.filter-container .builder .rules-list .rule-container').first().find('.rule-filter-container select').val(),
+      'enumerated_map_column.nested_1');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').first().find('.rule-operator-container select').val(), 'not_in');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').first().find('.rule-value-container input').val(), '1,2,3');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').last().find('.rule-filter-container select').val(), 'simple_column');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').last().find('.rule-operator-container select').val(), 'in');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').last().find('.rule-value-container input').val(), 'foo,bar');
+  });
+
+  test('it reuses fetched values when creating new queries', async function(assert) {
+    assert.expect(1);
+    await visit('/queries/new');
+    await visit('/queries/new');
+    await visit('/queries/new');
     assert.equal(hit, 1);
   });
 });

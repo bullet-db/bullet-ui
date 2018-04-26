@@ -53,7 +53,7 @@ export default Route.extend({
     }).catch(() => {
       // Needed since findRecord adds the non-existant record to the cache
       this.store.unloadAll('query');
-      return this.transitionTo('errored');
+      this.transitionTo('errored');
     });
   },
 

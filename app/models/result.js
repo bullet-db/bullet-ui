@@ -43,7 +43,7 @@ export default DS.Model.extend({
     return this.get('isGroup') && this.get('querySnapshot.groupsSize') === 0;
   }),
 
-  isGroupBy: computed('isGroup', 'querySnapshot.metricsSize', 'querySnapshot.groupsSize', function() {
+  isGroupBy: computed('isGroup', 'querySnapshot.{metricsSize,groupsSize}', function() {
     return this.get('isGroup') && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }),
 

@@ -3,23 +3,18 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { test } from 'qunit';
-import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
+import setupForAcceptanceTest from '../helpers/setup-for-acceptance-test';
+import { visit, currentURL } from '@ember/test-helpers';
 
-moduleForAcceptance('Acceptance | query error', {
-  suppressLogging: true,
+module('Acceptance | query error', function(hooks) {
+  setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-  beforeEach() {
-    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-  }
-});
+  test('visiting a non-existant query', async function(assert) {
+    await visit('/query/foo');
 
-test('visiting a non-existant query', function(assert) {
-  visit('/query/foo');
-
-  andThen(function() {
     assert.equal(currentURL(), '/errored');
   });
 });

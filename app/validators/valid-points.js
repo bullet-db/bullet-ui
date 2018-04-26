@@ -93,7 +93,7 @@ const Validoints = BaseValidator.extend({
 Validoints.reopenClass({
   getDependentsFor() {
     return ['model.type', 'model.attributes.start', 'model.attributes.end', 'model.attributes.increment',
-            'model.attributes.numberOfPoints', 'model.attributes.points', 'model.attributes.type', 'model.attributes.pointType'];
+      'model.attributes.numberOfPoints', 'model.attributes.points', 'model.attributes.type', 'model.attributes.pointType'];
   }
 });
 

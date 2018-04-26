@@ -6,14 +6,18 @@ export default Component.extend({
   rows: null,
   columns: null,
   initialOptions: null,
-  defaultOptions: {
-    unusedAttrsVertical: true,
-    menuLimit: 200,
-    renderers: $.extend(
-      $.pivotUtilities.renderers,
-      $.pivotUtilities.c3_renderers,
-      $.pivotUtilities.export_renderers
-    )
+
+  init() {
+    this._super(...arguments);
+    this.set('defaultOptions', {
+      unusedAttrsVertical: true,
+      menuLimit: 200,
+      renderers: $.extend(
+        $.pivotUtilities.renderers,
+        $.pivotUtilities.c3_renderers,
+        $.pivotUtilities.export_renderers
+      )
+    });
   },
 
   options: computed('initialOptions', 'defaultOptions', function() {

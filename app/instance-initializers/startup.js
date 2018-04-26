@@ -9,6 +9,7 @@ import ENV from 'bullet-ui/config/environment';
 
 export default {
   name: 'settings',
+  before: 'migrations',
 
   initialize(application) {
     let metaSettings = $('head meta[name=app-settings]').attr('content');

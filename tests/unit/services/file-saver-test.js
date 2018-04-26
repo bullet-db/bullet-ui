@@ -4,28 +4,31 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { run } from '@ember/runloop';
-import { moduleFor, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
 let originalSave;
 
-moduleFor('service:file-saver', 'Unit | Service | file saver', {
-  beforeEach() {
-    run(function() {
+module('Unit | Service | file saver', function(hooks) {
+  setupTest(hooks);
+
+  hooks.beforeEach(function() {
+    run(() => {
       originalSave = window.saveAs;
     });
-  },
+  });
 
-  afterEach() {
+  hooks.afterEach(function() {
     window.saveAs = originalSave;
-  }
-});
+  });
 
-test('it uses the window saveAs to save', function(assert) {
-  assert.expect(2);
-  let service = this.subject();
-  window.saveAs = (blob, name) => {
-    assert.equal(name, 'test');
-  };
-  assert.ok(service);
-  service.save({}, 'someMIMEType', 'test');
+  test('it uses the window saveAs to save', function(assert) {
+    assert.expect(2);
+    let service = this.owner.lookup('service:file-saver');
+    window.saveAs = (blob, name) => {
+      assert.equal(name, 'test');
+    };
+    assert.ok(service);
+    service.save({}, 'someMIMEType', 'test');
+  });
 });

@@ -43,5 +43,6 @@ export function applyMigrations(manager, migrations, forage) {
 
 export default {
   name: 'migrations',
+  after: 'settings',
   initialize
 };

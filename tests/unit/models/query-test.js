@@ -4,19 +4,20 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isPresent } from '@ember/utils';
-import { moduleForModel, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleForModel('query', 'Unit | Model | query', {
-  needs: ['model:filter', 'model:projection', 'model:aggregation', 'model:result',
-          'validator:presence', 'validator:belongsTo', 'validator:hasMany',
-          'validator:number', 'validator:queryMaxDuration']
-});
+import { run } from '@ember/runloop';
 
-test('it sets its default values right', function(assert) {
-  let now = parseInt(Date.now());
-  let model = this.subject();
-  let created = model.get('created');
-  assert.ok(!isPresent(model.get('name')));
-  assert.equal(model.get('duration'), 20);
-  assert.ok(parseInt(created.getTime()) >= now);
+module('Unit | Model | query', function(hooks) {
+  setupTest(hooks);
+
+  test('it sets its default values right', function(assert) {
+    let now = parseInt(Date.now());
+    let model = run(() => this.owner.lookup('service:store').createRecord('query'));
+    let created = model.get('created');
+    assert.ok(!isPresent(model.get('name')));
+    assert.equal(model.get('duration'), 20);
+    assert.ok(parseInt(created.getTime()) >= now);
+  });
 });

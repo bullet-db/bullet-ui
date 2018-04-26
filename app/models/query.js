@@ -61,7 +61,7 @@ export default DS.Model.extend(Validations, {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
   }),
 
-  metricsSummary: computed('aggregation.metrics.@each.type', 'aggregation.metrics.@each.name', function() {
+  metricsSummary: computed('aggregation.metrics.@each.{type,name}', function() {
     let metrics = this.getWithDefault('aggregation.metrics', A());
     return metrics.map(m => {
       let type = m.get('type');
@@ -75,36 +75,36 @@ export default DS.Model.extend(Validations, {
   }),
 
   aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}',
-                                     'groupsSummary', 'metricsSummary', function() {
-    let type = this.get('aggregation.type');
-    if (type === AGGREGATIONS.get('RAW')) {
-      return '';
-    }
-    let groupsSummary = this.get('groupsSummary');
-    if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
-      return `${type} ON (${groupsSummary})`;
-    }
-    if (type === AGGREGATIONS.get('DISTRIBUTION')) {
-      let distributionType = this.get('aggregation.attributes.type');
-      return `${distributionType} ON ${groupsSummary}`;
-    }
-    if (type === AGGREGATIONS.get('TOP_K')) {
-      let k = this.get('aggregation.size');
-      let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
-      let summary = `TOP ${k} OF (${groupsSummary})`;
-      let threshold = this.get('aggregation.attributes.threshold');
-      return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
-    }
-    // Otherwise 'GROUP'
-    let metricsSummary = this.get('metricsSummary');
+    'groupsSummary', 'metricsSummary', function() {
+      let type = this.get('aggregation.type');
+      if (type === AGGREGATIONS.get('RAW')) {
+        return '';
+      }
+      let groupsSummary = this.get('groupsSummary');
+      if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
+        return `${type} ON (${groupsSummary})`;
+      }
+      if (type === AGGREGATIONS.get('DISTRIBUTION')) {
+        let distributionType = this.get('aggregation.attributes.type');
+        return `${distributionType} ON ${groupsSummary}`;
+      }
+      if (type === AGGREGATIONS.get('TOP_K')) {
+        let k = this.get('aggregation.size');
+        let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
+        let summary = `TOP ${k} OF (${groupsSummary})`;
+        let threshold = this.get('aggregation.attributes.threshold');
+        return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
+      }
+      // Otherwise 'GROUP'
+      let metricsSummary = this.get('metricsSummary');
 
-    if (isEmpty(metricsSummary)) {
-      return groupsSummary;
-    } else if (isEmpty(groupsSummary)) {
-      return metricsSummary;
-    }
-    return `${groupsSummary}, ${metricsSummary}`;
-  }),
+      if (isEmpty(metricsSummary)) {
+        return groupsSummary;
+      } else if (isEmpty(groupsSummary)) {
+        return metricsSummary;
+      }
+      return `${groupsSummary}, ${metricsSummary}`;
+    }),
 
   fieldsSummary: computed('projectionsSummary', 'aggregationSummary', function() {
     let projectionsSummary = this.get('projectionsSummary');

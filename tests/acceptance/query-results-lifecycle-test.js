@@ -3,106 +3,86 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { next } from '@ember/runloop';
-import { test } from 'qunit';
-import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
+import { later } from '@ember/runloop';
+import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
+import setupForAcceptanceTest from '../helpers/setup-for-acceptance-test';
+import { visit, click, currentRouteName } from '@ember/test-helpers';
+import { selectChoose } from 'ember-power-select/test-support/helpers';
+import $ from 'jquery';
 
-moduleForAcceptance('Acceptance | query results lifecycle', {
-  suppressLogging: true,
+module('Acceptance | query results lifecycle', function(hooks) {
+  setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
 
-  beforeEach() {
-    // Wipe out localstorage because we are creating queries here
-    window.localStorage.clear();
-  }
-});
+  test('query submission and result navigation', async function(assert) {
+    assert.expect(3);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
+    await visit('queries/new');
+    await click('.submit-button');
 
-test('query submission and result navigation', function(assert) {
-  assert.expect(3);
-  this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-  visit('queries/new');
-  click('.submit-button');
-
-  visit('queries');
-  andThen(() => {
-    assert.equal(find('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
-  });
-  click('.queries-table .query-results-entry');
-  click('.query-results-entry-popover .results-table .result-date-entry');
-  andThen(() => {
+    await visit('queries');
+    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    await click('.queries-table .query-results-entry');
+    await click('.query-results-entry-popover .results-table .result-date-entry');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(find('pre').length, 1);
+    assert.equal($('pre').length, 1);
   });
-});
 
-test('query submission with raw output with projections opens the table view by default', function(assert) {
-  assert.expect(2);
-  this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
+  test('query submission with raw output with projections opens the table view by default', async function(assert) {
+    assert.expect(2);
+    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
-  visit('/queries/new');
-  click('.output-container .raw-sub-options #select');
-  selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
-  click('.submit-button');
-  andThen(() => {
+    await visit('/queries/new');
+    await click('.output-container .raw-sub-options #select');
+    await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
+    await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(find('.records-table').length, 1);
+    assert.equal($('.records-table').length, 1);
   });
-});
 
-test('query submission with grouped data opens the table view by default', function(assert) {
-  assert.expect(2);
-  this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
+  test('query submission with grouped data opens the table view by default', async function(assert) {
+    assert.expect(2);
+    this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
 
-  visit('/queries/new');
-  click('.output-options #grouped-data');
-  click('.output-container .groups-container .add-group');
-  selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
-  click('.submit-button');
-  andThen(() => {
+    await visit('/queries/new');
+    await click('.output-options #grouped-data');
+    await click('.output-container .groups-container .add-group');
+    await selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
+    await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(find('.records-table').length, 1);
+    assert.equal($('.records-table').length, 1);
   });
-});
 
-test('result table popover open and close', function(assert) {
-  assert.expect(3);
-  this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-  visit('queries/new');
-  click('.submit-button');
+  test('result table popover open and close', async function(assert) {
+    assert.expect(3);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
+    await visit('queries/new');
+    await click('.submit-button');
 
-  visit('queries');
-  andThen(() => {
-    assert.equal(find('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    await visit('queries');
+    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    await click('.queries-table .query-results-entry');
+    assert.equal($('.query-results-entry-popover').length, 1);
+    await click('.query-results-entry-popover .close-button');
+    // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
+    later(() => {
+      assert.equal($('.query-results-entry-popover .results-table .result-date-entry').length, 0);
+    }, 500);
   });
-  click('.queries-table .query-results-entry');
-  andThen(() => {
-    assert.equal(find('.query-results-entry-popover').length, 1);
-  });
-  click('.query-results-entry-popover .close-button');
-  // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
-  next(() => {
-    andThen(() => {
-      assert.equal(find('.query-results-entry-popover .results-table .result-date-entry').length, 0);
-    });
-  });
-});
 
-test('query multiple submissions and results clearing', function(assert) {
-  assert.expect(2);
-  this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-  visit('queries/new');
-  click('.submit-button');
-  visit('queries');
-  click('.queries-table .query-name-entry .query-name-actions .edit-icon');
-  click('.submit-button');
-  visit('queries');
-  andThen(() => {
-    assert.equal(find('.queries-table .query-results-entry .length-entry').text().trim(), '2 Results');
-  });
-  click('.queries-table .query-results-entry');
-  click('.query-results-entry .clear-history');
-  andThen(() => {
-    assert.equal(find('.queries-table .query-results-entry').text().trim(), '--');
+  test('query multiple submissions and results clearing', async function(assert) {
+    assert.expect(2);
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
+    await visit('queries/new');
+    await click('.submit-button');
+    await visit('queries');
+    await click('.queries-table .query-name-entry .query-name-actions .edit-icon');
+    await click('.submit-button');
+    await visit('queries');
+    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '2 Results');
+    await click('.queries-table .query-results-entry');
+    await click('.query-results-entry .clear-history');
+    assert.equal($('.queries-table .query-results-entry').text().trim(), '--');
   });
 });

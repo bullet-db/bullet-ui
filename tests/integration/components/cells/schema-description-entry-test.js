@@ -3,22 +3,24 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('schema-description-entry', 'Integration | Component | Cell | schema description entry', {
-  integration: true
-});
+module('Integration | Component | Cell | schema description entry', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders', function(assert) {
-  this.render(hbs`{{cells/schema-description-entry value='foo'}}`);
+  test('it renders', async function(assert) {
+    await render(hbs`{{cells/schema-description-entry value='foo'}}`);
 
-  assert.equal(this.$().text().trim(), 'foo');
-});
+    assert.equal(this.$().text().trim(), 'foo');
+  });
 
-test('it renders html', function(assert) {
-  this.render(hbs`{{cells/schema-description-entry value='<div><p>foo</p></div>'}}`);
+  test('it renders html', async function(assert) {
+    await render(hbs`{{cells/schema-description-entry value='<div><p>foo</p></div>'}}`);
 
-  assert.equal(this.$().text().trim(), 'foo');
-  assert.equal(this.$('div > p').length, 1);
+    assert.equal(this.$().text().trim(), 'foo');
+    assert.equal(this.$('div > p').length, 1);
+  });
 });

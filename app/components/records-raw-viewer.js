@@ -20,7 +20,7 @@ export default Component.extend({
     return Math.max(1, parseInt((max - (rows / 20))));
   }).readOnly(),
 
-  formattedData:  computed('data', function() {
+  formattedData: computed('data', function() {
     let data = this.get('data');
     if (isEmpty(data)) {
       return '';

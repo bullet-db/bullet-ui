@@ -8,7 +8,7 @@ const FILTERS = {
     operation: 'AND',
     clauses: [
       {
-        operation: '!=' ,
+        operation: '!=',
         field: 'enumerated_map_column.nested_1',
         values: ['1', '2', '3']
       },
@@ -24,7 +24,7 @@ const FILTERS = {
     operation: 'AND',
     clauses: [
       {
-        operation: '!=' ,
+        operation: '!=',
         field: 'complex_list_column',
         values: ['null']
       },
@@ -40,7 +40,7 @@ const FILTERS = {
     operation: 'OR',
     clauses: [
       {
-        operation: '!=' ,
+        operation: '!=',
         field: 'complex_map_column.subfield1',
         values: ['1', '2', '3']
       },

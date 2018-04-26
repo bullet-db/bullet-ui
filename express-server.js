@@ -1,4 +1,4 @@
-/* jshint node: true */
+/* eslint-env node */
 
 var express = require('express');
 var entrypoint = require('./server/index.js');

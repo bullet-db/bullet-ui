@@ -4,14 +4,17 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isPresent } from '@ember/utils';
-import { moduleForModel, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleForModel('projection', 'Unit | Model | projection', {
-  needs: ['model:query', 'validator:presence', 'validator:belongsTo']
-});
+import { run } from '@ember/runloop';
 
-test('it sets its default values right', function(assert) {
-  let model = this.subject();
-  assert.ok(!isPresent(model.get('field')));
-  assert.ok(!isPresent(model.get('name')));
+module('Unit | Model | projection', function(hooks) {
+  setupTest(hooks);
+
+  test('it sets its default values right', function(assert) {
+    let model = run(() => this.owner.lookup('service:store').createRecord('projection'));
+    assert.ok(!isPresent(model.get('field')));
+    assert.ok(!isPresent(model.get('name')));
+  });
 });

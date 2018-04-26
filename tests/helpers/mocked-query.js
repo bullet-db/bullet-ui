@@ -132,7 +132,7 @@ export default EmberObject.extend({
 
   filterSummary: oneWay('_filter.summary'),
 
-  fieldsSummary: computed('_projections.[]', '_aggregation._groups.[]', '_aggregation._metrics.[]', function() {
+  fieldsSummary: computed('_projections.[]', '_aggregation.{_groups.[],_metrics.[]}', function() {
     let projections = this.concatFieldLikes(this.get('_projections'));
     let groups = this.concatFieldLikes(this.get('_aggregation._groups'));
     let metrics = this.concatFieldLikes(this.get('_aggregation._metrics'));

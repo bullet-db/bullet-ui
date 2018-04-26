@@ -13,12 +13,14 @@ export default EmberObject.extend({
   server: null,
 
   mock(dataArray, columns, delay = 0) {
+    this.shutdown();
     this.set('type', 'mockAPI');
     this.set('dataArray', dataArray);
     this.set('server', mockAPI(columns, delay));
   },
 
   fail(columns) {
+    this.shutdown();
     this.set('type', 'failAPI');
     this.set('server', failAPI(columns));
   },

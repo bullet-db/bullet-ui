@@ -17,7 +17,7 @@ MediaService.reopen({
     let found = false;
 
     const props = {};
-    this.get('_breakpointArr').forEach(function(bp) {
+    this.get('_breakpointArr').forEach(bp => {
       const val = bp === breakpoint;
       if (val) {
         found = true;
@@ -44,7 +44,7 @@ MediaService.reopen({
   }
 });
 
-export default registerAsyncHelper('setBreakpoint', function(app, breakpoint) {
+export default registerAsyncHelper('setBreakpoint', (app, breakpoint) => {
   // this should use getOwner once that's supported
   const mediaService = app.__deprecatedInstance__.lookup('service:media');
   mediaService._forceSetBreakpoint(breakpoint);

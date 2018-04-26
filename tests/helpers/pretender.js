@@ -9,7 +9,7 @@ import ENV from 'bullet-ui/config/environment';
 const SCHEMA_ENDPOINT = `${ENV.APP.SETTINGS.schemaHost}/${ENV.APP.SETTINGS.schemaNamespace}/columns`;
 
 export function wrap(statusCode, contentType, response) {
-  return [statusCode, { 'Content-Type':  contentType }, response];
+  return [statusCode, { 'Content-Type': contentType }, response];
 }
 
 export function jsonWrap(statusCode, response) {
@@ -22,9 +22,7 @@ export function jsonAPIWrap(statusCode, response) {
 
 export function requiredRoutes(columns, delay) {
   return function() {
-    this.get(SCHEMA_ENDPOINT, () => {
-      return jsonAPIWrap(200, columns);
-    }, delay);
+    this.get(SCHEMA_ENDPOINT, () => jsonAPIWrap(200, columns), delay);
   };
 }
 
@@ -45,9 +43,7 @@ export function mockAPI(columns, delay = 0) {
 export function failAPI(columns) {
   let pretender = emptyAPI();
   pretender.map(function() {
-    this.get(SCHEMA_ENDPOINT, () => {
-      return jsonAPIWrap(200, columns);
-    });
+    this.get(SCHEMA_ENDPOINT, () => jsonAPIWrap(200, columns));
   });
   return pretender;
 }

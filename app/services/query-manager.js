@@ -217,10 +217,10 @@ export default Service.extend({
       query.get('projections').then(p => p.forEach(i => i.save())),
       query.get('aggregation').then(a => {
         let promises = [
-              a.get('groups').then(g => g.forEach(i => i.save())),
-              a.get('metrics').then(m => m.forEach(i => i.save())),
-              a.save()
-            ];
+          a.get('groups').then(g => g.forEach(i => i.save())),
+          a.get('metrics').then(m => m.forEach(i => i.save())),
+          a.save()
+        ];
         return all(promises);
       }),
       query.save()
@@ -252,7 +252,7 @@ export default Service.extend({
   },
 
   deleteProjections(query) {
-    return query.get('projections').then((p) => {
+    return query.get('projections').then(p => {
       let promises = p.toArray().map(item => {
         item.destroyRecord();
       });

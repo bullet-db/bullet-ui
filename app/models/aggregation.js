@@ -13,12 +13,16 @@ let AggregationTypes = EmberObject.extend({
   COUNT_DISTINCT: 'Count Distinct',
   DISTRIBUTION: 'Distribution',
   TOP_K: 'Top K',
-  API: {
-    'Raw': 'RAW',
-    'Group': 'GROUP',
-    'Count Distinct': 'COUNT DISTINCT',
-    'Distribution': 'DISTRIBUTION',
-    'Top K': 'TOP K'
+
+  init() {
+    this._super(...arguments);
+    this.set('API', {
+      'Raw': 'RAW',
+      'Group': 'GROUP',
+      'Count Distinct': 'COUNT DISTINCT',
+      'Distribution': 'DISTRIBUTION',
+      'Top K': 'TOP K'
+    });
   },
 
   apiKey(key) {
@@ -32,10 +36,14 @@ let DistributionTypes = EmberObject.extend({
   QUANTILE: 'Quantile',
   PMF: 'Frequency',
   CDF: 'Cumulative Frequency',
-  API: {
-    'Quantile': 'QUANTILE',
-    'Frequency': 'PMF',
-    'Cumulative Frequency': 'CDF'
+
+  init() {
+    this._super(...arguments);
+    this.set('API', {
+      'Quantile': 'QUANTILE',
+      'Frequency': 'PMF',
+      'Cumulative Frequency': 'CDF'
+    });
   },
 
   apiKey(key) {
@@ -44,7 +52,7 @@ let DistributionTypes = EmberObject.extend({
 });
 
 let DistributionPointTypes = EmberObject.extend({ NUMBER: 'Number', POINTS: 'Points',
-                                                    GENERATED: 'Generated' });
+  GENERATED: 'Generated' });
 
 export const AGGREGATIONS = AggregationTypes.create();
 export const RAWS = RawTypes.create();

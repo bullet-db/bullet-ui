@@ -59,7 +59,7 @@ export default Component.extend({
         }
       }
     });
-    let columnArray =  Array.from(columns);
+    let columnArray = Array.from(columns);
     columnArray.sort();
     return columnArray;
   },

@@ -3,19 +3,20 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { moduleFor, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleFor('route:query', 'Unit | Route | query', {
-  needs: ['service:querier', 'service:queryManager']
-});
+module('Unit | Route | query', function(hooks) {
+  setupTest(hooks);
 
-test('it aborts a pending request if one exists', function(assert) {
-  assert.expect(1);
-  let route = this.subject();
-  route.set('pendingRequest', {
-    disconnect() {
-      assert.ok(true);
-    }
+  test('it aborts a pending request if one exists', function(assert) {
+    assert.expect(1);
+    let route = this.owner.lookup('route:query');
+    route.set('pendingRequest', {
+      disconnect() {
+        assert.ok(true);
+      }
+    });
+    route.send('cancelQuery');
   });
-  route.send('cancelQuery');
 });
