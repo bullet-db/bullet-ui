@@ -20,7 +20,7 @@ export default Route.extend({
 
   errorHandler(error, context) {
     context.set('pendingRequest', null);
-    console.error(error);
+    console.error(error); // eslint-disable-line no-console
     context.transitionTo('errored');
   },
 
