@@ -89,7 +89,7 @@ export default Component.extend(BuilderAdapter, {
     this.reset();
     let query = this.get('query');
     return this.get('queryManager').cleanup(query).then(() => {
-      return query.validate().then((hash) => {
+      return query.validate().then(hash => {
         let isValid = this.isCurrentFilterValid() && hash.validations.get('isValid');
         return isValid ? resolve() : reject();
       });

@@ -44,7 +44,7 @@ export default Component.extend({
 
   asFlatCSV: computed('records', function() {
     let records = this.get('records');
-    let flattenedRows = records.map((item) => this.flatten(item), this);
+    let flattenedRows = records.map(item => this.flatten(item), this);
     let columns = this.extractUniqueColumns(flattenedRows);
     let rows = this.extractRows(flattenedRows, columns);
     return this.makeCSVString(columns, rows);
@@ -52,14 +52,14 @@ export default Component.extend({
 
   extractUniqueColumns(records) {
     let columns = new Set();
-    records.forEach((record) => {
+    records.forEach(record => {
       for (let item in record) {
         if (!columns.has(item)) {
           columns.add(item);
         }
       }
     });
-    let columnArray =  Array.from(columns);
+    let columnArray = Array.from(columns);
     columnArray.sort();
     return columnArray;
   },

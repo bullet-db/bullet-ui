@@ -5,20 +5,22 @@
  */
 import EmberObject from '@ember/object';
 import { A } from '@ember/array';
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('query-results-entry', 'Integration | Component | Cell | query results entry', {
-  integration: true
-});
+module('Integration | Component | Cell | query results entry', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders the empty state when there are no results', function(assert) {
-  this.render(hbs`{{cells/query-results-entry}}`);
-  assert.equal(this.$().text().trim(), '--');
-});
+  test('it renders the empty state when there are no results', async function(assert) {
+    await render(hbs`{{cells/query-results-entry}}`);
+    assert.equal(this.$().text().trim(), '--');
+  });
 
-test('it renders the run count if there were results', function(assert) {
-  this.set('mockValue', A([EmberObject.create({ foo: 2 })]));
-  this.render(hbs`{{cells/query-results-entry value=mockValue}}`);
-  assert.equal(this.$('.length-entry').text().trim(), '1 Results');
+  test('it renders the run count if there were results', async function(assert) {
+    this.set('mockValue', A([EmberObject.create({ foo: 2 })]));
+    await render(hbs`{{cells/query-results-entry value=mockValue}}`);
+    assert.equal(this.$('.length-entry').text().trim(), '1 Results');
+  });
 });

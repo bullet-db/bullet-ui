@@ -6,14 +6,18 @@ export default Component.extend({
   rows: null,
   columns: null,
   initialOptions: null,
-  defaultOptions: {
-    unusedAttrsVertical: true,
-    menuLimit: 200,
-    renderers: $.extend(
-      $.pivotUtilities.renderers,
-      $.pivotUtilities.c3_renderers,
-      $.pivotUtilities.export_renderers
-    )
+
+  init() {
+    this._super(...arguments);
+    this.set('defaultOptions', {
+      unusedAttrsVertical: true,
+      menuLimit: 200,
+      renderers: $.extend(
+        $.pivotUtilities.renderers,
+        $.pivotUtilities.c3_renderers,
+        $.pivotUtilities.export_renderers
+      )
+    });
   },
 
   options: computed('initialOptions', 'defaultOptions', function() {
@@ -30,7 +34,7 @@ export default Component.extend({
   },
 
   refreshHandler(context) {
-    return (configuration) => {
+    return configuration => {
       let copy = JSON.parse(JSON.stringify(configuration));
       // Deletes functions and defaults: http://nicolas.kruchten.com/pivottable/examples/onrefresh.html
       delete copy.aggregators;

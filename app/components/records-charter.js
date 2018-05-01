@@ -148,7 +148,7 @@ export default Component.extend({
   },
 
   zip(arrayOfArrays, delimiter = '/') {
-    let zipped =  arrayOfArrays[0].map((_, i) => arrayOfArrays.map(a => a[i]));
+    let zipped = arrayOfArrays[0].map((_, i) => arrayOfArrays.map(a => a[i]));
     return zipped.map(a => a.reduce((p, c) => `${p}${delimiter}${c}`), '');
   },
 

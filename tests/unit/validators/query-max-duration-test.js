@@ -4,22 +4,23 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
-import { moduleFor, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleFor('validator:query-max-duration', 'Unit | Validator | query-max-duration', {
-  needs: ['validator:messages']
-});
+module('Unit | Validator | query-max-duration', function(hooks) {
+  setupTest(hooks);
 
-test('it does not let you exceed the maximum duration seconds', function(assert) {
-  var validator = this.subject();
-  let mockModel = EmberObject.create({
-    settings: {
-      defaultValues: {
-        durationMaxSecs: 120
+  test('it does not let you exceed the maximum duration seconds', function(assert) {
+    var validator = this.owner.lookup('validator:query-max-duration');
+    let mockModel = EmberObject.create({
+      settings: {
+        defaultValues: {
+          durationMaxSecs: 120
+        }
       }
-    }
+    });
+    let expected = 'The maintainer has configured Bullet to support a maximum of 120s for maximum duration';
+    assert.equal(validator.validate(121, null, mockModel), expected);
+    assert.ok(validator.validate(120, null, mockModel));
   });
-  let expected = 'The maintainer has configured Bullet to support a maximum of 120s for maximum duration';
-  assert.equal(validator.validate(121, null, mockModel), expected);
-  assert.ok(validator.validate(120, null, mockModel));
 });

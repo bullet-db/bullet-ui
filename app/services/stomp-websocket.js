@@ -28,7 +28,7 @@ export default Service.extend({
   }),
 
   makeStompMessageHandler(stompClient, successHandler, context) {
-    return (payload) => {
+    return payload => {
       let message = JSON.parse(payload.body);
       if (!isEqual(message.type, ACK_TYPE)) {
         if (isEqual(message.type, COMPLETE_TYPE)) {

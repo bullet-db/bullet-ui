@@ -75,7 +75,7 @@ export default Service.extend({
     let json = querier.reformat(query);
     querier.set('apiMode', true);
     let string = JSON.stringify(json);
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       ZLib.deflate(string, (_, result) => resolve(Base64.encode(result)));
     });
   },
@@ -83,7 +83,7 @@ export default Service.extend({
   decodeQuery(hash) {
     let querier = this.get('querier');
     let buffer = Base64.decode(hash);
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       ZLib.inflate(buffer, (_, result) => {
         let json = JSON.parse(result.toString());
         resolve(querier.recreate(json));
@@ -100,7 +100,7 @@ export default Service.extend({
   },
 
   addResult(id, data) {
-    return this.get('store').findRecord('query', id).then((query) => {
+    return this.get('store').findRecord('query', id).then(query => {
       let result = this.get('store').createRecord('result', {
         metadata: data.meta,
         records: data.records,
@@ -217,10 +217,10 @@ export default Service.extend({
       query.get('projections').then(p => p.forEach(i => i.save())),
       query.get('aggregation').then(a => {
         let promises = [
-              a.get('groups').then(g => g.forEach(i => i.save())),
-              a.get('metrics').then(m => m.forEach(i => i.save())),
-              a.save()
-            ];
+          a.get('groups').then(g => g.forEach(i => i.save())),
+          a.get('metrics').then(m => m.forEach(i => i.save())),
+          a.save()
+        ];
         return all(promises);
       }),
       query.save()
@@ -252,7 +252,7 @@ export default Service.extend({
   },
 
   deleteProjections(query) {
-    return query.get('projections').then((p) => {
+    return query.get('projections').then(p => {
       let promises = p.toArray().map(item => {
         item.destroyRecord();
       });

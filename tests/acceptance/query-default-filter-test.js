@@ -3,42 +3,29 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject from '@ember/object';
-import { test } from 'qunit';
-import moduleForAcceptance from 'bullet-ui/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
+import { setupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
+import { visit } from '@ember/test-helpers';
+import $ from 'jquery';
 
-moduleForAcceptance('Acceptance | query default filter', {
-  suppressLogging: true,
+module('Acceptance | query default filter', function(hooks) {
+  setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
+  setupForMockSettings(hooks, FILTERS.AND_LIST);
 
-  beforeEach() {
-    // Inject into defaultValues in routes, our mock filter values
-    this.application.register('settings:mocked', EmberObject.create({ defaultFilter: FILTERS.AND_LIST }), { instantiate: false });
-    this.application.inject('route', 'settings', 'settings:mocked');
+  test('it creates new queries with two default filters', async function(assert) {
+    assert.expect(7);
+    await visit('/queries/new');
 
-    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-  },
-
-  afterEach() {
-    // Wipe out localstorage because we are creating here
-    window.localStorage.clear();
-  }
-});
-
-test('it creates new queries with two default filters', function(assert) {
-  assert.expect(7);
-  visit('/queries/new');
-
-  andThen(function() {
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').length, 2);
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-filter-container select').val(),
-                 'complex_list_column');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-operator-container select').val(), 'is_not_null');
-    assert.notOk(find('.filter-container .builder .rules-list .rule-container').first().find('.rule-value-container input').val());
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-filter-container select').val(), 'simple_column');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-operator-container select').val(), 'in');
-    assert.equal(find('.filter-container .builder .rules-list .rule-container').last().find('.rule-value-container input').val(), 'foo,bar');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').length, 2);
+    assert.equal($('.filter-container .builder .rules-list .rule-container').first().find('.rule-filter-container select').val(),
+      'complex_list_column');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').first().find('.rule-operator-container select').val(), 'is_not_null');
+    assert.notOk($('.filter-container .builder .rules-list .rule-container').first().find('.rule-value-container input').val());
+    assert.equal($('.filter-container .builder .rules-list .rule-container').last().find('.rule-filter-container select').val(), 'simple_column');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').last().find('.rule-operator-container select').val(), 'in');
+    assert.equal($('.filter-container .builder .rules-list .rule-container').last().find('.rule-value-container input').val(), 'foo,bar');
   });
 });

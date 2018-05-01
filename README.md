@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This project is the UI for Bullet built with Ember 2. The UI does not use a database and stores all Bullet queries/results locally using HTML5 local storage.
+This project is the UI for Bullet built with Ember 3. The UI does not use a database and stores all Bullet queries/results locally using HTML5 local storage.
 
 ## Documentation
 

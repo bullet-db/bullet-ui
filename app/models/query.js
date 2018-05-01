@@ -61,7 +61,7 @@ export default DS.Model.extend(Validations, {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
   }),
 
-  metricsSummary: computed('aggregation.metrics.@each.type', 'aggregation.metrics.@each.name', function() {
+  metricsSummary: computed('aggregation.metrics.@each.{type,name}', function() {
     let metrics = this.getWithDefault('aggregation.metrics', A());
     return metrics.map(m => {
       let type = m.get('type');
@@ -74,8 +74,7 @@ export default DS.Model.extend(Validations, {
     }).join(', ');
   }),
 
-  aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}',
-                                     'groupsSummary', 'metricsSummary', function() {
+  aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary', function() {
     let type = this.get('aggregation.type');
     if (type === AGGREGATIONS.get('RAW')) {
       return '';
@@ -135,7 +134,7 @@ export default DS.Model.extend(Validations, {
   }).readOnly(),
 
   summarizeFieldLike(fieldLike) {
-    return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject((n) => isEmpty(n)).join(', ');
+    return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject(n => isEmpty(n)).join(', ');
   },
 
   hasNoName(fieldLike) {

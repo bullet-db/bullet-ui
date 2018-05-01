@@ -48,12 +48,12 @@ export default Route.extend({
 
     linkQueryClick(query, callback) {
       this.validate(query)
-          .then(query => this.get('queryManager').encodeQuery(query))
-          .then(encoded => {
-            let origin = this.getOrigin();
-            let path = this.router.generate('create', EmberObject.create({ hash: encoded }));
-            callback(`${origin}${path}`);
-          });
+        .then(query => this.get('queryManager').encodeQuery(query))
+        .then(encoded => {
+          let origin = this.getOrigin();
+          let path = this.router.generate('create', EmberObject.create({ hash: encoded }));
+          callback(`${origin}${path}`);
+        });
     },
 
     resultClick(result) {

@@ -55,13 +55,13 @@ export default Component.extend(PaginatedTable, {
   insertNewRowAfter(currentRow) {
     let table = this.get('table');
     let index = table.get('rows').indexOf(currentRow);
-    return (row) => {
+    return row => {
       table.insertRowAt(index + 1, row);
     };
   },
 
   expandRowWithLink(row) {
-    return (link) => {
+    return link => {
       row.set('expanded', true);
       row.set('queryLink', link);
     };

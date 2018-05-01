@@ -4,6 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 
+/*eslint camelcase: 0 */
+
 const RESULTS = {
   SINGLE: {
     meta: {},
@@ -15,7 +17,7 @@ const RESULTS = {
       }
     ]
   },
-  MULTIPLE:  {
+  MULTIPLE: {
     meta: {},
     records: [
       {

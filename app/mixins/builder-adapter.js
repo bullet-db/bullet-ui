@@ -3,8 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+
+/*eslint camelcase: 0 */
+
 import { isEmpty } from '@ember/utils';
-import { A } from '@ember/array';
 import Mixin from '@ember/object/mixin';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 
@@ -25,7 +27,7 @@ export default Mixin.create(Filterizer, {
           delay: 0,
           placement: 'auto bottom'
         },
-        'sortable':  {
+        'sortable': {
           icon: 'glyphicon glyphicon-option-vertical'
         },
         'subfield': { },
@@ -41,19 +43,19 @@ export default Mixin.create(Filterizer, {
         { type: 'rlike', nb_inputs: 1, multiple: false, apply_to: ['string'] }
       ],
       sqlOperators: {
-        equal:            { op: '= ?' },
-        not_equal:        { op: '!= ?' },
-        in:               { op: 'IN(?)',     sep: ', ' },
-        not_in:           { op: 'NOT IN(?)', sep: ', ' },
-        less:             { op: '< ?' },
-        less_or_equal:    { op: '<= ?' },
-        greater:          { op: '> ?' },
+        equal: { op: '= ?' },
+        not_equal: { op: '!= ?' },
+        in: { op: 'IN(?)',     sep: ', ' },
+        not_in: { op: 'NOT IN(?)', sep: ', ' },
+        less: { op: '< ?' },
+        less_or_equal: { op: '<= ?' },
+        greater: { op: '> ?' },
         greater_or_equal: { op: '>= ?' },
-        is_empty:         { op: '= \'\'' },
-        is_not_empty:     { op: '!= \'\'' },
-        is_null:          { op: 'IS NULL' },
-        is_not_null:      { op: 'IS NOT NULL' },
-        rlike:            { op: 'RLIKE ?' }
+        is_empty: { op: '= \'\'' },
+        is_not_empty: { op: '!= \'\'' },
+        is_null: { op: 'IS NULL' },
+        is_not_null: { op: 'IS NOT NULL' },
+        rlike: { op: 'RLIKE ?' }
       },
       icons: {
         add_group: 'glyphicon glyphicon-plus',
@@ -78,16 +80,16 @@ export default Mixin.create(Filterizer, {
   /**
    * Creates QueryBuilder version of Filters from an Enumerable of {@link Column}, flattening enumerated Columns.
    * @param  {Column} columns An Enumerable set of Columns
-   * @return {EmberArray}     Ember Arrray of the corresponding filters.
+   * @return {Array}          Array of the corresponding filters.
    */
   builderFilters(columns) {
-    let filters = A();
+    let filters = [];
     if (isEmpty(columns)) {
       return filters;
     }
     return columns.reduce((previous, item) => {
       let flattenedColumns = item.get('flattenedColumns');
-      return previous.addObjects(flattenedColumns.map((flatColumn) => {
+      return previous.concat(flattenedColumns.map(flatColumn => {
         return this.rulify(flatColumn.name, flatColumn.type, flatColumn.hasFreeformField);
       }));
     }, filters);
@@ -118,7 +120,7 @@ export default Mixin.create(Filterizer, {
    * @private
    * @type {Object}
    */
-  typeMapping:  {
+  typeMapping: {
     // Storing as JSON string to quickly create a deep copy using JSON.parse
     UNDEFINED: JSON.stringify({
       type: 'integer',

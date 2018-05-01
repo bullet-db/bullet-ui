@@ -37,7 +37,7 @@ export default Mixin.create({
   },
 
   defaultExtractor(column) {
-    return (row) => {
+    return row => {
       // Use regular instead of get in case column has '.' Only doing it here because the defaultExtractor is used
       // for unknown column names. When we define columns, we should not add columns with '.' in the name
       let value = row[column];

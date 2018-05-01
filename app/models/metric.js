@@ -13,12 +13,16 @@ let Metric = EmberObject.extend({
   MIN: 'Minimum',
   MAX: 'Maximum',
   AVG: 'Average',
-  INVERSE: {
-    'Sum': 'SUM',
-    'Count': 'COUNT',
-    'Minimum': 'MIN',
-    'Maximum': 'MAX',
-    'Average': 'AVG'
+
+  init() {
+    this._super(...arguments);
+    this.set('INVERSE', {
+      'Sum': 'SUM',
+      'Count': 'COUNT',
+      'Minimum': 'MIN',
+      'Maximum': 'MAX',
+      'Average': 'AVG'
+    });
   },
 
   invert(key) {
@@ -52,4 +56,3 @@ export default DS.Model.extend(Validations, {
     return type === 'Count';
   })
 });
-
