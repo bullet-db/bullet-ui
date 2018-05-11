@@ -57,10 +57,10 @@ export default Component.extend({
   }).readOnly(),
   everyDisabled: or('isRecordBasedWindow', 'disabled').readOnly(),
   includeDisabled: or('isRecordBasedWindow', 'disabled').readOnly(),
-  allIncludeTypeDisabled: computed('isAggregationRaw', 'includeDisabled', 'disabled', function() {
+  allIncludeTypeDisabled: computed('isAggregationRaw', 'includeDisabled', function() {
     return this.get('includeDisabled') || this.get('isAggregationRaw');
   }).readOnly(),
-  everyFiledName: computed('isRecordBasedWindow', function() {
+  everyFieldName: computed('isRecordBasedWindow', function() {
     if (this.get('isRecordBasedWindow')) {
       return 'every (records)';
     }
