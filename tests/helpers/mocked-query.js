@@ -73,9 +73,9 @@ export default EmberObject.extend({
     A(['filter', 'projections', 'aggregation', 'results', 'window']).forEach(this.topLevelPropertyAsPromise, this);
   },
 
-  isWindowless() {
+  isWindowless: computed('_window', function() {
     return isEmpty(this.get('_window'));
-  },
+  }),
 
   setWindow(emitType, emitEvery, includeType) {
     this.set('_window', EmberObject.create({

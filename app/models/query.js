@@ -46,6 +46,10 @@ export default DS.Model.extend(Validations, {
   }),
   results: DS.hasMany('result', { async: true, dependent: 'destroy' }),
 
+  isWindowless: computed('window', function() {
+    return isEmpty(this.get('window.id'));
+  }),
+
   hasUnsavedFields: computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
     let projections = this.getWithDefault('projections', A());
     let groups = this.getWithDefault('aggregation.groups', A());
@@ -119,8 +123,8 @@ export default DS.Model.extend(Validations, {
     return this.get('aggregationSummary');
   }),
 
-  windowSummary: computed('window.{emitType,emitEvery,includeType}', function() {
-    if (this.isWindowless()) {
+  windowSummary: computed('isWindowless', 'window.{emitType,emitEvery,includeType}', function() {
+    if (this.get('isWindowless')) {
       return 'None';
     }
     let emit = `Emit Type: ${this.get('window.emitType')}, Emit Every: ${this.get('window.emitEvery')}`;
@@ -154,9 +158,5 @@ export default DS.Model.extend(Validations, {
 
   hasNoName(fieldLike) {
     return isEmpty(fieldLike) ? false : fieldLike.any(f => !isEmpty(f.get('field')) && isEmpty(f.get('name')));
-  },
-
-  isWindowless() {
-    return isEmpty(this.get('window.content'));
   }
 });

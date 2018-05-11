@@ -61,7 +61,7 @@ export default Service.extend(Filterizer, {
     let projection = this.reformatProjections(query.get('projections'));
     let aggregation = this.reformatAggregation(query.get('aggregation'));
 
-    if (!query.isWindowless()) {
+    if (!query.get('isWindowless')) {
       json.window = this.reformatWindow(query.get('window'));
     }
 

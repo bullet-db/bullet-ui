@@ -46,8 +46,8 @@ export default Component.extend({
   }),
 
   // Helper equalities for template
-  isWindowless: computed('query.window', function() {
-    return this.get('query').isWindowless();
+  isWindowless: computed('query.isWindowless', function() {
+    return this.get('query.isWindowless');
   }),
   isTimeBasedWindow: equal('emitType', EMIT_TYPES.get('TIME')).readOnly(),
   isRecordBasedWindow: equal('emitType', EMIT_TYPES.get('RECORD')).readOnly(),

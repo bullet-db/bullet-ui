@@ -55,7 +55,7 @@ export default Service.extend({
     let promises = [
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
-      isEmpty(query.get('window')) || query.isWindowless() ? resolve() :
+      query.get('isWindowless') ? resolve() :
         this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
@@ -261,7 +261,7 @@ export default Service.extend({
       query.get('filter').then(i => {
         i.set('clause', clause);
         i.set('summary', summary);
-        i.save();
+        return i.save();
       }),
       query.get('projections').then(p => p.forEach(i => i.save())),
       query.get('aggregation').then(a => {
@@ -272,7 +272,7 @@ export default Service.extend({
         ];
         return all(promises);
       }),
-      query.isWindowless() ? resolve() : query.get('window').then(w => w.save()),
+      query.get('window').then(w => (isEmpty(w) ? resolve() : w.save())),
       query.save()
     ];
     return all(promises);
