@@ -5,6 +5,7 @@
  */
 import { isEqual, isEmpty } from '@ember/utils';
 import EmberObject from '@ember/object';
+import { next } from '@ember/runloop';
 import { mockAPI, failAPI } from './pretender';
 
 export default EmberObject.extend({
@@ -49,7 +50,7 @@ export default EmberObject.extend({
     let dataArray = this.get('dataArray');
     if (onStompMessage && !isEmpty(dataArray)) {
       let length = dataArray.length;
-      dataArray.forEach((data, i) => {
+      dataArray.forEach((data, i) => next(() => {
         let responseType = isEqual(i, length - 1) ? 'COMPLETE' : 'MESSAGE';
         let response = {
           body: JSON.stringify({
@@ -58,7 +59,7 @@ export default EmberObject.extend({
           })
         };
         onStompMessage(response);
-      });
+      }));
     }
   },
 

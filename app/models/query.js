@@ -6,9 +6,11 @@
 import { isEmpty } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
+import { isEqual } from '@ember/utils';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { INCLUDE_TYPES } from 'bullet-ui/models/window';
 import { METRICS } from 'bullet-ui/models/metric';
 
 let Validations = buildValidations({
@@ -26,7 +28,8 @@ let Validations = buildValidations({
     ]
   },
   projections: validator('has-many'),
-  aggregation: validator('belongs-to')
+  aggregation: validator('belongs-to'),
+  window: validator('belongs-to')
 });
 
 export default DS.Model.extend(Validations, {
@@ -34,6 +37,7 @@ export default DS.Model.extend(Validations, {
   filter: DS.belongsTo('filter'),
   projections: DS.hasMany('projection', { dependent: 'destroy' }),
   aggregation: DS.belongsTo('aggregation'),
+  window: DS.belongsTo('window'),
   duration: DS.attr('number', { defaultValue: 20 }),
   created: DS.attr('date', {
     defaultValue() {
@@ -115,6 +119,17 @@ export default DS.Model.extend(Validations, {
     return this.get('aggregationSummary');
   }),
 
+  windowSummary: computed('window.{emitType,emitEvery,includeType}', function() {
+    if (this.isWindowless()) {
+      return 'None';
+    }
+    let emit = `Emit Type: ${this.get('window.emitType')}, Emit Every: ${this.get('window.emitEvery')}`;
+    if (isEqual(this.get('window.includeType'), INCLUDE_TYPES.get('ALL'))) {
+      return `${emit}, Include: ALL`;
+    }
+    return emit;
+  }),
+
   latestResult: computed('results.[]', function() {
     let results = this.get('results');
     if (isEmpty(results)) {
@@ -139,5 +154,9 @@ export default DS.Model.extend(Validations, {
 
   hasNoName(fieldLike) {
     return isEmpty(fieldLike) ? false : fieldLike.any(f => !isEmpty(f.get('field')) && isEmpty(f.get('name')));
+  },
+
+  isWindowless() {
+    return isEmpty(this.get('window.content'));
   }
 });

@@ -168,6 +168,10 @@
       @import "output-data-input";
     }
 
+    .window-container {
+      @import "window-input";
+    }
+
     .options-container {
       padding-top: 5px;
       .row {

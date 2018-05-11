@@ -1,0 +1,74 @@
+.window-input {
+  $border-rectangle-color: #DCDEE2;
+  $subsection-color: #8C8C8C;
+
+  .add-button {
+    @extend %add-button;
+    margin-bottom: 10px;
+    i {
+      padding-right: 5px;
+    }
+    &.add-group, &.add-metric {
+      width: 120px;
+    }
+  }
+
+  .remove-button {
+    @extend %remove-button;
+  }
+
+  @import "info-popover";
+  padding: 15px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  max-width: 800px;
+  background-color: $box-rectangle-color;
+  position: relative;
+
+  .ember-radio-button {
+    display: inline-block;
+    margin-right: 30px;
+    max-width: 400px;
+    margin-bottom: 10px;
+    font-size: $font-size-regular-small;
+    font-family: $font-family-regular;
+    font-weight: $font-weight-regular;
+    &.checked {
+      font-weight: $font-weight-strong;
+    }
+    input {
+      margin-right: 10px;
+    }
+  }
+
+  .subsection-header {
+    margin: 5px 0;
+    text-transform: uppercase;
+    font-size: $font-size-small;
+    font-weight: $font-weight-medium;
+    color: $subsection-color;
+    opacity: 0.9;
+  }
+
+.row {
+  @import "validated-input";
+  margin-top: 10px;
+  margin-left: 5px;
+  input {
+    height: 45px;
+  }
+  .validated-input {
+    .labeled-input {
+      padding-right: 0;
+      width: 150px;
+      margin-left: -5px;
+      margin-right: 0;
+    }
+
+    .error-tooltip-link {
+      // Because these fields are an exception, their error icon needs to be recentered
+      margin-top: 45px/2 - $font-size-regular/2;
+    }
+  }
+}
+}

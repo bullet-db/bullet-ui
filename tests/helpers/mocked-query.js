@@ -60,15 +60,35 @@ export default EmberObject.extend({
   name: null,
   shouldValidate: true,
   promisify: false,
+  window: null,
 
   init() {
     this.setProperties({
       _filter: EmberObject.create(),
       _projections: A(),
       _aggregation: EmberObject.create(),
-      _results: A()
+      _results: A(),
+      _window: null
     });
-    A(['filter', 'projections', 'aggregation', 'results']).forEach(this.topLevelPropertyAsPromise, this);
+    A(['filter', 'projections', 'aggregation', 'results', 'window']).forEach(this.topLevelPropertyAsPromise, this);
+  },
+
+  isWindowless() {
+    return isEmpty(this.get('_window'));
+  },
+
+  setWindow(emitType, emitEvery, includeType) {
+    this.set('_window', EmberObject.create({
+      emitType: isEmpty(emitType) ? this.get('_window.emitType') : emitType,
+      emitEvery: isEmpty(emitEvery) ? this.get('_window.emitEvery') : emitEvery,
+      includeType: isEmpty(includeType) ? this.get('_window.includeType') : includeType
+    }));
+    this.topLevelPropertyAsPromise('window');
+  },
+
+  removeWindow() {
+    this.set('_window', null);
+    this.topLevelPropertyAsPromise('window');
   },
 
   topLevelPropertyAsPromise(attr) {
@@ -139,6 +159,13 @@ export default EmberObject.extend({
     let fields = ['newName', 'points', 'numberOfPoints', 'start', 'end', 'increment'];
     let attributes = this.concatProperties(this.get('_aggregation.attributes'), fields);
     return `${projections}${groups}${metrics}${attributes}`;
+  }),
+
+  windowSummary: computed('_window.{emitType,emitEvery,includeType}', function() {
+    if (isEmpty(this.get('_window'))) {
+      return 'None';
+    }
+    return `${this.get('_window.emitType')}${this.get('_window.emitEvery')}${this.get('_window.includeType')}`;
   }),
 
   latestResult: computed('_results.[]', function() {

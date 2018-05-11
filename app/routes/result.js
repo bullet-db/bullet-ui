@@ -5,8 +5,11 @@
  */
 import { hash } from 'rsvp';
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 
 export default Route.extend({
+  querier: service(),
+
   model(params) {
     return this.store.findRecord('result', params.result_id).catch(() => {
       this.transitionTo('missing', 'not-found');
@@ -15,8 +18,7 @@ export default Route.extend({
   // Force the fetching of query and filter
   afterModel(model) {
     return hash({
-      metadata: model.get('metadata'),
-      records: model.get('records'),
+      segments: model.get('segments'),
       query: model.get('query'),
       filter: model.get('query').then(query => query.get('filter'))
     });
@@ -25,6 +27,11 @@ export default Route.extend({
   actions: {
     queryClick(query) {
       this.transitionTo('query', query.get('id'));
+    },
+
+    willTransition() {
+      this.get('querier').endQuery();
+      return true;
     }
   }
 });

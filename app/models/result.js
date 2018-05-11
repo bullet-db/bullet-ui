@@ -4,30 +4,39 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { equal, or } from '@ember/object/computed';
-import { A } from '@ember/array';
-import EmberObject, { computed } from '@ember/object';
+import { computed } from '@ember/object';
+import { isEmpty } from '@ember/utils';
 import DS from 'ember-data';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
 export default DS.Model.extend({
-  metadata: DS.attr({
-    defaultValue() {
-      return EmberObject.create();
-    }
-  }),
-  records: DS.attr({
-    defaultValue() {
-      return A();
-    }
-  }),
   created: DS.attr('date', {
     defaultValue() {
       return new Date(Date.now());
     }
   }),
   query: DS.belongsTo('query', { autoSave: true }),
-  querySnapshot: DS.attr(),
+  segments: DS.hasMany('segment', { async: true, dependent: 'destroy' }),
   pivotOptions: DS.attr('string'),
+  querySnapshot: DS.attr(),
+
+  // Removed it after result page has been changed.
+  metadata: computed('segments.[]', function() {
+    let segments = this.get('segments').toArray();
+    if (isEmpty(segments)) {
+      return null;
+    }
+    return segments.objectAt(segments.length - 1).get('metadata');
+  }),
+
+  // Removed it after result page has been changed.
+  records: computed('segments.[]', function() {
+    let segments = this.get('segments').toArray();
+    if (isEmpty(segments)) {
+      return null;
+    }
+    return segments.objectAt(segments.length - 1).get('records');
+  }),
 
   isRaw: equal('querySnapshot.type', AGGREGATIONS.get('RAW')),
   isCountDistinct: equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')),

@@ -16,8 +16,6 @@ module('Unit | Model | result', function(hooks) {
     let now = parseInt(Date.now());
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     let created = model.get('created');
-    assert.equal(Object.keys(model.get('metadata')).length, 0);
-    assert.equal(model.get('records').length, 0);
     assert.ok(isPresent(created));
     assert.ok(parseInt(created.getTime()) >= now);
   });

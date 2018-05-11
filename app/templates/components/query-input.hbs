@@ -19,10 +19,6 @@
       {{#simple-alert type="success"}}
         <span>SAVED TO BROWSER CACHE!</span>
       {{/simple-alert}}
-    {{else if hasCancelled}}
-      {{#simple-alert type="warning"}}
-        <span>CANCELLED!</span>
-      {{/simple-alert}}
     {{/if}}
   </div>
 
@@ -56,6 +52,17 @@
       {{output-data-input subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator query=query forceDirty=hasError disabled=isListening columns=columns}}
     </div>
 
+    <div class="container-fluid window-container">
+      <div class="section-header">
+        <h3 class="section-title">Window</h3>
+        {{#info-popover title="Window"}}
+          {{partial "partials/window-help"}}
+        {{/info-popover}}
+      </div>
+
+      {{window-input query=query disabled=isListening}}
+    </div>
+
 
     <div class="container-fluid options-container">
       <div class="section-header">
@@ -78,13 +85,8 @@
 
   <div class="container-fluid control-container">
     <hr />
-    {{#if isListening}}
-      {{timed-progress-bar active=true duration=listenDuration}}
-      <button type="button" class="btn btn-default btn-md cancel-button" onclick={{action "cancel"}}>Cancel Query</button>
-    {{else}}
-      <button type="button" class="btn btn-primary btn-md submit-button" {{action "listen"}}>Run Query</button>
-      <button type="button" class="btn btn-default btn-md save-button" onclick={{action "save"}}>Save Query</button>
-    {{/if}}
+    <button type="button" class="btn btn-primary btn-md submit-button" {{action "listen"}}>Run Query</button>
+    <button type="button" class="btn btn-default btn-md save-button" onclick={{action "save"}}>Save Query</button>
   </div>
 
 

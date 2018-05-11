@@ -59,7 +59,7 @@ module('Integration | Component | queries table', function(hooks) {
 
     text = this.$('.lt-body .lt-row .lt-cell').eq(0).text();
     spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb');
+    assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fbWindow:None');
   });
 
   test('it sorts by the latest result column on click', async function(assert) {

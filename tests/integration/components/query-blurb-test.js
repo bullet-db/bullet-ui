@@ -18,7 +18,7 @@ module('Integration | Component | query blurb', function(hooks) {
 
     let actualText = this.$().text();
     let spaceLess = actualText.replace(/\s/g, '');
-    assert.equal(spaceLess, 'Filters:Fields:');
+    assert.equal(spaceLess, 'Filters:Fields:Window:');
 
     // Template block usage:
     await render(hbs`
@@ -28,7 +28,7 @@ module('Integration | Component | query blurb', function(hooks) {
     `);
     actualText = this.$().text();
     spaceLess = actualText.replace(/\s/g, '');
-    assert.equal(spaceLess, 'Filters:Fields:');
+    assert.equal(spaceLess, 'Filters:Fields:Window:');
   });
 
   test('it fully summarizes a query', async function(assert) {
@@ -41,6 +41,6 @@ module('Integration | Component | query blurb', function(hooks) {
     await render(hbs`{{query-blurb summary=mockedQuery}}`);
     let actualText = this.$().text();
     let spaceLess = actualText.replace(/\s/g, '');
-    assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb0.1,0.2');
+    assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb0.1,0.2Window:None');
   });
 });

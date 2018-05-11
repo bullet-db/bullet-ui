@@ -17,7 +17,8 @@ export default Route.extend({
       groups: this.store.findAll('group'),
       aggregations: this.store.findAll('aggregation'),
       projections: this.store.findAll('projection'),
-      metrics: this.store.findAll('metric')
+      metrics: this.store.findAll('metric'),
+      windows: this.store.findAll('window')
     });
   },
 

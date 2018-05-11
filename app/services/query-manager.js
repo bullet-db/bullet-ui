@@ -4,8 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
-import Service from '@ember/service';
-import { inject as service } from '@ember/service';
+import Service, { inject as service } from '@ember/service';
 import { isBlank, isEmpty, isEqual } from '@ember/utils';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
@@ -56,6 +55,8 @@ export default Service.extend({
     let promises = [
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
+      isEmpty(query.get('window')) || query.isWindowless() ? resolve() :
+        this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
@@ -99,24 +100,36 @@ export default Service.extend({
     return childModel.save();
   },
 
-  addResult(id, data) {
+  addResult(id) {
     return this.get('store').findRecord('query', id).then(query => {
       let result = this.get('store').createRecord('result', {
-        metadata: data.meta,
-        records: data.records,
         querySnapshot: {
           type: query.get('aggregation.type'),
           groupsSize: query.get('aggregation.groups.length'),
           metricsSize: query.get('aggregation.metrics.length'),
           projectionsSize: query.get('projections.length'),
           fieldsSummary: query.get('fieldsSummary'),
-          filterSummary: query.get('filterSummary')
+          filterSummary: query.get('filterSummary'),
+          windowSummary: query.get('windowSummary')
         },
         query: query
       });
       query.set('lastRun', result.get('created'));
       return query.save().then(() => {
         return result.save();
+      });
+    });
+  },
+
+  addSegment(id, data) {
+    return this.get('store').findRecord('result', id).then(result => {
+      let segment = this.get('store').createRecord('segment', {
+        metadata: data.meta,
+        records: data.records,
+        result: result
+      });
+      return result.save().then(() => {
+        return segment.save();
       });
     });
   },
@@ -146,6 +159,42 @@ export default Service.extend({
         aggregation.set('size', size);
         aggregation.set('attributes', EmberObject.create());
         return aggregation.save();
+      });
+    });
+  },
+
+  replaceWindow(query, emitType, emitEvery, includeType) {
+    return query.get('window').then(window => {
+      this.setIfNotEmpty(window, 'emitType', emitType);
+      this.setIfNotEmpty(window, 'emitEvery', emitEvery);
+      this.setIfNotEmpty(window, 'includeType', includeType);
+      return window.save();
+    });
+  },
+
+  removeWindow(query) {
+    return query.get('window').then(window => {
+      if (isEmpty(window)) {
+        return resolve();
+      }
+      query.set('window', null);
+      return query.save().then(() => {
+        return window.destroyRecord();
+      });
+    });
+  },
+
+  addWindow(query) {
+    return query.get('window').then(window => {
+      if (!isEmpty(window)) {
+        return resolve();
+      }
+      let newWindow = this.get('store').createRecord('window', {
+        query: query
+      });
+      query.set('window', newWindow);
+      return query.save().then(() => {
+        return newWindow.save();
       });
     });
   },
@@ -223,6 +272,7 @@ export default Service.extend({
         ];
         return all(promises);
       }),
+      query.isWindowless() ? resolve() : query.get('window').then(w => w.save()),
       query.save()
     ];
     return all(promises);
@@ -270,8 +320,20 @@ export default Service.extend({
   },
 
   deleteResults(query) {
-    this.deleteMultiple('results', query, 'query').then(() => {
-      query.save();
+    return query.get('results').then(results => {
+      let promises = [];
+      results.forEach(r => promises.push(this.deleteSegments(r)));
+      return all(promises);
+    }).then(() => {
+      return this.deleteMultiple('results', query, 'query').then(() => {
+        return query.save();
+      });
+    });
+  },
+
+  deleteSegments(result) {
+    return this.deleteMultiple('segments', result, 'result').then(() => {
+      return result.save();
     });
   },
 
@@ -279,10 +341,11 @@ export default Service.extend({
     return all([
       this.deleteSingle('filter', query, 'query'),
       this.deleteMultiple('projections', query, 'query'),
-      this.deleteMultiple('results', query, 'query'),
+      this.deleteResults(query),
+      this.removeWindow(query),
       this.deleteAggregation(query)
     ]).then(() => {
-      query.destroyRecord();
+      return query.destroyRecord();
     });
   },
 
@@ -290,5 +353,12 @@ export default Service.extend({
     return this.get('store').findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
+  },
+
+  setIfNotEmpty(object, key, value) {
+    if (!isEmpty(value)) {
+      object.set(key, value);
+    }
+    return object;
   }
 });

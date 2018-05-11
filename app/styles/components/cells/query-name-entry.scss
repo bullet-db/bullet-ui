@@ -42,7 +42,7 @@
       @import "../query-blurb";
       display: flex;
       align-items: center;
-      .filter-summary-text {
+      .filter-summary-text, .fields-summary-text {
         padding-right: 10px;
       }
     }
