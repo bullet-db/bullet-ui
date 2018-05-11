@@ -40,24 +40,24 @@ module('Integration | Component | window-input', function(hooks) {
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[0].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[1].classList.contains('checked'));
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[2].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[3].classList.contains('checked'));
-    assert.equal(this.element.querySelectorAll('.ember-radio-button input')[3].disabled, true);
+    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
+    assert.ok(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
+    assert.equal(this.element.querySelector('#include-all').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
-    await click(this.element.querySelectorAll('.ember-radio-button input')[1]);
+    await click(this.element.querySelector('#record-based'));
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 2);
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[0].classList.contains('checked'));
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[1].classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
+    assert.ok(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
     assert.equal(this.element.querySelector('.validated-input input').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 1);
 
-    await click(this.element.querySelectorAll('.ember-radio-button input')[0]);
+    await click(this.element.querySelector('#time-based'));
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[0].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[1].classList.contains('checked'));
+    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
   });
 
   test('it renders when aggregation is not raw', async function(assert) {
@@ -75,16 +75,16 @@ module('Integration | Component | window-input', function(hooks) {
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[0].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[1].classList.contains('checked'));
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[2].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[3].classList.contains('checked'));
-    assert.equal(this.element.querySelectorAll('.ember-radio-button input')[1].disabled, true);
+    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
+    assert.ok(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
+    assert.equal(this.element.querySelector('#record-based').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
-    await click(this.element.querySelectorAll('.ember-radio-button')[3]);
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[2].classList.contains('checked'));
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[3].classList.contains('checked'));
+    await click(this.element.querySelector('#include-all'));
+    assert.notOk(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
+    assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
   });
 
   test('it renders when changing aggregation type', async function(assert) {
@@ -102,24 +102,24 @@ module('Integration | Component | window-input', function(hooks) {
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 2);
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[0].classList.contains('checked'));
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[1].classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
+    assert.ok(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
 
     mockQuery.addAggregation(AGGREGATIONS.get('GROUP'));
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[0].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[1].classList.contains('checked'));
-    assert.equal(this.element.querySelectorAll('.ember-radio-button input')[1].disabled, true);
+    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
+    assert.equal(this.element.querySelector('#record-based').disabled, true);
 
-    await click(this.element.querySelectorAll('.ember-radio-button')[3]);
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[2].classList.contains('checked'));
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[3].classList.contains('checked'));
+    await click(this.element.querySelector('#include-all'));
+    assert.notOk(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
+    assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
 
     mockQuery.addAggregation(AGGREGATIONS.get('RAW'));
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
-    assert.ok(this.element.querySelectorAll('.ember-radio-button')[2].classList.contains('checked'));
-    assert.notOk(this.element.querySelectorAll('.ember-radio-button')[3].classList.contains('checked'));
+    assert.ok(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
+    assert.notOk(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
   });
 
   test('it adds window', async function(assert) {
