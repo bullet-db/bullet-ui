@@ -47,14 +47,14 @@ module('Integration | Component | window-input', function(hooks) {
     assert.equal(this.element.querySelector('#include-all').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
-    await click(this.element.querySelector('#record-based'));
+    await click('#record-based');
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 2);
     assert.notOk(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
     assert.ok(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
     assert.equal(this.element.querySelector('.validated-input input').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 1);
 
-    await click(this.element.querySelector('#time-based'));
+    await click('#time-based');
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
     assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
     assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
@@ -82,7 +82,7 @@ module('Integration | Component | window-input', function(hooks) {
     assert.equal(this.element.querySelector('#record-based').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
-    await click(this.element.querySelector('#include-all'));
+    await click('#include-all');
     assert.notOk(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
     assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
   });
@@ -112,7 +112,7 @@ module('Integration | Component | window-input', function(hooks) {
     assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
     assert.equal(this.element.querySelector('#record-based').disabled, true);
 
-    await click(this.element.querySelector('#include-all'));
+    await click('#include-all');
     assert.notOk(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
     assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
 
