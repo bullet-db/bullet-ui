@@ -43,7 +43,7 @@ export default Component.extend({
         this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
       }
     } else if (isEqual(this.get('emitType'), EMIT_TYPES.get('RECORD'))) {
-      this.replaceWindow(EMIT_TYPES.get('TIME'), this.get('everyForTimeBasedWindow'), null);
+      this.replaceWindow(EMIT_TYPES.get('TIME'), this.get('everyForTimeBasedWindow'));
       this.set('emitType', EMIT_TYPES.get('TIME'));
     }
     return this.get('query.isWindowless');
