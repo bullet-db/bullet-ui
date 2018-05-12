@@ -23,6 +23,8 @@
   $inactive-container-color: #EAEAEA;
   $query-footer-panel-height: 140px;
   $output-option-indentation: 25px;
+  $border-rectangle-color: #DCDEE2;
+  $subsection-color: #8C8C8C;
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // Reused mixins
@@ -75,6 +77,30 @@
     &:hover {
       color: $error-icon-hover-color;
     }
+  }
+
+  %ember-radio-button {
+    display: block;
+    max-width: 400px;
+    margin-bottom: 10px;
+    font-size: $font-size-regular-small;
+    font-family: $font-family-regular;
+    font-weight: $font-weight-regular;
+    &.checked {
+      font-weight: $font-weight-strong;
+    }
+    input {
+      margin-right: 10px;
+    }
+  }
+
+  %subsection-header {
+    margin: 5px 0;
+    text-transform: uppercase;
+    font-size: $font-size-small;
+    font-weight: $font-weight-medium;
+    color: $subsection-color;
+    opacity: 0.9;
   }
 
   @import "section-heading-with-help";

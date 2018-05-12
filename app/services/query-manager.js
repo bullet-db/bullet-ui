@@ -165,7 +165,7 @@ export default Service.extend({
     return query.get('window').then(window => {
       let emit = EmberObject.create({
         type: window.get('emit.type'),
-        include: window.get('emit.every')
+        every: window.get('emit.every')
       });
       this.setIfNotEmpty(emit, 'type', emitType);
       this.setIfNotEmpty(emit, 'every', emitEvery);

@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
+import { computed } from '@ember/object';
 import { equal, or, alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
@@ -33,7 +33,11 @@ export default Component.extend({
   everyForRecordBasedWindow: alias('settings.defaultValues.everyForRecordBasedWindow').readOnly(),
   everyForTimeBasedWindow: alias('settings.defaultValues.everyForTimeBasedWindow').readOnly(),
 
-  aggregationTypeChanged: observer('query.aggregation.type', function() {
+
+  // Helper equalities for template
+  isWindowless: computed('query.{isWindowless,aggregation.type}', function() {
+    // Check if needing to change to the correct window when aggregation changes.
+    // Some window types are not valid for some aggregation types.
     if (isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW'))) {
       if (isEqual(this.get('includeType'), INCLUDE_TYPES.get('ALL'))) {
         this.replaceWindow(null, null, INCLUDE_TYPES.get('WINDOW'));
@@ -43,10 +47,8 @@ export default Component.extend({
       this.replaceWindow(EMIT_TYPES.get('TIME'), this.get('everyForTimeBasedWindow'), null);
       this.set('emitType', EMIT_TYPES.get('TIME'));
     }
-  }),
-
-  // Helper equalities for template
-  isWindowless: alias('query.isWindowless').readOnly(),
+    return this.get('query.isWindowless');
+  }).readOnly(),
   isTimeBasedWindow: equal('emitType', EMIT_TYPES.get('TIME')).readOnly(),
   isRecordBasedWindow: equal('emitType', EMIT_TYPES.get('RECORD')).readOnly(),
   isRawAggregation: equal('query.aggregation.type', AGGREGATIONS.get('RAW')).readOnly(),

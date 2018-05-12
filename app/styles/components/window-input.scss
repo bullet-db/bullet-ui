@@ -1,7 +1,4 @@
 .window-input {
-  $border-rectangle-color: #DCDEE2;
-  $subsection-color: #8C8C8C;
-
   .add-button {
     @extend %add-button;
     margin-bottom: 10px;
@@ -26,28 +23,13 @@
   position: relative;
 
   .ember-radio-button {
+    @extend %ember-radio-button;
     display: inline-block;
     margin-right: 30px;
-    max-width: 400px;
-    margin-bottom: 10px;
-    font-size: $font-size-regular-small;
-    font-family: $font-family-regular;
-    font-weight: $font-weight-regular;
-    &.checked {
-      font-weight: $font-weight-strong;
-    }
-    input {
-      margin-right: 10px;
-    }
   }
 
   .subsection-header {
-    margin: 5px 0;
-    text-transform: uppercase;
-    font-size: $font-size-small;
-    font-weight: $font-weight-medium;
-    color: $subsection-color;
-    opacity: 0.9;
+    @extend %subsection-header;
   }
 
 .row {
