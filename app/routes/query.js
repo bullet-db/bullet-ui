@@ -11,20 +11,21 @@ export default Route.extend({
   querier: service(),
   queryManager: service(),
 
-  successHandler(result) {
-    this.transitionTo('result', result.get('id'));
+  resultHandler(context) {
+    context.transitionTo('result', context.get('result.id'));
   },
 
-  errorHandler(error) {
+  errorHandler(error, context) {
     console.error(error); // eslint-disable-line no-console
-    this.transitionTo('errored');
+    context.transitionTo('errored');
   },
 
   actions: {
     fireQuery() {
       this.get('queryManager').addResult(this.paramsFor('query').query_id).then(result => {
         this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
-          this.get('querier').send(query, result, this);
+          this.set('result', result);
+          this.get('querier').send(query, this.resultHandler, this.errorHandler, this);
         });
       });
     }
