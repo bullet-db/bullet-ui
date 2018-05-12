@@ -39,9 +39,9 @@ export default Component.extend(BuilderAdapter, {
     return this.builderFilters(schema);
   }).readOnly(),
 
-  showAggregationSize: computed('query.{aggregation.type,window.emitType,isWindowless}', function() {
+  showAggregationSize: computed('query.{aggregation.type,window.emit.type,isWindowless}', function() {
     return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) &&
-      (this.get('query.isWindowless') || isEqual(this.get('query.window.emitType'), EMIT_TYPES.get('TIME')));
+      (this.get('query.isWindowless') || isEqual(this.get('query.window.emit.type'), EMIT_TYPES.get('TIME')));
   }),
 
   didInsertElement() {

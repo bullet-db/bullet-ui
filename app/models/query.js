@@ -3,14 +3,13 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty } from '@ember/utils';
+import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
-import { isEqual } from '@ember/utils';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { INCLUDE_TYPES } from 'bullet-ui/models/window';
+import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 import { METRICS } from 'bullet-ui/models/metric';
 
 let Validations = buildValidations({
@@ -123,15 +122,14 @@ export default DS.Model.extend(Validations, {
     return this.get('aggregationSummary');
   }),
 
-  windowSummary: computed('isWindowless', 'window.{emitType,emitEvery,includeType}', function() {
+  windowSummary: computed('isWindowless', 'window.{emit.type,emit.every,include.type}', function() {
     if (this.get('isWindowless')) {
       return 'None';
     }
-    let emit = `Emit Type: ${this.get('window.emitType')}, Emit Every: ${this.get('window.emitEvery')}`;
-    if (isEqual(this.get('window.includeType'), INCLUDE_TYPES.get('ALL'))) {
-      return `${emit}, Include: ALL`;
-    }
-    return emit;
+    let emitType = this.get('window.emit.type');
+    let emitEvery = this.get('window.emit.every');
+    let includeType = this.get('window.include.type');
+    return `Every ${emitEvery} ${isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'seconds' : 'records'} ${isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? 'Cumulative' : ''}`;
   }),
 
   latestResult: computed('results.[]', function() {

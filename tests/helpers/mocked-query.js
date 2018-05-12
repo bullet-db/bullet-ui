@@ -79,9 +79,13 @@ export default EmberObject.extend({
 
   setWindow(emitType, emitEvery, includeType) {
     this.set('_window', EmberObject.create({
-      emitType: isEmpty(emitType) ? this.get('_window.emitType') : emitType,
-      emitEvery: isEmpty(emitEvery) ? this.get('_window.emitEvery') : emitEvery,
-      includeType: isEmpty(includeType) ? this.get('_window.includeType') : includeType
+      emit: {
+        type: isEmpty(emitType) ? this.get('_window.emit.type') : emitType,
+        every: isEmpty(emitEvery) ? this.get('_window.emit.every') : emitEvery
+      },
+      include: {
+        type: isEmpty(includeType) ? this.get('_window.include.type') : includeType
+      }
     }));
     this.topLevelPropertyAsPromise('window');
   },

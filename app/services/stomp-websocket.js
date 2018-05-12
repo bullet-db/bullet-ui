@@ -16,6 +16,7 @@ const SESSION_LENGTH = 64;
 
 export default Service.extend({
   querier: service(),
+  queryManager: service(),
 
   url: computed('settings', function() {
     return `${this.get('settings.queryHost')}/${this.get('settings.queryNamespace')}/${this.get('settings.queryPath')}`;
@@ -29,22 +30,22 @@ export default Service.extend({
     return this.get('settings.queryStompResponseChannel');
   }),
 
-  makeStompMessageHandler(stompClient, context) {
+  makeStompMessageHandler(stompClient, result) {
     return payload => {
       let message = JSON.parse(payload.body);
       if (!isEqual(message.type, ACK_TYPE)) {
         if (isEqual(message.type, COMPLETE_TYPE)) {
-          this.get('querier').endQuery();
+          this.get('querier').cancel();
         }
-        context.get('queryManager').addSegment(context.get('result').get('id'), JSON.parse(message.content));
+        this.get('queryManager').addSegment(result, JSON.parse(message.content));
       }
     };
   },
 
-  makeStompConnectHandler(stompClient, data, successHandler, context) {
+  makeStompConnectHandler(stompClient, data, result, context) {
     let queryStompRequestChannel = this.get('queryStompRequestChannel');
     let queryStompResponseChannel = this.get('queryStompResponseChannel');
-    let onStompMessage = this.makeStompMessageHandler(stompClient, context);
+    let onStompMessage = this.makeStompMessageHandler(stompClient, result);
     return () => {
       stompClient.subscribe(queryStompResponseChannel, onStompMessage);
       let request = {
@@ -52,24 +53,24 @@ export default Service.extend({
         type: NEW_QUERY_TYPE
       };
       stompClient.send(queryStompRequestChannel, { }, JSON.stringify(request));
-      successHandler(context);
+      context.successHandler(result);
     };
   },
 
-  makeStompErrorHandler(errorHandler, context) {
+  makeStompErrorHandler(context) {
     return (...args) => {
-      errorHandler(`Error when connecting the server: ${args}`, context);
+      context.errorHandler(`Error when connecting the server: ${args}`);
     };
   },
 
-  createStompClient(data, successHandler, errorHandler, context) {
+  createStompClient(data, result, context) {
     let url = this.get('url');
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
     stompClient.debug = null;
 
-    let onStompConnect = this.makeStompConnectHandler(stompClient, data, successHandler, context);
-    let onStompError = this.makeStompErrorHandler(errorHandler, context);
+    let onStompConnect = this.makeStompConnectHandler(stompClient, data, result, context);
+    let onStompError = this.makeStompErrorHandler(context);
     stompClient.connect({ }, onStompConnect, onStompError);
     return stompClient;
   }

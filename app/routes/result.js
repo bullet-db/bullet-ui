@@ -30,7 +30,7 @@ export default Route.extend({
     },
 
     willTransition() {
-      this.get('querier').endQuery();
+      this.get('querier').cancel();
       return true;
     }
   }

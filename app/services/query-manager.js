@@ -56,7 +56,7 @@ export default Service.extend({
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
       query.get('isWindowless') ? resolve() :
-        this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType']),
+        this.copySingle(query, copied, 'window', 'query', ['emit', 'include']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
@@ -121,16 +121,14 @@ export default Service.extend({
     });
   },
 
-  addSegment(id, data) {
-    return this.get('store').findRecord('result', id).then(result => {
-      let segment = this.get('store').createRecord('segment', {
-        metadata: data.meta,
-        records: data.records,
-        result: result
-      });
-      return result.save().then(() => {
-        return segment.save();
-      });
+  addSegment(result, data) {
+    let segment = this.get('store').createRecord('segment', {
+      metadata: data.meta,
+      records: data.records,
+      result: result
+    });
+    return result.save().then(() => {
+      return segment.save();
     });
   },
 
@@ -165,14 +163,23 @@ export default Service.extend({
 
   replaceWindow(query, emitType, emitEvery, includeType) {
     return query.get('window').then(window => {
-      this.setIfNotEmpty(window, 'emitType', emitType);
-      this.setIfNotEmpty(window, 'emitEvery', emitEvery);
-      this.setIfNotEmpty(window, 'includeType', includeType);
+      let emit = EmberObject.create({
+        type: window.get('emit.type'),
+        include: window.get('emit.every')
+      });
+      this.setIfNotEmpty(emit, 'type', emitType);
+      this.setIfNotEmpty(emit, 'every', emitEvery);
+      let include = EmberObject.create({
+        type: window.get('include.type')
+      });
+      this.setIfNotEmpty(include, 'type', includeType);
+      window.set('emit', emit);
+      window.set('include', include);
       return window.save();
     });
   },
 
-  removeWindow(query) {
+  deleteWindow(query) {
     return query.get('window').then(window => {
       if (isEmpty(window)) {
         return resolve();
@@ -321,8 +328,7 @@ export default Service.extend({
 
   deleteResults(query) {
     return query.get('results').then(results => {
-      let promises = [];
-      results.forEach(r => promises.push(this.deleteSegments(r)));
+      let promises = results.toArray().map(r => this.deleteAllSegments(r));
       return all(promises);
     }).then(() => {
       return this.deleteMultiple('results', query, 'query').then(() => {
@@ -331,7 +337,7 @@ export default Service.extend({
     });
   },
 
-  deleteSegments(result) {
+  deleteAllSegments(result) {
     return this.deleteMultiple('segments', result, 'result').then(() => {
       return result.save();
     });
@@ -342,7 +348,7 @@ export default Service.extend({
       this.deleteSingle('filter', query, 'query'),
       this.deleteMultiple('projections', query, 'query'),
       this.deleteResults(query),
-      this.removeWindow(query),
+      this.deleteWindow(query),
       this.deleteAggregation(query)
     ]).then(() => {
       return query.destroyRecord();

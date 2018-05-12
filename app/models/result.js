@@ -16,11 +16,12 @@ export default DS.Model.extend({
     }
   }),
   query: DS.belongsTo('query', { autoSave: true }),
-  segments: DS.hasMany('segment', { async: true, dependent: 'destroy' }),
+  // TODO: change it to async: true when metadata and records computed properties are removed.
+  segments: DS.hasMany('segment', { dependent: 'destroy' }),
   pivotOptions: DS.attr('string'),
   querySnapshot: DS.attr(),
 
-  // Removed it after result page has been changed.
+  // TODO: Remove it after result page has been changed.
   metadata: computed('segments.[]', function() {
     let segments = this.get('segments').toArray();
     if (isEmpty(segments)) {
@@ -29,7 +30,7 @@ export default DS.Model.extend({
     return segments.objectAt(segments.length - 1).get('metadata');
   }),
 
-  // Removed it after result page has been changed.
+  // TODO: Remove it after result page has been changed.
   records: computed('segments.[]', function() {
     let segments = this.get('segments').toArray();
     if (isEmpty(segments)) {

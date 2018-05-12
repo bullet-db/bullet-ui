@@ -143,15 +143,20 @@ export default Service.extend(Filterizer, {
     if (isEmpty(json)) {
       return false;
     }
-    let window = EmberObject.create();
-    window.set('emitType', EMIT_TYPES.get(json.emit.type));
-    window.set('emitEvery', json.emit.every / 1000);
+    let emit = EmberObject.create({
+      type: EMIT_TYPES.get(json.emit.type),
+      every: Number(json.emit.every) / 1000
+    });
+    let include = EmberObject.create();
     if (!isEmpty(json.include) && isEqual(json.include.type, INCLUDE_TYPES.apiKey(INCLUDE_TYPES.get('ALL')))) {
-      window.set('includeType', INCLUDE_TYPES.get('ALL'));
+      include.set('type', INCLUDE_TYPES.get('ALL'));
     } else {
-      window.set('includeType', INCLUDE_TYPES.get('WINDOW'));
+      include.set('type', INCLUDE_TYPES.get('WINDOW'));
     }
-    return window;
+    return EmberObject.create({
+      emit: emit,
+      include: include
+    });
   },
 
   reformatAggregation(aggregation) {
@@ -173,11 +178,11 @@ export default Service.extend(Filterizer, {
   reformatWindow(window) {
     let json = {
       emit: {
-        type: EMIT_TYPES.apiKey(window.get('emitType')),
-        every: window.get('emitEvery') * 1000
+        type: EMIT_TYPES.apiKey(window.get('emit.type')),
+        every: Number(window.get('emit.every')) * 1000
       }
     };
-    let includeType = window.get('includeType');
+    let includeType = window.get('include.type');
     if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
       json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
     }
@@ -348,17 +353,16 @@ export default Service.extend(Filterizer, {
    * Exposes the low-level StompClient object in order to abort.
    *
    * @param  {Object} data             The Query model.
-   * @param  {Function} successHandler The function to invoke on success.
-   * @param  {Function} errorHandler   The function to invoke on failure.
+   * @param  {Object} result           The result model.
    * @param  {Object} context          The this context for the success and error handlers.
    */
-  send(data, successHandler, errorHandler, context) {
+  send(data, result, context) {
     data = this.reformat(data);
-    let stompClient = this.get('stompWebsocket').createStompClient(data, successHandler, errorHandler, context);
+    let stompClient = this.get('stompWebsocket').createStompClient(data, result, context);
     this.set('pendingRequest', stompClient);
   },
 
-  endQuery() {
+  cancel() {
     let pendingRequest = this.get('pendingRequest');
     if (pendingRequest) {
       pendingRequest.disconnect();

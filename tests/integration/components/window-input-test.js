@@ -141,7 +141,7 @@ module('Integration | Component | window-input', function(hooks) {
     assert.equal(this.element.querySelectorAll('.remove-button').length, 1);
   });
 
-  test('it closes window', async function(assert) {
+  test('it removes window', async function(assert) {
     assert.expect(5);
 
     let mockQuery = MockQuery.create();

@@ -44,14 +44,14 @@ export const EMIT_TYPES = emitType.create();
 export const INCLUDE_TYPES = includeType.create();
 
 let Validations = buildValidations({
-  emitEvery: {
+  'emit.every': {
     description: 'emit frequency', validators: [
       validator('presence', true),
       validator('number', {
         integer: true,
         allowString: true,
         gte: 1,
-        message: 'emitEvery must be a positive integer'
+        message: 'emit frequency must be a positive integer'
       }),
       validator('window-emit-frequency')
     ]
@@ -60,8 +60,20 @@ let Validations = buildValidations({
 });
 
 export default DS.Model.extend(Validations, {
-  emitType: DS.attr('string', { defaultValue: EMIT_TYPES.get('TIME') }),
-  emitEvery: DS.attr('number', { defaultValue: 2 }),
-  includeType: DS.attr('string', { defaultValue: INCLUDE_TYPES.get('WINDOW') }),
+  emit: DS.attr({
+    defaultValue() {
+      return EmberObject.create({
+        type: EMIT_TYPES.get('TIME'),
+        every: 2
+      });
+    }
+  }),
+  include: DS.attr({
+    defaultValue() {
+      return EmberObject.create({
+        type: INCLUDE_TYPES.get('WINDOW')
+      });
+    }
+  }),
   query: DS.belongsTo('query', { autoSave: true })
 });

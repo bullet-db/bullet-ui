@@ -9,14 +9,15 @@ import { EMIT_TYPES } from 'bullet-ui/models/window';
 
 const WindowEmitFrequency = BaseValidator.extend({
   validate(value, options, model) {
-    let emitType = model.get('emitType');
-    let timeWindowEmitFrequncyMinSecs = model.get('settings.defaultValues.timeWindowEmitFrequncyMinSecs');
+    let emitType = model.get('emit.type');
+    let windowEmitFrequencyMinSecs = model.get('settings.defaultValues.windowEmitFrequencyMinSecs');
+    let emitEvery = Number(value);
     if (isEqual(emitType, EMIT_TYPES.get('TIME'))) {
       let duration = model.get('query.duration');
-      if (value > duration) {
+      if (emitEvery > duration) {
         return `The window emit frequency should not be longer than the query duration (${duration} seconds)`;
-      } else if (value < timeWindowEmitFrequncyMinSecs) {
-        return `The maintainer has configured Bullet to support a minimum of ${timeWindowEmitFrequncyMinSecs} for emit frequency`;
+      } else if (emitEvery < windowEmitFrequencyMinSecs) {
+        return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinSecs} for emit frequency`;
       }
     }
     return true;
@@ -25,7 +26,7 @@ const WindowEmitFrequency = BaseValidator.extend({
 
 WindowEmitFrequency.reopenClass({
   getDependentsFor() {
-    return ['model.query.duration', 'model.emitType'];
+    return ['model.query.duration', 'model.emit.type'];
   }
 });
 

@@ -17,7 +17,9 @@ module('Unit | Validator | window-emit-frequency', function(hooks) {
       duration: 20
     });
     let mockModel = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emit: {
+        type: EMIT_TYPES.get('TIME')
+      },
       query: query
     });
     let expected = 'The window emit frequency should not be longer than the query duration (20 seconds)';
@@ -25,17 +27,19 @@ module('Unit | Validator | window-emit-frequency', function(hooks) {
     assert.ok(validator.validate(20, null, mockModel));
   });
 
-  test('it does not let you subceed the minimum of emit frequency when it is time based window', function(assert) {
+  test('it does not let you exceed the minimum emit frequency when it is time based window', function(assert) {
     var validator = this.owner.lookup('validator:window-emit-frequency');
     let query = EmberObject.create({
       duration: 20
     });
     let mockModel = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emit: {
+        type: EMIT_TYPES.get('TIME')
+      },
       query: query,
       settings: {
         defaultValues: {
-          timeWindowEmitFrequncyMinSecs: 10
+          windowEmitFrequencyMinSecs: 10
         }
       }
     });
@@ -44,13 +48,15 @@ module('Unit | Validator | window-emit-frequency', function(hooks) {
     assert.ok(validator.validate(10, null, mockModel));
   });
 
-  test('it is always validated when it is record based window', function(assert) {
+  test('it successfully validates when it is record based window', function(assert) {
     var validator = this.owner.lookup('validator:window-emit-frequency');
     let query = EmberObject.create({
       duration: 20
     });
     let mockModel = EmberObject.create({
-      emitType: EMIT_TYPES.get('RECORD'),
+      emit: {
+        type: EMIT_TYPES.get('RECORD')
+      },
       query: query
     });
     assert.ok(validator.validate(21, null, mockModel));
