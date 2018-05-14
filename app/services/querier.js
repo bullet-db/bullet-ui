@@ -354,7 +354,7 @@ export default Service.extend(Filterizer, {
    *
    * @param  {Object} data             The Query model.
    * @param  {Object} handlers         The Object which contains the functions to invoke on success, failure or message.
-   * @param  {Object} context          The this context for the success and error handlers.
+   * @param  {Object} context          The context for the handlers.
    */
   send(data, handlers, context) {
     data = this.reformat(data);
