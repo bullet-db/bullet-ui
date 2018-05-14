@@ -21,7 +21,7 @@ module('Integration | Component | window-input', function(hooks) {
     let mockQuery = MockQuery.create();
     this.set('mockQuery', mockQuery);
     await render(hbs `{{window-input query=mockQuery}}`);
-    assert.equal(this.element.querySelector('.subsection-header').innerText.trim(), 'No Window');
+    assert.equal(this.element.querySelector('.subsection-header').textContent.trim(), 'No Window');
     assert.equal(this.element.querySelectorAll('.add-button').length, 1);
   });
 
@@ -87,41 +87,6 @@ module('Integration | Component | window-input', function(hooks) {
     assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
   });
 
-  test('it renders when changing aggregation type', async function(assert) {
-    assert.expect(14);
-
-    let mockQuery = MockQuery.create();
-    mockQuery.setWindow(EMIT_TYPES.get('RECORD'), 1, INCLUDE_TYPES.get('WINDOW'));
-    mockQuery.addAggregation(AGGREGATIONS.get('RAW'));
-    this.set('mockQuery', mockQuery);
-    this.set('mockReplaceWindow', (emitType, emitEvery, includeType) => {
-      assert.ok(true);
-      mockQuery.setWindow(emitType, emitEvery, includeType);
-      return resolve();
-    });
-
-    await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
-    assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 2);
-    assert.notOk(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
-    assert.ok(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
-
-    mockQuery.addAggregation(AGGREGATIONS.get('GROUP'));
-    await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
-    assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
-    assert.equal(this.element.querySelector('#record-based').disabled, true);
-
-    await click('#include-all');
-    assert.notOk(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
-    assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
-
-    mockQuery.addAggregation(AGGREGATIONS.get('RAW'));
-    await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
-    assert.ok(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
-  });
-
   test('it adds window', async function(assert) {
     assert.expect(4);
 
@@ -159,7 +124,7 @@ module('Integration | Component | window-input', function(hooks) {
 
     await click('.remove-button');
     assert.equal(this.element.querySelectorAll('.remove-button').length, 0);
-    assert.equal(this.element.querySelector('.subsection-header').innerText.trim(), 'No Window');
+    assert.equal(this.element.querySelector('.subsection-header').textContent.trim(), 'No Window');
     assert.equal(this.element.querySelectorAll('.add-button').length, 1);
   });
 });

@@ -28,7 +28,13 @@ let Validations = buildValidations({
   },
   projections: validator('has-many'),
   aggregation: validator('belongs-to'),
-  window: validator('belongs-to')
+  window: {
+    description: 'window',
+    validators: [
+      validator('valid-window'),
+      validator('belongs-to')
+    ]
+  }
 });
 
 export default DS.Model.extend(Validations, {

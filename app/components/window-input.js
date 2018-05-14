@@ -34,20 +34,7 @@ export default Component.extend({
   everyForTimeBasedWindow: alias('settings.defaultValues.everyForTimeBasedWindow').readOnly(),
 
   // Helper equalities for template
-  isWindowless: computed('query.{isWindowless,aggregation.type}', function() {
-    // Check if needing to change to the correct window when aggregation changes.
-    // Some window types are not valid for some aggregation types.
-    if (isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW'))) {
-      if (isEqual(this.get('includeType'), INCLUDE_TYPES.get('ALL'))) {
-        this.replaceWindow(null, null, INCLUDE_TYPES.get('WINDOW'));
-        this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
-      }
-    } else if (isEqual(this.get('emitType'), EMIT_TYPES.get('RECORD'))) {
-      this.replaceWindow(EMIT_TYPES.get('TIME'), this.get('everyForTimeBasedWindow'));
-      this.set('emitType', EMIT_TYPES.get('TIME'));
-    }
-    return this.get('query.isWindowless');
-  }).readOnly(),
+  isWindowless: alias('query.isWindowless').readOnly(),
 
   isTimeBasedWindow: equal('emitType', EMIT_TYPES.get('TIME')).readOnly(),
   isRecordBasedWindow: equal('emitType', EMIT_TYPES.get('RECORD')).readOnly(),
