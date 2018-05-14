@@ -14,10 +14,10 @@ const ValidWindow = BaseValidator.extend({
     let emitType = model.get('window.emit.type');
     let includeType = model.get('window.include.type');
     if (isEqual(aggregationType, AGGREGATIONS.get('RAW')) && isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
-      return `The window should not include all from start when aggregation type is RAW`;
+      return 'The window should not include all from start when aggregation type is Raw';
     }
     if (!isEqual(aggregationType, AGGREGATIONS.get('RAW')) && isEqual(emitType, EMIT_TYPES.get('RECORD'))) {
-      return `The window should not be record based when aggregation type is not RAW`;
+      return 'The window should not be record based when aggregation type is not Raw';
     }
     return true;
   }

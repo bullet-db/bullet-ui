@@ -20,12 +20,21 @@ export default Route.extend({
     context.transitionTo('errored');
   },
 
+  segmentHandler(message, context) {
+    context.get('queryManager').addSegment(context.get('result'), message);
+  },
+
   actions: {
     fireQuery() {
       this.get('queryManager').addResult(this.paramsFor('query').query_id).then(result => {
         this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
           this.set('result', result);
-          this.get('querier').send(query, this.resultHandler, this.errorHandler, this);
+          let handlers = {
+            successHandler: this.resultHandler,
+            errorHandler: this.errorHandler,
+            messageHandler: this.segmentHandler
+          };
+          this.get('querier').send(query, handlers, this);
         });
       });
     }

@@ -30,27 +30,21 @@ export default Component.extend({
     return this.get('query.window.include.type');
   }),
 
+  // Helper equalities for template
   everyForRecordBasedWindow: alias('settings.defaultValues.everyForRecordBasedWindow').readOnly(),
   everyForTimeBasedWindow: alias('settings.defaultValues.everyForTimeBasedWindow').readOnly(),
-
-  // Helper equalities for template
   isWindowless: alias('query.isWindowless').readOnly(),
-
   isTimeBasedWindow: equal('emitType', EMIT_TYPES.get('TIME')).readOnly(),
   isRecordBasedWindow: equal('emitType', EMIT_TYPES.get('RECORD')).readOnly(),
   isRawAggregation: equal('query.aggregation.type', AGGREGATIONS.get('RAW')).readOnly(),
-
   recordBasedWindowDisabled: computed('isRawAggregation', 'disabled', function() {
     return this.get('disabled') || !this.get('isRawAggregation');
   }).readOnly(),
-
   everyDisabled: or('isRecordBasedWindow', 'disabled').readOnly(),
   includeDisabled: or('isRecordBasedWindow', 'disabled').readOnly(),
-
   allIncludeTypeDisabled: computed('isRawAggregation', 'includeDisabled', function() {
     return this.get('includeDisabled') || this.get('isRawAggregation');
   }).readOnly(),
-
   everyFieldName: computed('isRecordBasedWindow', function() {
     return this.get('isRecordBasedWindow') ? 'every (records)' : 'every (seconds)';
   }).readOnly(),
@@ -75,12 +69,12 @@ export default Component.extend({
         this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
         this.replaceWindow(emitType, this.get('everyForRecordBasedWindow'), INCLUDE_TYPES.get('WINDOW'));
       } else {
-        this.replaceWindow(emitType, this.get('everyForTimeBasedWindow'));
+        this.replaceWindow(emitType, this.get('everyForTimeBasedWindow'), this.get('includeType'));
       }
     },
 
     changeIncludeType(includeType) {
-      this.replaceWindow(null, null, includeType);
+      this.replaceWindow(this.get('emitType'), this.get('query.window.emit.every'), includeType);
     },
 
     addWindow() {

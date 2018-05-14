@@ -103,6 +103,21 @@
     opacity: 0.9;
   }
 
+  %validated-input-row {
+    @import "validated-input";
+    margin-top: 10px;
+    margin-left: 5px;
+    input {
+      height: 45px;
+    }
+    .validated-input {
+      .error-tooltip-link {
+        // Because these fields are an exception, their error icon needs to be recentered
+        margin-top: 45px/2 - $font-size-regular/2;
+      }
+    }
+  }
+
   @import "section-heading-with-help";
   @import "column-field";
   @import "labeled-input";
@@ -201,13 +216,8 @@
     .options-container {
       padding-top: 5px;
       .row {
-        @import "validated-input";
+        @extend %validated-input-row;
 
-        margin-top: 10px;
-        margin-left: 5px;
-        input {
-          height: 45px;
-        }
         .validated-input {
           .aggregation-size {
             padding-right: 0;
@@ -218,10 +228,6 @@
           .query-duration {
             margin-left: -5px;
             width: 195px;
-          }
-          .error-tooltip-link {
-            // Because these fields are an exception, their error icon needs to be recentered
-            margin-top: 45px/2 - $font-size-regular/2;
           }
         }
       }

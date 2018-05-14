@@ -353,13 +353,12 @@ export default Service.extend(Filterizer, {
    * Exposes the low-level StompClient object in order to abort.
    *
    * @param  {Object} data             The Query model.
-   * @param  {Function} successHandler The function to invoke on success.
-   * @param  {Function} errorHandler   The function to invoke on failure.
+   * @param  {Object} handlers         The Object which contains the functions to invoke on success, failure or message.
    * @param  {Object} context          The this context for the success and error handlers.
    */
-  send(data, successHandler, errorHandler, context) {
+  send(data, handlers, context) {
     data = this.reformat(data);
-    let stompClient = this.get('stompWebsocket').createStompClient(data, successHandler, errorHandler, context);
+    let stompClient = this.get('stompWebsocket').createStompClient(data, handlers, context);
     this.set('pendingRequest', stompClient);
   },
 

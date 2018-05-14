@@ -29,12 +29,12 @@ module('Integration | Component | window-input', function(hooks) {
     assert.expect(17);
 
     let mockQuery = MockQuery.create();
-    mockQuery.setWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
+    mockQuery.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
     mockQuery.addAggregation(AGGREGATIONS.get('RAW'));
     this.set('mockQuery', mockQuery);
     this.set('mockReplaceWindow', (emitType, emitEvery, includeType) => {
       assert.ok(true);
-      mockQuery.setWindow(emitType, emitEvery, includeType);
+      mockQuery.addWindow(emitType, emitEvery, includeType);
       return resolve();
     });
 
@@ -64,12 +64,12 @@ module('Integration | Component | window-input', function(hooks) {
     assert.expect(10);
 
     let mockQuery = MockQuery.create();
-    mockQuery.setWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
+    mockQuery.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
     mockQuery.addAggregation(AGGREGATIONS.get('GROUP'));
     this.set('mockQuery', mockQuery);
     this.set('mockReplaceWindow', (emitType, emitEvery, includeType) => {
       assert.ok(true);
-      mockQuery.setWindow(emitType, emitEvery, includeType);
+      mockQuery.addWindow(emitType, emitEvery, includeType);
       return resolve();
     });
 
@@ -94,7 +94,7 @@ module('Integration | Component | window-input', function(hooks) {
     this.set('mockQuery', mockQuery);
     this.set('mockAddWindow', () => {
       assert.ok(true);
-      mockQuery.setWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
+      mockQuery.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
       return resolve();
     });
 
@@ -110,7 +110,7 @@ module('Integration | Component | window-input', function(hooks) {
     assert.expect(5);
 
     let mockQuery = MockQuery.create();
-    mockQuery.setWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
+    mockQuery.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
     mockQuery.addAggregation(AGGREGATIONS.get('GROUP'));
     this.set('mockQuery', mockQuery);
     this.set('mockRemoveWindow', () => {

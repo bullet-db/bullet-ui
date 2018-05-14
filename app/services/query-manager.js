@@ -163,46 +163,19 @@ export default Service.extend({
 
   replaceWindow(query, emitType, emitEvery, includeType) {
     return query.get('window').then(window => {
-      let emit = EmberObject.create({
-        type: window.get('emit.type'),
-        every: window.get('emit.every')
-      });
-      this.setIfNotEmpty(emit, 'type', emitType);
-      this.setIfNotEmpty(emit, 'every', emitEvery);
-      let include = EmberObject.create({
-        type: window.get('include.type')
-      });
-      this.setIfNotEmpty(include, 'type', includeType);
-      window.set('emit', emit);
-      window.set('include', include);
+      window.set('emit', { type: emitType, every: emitEvery });
+      window.set('include', { type: includeType });
       return window.save();
     });
   },
 
-  deleteWindow(query) {
-    return query.get('window').then(window => {
-      if (isEmpty(window)) {
-        return resolve();
-      }
-      query.set('window', null);
-      return query.save().then(() => {
-        return window.destroyRecord();
-      });
-    });
-  },
-
   addWindow(query) {
-    return query.get('window').then(window => {
-      if (!isEmpty(window)) {
-        return resolve();
-      }
-      let newWindow = this.get('store').createRecord('window', {
-        query: query
-      });
-      query.set('window', newWindow);
-      return query.save().then(() => {
-        return newWindow.save();
-      });
+    let window = this.get('store').createRecord('window', {
+      query: query
+    });
+    query.set('window', window);
+    return query.save().then(() => {
+      return window.save();
     });
   },
 
@@ -323,6 +296,18 @@ export default Service.extend({
       this.deleteMultiple('metrics', aggregation, 'aggregation');
       aggregation.set('query', null);
       return aggregation.destroyRecord();
+    });
+  },
+
+  deleteWindow(query) {
+    return query.get('window').then(window => {
+      if (isEmpty(window)) {
+        return resolve();
+      }
+      query.set('window', null);
+      return query.save().then(() => {
+        return window.destroyRecord();
+      });
     });
   },
 

@@ -29,22 +29,22 @@ export default Service.extend({
     return this.get('settings.queryStompResponseChannel');
   }),
 
-  makeStompMessageHandler(stompClient, context) {
+  makeStompMessageHandler(stompClient, handlers, context) {
     return payload => {
       let message = JSON.parse(payload.body);
       if (!isEqual(message.type, ACK_TYPE)) {
         if (isEqual(message.type, COMPLETE_TYPE)) {
           this.get('querier').cancel();
         }
-        context.get('queryManager').addSegment(context.get('result'), JSON.parse(message.content));
+        handlers.messageHandler(JSON.parse(message.content), context);
       }
     };
   },
 
-  makeStompConnectHandler(stompClient, data, successHandler, context) {
+  makeStompConnectHandler(stompClient, data, handlers, context) {
     let queryStompRequestChannel = this.get('queryStompRequestChannel');
     let queryStompResponseChannel = this.get('queryStompResponseChannel');
-    let onStompMessage = this.makeStompMessageHandler(stompClient, context);
+    let onStompMessage = this.makeStompMessageHandler(stompClient, handlers, context);
     return () => {
       stompClient.subscribe(queryStompResponseChannel, onStompMessage);
       let request = {
@@ -52,24 +52,24 @@ export default Service.extend({
         type: NEW_QUERY_TYPE
       };
       stompClient.send(queryStompRequestChannel, { }, JSON.stringify(request));
-      successHandler(context);
+      handlers.successHandler(context);
     };
   },
 
-  makeStompErrorHandler(errorHandler, context) {
+  makeStompErrorHandler(handlers, context) {
     return (...args) => {
-      errorHandler(`Error when connecting the server: ${args}`, context);
+      handlers.errorHandler(`Error when connecting the server: ${args}`, context);
     };
   },
 
-  createStompClient(data, successHandler, errorHandler, context) {
+  createStompClient(data, handlers, context) {
     let url = this.get('url');
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
     stompClient.debug = null;
 
-    let onStompConnect = this.makeStompConnectHandler(stompClient, data, successHandler, context);
-    let onStompError = this.makeStompErrorHandler(errorHandler, context);
+    let onStompConnect = this.makeStompConnectHandler(stompClient, data, handlers, context);
+    let onStompError = this.makeStompErrorHandler(handlers, context);
     stompClient.connect({ }, onStompConnect, onStompError);
     return stompClient;
   }

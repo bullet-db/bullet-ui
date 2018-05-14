@@ -31,11 +31,11 @@ module('Unit | Validator | valid-window', function(hooks) {
     assert.ok(validator.validate(null, null, mockModel));
 
     mockModel.get('window').set('include', { type: INCLUDE_TYPES.get('ALL') });
-    assert.equal(validator.validate(null, null, mockModel), 'The window should not include all from start when aggregation type is RAW');
+    assert.equal(validator.validate(null, null, mockModel), 'The window should not include all from start when aggregation type is Raw');
 
     mockModel.get('aggregation').set('type', AGGREGATIONS.get('GROUP'));
     mockModel.get('window').set('emit', { type: EMIT_TYPES.get('RECORD') });
-    assert.equal(validator.validate(null, null, mockModel), 'The window should not be record based when aggregation type is not RAW');
+    assert.equal(validator.validate(null, null, mockModel), 'The window should not be record based when aggregation type is not Raw');
   });
 
   test('it successfully validates when it has no window', function(assert) {

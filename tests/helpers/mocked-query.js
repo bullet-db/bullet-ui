@@ -77,24 +77,6 @@ export default EmberObject.extend({
     return isEmpty(this.get('_window'));
   }),
 
-  setWindow(emitType, emitEvery, includeType) {
-    this.set('_window', EmberObject.create({
-      emit: {
-        type: isEmpty(emitType) ? this.get('_window.emit.type') : emitType,
-        every: isEmpty(emitEvery) ? this.get('_window.emit.every') : emitEvery
-      },
-      include: {
-        type: isEmpty(includeType) ? this.get('_window.include.type') : includeType
-      }
-    }));
-    this.topLevelPropertyAsPromise('window');
-  },
-
-  removeWindow() {
-    this.set('_window', null);
-    this.topLevelPropertyAsPromise('window');
-  },
-
   topLevelPropertyAsPromise(attr) {
     if (this.get('promisify')) {
       this.set(attr, resolve(this.get(`_${attr}`)));
@@ -144,6 +126,24 @@ export default EmberObject.extend({
   addResult(records, created = new Date(Date.now()), metadata = null, querySnapshot = null, pivotOptions = null) {
     this.get('_results').pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
     this.topLevelPropertyAsPromise('results');
+  },
+
+  addWindow(emitType, emitEvery, includeType) {
+    this.set('_window', EmberObject.create({
+      emit: {
+        type: emitType,
+        every: emitEvery
+      },
+      include: {
+        type: includeType
+      }
+    }));
+    this.topLevelPropertyAsPromise('window');
+  },
+
+  removeWindow() {
+    this.set('_window', null);
+    this.topLevelPropertyAsPromise('window');
   },
 
   validate() {
