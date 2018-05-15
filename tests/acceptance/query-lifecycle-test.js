@@ -7,9 +7,9 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, triggerEvent, currentURL } from '@ember/test-helpers';
+import { visit, click, fillIn, triggerEvent, currentURL, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import $ from 'jquery';
+import { findWithContext, findAllWithContext } from '../helpers/find-helpers';
 
 module('Acceptance | query lifecycle', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -29,10 +29,10 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await visit('queries');
-    assert.equal($('.query-description').length, 1);
+    assert.equal(findAll('.query-description').length, 1);
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .delete-icon');
-    assert.equal($('.query-description').length, 0);
+    assert.equal(findAll('.query-description').length, 0);
   });
 
   test('creating a query and copying it', async function(assert) {
@@ -40,10 +40,10 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await visit('queries');
-    assert.equal($('.query-description').length, 1);
+    assert.equal(findAll('.query-description').length, 1);
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.query-description').length, 2);
+    assert.equal(findAll('.query-description').length, 2);
   });
 
   test('creating an invalid query and failing to copy it', async function(assert) {
@@ -53,10 +53,10 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await click('.output-container .projections-container .add-projection');
     await visit('queries');
-    assert.equal($('.query-description').length, 1);
+    assert.equal(findAll('.query-description').length, 1);
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.query-description').length, 1);
+    assert.equal(findAll('.query-description').length, 1);
   });
 
   test('creating multiple queries and deleting them', async function(assert) {
@@ -65,13 +65,13 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await visit('/queries/new');
     await visit('queries');
-    assert.equal($('.query-description').length, 2);
-    await triggerEvent($('.queries-table .query-name-entry:eq(0)')[0], 'mouseover');
-    await click($('.queries-table .query-name-entry:eq(0) .query-name-actions .delete-icon')[0]);
-    assert.equal($('.query-description').length, 1);
+    assert.equal(findAll('.query-description').length, 2);
+    await triggerEvent(findAll('.queries-table .query-name-entry')[0], 'mouseover');
+    await click(findWithContext('.query-name-actions .delete-icon', findAll('.queries-table .query-name-entry')[0]));
+    assert.equal(findAll('.query-description').length, 1);
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .delete-icon');
-    assert.equal($('.query-description').length, 0);
+    assert.equal(findAll('.query-description').length, 0);
   });
 
   test('creating multiple queries and copying them', async function(assert) {
@@ -80,13 +80,13 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await visit('/queries/new');
     await visit('queries');
-    assert.equal($('.query-description').length, 2);
-    await triggerEvent($('.queries-table .query-name-entry:eq(0)')[0], 'mouseover');
-    await click($('.queries-table .query-name-entry:eq(0) .query-name-actions .copy-icon')[0]);
-    assert.equal($('.query-description').length, 3);
+    assert.equal(findAll('.query-description').length, 2);
+    await triggerEvent(findAll('.queries-table .query-name-entry')[0], 'mouseover');
+    await click(findWithContext('.query-name-actions .copy-icon', findAll('.queries-table .query-name-entry')[0]));
+    assert.equal(findAll('.query-description').length, 3);
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
-    await click($('.queries-table .query-name-entry:eq(1) .query-name-actions .copy-icon')[0]);
-    assert.equal($('.query-description').length, 4);
+    await click(findWithContext('.query-name-actions .copy-icon', findAll('.queries-table .query-name-entry')[1]));
+    assert.equal(findAll('.query-description').length, 4);
   });
 
   test('adding a filter with a simple column', async function(assert) {
@@ -94,10 +94,11 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await click('.filter-container button[data-add=\'rule\']');
-    $('.filter-container .rule-filter-container select').val('simple_column').trigger('change');
-    assert.equal($('.filter-container .rule-filter-container select').val(), 'simple_column');
-    assert.equal($('.filter-container .rule-subfield-container input').length, 0);
-    assert.equal($('.filter-container .rule-operator-container select').val(), 'equal');
+    find('.filter-container .rule-filter-container select').value = 'simple_column';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
+    assert.equal(find('.filter-container .rule-filter-container select').value, 'simple_column');
+    assert.equal(findAll('.filter-container .rule-subfield-container input').length, 0);
+    assert.equal(find('.filter-container .rule-operator-container select').value, 'equal');
   });
 
   test('adding a complex map field column filter with a subfield column', async function(assert) {
@@ -105,10 +106,11 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await click('.filter-container button[data-add=\'rule\']');
-    $('.filter-container .rule-filter-container select').val('complex_map_column.*').trigger('change');
-    assert.equal($('.filter-container .rule-filter-container select').val(), 'complex_map_column.*');
-    assert.equal($('.filter-container .rule-operator-container select').val(), 'equal');
-    assert.equal($('.filter-container .rule-subfield-container input').length, 1);
+    find('.filter-container .rule-filter-container select').value = 'complex_map_column.*';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
+    assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_map_column.*');
+    assert.equal(find('.filter-container .rule-operator-container select').value, 'equal');
+    assert.equal(findAll('.filter-container .rule-subfield-container input').length, 1);
   });
 
   test('adding a complex map field column filter without a subfield column', async function(assert) {
@@ -116,30 +118,31 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await click('.filter-container button[data-add=\'rule\']');
-    $('.filter-container .rule-filter-container select').val('complex_map_column').trigger('change');
-    assert.equal($('.filter-container .rule-filter-container select').val(), 'complex_map_column');
-    assert.equal($('.filter-container .rule-operator-container select').val(), 'is_null');
-    assert.equal($('.filter-container .rule-subfield-container input').length, 0);
+    find('.filter-container .rule-filter-container select').value = 'complex_map_column';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
+    assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_map_column');
+    assert.equal(find('.filter-container .rule-operator-container select').value, 'is_null');
+    assert.equal(findAll('.filter-container .rule-subfield-container input').length, 0);
   });
 
   test('adding and removing filter rules', async function(assert) {
     assert.expect(3);
 
     await visit('/queries/new');
-    assert.equal($('.filter-container .rule-container').length, 0);
+    assert.equal(findAll('.filter-container .rule-container').length, 0);
     await click('.filter-container button[data-add=\'rule\']');
-    assert.equal($('.filter-container .rule-container').length, 1);
+    assert.equal(findAll('.filter-container .rule-container').length, 1);
     await click('.filter-container .rules-list button[data-delete=\'rule\']');
-    assert.equal($('.filter-container .rule-container').length, 0);
+    assert.equal(findAll('.filter-container .rule-container').length, 0);
   });
 
   test('raw data output with all columns is selected by default', async function(assert) {
     assert.expect(3);
 
     await visit('/queries/new');
-    assert.ok($('.output-options #raw').parent().hasClass('checked'));
-    assert.equal($('.output-container .projections-container .add-projection').length, 0);
-    assert.equal($('.projections-container').length, 0);
+    assert.ok(find('.output-options #raw').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.output-container .projections-container .add-projection').length, 0);
+    assert.equal(findAll('.projections-container').length, 0);
   });
 
   test('adding and removing raw data output projections', async function(assert) {
@@ -148,13 +151,13 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.output-container .raw-sub-options #select');
     await click('.output-container .projections-container .add-projection');
-    await selectChoose($('.projections-container .field-selection-container .field-selection')[0], 'simple_column');
-    await fillIn($('.projections-container .field-selection-container:eq(0) .field-name input')[0], 'new_name');
-    assert.equal($('.projections-container .column-onlyfield').length, 2);
-    await click($('.projections-container .field-selection-container:eq(1) .delete-button')[0]);
-    assert.equal($('.projections-container .field-selection-container').length, 1);
+    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'simple_column');
+    await fillIn(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
+    assert.equal(findAll('.projections-container .column-onlyfield').length, 2);
+    await click(findWithContext('.delete-button', findAll('.projections-container .field-selection-container')[1]));
+    assert.equal(findAll('.projections-container .field-selection-container').length, 1);
     // The last one cannot be removed
-    assert.equal($('.projections-container .field-selection-container .delete-button').length, 0);
+    assert.equal(findAll('.projections-container .field-selection-container .delete-button').length, 0);
   });
 
   test('filling out projection name even when there are errors', async function(assert) {
@@ -163,11 +166,11 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
-    assert.equal($('.projections-container .column-onlyfield').length, 1);
+    assert.equal(findAll('.projections-container .column-onlyfield').length, 1);
     await fillIn('.options-container .aggregation-size input', '');
     await click('.save-button');
-    assert.equal($('.projections-container .field-name input').val(), 'simple_column');
-    assert.equal($('.validation-container .simple-alert').length, 1);
+    assert.equal(find('.projections-container .field-name input').value, 'simple_column');
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
   });
 
   test('adding a projection with a subfield column', async function(assert) {
@@ -177,14 +180,14 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
-    assert.equal($('.projections-container .field-selection .column-mainfield').length, 1);
+    assert.equal(findAll('.projections-container .field-selection .column-mainfield').length, 1);
     await triggerEvent('.projections-container .field-selection-container .field-selection .column-subfield input', 'blur');
-    assert.equal($('.projections-container .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
-    assert.equal($('.projections-container .field-selection-container .column-subfield input').val(), '');
+    assert.equal(find('.projections-container .column-mainfield .ember-power-select-selected-item').textContent.trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .field-selection-container .column-subfield input').value, '');
     await fillIn('.projections-container .field-selection-container .field-selection .column-subfield input', 'foo');
     await triggerEvent('.projections-container .field-selection-container .field-selection .column-subfield input', 'blur');
-    assert.equal($('.projections-container .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
-    assert.equal($('.projections-container .field-selection-container .column-subfield input').val(), 'foo');
+    assert.equal(find('.projections-container .column-mainfield .ember-power-select-selected-item').textContent.trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .field-selection-container .column-subfield input').value, 'foo');
   });
 
   test('switching to another output data type wipes selected columns', async function(assert) {
@@ -192,51 +195,51 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await click('.output-container .raw-sub-options #select');
-    await selectChoose($('.projections-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
-      $('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input')[0],
+      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
     await triggerEvent(
-      $('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input')[0],
+      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'blur'
     );
-    await fillIn($('.projections-container .field-selection-container:eq(0) .field-name input')[0], 'new_name');
+    await fillIn(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
-    await selectChoose($('.projections-container .field-selection-container .field-selection')[1], 'simple_column');
+    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
     await click('.save-button');
-    assert.equal($('.projections-container .field-selection-container').length, 2);
-    assert.equal($('.projections-container .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
-    assert.equal($('.projections-container .field-selection-container .column-subfield input').val(), 'foo');
-    assert.equal($('.projections-container .field-selection-container .field-name input').val(), 'new_name');
+    assert.equal(findAll('.projections-container .field-selection-container').length, 2);
+    assert.equal(find('.projections-container .column-mainfield .ember-power-select-selected-item').textContent.trim(), 'complex_map_column.*');
+    assert.equal(find('.projections-container .field-selection-container .column-subfield input').value, 'foo');
+    assert.equal(find('.projections-container .field-selection-container .field-name input').value, 'new_name');
     // This means that save was also successful
-    assert.equal($('.projections-container .field-selection-container:eq(1) .field-name input').val(), 'simple_column');
+    assert.equal(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
     await click('.output-options #count-distinct');
     await click('.output-options #raw');
     await click('.output-container .raw-sub-options #select');
-    assert.equal($('.projections-container .field-selection-container').length, 1);
+    assert.equal(findAll('.projections-container .field-selection-container').length, 1);
   });
 
   test('aggregation size is only visible when selecting the raw output option', async function(assert) {
     assert.expect(11);
 
     await visit('/queries/new');
-    assert.ok($('.output-options #raw').parent().hasClass('checked'));
-    assert.ok($('.output-container .raw-sub-options #all').parent().hasClass('checked'));
-    assert.equal($('.aggregation-size input').length, 1);
+    assert.ok(find('.output-options #raw').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .raw-sub-options #all').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.aggregation-size input').length, 1);
     await click('.output-options #grouped-data');
-    assert.ok($('.output-options #grouped-data').parent().hasClass('checked'));
-    assert.equal($('.aggregation-size input').length, 0);
+    assert.ok(find('.output-options #grouped-data').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.aggregation-size input').length, 0);
     await click('.output-options #count-distinct');
-    assert.ok($('.output-options #count-distinct').parent().hasClass('checked'));
-    assert.equal($('.aggregation-size input').length, 0);
+    assert.ok(find('.output-options #count-distinct').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.aggregation-size input').length, 0);
     await click('.output-options #distribution');
-    assert.ok($('.output-options #distribution').parent().hasClass('checked'));
-    assert.equal($('.aggregation-size input').length, 0);
+    assert.ok(find('.output-options #distribution').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.aggregation-size input').length, 0);
     await click('.output-options #top-k');
-    assert.ok($('.output-options #top-k').parent().hasClass('checked'));
-    assert.equal($('.aggregation-size input').length, 0);
+    assert.ok(find('.output-options #top-k').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.aggregation-size input').length, 0);
   });
 
   test('copying a full query with filters, raw data output with projections and a name works', async function(assert) {
@@ -245,38 +248,39 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await fillIn('.name-container input', 'test query');
     await click('.filter-container button[data-add=\'rule\']');
-    $('.filter-container .rule-filter-container select').val('complex_list_column').trigger('change');
+    find('.filter-container .rule-filter-container select').value = 'complex_list_column';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
     await click('.output-container .raw-sub-options #select');
-    await selectChoose($('.projections-container .field-selection-container .field-selection')[0], 'complex_map_column.*');
+    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
-      $('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input')[0],
+      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
     await triggerEvent(
-      $('.projections-container .field-selection-container:eq(0) .field-selection .column-subfield input')[0],
+      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'blur'
     );
-    await fillIn($('.projections-container .field-selection-container:eq(0) .field-name input')[0], 'new_name');
+    await fillIn(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
-    await selectChoose($('.projections-container .field-selection-container .field-selection')[1], 'simple_column');
+    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
 
     await fillIn('.options-container .aggregation-size input', '40');
     await click('.submit-button');
     await visit('queries');
-    assert.equal($('.query-description').text().trim(), 'test query');
-    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    assert.equal(find('.query-description').textContent.trim(), 'test query');
+    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.queries-table .query-name-entry .query-description').length, 2);
-    assert.equal($('.queries-table .query-results-entry .length-entry').first().text().trim(), '1 Results');
-    assert.equal($('.queries-table .query-results-entry').last().text().trim(), '--');
-    assert.equal($('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
-    await click($('.queries-table .query-name-entry:eq(1)')[0]);
-    assert.equal($('.filter-container .rule-filter-container select').val(), 'complex_list_column');
-    assert.equal($('.projections-container .field-selection-container:eq(0) .field-name input').val(), 'new_name');
-    assert.equal($('.projections-container .field-selection-container:eq(1) .field-name input').val(), 'simple_column');
-    assert.equal($('.options-container .aggregation-size input').val(), '40');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(findAll('.queries-table .query-results-entry .length-entry')[0].textContent.trim(), '1 Results');
+    assert.equal(findAll('.queries-table .query-results-entry')[1].textContent.trim(), '--');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
+    await click(findAll('.queries-table .query-name-entry')[1]);
+    assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_list_column');
+    assert.equal(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[0]).value, 'new_name');
+    assert.equal(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
+    assert.equal(find('.options-container .aggregation-size input').value, '40');
   });
 
   test('copying a full query with filters, grouped data output with groups and fields works', async function(assert) {
@@ -285,41 +289,42 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await fillIn('.name-container input', 'test query');
     await click('.filter-container button[data-add=\'rule\']');
-    $('.filter-container .rule-filter-container select').val('complex_list_column').trigger('change');
+    find('.filter-container .rule-filter-container select').value = 'complex_list_column';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
     await click('.output-options #grouped-data');
     await click('.output-container .groups-container .add-group');
     await click('.output-container .groups-container .add-group');
-    await selectChoose($('.output-container .groups-container .field-selection-container .field-selection')[0], 'complex_map_column');
-    await selectChoose($('.output-container .groups-container .field-selection-container .field-selection')[1], 'simple_column');
-    await fillIn($('.output-container .groups-container .field-selection-container:eq(1) .field-name input')[0], 'bar');
+    await selectChoose(findWithContext('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
+    await selectChoose(findWithContext('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findWithContext('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose($('.output-container .metrics-container .field-selection-container:eq(0) .metrics-selection')[0], 'Count');
-    await selectChoose($('.output-container .metrics-container .metrics-selection')[1], 'Average');
-    await selectChoose($('.output-container .metrics-container .field-selection-container .field-selection')[0], 'simple_column');
-    await fillIn($('.output-container .metrics-container .field-selection-container:eq(1) .field-name input')[0], 'avg_bar');
+    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findAll('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findWithContext('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-description').text().trim(), 'test query');
+    assert.equal(find('.query-description').textContent.trim(), 'test query');
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.queries-table .query-name-entry .query-description').length, 2);
-    assert.equal($('.queries-table .query-results-entry').last().text().trim(), '--');
-    assert.equal($('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
-    await click($('.queries-table .query-name-entry:eq(1)')[0]);
-    assert.equal($('.filter-container .rule-filter-container select').val(), 'complex_list_column');
-    assert.equal($('.groups-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'complex_map_column');
-    assert.equal($('.groups-container .field-selection-container:eq(0) .field-name input').val(), 'complex_map_column');
-    assert.equal($('.groups-container .field-selection-container:eq(1) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal($('.groups-container .field-selection-container:eq(1) .field-name input').val(), 'bar');
-    assert.equal($('.metrics-container .field-selection-container:eq(0) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Count');
-    assert.equal($('.metrics-container .field-selection-container:eq(0) .field-selection').length, 0);
-    assert.equal($('.metrics-container .field-selection-container:eq(0) .field-name input').val(), '');
-    assert.equal($('.metrics-container .field-selection-container:eq(1) .metrics-selection .ember-power-select-selected-item').text().trim(), 'Average');
-    assert.equal($('.metrics-container .field-selection-container:eq(1) .field-selection .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal($('.metrics-container .field-selection-container:eq(1) .field-name input').val(), 'avg_bar');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(findAll('.queries-table .query-results-entry')[1].textContent.trim(), '--');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
+    await click(findAll('.queries-table .query-name-entry')[1]);
+    assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_list_column');
+    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0]).textContent.trim(), 'complex_map_column');
+    assert.equal(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
+    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.equal(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
+    assert.equal(findWithContext('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0]).textContent.trim(), 'Count');
+    assert.equal(findAllWithContext('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
+    assert.equal(findWithContext('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
+    assert.equal(findWithContext('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'Average');
+    assert.equal(findWithContext('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.equal(findWithContext('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
   });
 
   test('distribution output selects quantiles and number of points by default', async function(assert) {
@@ -327,12 +332,12 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await click('.output-options #distribution');
-    assert.ok($('.output-options #distribution').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-type-options #quantile').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .fields-selection-container .add-field').length, 0);
-    assert.equal($('.fields-selection-container .field-selection-container').length, 1);
-    assert.equal($('.fields-selection-container .field-selection-container .delete-button').length, 0);
+    assert.ok(find('.output-options #distribution').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-type-options #quantile').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.output-container .fields-selection-container .add-field').length, 0);
+    assert.equal(findAll('.fields-selection-container .field-selection-container').length, 1);
+    assert.equal(findAll('.fields-selection-container .field-selection-container .delete-button').length, 0);
   });
 
   test('copying a distribution query with number of points works', async function(assert) {
@@ -348,18 +353,18 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-description').text().trim(), 'test query');
+    assert.equal(find('.query-description').textContent.trim(), 'test query');
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.queries-table .query-name-entry .query-description').length, 2);
-    assert.equal($('.queries-table .query-results-entry').last().text().trim(), '--');
-    assert.equal($('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
-    await click($('.queries-table .query-name-entry:eq(1)')[0]);
-    assert.ok($('.output-options #distribution').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal($('.output-container .distribution-type-number-of-points input').val(), '15');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(findAll('.queries-table .query-results-entry')[1].textContent.trim(), '--');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
+    await click(findAll('.queries-table .query-name-entry')[1]);
+    assert.ok(find('.output-options #distribution').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-number-of-points input').value, '15');
   });
 
   test('copying a distribution query with generated points works', async function(assert) {
@@ -371,26 +376,26 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.distribution-type-options #frequency');
     await click('.output-container .distribution-point-options #generate-points');
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '1.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '2.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '1.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '2.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.5');
 
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-description').text().trim(), 'test query');
+    assert.equal(find('.query-description').textContent.trim(), 'test query');
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.queries-table .query-name-entry .query-description').length, 2);
-    assert.equal($('.queries-table .query-results-entry').last().text().trim(), '--');
-    assert.equal($('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
-    await click($('.queries-table .query-name-entry:eq(1)')[0]);
-    assert.ok($('.output-options #distribution').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-type-options #frequency').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #generate-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(0)').val(), '1.5');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(1)').val(), '2.5');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(2)').val(), '0.5');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(findAll('.queries-table .query-results-entry')[1].textContent.trim(), '--');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
+    await click(findAll('.queries-table .query-name-entry')[1]);
+    assert.ok(find('.output-options #distribution').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-type-options #frequency').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #generate-points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'simple_column');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '1.5');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '2.5');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '0.5');
   });
 
   test('copying a distribution query with points works', async function(assert) {
@@ -405,18 +410,18 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-description').text().trim(), 'test query');
+    assert.equal(find('.query-description').textContent.trim(), 'test query');
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.queries-table .query-name-entry .query-description').length, 2);
-    assert.equal($('.queries-table .query-results-entry').last().text().trim(), '--');
-    assert.equal($('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
-    await click($('.queries-table .query-name-entry:eq(1)')[0]);
-    assert.ok($('.output-options #distribution').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-type-options #quantile').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #points').parent().hasClass('checked'));
-    assert.equal($('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal($('.output-container .distribution-type-points input').val(), '0,0.2,1');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(findAll('.queries-table .query-results-entry')[1].textContent.trim(), '--');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
+    await click(findAll('.queries-table .query-name-entry')[1]);
+    assert.ok(find('.output-options #distribution').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-type-options #quantile').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'simple_column');
+    assert.equal(find('.output-container .distribution-type-points input').value, '0,0.2,1');
   });
 
   test('copying a top k query works', async function(assert) {
@@ -427,11 +432,11 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-options #top-k');
 
     await click('.output-container .add-field');
-    await selectChoose($('.output-container .field-selection-container .field-selection')[0], 'simple_column');
-    await selectChoose($('.output-container .field-selection-container .field-selection')[1], 'complex_map_column.*');
-    await fillIn($('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input')[0], 'foo');
-    await triggerEvent($('.output-container .field-selection-container:eq(1) .field-selection .column-subfield input')[0], 'blur');
-    await fillIn($('.output-container .field-selection-container:eq(1) .field-name input')[0], 'new_name');
+    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
+    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await fillIn(findWithContext('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
 
     await fillIn('.output-container .top-k-size input', '15');
     await fillIn('.output-container .top-k-min-count input', '1500');
@@ -439,21 +444,21 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-description').text().trim(), 'test query');
+    assert.equal(find('.query-description').textContent.trim(), 'test query');
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.equal($('.queries-table .query-name-entry .query-description').length, 2);
-    assert.equal($('.queries-table .query-results-entry').last().text().trim(), '--');
-    assert.equal($('.queries-table .query-name-entry .query-description').last().text().trim(), 'test query');
-    await click($('.queries-table .query-name-entry:eq(1)')[0]);
-    assert.ok($('.output-options #top-k').parent().hasClass('checked'));
-    assert.equal($('.output-container .field-selection-container:eq(0) .column-onlyfield .ember-power-select-selected-item').text().trim(), 'simple_column');
-    assert.equal($('.output-container .field-selection-container:eq(1) .column-mainfield .ember-power-select-selected-item').text().trim(), 'complex_map_column.*');
-    assert.equal($('.output-container .field-selection-container:eq(1) .column-subfield input').val(), 'foo');
-    assert.equal($('.output-container .field-selection-container:eq(1) .field-name input').val(), 'new_name');
-    assert.equal($('.output-container .top-k-size input').val(), '15');
-    assert.equal($('.output-container .top-k-min-count input').val(), '1500');
-    assert.equal($('.output-container .top-k-display-name input').val(), 'cnt');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 2);
+    assert.equal(findAll('.queries-table .query-results-entry')[1].textContent.trim(), '--');
+    assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
+    await click(findAll('.queries-table .query-name-entry')[1]);
+    assert.ok(find('.output-options #top-k').parentElement.classList.contains('checked'));
+    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
+    assert.equal(findWithContext('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column.*');
+    assert.equal(findWithContext('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
+    assert.equal(findWithContext('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
+    assert.equal(find('.output-container .top-k-size input').value, '15');
+    assert.equal(find('.output-container .top-k-min-count input').value, '1500');
+    assert.equal(find('.output-container .top-k-display-name input').value, 'cnt');
   });
 
   test('distribution queries are sticky when switching to and from frequency to cumulative frequency', async function(assert) {
@@ -466,29 +471,29 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .distribution-point-options #number-points');
     await fillIn('.output-container .distribution-type-number-of-points input', '15');
     await click('.distribution-type-options #frequency');
-    assert.ok($('.output-container .distribution-type-options #frequency').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .distribution-type-number-of-points input').val(), '15');
+    assert.ok(find('.output-container .distribution-type-options #frequency').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .distribution-type-number-of-points input').value, '15');
 
     await click('.distribution-type-options #frequency');
     await click('.output-container .distribution-point-options #points');
     await fillIn('.output-container .distribution-type-points input', '1,4,51,5');
     await click('.distribution-type-options #cumulative');
-    assert.ok($('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #points').parent().hasClass('checked'));
-    assert.equal($('.output-container .distribution-type-points input').val(), '1,4,51,5');
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .distribution-type-points input').value, '1,4,51,5');
 
     await click('.distribution-type-options #frequency');
     await click('.output-container .distribution-point-options #generate-points');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '1.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '2.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '1.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '2.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.5');
     await click('.distribution-type-options #cumulative');
-    assert.ok($('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #generate-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .distribution-type-point-range input:eq(0)').val(), '1.5');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(1)').val(), '2.5');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(2)').val(), '0.5');
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #generate-points').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '1.5');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '2.5');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '0.5');
   });
 
   test('quantile query point value fields are not sticky when switching to another distribution', async function(assert) {
@@ -501,29 +506,29 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .distribution-point-options #number-points');
     await fillIn('.output-container .distribution-type-number-of-points input', '15');
     await click('.distribution-type-options #frequency');
-    assert.ok($('.output-container .distribution-type-options #frequency').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #number-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .distribution-type-number-of-points input').val(), '11');
+    assert.ok(find('.output-container .distribution-type-options #frequency').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #number-points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .distribution-type-number-of-points input').value, '11');
 
     await click('.distribution-type-options #quantile');
     await click('.output-container .distribution-point-options #points');
     await fillIn('.output-container .distribution-type-points input', '0,0.5,0.4');
     await click('.distribution-type-options #cumulative');
-    assert.ok($('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #points').parent().hasClass('checked'));
-    assert.equal($('.output-container .distribution-type-points input').val(), '');
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #points').parentElement.classList.contains('checked'));
+    assert.equal(find('.output-container .distribution-type-points input').value, '');
 
     await click('.distribution-type-options #quantile');
     await click('.output-container .distribution-point-options #generate-points');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '0.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '0.75');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '0.75');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.5');
     await click('.distribution-type-options #cumulative');
-    assert.ok($('.output-container .distribution-type-options #cumulative').parent().hasClass('checked'));
-    assert.ok($('.output-container .distribution-point-options #generate-points').parent().hasClass('checked'));
-    assert.equal($('.output-container .distribution-type-point-range input:eq(0)').val(), '');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(1)').val(), '');
-    assert.equal($('.output-container .distribution-type-point-range input:eq(2)').val(), '');
+    assert.ok(find('.output-container .distribution-type-options #cumulative').parentElement.classList.contains('checked'));
+    assert.ok(find('.output-container .distribution-point-options #generate-points').parentElement.classList.contains('checked'));
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '');
+    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '');
   });
 
   test('creating a valid query and checking if it is indicated as needing attention', async function(assert) {
@@ -532,8 +537,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 0);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 0);
   });
 
   test('editing a query field and checking if it is indicated as needing attention', async function(assert) {
@@ -542,13 +547,13 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 0);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 0);
     await click('.queries-table .query-name-entry .query-description');
     await fillIn('.name-container input', 'test query');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 1);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 1);
   });
 
   test('adding a projection field and checking if it is indicated as needing attention', async function(assert) {
@@ -557,14 +562,14 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 0);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 0);
     await click('.queries-table .query-name-entry .query-description');
     await click('.output-container .raw-sub-options #select');
-    await selectChoose($('.projections-container .field-selection-container:eq(0) .field-selection')[0], 'simple_column');
+    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'simple_column');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 1);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 1);
   });
 
   test('adding a group field and checking if it is indicated as needing attention', async function(assert) {
@@ -573,15 +578,15 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.save-button');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 0);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 0);
     await click('.queries-table .query-name-entry .query-description');
     await click('.output-options #grouped-data');
     await click('.output-container .groups-container .add-group');
     await selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'simple_column');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 1);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 1);
   });
 
   test('creating an invalid query and checking if it is indicated as needing attention', async function(assert) {
@@ -591,7 +596,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await click('.output-container .projections-container .add-projection');
     await visit('queries');
-    assert.equal($('.query-name-entry').length, 1);
-    assert.equal($('.query-unsaved').length, 1);
+    assert.equal(findAll('.query-name-entry').length, 1);
+    assert.equal(findAll('.query-unsaved').length, 1);
   });
 });

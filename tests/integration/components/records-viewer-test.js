@@ -39,9 +39,9 @@ module('Integration | Component | records viewer', function(hooks) {
     this.set('mockRecords', RESULTS.SINGLE.records);
     this.set('rawMode', true);
     await render(hbs`{{records-viewer records=mockRecords showRawData=rawMode}}`);
-    assert.equal(this.$('.raw-display').length, 1);
-    assert.equal(this.$('.pretty-json-container').length, 1);
-    assert.ok(this.$('.pretty-json-container').text().trim().startsWith('Array[1]'));
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
+    assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
+    assert.ok(this.element.querySelector('.pretty-json-container').textContent.trim().startsWith('Array[1]'));
   });
 
   test('it allows swapping between table and the raw views', async function(assert) {
@@ -50,28 +50,28 @@ module('Integration | Component | records viewer', function(hooks) {
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer model=mockModel records=mockRecords}}`);
     await click('.table-view');
-    assert.equal(this.$('.chart-view').length, 0);
-    assert.ok(this.$('.table-view').hasClass('active'));
-    assert.equal(this.$('.raw-display').length, 0);
-    assert.equal(this.$('.records-table').length, 1);
-    assert.equal(this.$('.lt-column').length, 3);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 3);
+    assert.equal(this.element.querySelectorAll('.chart-view').length, 0);
+    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
     await click('.raw-view');
-    assert.equal(this.$('.chart-view').length, 0);
-    assert.ok(this.$('.raw-view').hasClass('active'));
-    assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.raw-display').length, 1);
-    assert.equal(this.$('.pretty-json-container').length, 1);
+    assert.equal(this.element.querySelectorAll('.chart-view').length, 0);
+    assert.ok(this.element.querySelector('.raw-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.records-table').length, 0);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
+    assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
   });
 
   test('it allows downloading the data in 3 formats', async function(assert) {
     assert.expect(4);
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
-    assert.equal(this.$('.download-option').length, 3);
-    assert.equal(this.$('.download-option > a:eq(0)').text(), 'JSON');
-    assert.equal(this.$('.download-option > a:eq(1)').text(), 'CSV');
-    assert.equal(this.$('.download-option > a:eq(2)').text(), 'Flat CSV');
+    assert.equal(this.element.querySelectorAll('.download-option').length, 3);
+    assert.equal(this.element.querySelectorAll('.download-option > a')[0].textContent, 'JSON');
+    assert.equal(this.element.querySelectorAll('.download-option > a')[1].textContent, 'CSV');
+    assert.equal(this.element.querySelectorAll('.download-option > a')[2].textContent, 'Flat CSV');
   });
 
   test('it allows downloading the data as JSON', async function(assert) {
@@ -79,7 +79,7 @@ module('Integration | Component | records viewer', function(hooks) {
     window.saveAs = assertDataEquals(assert, JSON.stringify(RESULTS.SINGLE.records, null, 2), 'results.json');
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
-    await click(this.$('.download-option > a:eq(0)')[0]);
+    await click(this.element.querySelectorAll('.download-option > a')[0]);
   });
 
   test('it allows downloading the data as CSV', async function(assert) {
@@ -89,7 +89,7 @@ module('Integration | Component | records viewer', function(hooks) {
     window.saveAs = assertDataEquals(assert, expected, 'results.csv');
     this.set('mockRecords', RESULTS.RAW.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
-    await click(this.$('.download-option > a:eq(1)')[0]);
+    await click(this.element.querySelectorAll('.download-option > a')[1]);
   });
 
   test('it allows downloading the data as flat CSV', async function(assert) {
@@ -99,7 +99,7 @@ module('Integration | Component | records viewer', function(hooks) {
     window.saveAs = assertDataEquals(assert, expected, 'results_flat.csv');
     this.set('mockRecords', RESULTS.RAW.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
-    await click(this.$('.download-option > a:eq(2)')[0]);
+    await click(this.element.querySelectorAll('.download-option > a')[2]);
   });
 
   test('it handles missing columns across rows when making CSVs', async function(assert) {
@@ -111,7 +111,7 @@ module('Integration | Component | records viewer', function(hooks) {
     window.saveAs = assertDataEquals(assert, expected, 'results.csv');
     this.set('mockRecords', RESULTS.MULTIPLE_MISSING.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
-    await click(this.$('.download-option > a:eq(1)')[0]);
+    await click(this.element.querySelectorAll('.download-option > a')[1]);
   });
 
   test('it enables charting mode if the results have more than one row', async function(assert) {
@@ -120,17 +120,17 @@ module('Integration | Component | records viewer', function(hooks) {
     this.set('mockModel', { isSingleRow: false });
     this.set('mockRecords', RESULTS.GROUP.records);
     await render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
-    assert.equal(this.$('.chart-view').length, 1);
-    assert.equal(this.$('.raw-display').length, 0);
-    assert.equal(this.$('.records-table').length, 1);
-    assert.equal(this.$('.lt-column').length, 4);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 12);
+    assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 4);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 12);
     await click('.chart-view');
-    assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.raw-display').length, 0);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 0);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
     // Defaults to simple chart view
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container canvas').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
   test('it allows you to switch to pivot mode', async function(assert) {
@@ -145,19 +145,19 @@ module('Integration | Component | records viewer', function(hooks) {
     }));
     this.set('mockRecords', RESULTS.DISTRIBUTION.records);
     await render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
-    assert.equal(this.$('.chart-view').length, 1);
-    assert.equal(this.$('.raw-display').length, 0);
-    assert.equal(this.$('.records-table').length, 1);
-    assert.equal(this.$('.lt-column').length, 3);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 9);
+    assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 9);
     await click('.chart-view');
-    assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.raw-display').length, 0);
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container canvas').length, 1);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 0);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
     await click('.mode-toggle .right-view');
-    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
   });
 
   test('it enables only pivot mode if the results are raw', async function(assert) {
@@ -172,16 +172,16 @@ module('Integration | Component | records viewer', function(hooks) {
     }));
     this.set('mockRecords', RESULTS.GROUP.records);
     await render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
-    assert.equal(this.$('.chart-view').length, 1);
-    assert.equal(this.$('.raw-display').length, 0);
-    assert.equal(this.$('.records-table').length, 1);
-    assert.equal(this.$('.lt-column').length, 4);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 12);
+    assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 4);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 12);
     await click('.chart-view');
-    assert.equal(this.$('.records-table').length, 0);
-    assert.equal(this.$('.raw-display').length, 0);
-    assert.equal(this.$('.mode-toggle').length, 0);
-    assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
+    assert.equal(this.element.querySelectorAll('.records-table').length, 0);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
+    assert.equal(this.element.querySelectorAll('.mode-toggle').length, 0);
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
   });
 
   test('it allows you to switch to raw json data mode', async function(assert) {
@@ -189,13 +189,13 @@ module('Integration | Component | records viewer', function(hooks) {
     this.set('rawMode', true);
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer records=mockRecords showRawData=rawMode}}`);
-    assert.equal(this.$('.chart-view').length, 1);
-    assert.equal(this.$('.raw-display').length, 1);
-    assert.equal(this.$('.pretty-json-container').length, 1);
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.records-table').length, 0);
+    assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
+    assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
+    assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     await click('.mode-toggle .right-view');
-    assert.equal(this.$('pre').text().trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
-    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
+    assert.equal(this.element.querySelector('pre').textContent.trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
+    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
   });
 });

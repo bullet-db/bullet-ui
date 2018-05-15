@@ -14,38 +14,38 @@ module('Integration | Component | simple alert', function(hooks) {
 
   test('it renders a message in block form', async function(assert) {
     await render(hbs`{{simple-alert}}`);
-    assert.equal(this.$().text().trim(), '');
+    assert.equal(this.element.textContent.trim(), '');
 
     await render(hbs`
       {{#simple-alert}}
         template block text
       {{/simple-alert}}
     `);
-    assert.equal(this.$().text().trim(), 'template block text');
+    assert.equal(this.element.textContent.trim(), 'template block text');
   });
 
   test('it shows a dismiss button', async function(assert) {
     await render(hbs`{{simple-alert}}`);
-    assert.ok(this.$('.alert > button i').hasClass('glyphicon-remove'));
+    assert.ok(this.element.querySelector('.alert > button i').classList.contains('glyphicon-remove'));
   });
 
   test('it maps an empty alert type to the proper bootstrap css class', async function(assert) {
     await render(hbs`{{simple-alert}}`);
-    assert.equal(this.$('.alert').prop('class'), 'alert  alert-dismissible');
+    assert.equal(this.element.querySelector('.alert').getAttribute('class'), 'alert  alert-dismissible');
   });
 
   test('it maps an warning alert type to the proper bootstrap css class', async function(assert) {
     await render(hbs`{{simple-alert type='warning'}}`);
-    assert.ok(this.$('.alert').prop('class').indexOf('alert-warning') >= 0);
+    assert.ok(this.element.querySelector('.alert').getAttribute('class').indexOf('alert-warning') >= 0);
   });
 
   test('it maps an error alert type to the proper bootstrap css class', async function(assert) {
     await render(hbs`{{simple-alert type='error'}}`);
-    assert.ok(this.$('.alert').prop('class').indexOf('alert-danger') >= 0);
+    assert.ok(this.element.querySelector('.alert').getAttribute('class').indexOf('alert-danger') >= 0);
   });
 
   test('it maps a success alert type to the proper bootstrap css class', async function(assert) {
     await render(hbs`{{simple-alert type='success'}}`);
-    assert.ok(this.$('.alert').prop('class').indexOf('alert-success') >= 0);
+    assert.ok(this.element.querySelector('.alert').getAttribute('class').indexOf('alert-success') >= 0);
   });
 });

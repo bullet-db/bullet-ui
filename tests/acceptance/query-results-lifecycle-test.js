@@ -8,9 +8,8 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, currentRouteName } from '@ember/test-helpers';
+import { visit, click, currentRouteName, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import $ from 'jquery';
 
 module('Acceptance | query results lifecycle', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -22,11 +21,11 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await click('.submit-button');
 
     await visit('queries');
-    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry-popover .results-table .result-date-entry');
     assert.equal(currentRouteName(), 'result');
-    assert.equal($('pre').length, 1);
+    assert.equal(findAll('pre').length, 1);
   });
 
   test('query submission with raw output with projections opens the table view by default', async function(assert) {
@@ -38,7 +37,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal($('.records-table').length, 1);
+    assert.equal(findAll('.records-table').length, 1);
   });
 
   test('query submission with grouped data opens the table view by default', async function(assert) {
@@ -51,7 +50,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal($('.records-table').length, 1);
+    assert.equal(findAll('.records-table').length, 1);
   });
 
   test('result table popover open and close', async function(assert) {
@@ -61,13 +60,13 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await click('.submit-button');
 
     await visit('queries');
-    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
     await click('.queries-table .query-results-entry');
-    assert.equal($('.query-results-entry-popover').length, 1);
+    assert.equal(findAll('.query-results-entry-popover').length, 1);
     await click('.query-results-entry-popover .close-button');
     // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
     later(() => {
-      assert.equal($('.query-results-entry-popover .results-table .result-date-entry').length, 0);
+      assert.equal(findAll('.query-results-entry-popover .results-table .result-date-entry').length, 0);
     }, 500);
   });
 
@@ -80,9 +79,9 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await click('.queries-table .query-name-entry .query-name-actions .edit-icon');
     await click('.submit-button');
     await visit('queries');
-    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '2 Results');
+    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '2 Results');
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry .clear-history');
-    assert.equal($('.queries-table .query-results-entry').text().trim(), '--');
+    assert.equal(find('.queries-table .query-results-entry').textContent.trim(), '--');
   });
 });

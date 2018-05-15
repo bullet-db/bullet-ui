@@ -24,13 +24,13 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([query]));
 
     await render(hbs`{{queries-table queries=mockQueries}}`);
-    assert.equal(this.$('.lt-head .lt-column').eq(0).text().trim(), 'Query');
-    assert.equal(this.$('.lt-head .lt-column').eq(1).text().trim(), 'Last Result');
-    assert.equal(this.$('.lt-head .lt-column').eq(2).text().trim(), 'Historical Results');
-    assert.equal(this.$('.lt-body .lt-row').length, 1);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(0).text().trim(), 'foo');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(1).text().trim(), '03 Jan 12:00 AM');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .length-entry').text().trim(), '2 Results');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Query');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[1].textContent.trim(), 'Last Result');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[2].textContent.trim(), 'Historical Results');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent.trim(), 'foo');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '03 Jan 12:00 AM');
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .length-entry').textContent.trim(), '2 Results');
   });
 
   test('it has a default sort by name and can manually sort on click', async function(assert) {
@@ -47,17 +47,17 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([queryA, queryB]));
     await render(hbs`{{queries-table queries=mockQueries}}`);
 
-    assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 3);
-    let text = this.$('.lt-body .lt-row .lt-cell').eq(0).text();
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 3);
+    let text = this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent;
     let spaceLess = text.replace(/\s/g, '');
 
     assert.equal(spaceLess, 'foo');
 
     // Click twice for descending
-    await click(this.$('.lt-head .lt-column.is-sortable')[0]);
-    await click(this.$('.lt-head .lt-column.is-sortable')[0]);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
 
-    text = this.$('.lt-body .lt-row .lt-cell').eq(0).text();
+    text = this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent;
     spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fbWindow:None');
   });
@@ -80,10 +80,10 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([queryA, queryB]));
     await render(hbs`{{queries-table queries=mockQueries}}`);
 
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(1).text().trim(), '04 Jan 12:00 AM');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '04 Jan 12:00 AM');
 
-    await click(this.$('.lt-head .lt-column.is-sortable')[1]);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(1).text().trim(), '02 Jan 12:00 AM');
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '02 Jan 12:00 AM');
   });
 
   test('it sorts by the number of results column on click', async function(assert) {
@@ -102,11 +102,11 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([queryA, queryB]));
     await render(hbs`{{queries-table queries=mockQueries}}`);
 
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .length-entry').eq(0).text().trim(), '3 Results');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0].textContent.trim(), '3 Results');
 
-    await click(this.$('.lt-head .lt-column.is-sortable')[2]);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[2]);
 
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .length-entry').eq(0).text().trim(), '1 Results');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0].textContent.trim(), '1 Results');
   });
 
   test('it calls the queryClick action on clicking the query name', async function(assert) {

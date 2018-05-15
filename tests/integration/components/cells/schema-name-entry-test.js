@@ -18,8 +18,8 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     }));
     await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-    assert.equal(this.$().text().trim(), 'foo');
-    assert.equal(this.$().find('.schema-enumeration-caret').length, 0);
+    assert.equal(this.element.textContent.trim(), 'foo');
+    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
   });
 
   test('it displays an subfield column', async function(assert) {
@@ -29,8 +29,8 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     }));
     await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-    assert.equal(this.$().text().trim(), 'bar');
-    assert.equal(this.$().find('.schema-enumeration-caret').length, 0);
+    assert.equal(this.element.textContent.trim(), 'bar');
+    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
   });
 
   test('it displays an expand caret if the row has enumerations', async function(assert) {
@@ -41,7 +41,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     }));
     await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-    assert.equal(this.$().find('.schema-enumeration-caret > .expand-caret').length, 1);
+    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret > .expand-caret').length, 1);
   });
 
   test('it displays an expanded caret if the row is expanded', async function(assert) {
@@ -53,6 +53,6 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     }));
     await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-    assert.equal(this.$().find('.schema-enumeration-caret > .expanded-caret').length, 1);
+    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret > .expanded-caret').length, 1);
   });
 });

@@ -20,7 +20,7 @@ module('Integration | Component | pivot table', function(hooks) {
 
     await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
                                    onRefresh=(action mockOnRefresh)}}`);
-    assert.equal(this.$('.pvtUi select.pvtRenderer').val(), 'Table');
+    assert.equal(this.element.querySelector('.pvtUi select.pvtRenderer').value, 'Table');
   });
 
   test('it generates options by combining defaults with provided options', async function(assert) {

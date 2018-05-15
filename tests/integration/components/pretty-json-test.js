@@ -13,39 +13,39 @@ module('Integration | Component | pretty json', function(hooks) {
 
   test('it renders edge cases', async function(assert) {
     await render(hbs`{{pretty-json}}`);
-    assert.equal(this.$().text().trim(), 'null');
+    assert.equal(this.element.textContent.trim(), 'null');
 
     await render(hbs`
       {{#pretty-json}}
         template block text
       {{/pretty-json}}
     `);
-    assert.equal(this.$().text().trim(), 'null');
+    assert.equal(this.element.textContent.trim(), 'null');
 
     this.set('json', undefined);
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.$().text().trim(), 'undefined');
+    assert.equal(this.element.textContent.trim(), 'undefined');
 
     this.set('json', []);
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.$().text().trim(), 'Array[0][]');
+    assert.equal(this.element.textContent.trim(), 'Array[0][]');
 
     this.set('json', { });
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.$().text().trim(), 'Object{}');
+    assert.equal(this.element.textContent.trim(), 'Object{}');
   });
 
   test('it wraps content in a pre tag', async function(assert) {
     await render(hbs`{{pretty-json}}`);
-    assert.equal(this.$('pre.pretty-json-container').length, 1);
+    assert.equal(this.element.querySelectorAll('pre.pretty-json-container').length, 1);
   });
 
   test('it formats json and opens to two levels by default', async function(assert) {
     let json = { foo: { bar: 'baz', test: 'foo' } };
     this.set('json', json);
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.$('.json-formatter-open').length, 2);
-    assert.equal(this.$('.json-formatter-row').length, 4);
+    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 2);
+    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 4);
   });
 
   test('it collapses json to the given levels', async function(assert) {
@@ -53,6 +53,6 @@ module('Integration | Component | pretty json', function(hooks) {
     this.set('json', json);
     this.set('mockLevels', 1);
     await render(hbs`{{pretty-json data=json defaultLevels=mockLevels}}`);
-    assert.equal(this.$('.json-formatter-open').length, 1);
+    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 1);
   });
 });

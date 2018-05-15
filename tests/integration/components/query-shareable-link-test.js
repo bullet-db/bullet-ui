@@ -18,10 +18,10 @@ module('Integration | Component | query shareable link', function(hooks) {
 
     await render(hbs`{{query-shareable-link row=mockRow}}`);
 
-    assert.equal(this.$('input').length, 1);
-    assert.equal(this.$('input').attr('id'), 'query-foo');
-    assert.equal(this.$('input').val(), '/bar/as3FDS3dx');
-    assert.equal(this.$('i.collapse-icon').length, 1);
+    assert.equal(this.element.querySelectorAll('input').length, 1);
+    assert.equal(this.element.querySelector('input').getAttribute('id'), 'query-foo');
+    assert.equal(this.element.querySelector('input').value, '/bar/as3FDS3dx');
+    assert.equal(this.element.querySelectorAll('i.collapse-icon').length, 1);
   });
 
   test('it displays an button that points to the input for clipboard copying', async function(assert) {
@@ -30,9 +30,9 @@ module('Integration | Component | query shareable link', function(hooks) {
 
     await render(hbs`{{query-shareable-link row=mockRow}}`);
 
-    assert.equal(this.$('button.copy-btn').length, 1);
-    assert.equal(this.$('button.copy-btn').data('clipboard-target'), '#query-foo');
-    assert.equal(this.$('button.copy-btn .copy-icon').length, 1);
+    assert.equal(this.element.querySelectorAll('button.copy-btn').length, 1);
+    assert.equal(this.element.querySelector('button.copy-btn').getAttribute('data-clipboard-target'), '#query-foo');
+    assert.equal(this.element.querySelectorAll('button.copy-btn .copy-icon').length, 1);
   });
 
   test('it unsets the expanded property when the collapse icon is clicked', async function(assert) {

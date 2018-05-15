@@ -8,9 +8,9 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, currentRouteName, currentURL } from '@ember/test-helpers';
+import { visit, click, fillIn, currentRouteName, currentURL, find, findAll, triggerEvent } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import $ from 'jquery';
+import { findContains } from '../helpers/find-helpers';
 
 module('Acceptance | result lifecycle', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -35,11 +35,11 @@ module('Acceptance | result lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.submit-button');
     await click('.table-view');
-    assert.equal($('.pretty-json-container').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 9);
+    assert.equal(findAll('.pretty-json-container').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 9);
     await click('.raw-view');
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.pretty-json-container').length, 1);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 1);
   });
 
   test('it lets you expand metadata in results', async function(assert) {
@@ -51,13 +51,13 @@ module('Acceptance | result lifecycle', function(hooks) {
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal($('.records-table').length, 1);
-    assert.equal($('.result-metadata').length, 1);
-    assert.notOk($('.result-metadata').hasClass('is-expanded'));
-    assert.equal($('.result-metadata pre').length, 0);
+    assert.equal(findAll('.records-table').length, 1);
+    assert.equal(findAll('.result-metadata').length, 1);
+    assert.notOk(find('.result-metadata').classList.contains('is-expanded'));
+    assert.equal(findAll('.result-metadata pre').length, 0);
     await click('.result-metadata .expand-bar');
-    assert.ok($('.result-metadata').hasClass('is-expanded'));
-    assert.equal($('.result-metadata pre').length, 1);
+    assert.ok(find('.result-metadata').classList.contains('is-expanded'));
+    assert.equal(findAll('.result-metadata pre').length, 1);
   });
 
   test('it lets you expand result entries in a popover', async function(assert) {
@@ -67,13 +67,13 @@ module('Acceptance | result lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.submit-button');
     await click('.table-view');
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 3);
-    await click($('.records-table .lt-body .lt-row .record-entry .plain-entry:contains("test")')[0]);
-    assert.equal($('.record-entry-popover').length, 1);
-    assert.equal($('.record-entry-popover .record-popover-body pre').text().trim(), 'test');
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 3);
+    await click(findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'test'));
+    assert.equal(findAll('.record-entry-popover').length, 1);
+    assert.equal(find('.record-entry-popover .record-popover-body pre').textContent.trim(), 'test');
     await click('.record-entry-popover .close-button');
     later(() => {
-      assert.equal($('.record-entry-popover').length, 0);
+      assert.equal(findAll('.record-entry-popover').length, 0);
     }, 500);
   });
 
@@ -85,21 +85,21 @@ module('Acceptance | result lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.submit-button');
     await click('.table-view');
-    assert.equal($('.records-charter').length, 0);
-    assert.equal($('.pretty-json-container').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 9);
+    assert.equal(findAll('.records-charter').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 9);
     await click('.raw-view');
-    assert.equal($('.records-charter').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.pretty-json-container').length, 1);
+    assert.equal(findAll('.records-charter').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 1);
     await click('.chart-view');
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.pretty-json-container').length, 0);
-    assert.equal($('.records-charter').length, 1);
-    assert.equal($('.pivot-table-container').length, 1);
-    assert.equal($('.pvtUi').length, 1);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 0);
+    assert.equal(findAll('.records-charter').length, 1);
+    assert.equal(findAll('.pivot-table-container').length, 1);
+    assert.equal(findAll('.pvtUi').length, 1);
     // Only pivot view
-    assert.equal($('.records-chater .mode-toggle').length, 0);
+    assert.equal(findAll('.records-chater .mode-toggle').length, 0);
   });
 
   test('it lets swap between a row, tabular, simple and pivot chart views when it is not a raw query', async function(assert) {
@@ -115,24 +115,24 @@ module('Acceptance | result lifecycle', function(hooks) {
     await click('.submit-button');
 
     await click('.raw-view');
-    assert.equal($('.records-charter').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.pretty-json-container').length, 1);
+    assert.equal(findAll('.records-charter').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 1);
     await click('.table-view');
-    assert.equal($('.records-charter').length, 0);
-    assert.equal($('.pretty-json-container').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 9);
+    assert.equal(findAll('.records-charter').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 9);
     await click('.chart-view');
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.pretty-json-container').length, 0);
-    assert.equal($('.records-charter').length, 1);
-    assert.equal($('.records-charter .mode-toggle').length, 1);
-    assert.ok($('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal($('.records-charter canvas').length, 1);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.pretty-json-container').length, 0);
+    assert.equal(findAll('.records-charter').length, 1);
+    assert.equal(findAll('.records-charter .mode-toggle').length, 1);
+    assert.ok(find('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(findAll('.records-charter canvas').length, 1);
     await click('.mode-toggle .right-view');
-    assert.ok($('.mode-toggle .right-view').hasClass('selected'));
-    assert.equal($('.pivot-table-container').length, 1);
-    assert.equal($('.pvtUi').length, 1);
+    assert.ok(find('.mode-toggle .right-view').classList.contains('selected'));
+    assert.equal(findAll('.pivot-table-container').length, 1);
+    assert.equal(findAll('.pvtUi').length, 1);
   });
 
   test('it saves and restores pivot table options', async function(assert) {
@@ -149,20 +149,22 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     await click('.chart-view');
     await click('.mode-toggle .right-view');
-    assert.ok($('.mode-toggle .right-view').hasClass('selected'));
-    assert.equal($('.pivot-table-container').length, 1);
-    assert.equal($('.pvtUi').length, 1);
-    assert.equal($('.pvtUi select.pvtRenderer').val(), 'Table');
-    $('.pivot-table-container select.pvtRenderer').val('Bar Chart').trigger('change');
-    $('.pivot-table-container select.pvtAggregator').val('Sum').trigger('change');
+    assert.ok(find('.mode-toggle .right-view').classList.contains('selected'));
+    assert.equal(findAll('.pivot-table-container').length, 1);
+    assert.equal(findAll('.pvtUi').length, 1);
+    assert.equal(find('.pvtUi select.pvtRenderer').value, 'Table');
+    find('.pivot-table-container select.pvtRenderer').value = 'Bar Chart';
+    await triggerEvent('.pivot-table-container select.pvtRenderer', 'change');
+    find('.pivot-table-container select.pvtAggregator').value = 'Sum';
+    await triggerEvent('.pivot-table-container select.pvtAggregator', 'change');
     await visit('queries');
-    assert.equal($('.queries-table .query-results-entry .length-entry').text().trim(), '1 Results');
+    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry-popover .results-table .result-date-entry');
     await click('.chart-view');
     await click('.mode-toggle .right-view');
-    assert.equal($('.pvtUi select.pvtRenderer').val(), 'Bar Chart');
-    assert.equal($('.pvtUi select.pvtAggregator').val(), 'Sum');
+    assert.equal(find('.pvtUi select.pvtRenderer').value, 'Bar Chart');
+    assert.equal(find('.pvtUi select.pvtAggregator').value, 'Sum');
   });
 
   test('it lets you swap between raw and collapsible json forms', async function(assert) {
@@ -172,16 +174,16 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     await visit('/queries/new');
     await click('.submit-button');
-    assert.equal($('.records-charter').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.raw-display').length, 1);
-    assert.equal($('.pretty-json-container').length, 1);
-    assert.equal($('.raw-json-display').length, 0);
+    assert.equal(findAll('.records-charter').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.raw-display').length, 1);
+    assert.equal(findAll('.pretty-json-container').length, 1);
+    assert.equal(findAll('.raw-json-display').length, 0);
     await click('.mode-toggle .right-view');
-    assert.equal($('.records-charter').length, 0);
-    assert.equal($('.lt-body .lt-row .lt-cell').length, 0);
-    assert.equal($('.raw-display').length, 1);
-    assert.equal($('.pretty-json-container').length, 0);
-    assert.equal($('.raw-json-display').length, 1);
+    assert.equal(findAll('.records-charter').length, 0);
+    assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
+    assert.equal(findAll('.raw-display').length, 1);
+    assert.equal(findAll('.pretty-json-container').length, 0);
+    assert.equal(findAll('.raw-json-display').length, 1);
   });
 });
