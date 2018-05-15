@@ -3,31 +3,26 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { equal, or } from '@ember/object/computed';
-import { A } from '@ember/array';
-import EmberObject, { computed } from '@ember/object';
+import { equal, or, alias } from '@ember/object/computed';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
 export default DS.Model.extend({
-  metadata: DS.attr({
-    defaultValue() {
-      return EmberObject.create();
-    }
-  }),
-  records: DS.attr({
-    defaultValue() {
-      return A();
-    }
-  }),
   created: DS.attr('date', {
     defaultValue() {
       return new Date(Date.now());
     }
   }),
   query: DS.belongsTo('query', { autoSave: true }),
-  querySnapshot: DS.attr(),
+  // TODO: change it to async: true when metadata and records computed properties are removed.
+  segments: DS.hasMany('segment', { dependent: 'destroy' }),
   pivotOptions: DS.attr('string'),
+  querySnapshot: DS.attr(),
+
+  // TODO: Remove them after result page has been changed.
+  metadata: alias('segments.lastObject.metadata'),
+  records: alias('segments.lastObject.records'),
 
   isRaw: equal('querySnapshot.type', AGGREGATIONS.get('RAW')),
   isCountDistinct: equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')),

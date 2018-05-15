@@ -11,37 +11,31 @@ export default Route.extend({
   querier: service(),
   queryManager: service(),
 
-  resultHandler(data, context) {
-    context.set('pendingRequest', null);
-    context.get('queryManager').addResult(context.paramsFor('query').query_id, data).then(result => {
-      context.transitionTo('result', result.get('id'));
-    });
+  resultHandler(context) {
+    context.transitionTo('result', context.get('result.id'));
   },
 
   errorHandler(error, context) {
-    context.set('pendingRequest', null);
     console.error(error); // eslint-disable-line no-console
     context.transitionTo('errored');
   },
 
+  segmentHandler(message, context) {
+    context.get('queryManager').addSegment(context.get('result'), message);
+  },
+
   actions: {
-    willTransition() {
-      this.send('cancelQuery');
-      return true;
-    },
-
-    cancelQuery() {
-      let pendingRequest = this.get('pendingRequest');
-      if (pendingRequest) {
-        pendingRequest.disconnect();
-      }
-    },
-
     fireQuery() {
-      this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
-        let request = this.get('querier').send(query, this.resultHandler, this.errorHandler, this);
-        // The low level XMLHTTPRequest
-        this.set('pendingRequest', request);
+      this.get('queryManager').addResult(this.paramsFor('query').query_id).then(result => {
+        this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
+          this.set('result', result);
+          let handlers = {
+            success: this.resultHandler,
+            error: this.errorHandler,
+            message: this.segmentHandler
+          };
+          this.get('querier').send(query, handlers, this);
+        });
       });
     }
   },

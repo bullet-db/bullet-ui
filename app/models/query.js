@@ -3,12 +3,13 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty } from '@ember/utils';
+import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 import { METRICS } from 'bullet-ui/models/metric';
 
 let Validations = buildValidations({
@@ -26,7 +27,14 @@ let Validations = buildValidations({
     ]
   },
   projections: validator('has-many'),
-  aggregation: validator('belongs-to')
+  aggregation: validator('belongs-to'),
+  window: {
+    description: 'window',
+    validators: [
+      validator('valid-window'),
+      validator('belongs-to')
+    ]
+  }
 });
 
 export default DS.Model.extend(Validations, {
@@ -34,6 +42,7 @@ export default DS.Model.extend(Validations, {
   filter: DS.belongsTo('filter'),
   projections: DS.hasMany('projection', { dependent: 'destroy' }),
   aggregation: DS.belongsTo('aggregation'),
+  window: DS.belongsTo('window'),
   duration: DS.attr('number', { defaultValue: 20 }),
   created: DS.attr('date', {
     defaultValue() {
@@ -41,6 +50,10 @@ export default DS.Model.extend(Validations, {
     }
   }),
   results: DS.hasMany('result', { async: true, dependent: 'destroy' }),
+
+  isWindowless: computed('window', function() {
+    return isEmpty(this.get('window.id'));
+  }),
 
   hasUnsavedFields: computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
     let projections = this.getWithDefault('projections', A());
@@ -113,6 +126,16 @@ export default DS.Model.extend(Validations, {
       return isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
     }
     return this.get('aggregationSummary');
+  }),
+
+  windowSummary: computed('isWindowless', 'window.{emit.type,emit.every,include.type}', function() {
+    if (this.get('isWindowless')) {
+      return 'None';
+    }
+    let emitType = this.get('window.emit.type');
+    let emitEvery = this.get('window.emit.every');
+    let includeType = this.get('window.include.type');
+    return `Every ${emitEvery} ${isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'seconds' : 'records'} ${isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : ''}`;
   }),
 
   latestResult: computed('results.[]', function() {

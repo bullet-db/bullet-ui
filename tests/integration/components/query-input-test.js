@@ -26,7 +26,8 @@ module('Integration | Component | query input', function(hooks) {
 
   test('it renders', async function(assert) {
     this.set('mockSchema', SIMPLE_SCHEMA);
-    await render(hbs`{{query-input schema=mockSchema}}`);
+    this.set('mockQuery', MockQuery.create());
+    await render(hbs`{{query-input schema=mockSchema query=mockQuery}}`);
 
     let text = this.$().text().trim();
     assert.ok(text.indexOf('Filters') !== -1);
@@ -38,9 +39,10 @@ module('Integration | Component | query input', function(hooks) {
 
   test('it should ignore block content', async function(assert) {
     this.set('mockSchema', SIMPLE_SCHEMA);
+    this.set('mockQuery', MockQuery.create());
     // It should ignore block content
     await render(hbs`
-      {{#query-input schema=mockSchema}}
+      {{#query-input schema=mockSchema query=mockQuery}}
         template block text
       {{/query-input}}
     `);
@@ -129,55 +131,5 @@ module('Integration | Component | query input', function(hooks) {
     let text = this.$('.validation-container').text();
     assert.equal(this.$('.validation-container .simple-alert').length, 1);
     assert.ok(text.indexOf('SAVED') !== -1);
-  });
-
-  test('it hides the save and submit button when listening', async function(assert) {
-    assert.expect(5);
-
-    this.set('mockSchema', SIMPLE_SCHEMA);
-    let query = getMockQuery();
-
-    this.set('mockQuery', query);
-    this.set('mockSave', () => EmberPromise.resolve());
-
-    await render(hbs`{{query-input query=mockQuery schema=mockSchema save=mockSave}}`);
-
-    assert.ok(this.$('.submit-button').is(':visible'));
-    assert.ok(this.$('.save-button').is(':visible'));
-
-    await click('.submit-button');
-
-    assert.notOk(this.$('.submit-button').is(':visible'));
-    assert.notOk(this.$('.save-button').is(':visible'));
-    assert.ok(this.$('.cancel-button').is(':visible'));
-  });
-
-  test('it triggers the cancel query action when cancelling', async function(assert) {
-    assert.expect(6);
-
-    this.set('mockSchema', SIMPLE_SCHEMA);
-    let query = getMockQuery();
-
-    this.set('mockQuery', query);
-    this.set('mockSave', () => EmberPromise.resolve());
-    this.set('mockFireQuery', () => {
-      assert.ok(true);
-    });
-    this.set('mockCancelQuery', () => {
-      assert.ok(true);
-    });
-
-    await render(
-      hbs`{{query-input query=mockQuery schema=mockSchema save=mockSave fireQuery=(action mockFireQuery) cancelQuery=(action mockCancelQuery)}}`
-    );
-
-    assert.ok(this.$('.submit-button').is(':visible'));
-
-    await click('.submit-button');
-    assert.ok(this.$('.cancel-button').is(':visible'));
-    await click('.cancel-button');
-    let text = this.$('.validation-container').text();
-    assert.equal(this.$('.validation-container .simple-alert').length, 1);
-    assert.ok(text.indexOf('CANCELLED') !== -1);
   });
 });

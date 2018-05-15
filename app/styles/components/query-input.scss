@@ -23,6 +23,8 @@
   $inactive-container-color: #EAEAEA;
   $query-footer-panel-height: 140px;
   $output-option-indentation: 25px;
+  $border-rectangle-color: #DCDEE2;
+  $subsection-color: #8C8C8C;
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // Reused mixins
@@ -74,6 +76,45 @@
 
     &:hover {
       color: $error-icon-hover-color;
+    }
+  }
+
+  %ember-radio-button {
+    display: block;
+    max-width: 400px;
+    margin-bottom: 10px;
+    font-size: $font-size-regular-small;
+    font-family: $font-family-regular;
+    font-weight: $font-weight-regular;
+    &.checked {
+      font-weight: $font-weight-strong;
+    }
+    input {
+      margin-right: 10px;
+    }
+  }
+
+  %subsection-header {
+    margin: 5px 0;
+    text-transform: uppercase;
+    font-size: $font-size-small;
+    font-weight: $font-weight-medium;
+    color: $subsection-color;
+    opacity: 0.9;
+  }
+
+  %validated-input-row {
+    @import "validated-input";
+    margin-top: 10px;
+    margin-left: 5px;
+    input {
+      height: 45px;
+    }
+    .validated-input {
+      .error-tooltip-link {
+        // Because these fields are an exception, their error icon needs to be recentered
+        margin-top: 45px/2 - $font-size-regular/2;
+      }
     }
   }
 
@@ -168,16 +209,15 @@
       @import "output-data-input";
     }
 
+    .window-container {
+      @import "window-input";
+    }
+
     .options-container {
       padding-top: 5px;
       .row {
-        @import "validated-input";
+        @extend %validated-input-row;
 
-        margin-top: 10px;
-        margin-left: 5px;
-        input {
-          height: 45px;
-        }
         .validated-input {
           .aggregation-size {
             padding-right: 0;
@@ -188,10 +228,6 @@
           .query-duration {
             margin-left: -5px;
             width: 195px;
-          }
-          .error-tooltip-link {
-            // Because these fields are an exception, their error icon needs to be recentered
-            margin-top: 45px/2 - $font-size-regular/2;
           }
         }
       }

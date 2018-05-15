@@ -22,7 +22,7 @@ export default Component.extend(PaginatedTable, {
         return name;
       }
       // Stick a ~~~ in front so that generated summaries sort together toward one end
-      return `~~~${row.get('filterSummary')}${row.get('projectionsSummary')}`;
+      return `~~~${row.get('filterSummary')}${row.get('projectionsSummary')}${row.get('windowSummary')}`;
     },
 
     latestResult(row) {

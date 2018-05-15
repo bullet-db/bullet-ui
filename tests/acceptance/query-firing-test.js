@@ -258,4 +258,28 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal($('.output-container .top-k-min-count input').val(), '2000');
     assert.equal($('.output-container .top-k-display-name input').val(), 'cnt');
   });
+
+  test('creating a window query', async function(assert) {
+    assert.expect(7);
+    this.mockedAPI.mock([RESULTS.RAW], COLUMNS.BASIC);
+
+    await visit('/queries/new');
+    await click('.window-input .add-button');
+    await click('.submit-button');
+    await visit('queries');
+    await click('.queries-table .query-name-entry');
+    assert.equal($('.window-input .ember-radio-button').length, 4);
+    assert.ok($('.window-input #time-based').parent().hasClass('checked'));
+
+    await click('.window-input #record-based');
+    assert.equal($('.window-input .ember-radio-button').length, 2);
+    assert.ok($('.window-input #record-based').parent().hasClass('checked'));
+
+    await click('.window-input #time-based');
+    assert.equal($('.window-input .ember-radio-button').length, 4);
+    assert.ok($('.window-input #time-based').parent().hasClass('checked'));
+
+    await click('.window-input .remove-button');
+    assert.equal($('.window-input .add-button').length, 1);
+  });
 });

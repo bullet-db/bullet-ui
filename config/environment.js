@@ -41,6 +41,9 @@ const TEST_SETTINGS = {
     distributionQuantileEnd: 1,
     distributionQuantileIncrement: 0.1,
     queryTimeoutSecs: 3,
+    windowEmitFrequencyMinSecs: 1,
+    everyForRecordBasedWindow: 1,
+    everyForTimeBasedWindow: 2,
     sketches: {
       countDistinctMaxEntries: 16384,
       groupByMaxEntries: 512,

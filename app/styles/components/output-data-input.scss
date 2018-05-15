@@ -1,7 +1,4 @@
 .output-data-input {
-  $border-rectangle-color: #DCDEE2;
-  $subsection-color: #8C8C8C;
-
   @import "info-popover";
   padding: 15px;
   margin-top: 5px;
@@ -11,18 +8,7 @@
   position: relative;
 
   .ember-radio-button {
-    display: block;
-    max-width: 400px;
-    margin-bottom: 10px;
-    font-size: $font-size-regular-small;
-    font-family: $font-family-regular;
-    font-weight: $font-weight-regular;
-    &.checked {
-      font-weight: $font-weight-strong;
-    }
-    input {
-      margin-right: 10px;
-    }
+    @extend %ember-radio-button;
   }
 
   .inline-radio-buttons {
@@ -79,11 +65,6 @@
   }
 
   .subsection-header {
-    margin: 5px 0;
-    text-transform: uppercase;
-    font-size: $font-size-small;
-    font-weight: $font-weight-medium;
-    color: $subsection-color;
-    opacity: 0.9;
+    @extend %subsection-header;
   }
 }

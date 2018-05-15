@@ -8,8 +8,10 @@ import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
+import { isEqual } from '@ember/utils';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { EMIT_TYPES } from 'bullet-ui/models/window';
 import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
 
 export default Component.extend(BuilderAdapter, {
@@ -31,15 +33,15 @@ export default Component.extend(BuilderAdapter, {
   listenDuration: 0,
   hasError: false,
   hasSaved: false,
-  hasCancelled: false,
 
   columns: computed('schema', function() {
     let schema = this.get('schema');
     return this.builderFilters(schema);
   }).readOnly(),
 
-  showAggregationSize: computed('query.aggregation.type', function() {
-    return this.get('query.aggregation.type') === AGGREGATIONS.get('RAW');
+  showAggregationSize: computed('query.{aggregation.type,window.emit.type,isWindowless}', function() {
+    return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) &&
+      (this.get('query.isWindowless') || isEqual(this.get('query.window.emit.type'), EMIT_TYPES.get('TIME')));
   }),
 
   didInsertElement() {
@@ -79,8 +81,7 @@ export default Component.extend(BuilderAdapter, {
       isListening: false,
       listenDuration: 0,
       hasError: false,
-      hasSaved: false,
-      hasCancelled: false
+      hasSaved: false
     });
     this.$(this.get('queryBuilderInputs')).removeAttr('disabled');
   },
@@ -112,14 +113,6 @@ export default Component.extend(BuilderAdapter, {
         this.set('hasSaved', true);
         this.get('scroller').scrollVertical('.validation-container');
       });
-    },
-
-    cancel() {
-      this.toggleProperty('isListening');
-      this.reset();
-      this.set('hasCancelled', true);
-      this.get('scroller').scrollVertical('.validation-container');
-      this.sendAction('cancelQuery');
     },
 
     listen() {

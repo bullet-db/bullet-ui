@@ -5,7 +5,7 @@
  */
 import { isEqual } from '@ember/utils';
 import { computed } from '@ember/object';
-import Service from '@ember/service';
+import Service, { inject as service } from '@ember/service';
 import SockJS from 'npm:sockjs-client';
 import Stomp from 'npm:@stomp/stompjs';
 
@@ -15,6 +15,8 @@ const NEW_QUERY_TYPE = 'NEW_QUERY';
 const SESSION_LENGTH = 64;
 
 export default Service.extend({
+  querier: service(),
+
   url: computed('settings', function() {
     return `${this.get('settings.queryHost')}/${this.get('settings.queryNamespace')}/${this.get('settings.queryPath')}`;
   }),
@@ -27,21 +29,22 @@ export default Service.extend({
     return this.get('settings.queryStompResponseChannel');
   }),
 
-  makeStompMessageHandler(stompClient, successHandler, context) {
+  makeStompMessageHandler(stompClient, handlers, context) {
     return payload => {
-      let message = JSON.parse(payload.body);
-      if (!isEqual(message.type, ACK_TYPE)) {
-        if (isEqual(message.type, COMPLETE_TYPE)) {
-          stompClient.disconnect();
+      let { type, content } = JSON.parse(payload.body);
+      if (!isEqual(type, ACK_TYPE)) {
+        if (isEqual(type, COMPLETE_TYPE)) {
+          this.get('querier').cancel();
         }
-        successHandler(JSON.parse(message.content), context);
+        handlers.message(JSON.parse(content), context);
       }
     };
   },
 
-  makeStompConnectHandler(stompClient, data, onStompMessage) {
+  makeStompConnectHandler(stompClient, data, handlers, context) {
     let queryStompRequestChannel = this.get('queryStompRequestChannel');
     let queryStompResponseChannel = this.get('queryStompResponseChannel');
+    let onStompMessage = this.makeStompMessageHandler(stompClient, handlers, context);
     return () => {
       stompClient.subscribe(queryStompResponseChannel, onStompMessage);
       let request = {
@@ -49,24 +52,24 @@ export default Service.extend({
         type: NEW_QUERY_TYPE
       };
       stompClient.send(queryStompRequestChannel, { }, JSON.stringify(request));
+      handlers.success(context);
     };
   },
 
-  makeStompErrorHandler(errorHandler, context) {
+  makeStompErrorHandler(handlers, context) {
     return (...args) => {
-      errorHandler(`Error when connecting the server: ${args}`, context);
+      handlers.error(`Error when connecting the server: ${args}`, context);
     };
   },
 
-  createStompClient(data, successHandler, errorHandler, context) {
+  createStompClient(data, handlers, context) {
     let url = this.get('url');
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
     stompClient.debug = null;
 
-    let onStompMessage = this.makeStompMessageHandler(stompClient, successHandler, context);
-    let onStompConnect = this.makeStompConnectHandler(stompClient, data, onStompMessage);
-    let onStompError = this.makeStompErrorHandler(errorHandler, context);
+    let onStompConnect = this.makeStompConnectHandler(stompClient, data, handlers, context);
+    let onStompError = this.makeStompErrorHandler(handlers, context);
     stompClient.connect({ }, onStompConnect, onStompError);
     return stompClient;
   }

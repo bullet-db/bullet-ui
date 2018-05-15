@@ -5,12 +5,13 @@
  */
 import { A } from '@ember/array';
 import $ from 'jquery';
-import { isNone, isEmpty } from '@ember/utils';
+import { isNone, isEmpty, isEqual } from '@ember/utils';
 import EmberObject from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
+import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 
 export default Service.extend(Filterizer, {
   stompWebsocket: service(),
@@ -30,6 +31,7 @@ export default Service.extend(Filterizer, {
     let clause = this.recreateFilter(json.filters);
     let projection = this.recreateProjections(json.projection);
     let aggregation = this.recreateAggregation(json.aggregation);
+    let window = this.recreateWindow(json.window);
 
     let filter = EmberObject.create();
     if (!this.isTruthy(clause)) {
@@ -42,6 +44,7 @@ export default Service.extend(Filterizer, {
     this.setIfTruthy(query, 'filter', filter);
     this.setIfTruthy(query, 'projections', projection);
     this.setIfTruthy(query, 'aggregation', aggregation);
+    this.setIfTruthy(query, 'window', window);
     this.setIfTruthy(query, 'name', json.name);
     query.set('duration', Number(json.duration) / 1000);
     return query;
@@ -57,6 +60,10 @@ export default Service.extend(Filterizer, {
     let filter = this.reformatFilter(query.get('filter'));
     let projection = this.reformatProjections(query.get('projections'));
     let aggregation = this.reformatAggregation(query.get('aggregation'));
+
+    if (!query.get('isWindowless')) {
+      json.window = this.reformatWindow(query.get('window'));
+    }
 
     if (filter) {
       json.filters = [filter];
@@ -132,6 +139,26 @@ export default Service.extend(Filterizer, {
     return aggregation;
   },
 
+  recreateWindow(json) {
+    if (isEmpty(json)) {
+      return false;
+    }
+    let emit = EmberObject.create({
+      type: EMIT_TYPES.get(json.emit.type),
+      every: Number(json.emit.every) / 1000
+    });
+    let include = EmberObject.create();
+    if (!isEmpty(json.include) && isEqual(json.include.type, INCLUDE_TYPES.apiKey(INCLUDE_TYPES.get('ALL')))) {
+      include.set('type', INCLUDE_TYPES.get('ALL'));
+    } else {
+      include.set('type', INCLUDE_TYPES.get('WINDOW'));
+    }
+    return EmberObject.create({
+      emit: emit,
+      include: include
+    });
+  },
+
   reformatAggregation(aggregation) {
     if (isEmpty(aggregation)) {
       return false;
@@ -145,6 +172,20 @@ export default Service.extend(Filterizer, {
     this.assignIfTruthy(json, 'fields', fields);
     this.assignIfTruthy(json, 'attributes', attributes);
 
+    return json;
+  },
+
+  reformatWindow(window) {
+    let json = {
+      emit: {
+        type: EMIT_TYPES.apiKey(window.get('emit.type')),
+        every: Number(window.get('emit.every')) * 1000
+      }
+    };
+    let includeType = window.get('include.type');
+    if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
+      json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
+    }
     return json;
   },
 
@@ -312,13 +353,20 @@ export default Service.extend(Filterizer, {
    * Exposes the low-level StompClient object in order to abort.
    *
    * @param  {Object} data             The Query model.
-   * @param  {Function} successHandler The function to invoke on success.
-   * @param  {Function} errorHandler   The function to invoke on failure.
-   * @param  {Object} context          The this context for the success and error handlers.
-   * @return {Object}                  The StompClient object to communicate with server via WebSocket.
+   * @param  {Object} handlers         The Object which contains the functions to invoke on success, failure or message.
+   * @param  {Object} context          The context for the handlers.
    */
-  send(data, successHandler, errorHandler, context) {
+  send(data, handlers, context) {
     data = this.reformat(data);
-    return this.get('stompWebsocket').createStompClient(data, successHandler, errorHandler, context);
+    let stompClient = this.get('stompWebsocket').createStompClient(data, handlers, context);
+    this.set('pendingRequest', stompClient);
+  },
+
+  cancel() {
+    let pendingRequest = this.get('pendingRequest');
+    if (pendingRequest) {
+      pendingRequest.disconnect();
+      this.set('pendingRequest', null);
+    }
   }
 });
