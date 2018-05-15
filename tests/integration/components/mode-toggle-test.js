@@ -13,22 +13,22 @@ module('Integration | Component | mode toggle', function(hooks) {
 
   test('it renders two buttons with texts', async function(assert) {
     await render(hbs`{{mode-toggle}}`);
-    assert.equal(this.$().text().trim(), 'Toggled\n Not Toggled');
-    assert.equal(this.$('button').length, 2);
+    assert.equal(this.element.textContent.trim(), 'Toggled\n Not Toggled');
+    assert.equal(this.element.querySelectorAll('button').length, 2);
     await render(hbs`
       {{#mode-toggle}}
         template block text
       {{/mode-toggle}}
     `);
-    assert.equal(this.$().text().trim(), 'Toggled\n Not Toggled');
-    assert.equal(this.$('button').length, 2);
-    assert.ok(this.$('.left-view').hasClass('selected'));
+    assert.equal(this.element.textContent.trim(), 'Toggled\n Not Toggled');
+    assert.equal(this.element.querySelectorAll('button').length, 2);
+    assert.ok(this.element.querySelector('.left-view').classList.contains('selected'));
   });
 
   test('it renders two buttons with provided texts', async function(assert) {
     await render(hbs`{{mode-toggle toggledText="Foo" notToggledText="Bar"}}`);
-    assert.equal(this.$().text().trim(), 'Foo\n Bar');
-    assert.equal(this.$('button').length, 2);
+    assert.equal(this.element.textContent.trim(), 'Foo\n Bar');
+    assert.equal(this.element.querySelectorAll('button').length, 2);
   });
 
   test('it allows you to toggle modes', async function(assert) {
@@ -37,9 +37,9 @@ module('Integration | Component | mode toggle', function(hooks) {
       assert.notOk(isToggled);
     });
     await render(hbs`{{mode-toggle onToggled=mockToggled}}`);
-    assert.ok(this.$('.left-view').hasClass('selected'));
+    assert.ok(this.element.querySelector('.left-view').classList.contains('selected'));
     await click('.right-view');
-    assert.notOk(this.$('.left-view').hasClass('selected'));
-    assert.ok(this.$('.right-view').hasClass('selected'));
+    assert.notOk(this.element.querySelector('.left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.right-view').classList.contains('selected'));
   });
 });

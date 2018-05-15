@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isArray } from '@ember/array';
-import $ from 'jquery';
 import { isEmpty, typeOf } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
@@ -44,7 +43,7 @@ module('Unit | Service | querier', function(hooks) {
           return;
         }
         if (emType === 'object' && isEmptyObject(emValue)) {
-          assert.ok($.isEmptyObject(value), `Ember object: ${emValue} was empty but ${value} is not`);
+          assert.ok(isEmpty(value), `Ember object: ${emValue} was empty but ${value} is not`);
         } else {
           assertEmberEqual(assert, emValue, value);
         }

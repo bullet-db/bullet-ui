@@ -16,9 +16,9 @@ module('Integration | Component | records table', function(hooks) {
     this.set('columns', A(['foo']));
     this.set('rows', A([{ foo: 1 }, { foo: 2 }, { foo: 3 }]));
     await render(hbs`{{records-table columnNames=columns rawRows=rows}}`);
-    assert.equal(this.$('.lt-head .lt-column').text().trim(), 'foo');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').length, 3);
-    let text = this.$('.lt-body .lt-row .lt-cell').text();
+    assert.equal(this.element.querySelector('.lt-head .lt-column').textContent.trim(), 'foo');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
+    let text = this.element.querySelector('.lt-body').textContent;
     let spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, '123');
   });
@@ -28,12 +28,12 @@ module('Integration | Component | records table', function(hooks) {
     this.set('columns', A(['foo']));
     this.set('rows', A([{ foo: 2 }, { foo: 1 }, { foo: 3 }]));
     await render(hbs`{{records-table columnNames=columns rawRows=rows}}`);
-    assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 1);
-    let text = this.$('.lt-body .lt-row .lt-cell').text();
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 1);
+    let text = this.element.querySelector('.lt-body').textContent;
     let spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, '213');
     await click('.lt-head .lt-column.is-sortable');
-    text = this.$('.lt-body .lt-row .lt-cell').text();
+    text = this.element.querySelector('.lt-body').textContent;
     spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, '123');
   });
@@ -48,6 +48,13 @@ module('Integration | Component | records table', function(hooks) {
     }
     this.set('rows', A(mockRows));
     await render(hbs`{{records-table columnNames=columns rawRows=rows pageSize=10}}`);
-    assert.equal(this.$('.lt-row:not(".lt-is-loading")').length, 10);
+    let elements = this.element.querySelectorAll('.lt-row');
+    let count = 0;
+    elements.forEach(e => {
+      if (!e.classList.contains('lt-is-loading')) {
+        count += 1;
+      }
+    });
+    assert.equal(count, 10);
   });
 });

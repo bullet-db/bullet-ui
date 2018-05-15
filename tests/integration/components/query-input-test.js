@@ -29,7 +29,7 @@ module('Integration | Component | query input', function(hooks) {
     this.set('mockQuery', MockQuery.create());
     await render(hbs`{{query-input schema=mockSchema query=mockQuery}}`);
 
-    let text = this.$().text().trim();
+    let text = this.element.textContent.trim();
     assert.ok(text.indexOf('Filters') !== -1);
     assert.ok(text.indexOf('Output Data') !== -1);
     assert.ok(text.indexOf('Query Stop Criteria') !== -1);
@@ -46,7 +46,7 @@ module('Integration | Component | query input', function(hooks) {
         template block text
       {{/query-input}}
     `);
-    let text = this.$().text().trim();
+    let text = this.element.textContent.trim();
     assert.ok(text.indexOf('template block text') === -1);
   });
 
@@ -55,7 +55,7 @@ module('Integration | Component | query input', function(hooks) {
     let query = MockQuery.create({ name: 'foo' });
     this.set('mockQuery', query);
     await render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
-    assert.equal(this.$('.query-name :input').val(), 'foo');
+    assert.equal(this.element.querySelector('.query-name input').value, 'foo');
   });
 
   test('it displays the duration of a query', async function(assert) {
@@ -63,7 +63,7 @@ module('Integration | Component | query input', function(hooks) {
     let query = MockQuery.create({ duration: 1000 });
     this.set('mockQuery', query);
     await render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
-    assert.equal(this.$('.query-duration :input').val(), '1000');
+    assert.equal(this.element.querySelector('.query-duration input').value, '1000');
   });
 
   test('it displays validation messages on saving if the query is not valid', async function(assert) {
@@ -75,13 +75,13 @@ module('Integration | Component | query input', function(hooks) {
     this.set('mockQuery', query);
     await render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
 
-    assert.equal(this.$('.submit-button').prop('disabled'), false);
+    assert.equal(this.element.querySelector('.submit-button').disabled, false);
     await click('.save-button');
 
-    let text = this.$('.validation-container').text();
-    assert.equal(this.$('.validation-container .simple-alert').length, 1);
+    let text = this.element.querySelector('.validation-container').textContent;
+    assert.equal(this.element.querySelectorAll('.validation-container .simple-alert').length, 1);
     assert.ok(text.indexOf('OOPS') !== -1);
-    assert.equal(this.$('.submit-button').prop('disabled'), false);
+    assert.equal(this.element.querySelector('.submit-button').disabled, false);
   });
 
   test('it displays validation messages on submitting if the query is not valid', async function(assert) {
@@ -93,13 +93,13 @@ module('Integration | Component | query input', function(hooks) {
     this.set('mockQuery', query);
     await render(hbs`{{query-input query=mockQuery schema=mockSchema}}`);
 
-    assert.equal(this.$('.submit-button').prop('disabled'), false);
+    assert.equal(this.element.querySelector('.submit-button').disabled, false);
     await click('.submit-button');
 
-    let text = this.$('.validation-container').text();
-    assert.equal(this.$('.validation-container .simple-alert').length, 1);
+    let text = this.element.querySelector('.validation-container').textContent;
+    assert.equal(this.element.querySelectorAll('.validation-container .simple-alert').length, 1);
     assert.ok(text.indexOf('OOPS') !== -1);
-    assert.equal(this.$('.submit-button').prop('disabled'), false);
+    assert.equal(this.element.querySelector('.submit-button').disabled, false);
   });
 
   test('it saves and triggers the fire query action on a good query', async function(assert) {
@@ -118,18 +118,18 @@ module('Integration | Component | query input', function(hooks) {
       // We should be triggered if everything is ok.
       assert.ok(true);
       // There should be no validation messages
-      assert.equal(this.$('.validation-container').text().trim(), '');
+      assert.equal(this.element.querySelector('.validation-container').textContent.trim(), '');
     });
 
     await render(
       hbs`{{query-input query=mockQuery schema=mockSchema save=mockSave fireQuery=(action mockFireQuery)}}`
     );
 
-    assert.equal(this.$('.submit-button').prop('disabled'), false);
+    assert.equal(this.element.querySelector('.submit-button').disabled, false);
 
     await click('.submit-button');
-    let text = this.$('.validation-container').text();
-    assert.equal(this.$('.validation-container .simple-alert').length, 1);
+    let text = this.element.querySelector('.validation-container').textContent;
+    assert.equal(this.element.querySelectorAll('.validation-container .simple-alert').length, 1);
     assert.ok(text.indexOf('SAVED') !== -1);
   });
 });

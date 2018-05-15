@@ -5,7 +5,7 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, settled } from '@ember/test-helpers';
+import { render, settled, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
 module('Integration | Component | Cell | record entry', function(hooks) {
@@ -15,15 +15,15 @@ module('Integration | Component | Cell | record entry', function(hooks) {
     this.set('mockRow', { content: { value: 'foo' } });
     this.set('mockColumn', { label: 'value' });
     await render(hbs`{{cells/record-entry row=mockRow column=mockColumn}}`);
-    assert.ok(this.$().text(), 'foo');
-    assert.equal(this.$('.record-popover-body').length, 0);
+    assert.ok(this.element.textContent, 'foo');
+    assert.equal(this.element.querySelectorAll('.record-popover-body').length, 0);
   });
 
   test('it renders a complex array as text', async function(assert) {
     this.set('mockRow', { content: { bar: ['foo'] } });
     this.set('mockColumn', { label: 'bar' });
     await render(hbs`{{cells/record-entry row=mockRow column=mockColumn}}`);
-    assert.equal(this.$('.plain-entry').text(), '["foo"]');
+    assert.equal(this.element.querySelector('.plain-entry').textContent, '["foo"]');
   });
 
   test('it adds the popover to the provided element selector on click', async function(assert) {
@@ -33,11 +33,11 @@ module('Integration | Component | Cell | record entry', function(hooks) {
     await render(
       hbs`{{cells/record-entry id="test-record-entry" row=mockRow column=mockColumn createPopoverOn="#test-record-entry"}}`
     );
-    assert.equal(this.$('.record-popover-title').length, 0);
-    this.$('#test-record-entry').click();
+    assert.equal(this.element.querySelectorAll('.record-popover-title').length, 0);
+    await click('#test-record-entry');
     return settled().then(() => {
-      assert.equal(this.$('.record-popover-title').length, 1);
-      assert.equal(this.$('.record-popover-title > span').text(), 'bar');
+      assert.equal(this.element.querySelectorAll('.record-popover-title').length, 1);
+      assert.equal(this.element.querySelector('.record-popover-title > span').textContent, 'bar');
     });
   });
 });
