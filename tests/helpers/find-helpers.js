@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
- import { findAll } from '@ember/test-helpers';
+import { findAll } from '@ember/test-helpers';
 
 /**
  * Find the first element matched by the given selector within the given context element.
