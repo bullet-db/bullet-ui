@@ -9,7 +9,7 @@ import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
 import { visit, click, fillIn, triggerEvent, currentRouteName, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import { findWithContext, findAllWithContext } from '../helpers/find-helpers';
+import { findIn, findAllIn } from '../helpers/find-helpers';
 
 module('Acceptance | query firing', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -152,14 +152,14 @@ module('Acceptance | query firing', function(hooks) {
     await visit('/queries/new');
     await click('.output-options #count-distinct');
     await click('.output-container .fields-selection-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column');
     await fillIn('.output-container .count-distinct-display-name input', 'cnt');
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column');
     assert.equal(find('.output-container .count-distinct-display-name input').value, 'cnt');
     // No names for fields for count distinct
     assert.equal(findAll('.output-container .field-selection-container .field-name').length, 0);
@@ -175,34 +175,34 @@ module('Acceptance | query firing', function(hooks) {
     await click('.output-options #grouped-data');
     await click('.output-container .groups-container .add-group');
     await click('.output-container .groups-container .add-group');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
     // Name was autofilled for simple_column
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0]).textContent.trim(), 'complex_map_column');
-    assert.equal(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0]).textContent.trim(), 'complex_map_column');
+    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
 
     // No field and name for count
-    assert.equal(findWithContext('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0]).textContent.trim(), 'Count');
-    assert.equal(findAllWithContext('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
-    assert.equal(findWithContext('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
+    assert.equal(findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0]).textContent.trim(), 'Count');
+    assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
+    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
 
-    assert.equal(findWithContext('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'Average');
-    assert.equal(findWithContext('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
+    assert.equal(findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'Average');
+    assert.equal(findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
 
     // No size field shown
     assert.equal(findAll('.aggregation-size').length, 0);
@@ -239,11 +239,11 @@ module('Acceptance | query firing', function(hooks) {
     await visit('/queries/new');
     await click('.output-options #top-k');
     await click('.output-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
     await fillIn('.output-container .top-k-size input', '20');
     await fillIn('.output-container .top-k-min-count input', '2000');
     await fillIn('.output-container .top-k-display-name input', 'cnt');
@@ -254,10 +254,10 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal(findAll('.output-container .field-selection-container .field-name').length, 2);
     assert.equal(findAll('.aggregation-size').length, 0);
     assert.ok(find('.output-options #top-k').parentElement.classList.contains('checked'));
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column.*');
-    assert.equal(findWithContext('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
-    assert.equal(findWithContext('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column.*');
+    assert.equal(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
+    assert.equal(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
     assert.equal(find('.output-container .top-k-size input').value, '20');
     assert.equal(find('.output-container .top-k-min-count input').value, '2000');
     assert.equal(find('.output-container .top-k-display-name input').value, 'cnt');

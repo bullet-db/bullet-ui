@@ -9,7 +9,7 @@ import COLUMNS from '../fixtures/columns';
 import FILTERS from '../fixtures/filters';
 import { setupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
 import { visit, findAll } from '@ember/test-helpers';
-import { findWithContext, findAllWithContext } from '../helpers/find-helpers';
+import { findIn, findAllIn } from '../helpers/find-helpers';
 
 module('Acceptance | query default filter', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
@@ -20,12 +20,12 @@ module('Acceptance | query default filter', function(hooks) {
     await visit('/queries/new');
 
     assert.equal(findAll('.filter-container .builder .rules-list .rule-container').length, 2);
-    assert.equal(findWithContext('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
+    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
       'complex_list_column');
-    assert.equal(findWithContext('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'is_not_null');
-    assert.equal(findAllWithContext('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[0]).length, 0);
-    assert.equal(findWithContext('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
-    assert.equal(findWithContext('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
-    assert.equal(findWithContext('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
+    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'is_not_null');
+    assert.equal(findAllIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[0]).length, 0);
+    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
+    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
+    assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
   });
 });

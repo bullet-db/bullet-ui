@@ -9,7 +9,7 @@ import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
 import { visit, click, fillIn, triggerEvent, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import { findWithContext } from '../helpers/find-helpers';
+import { findIn } from '../helpers/find-helpers';
 
 module('Acceptance | query summarization', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -54,27 +54,27 @@ module('Acceptance | query summarization', function(hooks) {
     await visit('/queries/new');
     await click('.output-container .raw-sub-options #select');
 
-    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
+    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
-      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
+      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
     await triggerEvent(
-      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
+      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'blur'
     );
     await fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
 
     await click('.output-container .projections-container .add-projection');
-    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
     await click('.output-container .projections-container .add-projection');
-    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[2]), 'complex_map_column.*');
+    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[2]), 'complex_map_column.*');
     await fillIn(
-      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[2]),
+      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[2]),
       'bar'
     );
     await triggerEvent(
-      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[2]),
+      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[2]),
       'blur'
     );
 
@@ -94,8 +94,8 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #count-distinct');
     await click('.output-container .fields-selection-container .add-field');
     await click('.output-container .fields-selection-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column');
     await fillIn('.output-container .count-distinct-display-name input', 'cnt');
     await click('.save-button');
     await visit('queries');
@@ -112,13 +112,13 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #grouped-data');
 
     await click('.groups-container .add-group');
-    await selectChoose(findWithContext('.field-selection', findAll('.groups-container .field-selection-container')[0]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'blur');
+    await selectChoose(findIn('.field-selection', findAll('.groups-container .field-selection-container')[0]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'blur');
 
     await click('.groups-container .add-group');
-    await selectChoose(findWithContext('.field-selection', findAll('.groups-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[1]), 'bar');
+    await selectChoose(findIn('.field-selection', findAll('.groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]), 'bar');
 
     await click('.save-button');
     await visit('queries');
@@ -135,28 +135,28 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #grouped-data');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_s');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_s');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'Average');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'simple_column');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'Average');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'simple_column');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'Sum');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'simple_column');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'Sum');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'simple_column');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'Minimum');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'simple_column');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'Minimum');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'simple_column');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'Maximum');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'simple_column');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'Maximum');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'simple_column');
 
     await click('.submit-button');
     await visit('queries');
@@ -174,20 +174,20 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #grouped-data');
 
     await click('.groups-container .add-group');
-    await selectChoose(findWithContext('.field-selection', findAll('.groups-container .field-selection-container')[0]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'blur');
+    await selectChoose(findIn('.field-selection', findAll('.groups-container .field-selection-container')[0]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'blur');
 
     await click('.groups-container .add-group');
-    await selectChoose(findWithContext('.field-selection', findAll('.groups-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[1]), 'bar');
+    await selectChoose(findIn('.field-selection', findAll('.groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]), 'bar');
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
     await selectChoose(findAll('.output-container .metrics-container .metrics-selection')[1], 'Average');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
     await click('.submit-button');
     await visit('queries');
@@ -272,10 +272,10 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #top-k');
 
     await click('.output-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
 
     await click('.submit-button');
     await visit('queries');
@@ -292,10 +292,10 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #top-k');
 
     await click('.output-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
 
     await fillIn('.output-container .top-k-size input', '15');
     await fillIn('.output-container .top-k-min-count input', '1500');
@@ -315,10 +315,10 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #top-k');
 
     await click('.output-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
 
     await fillIn('.output-container .top-k-size input', '15');
     await fillIn('.output-container .top-k-min-count input', '1500');

@@ -13,7 +13,7 @@ import sinon from 'sinon';
 import Stomp from 'npm:@stomp/stompjs';
 import { basicSetupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
 import { visit, findAll } from '@ember/test-helpers';
-import { findWithContext } from '../helpers/find-helpers';
+import { findIn } from '../helpers/find-helpers';
 
 let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
@@ -45,13 +45,13 @@ module('Acceptance | query default api filter', function(hooks) {
     assert.expect(7);
     await visit('/queries/new');
     assert.equal(findAll('.filter-container .builder .rules-list .rule-container').length, 2);
-    assert.equal(findWithContext('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
+    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
       'enumerated_map_column.nested_1');
-    assert.equal(findWithContext('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'not_in');
-    assert.equal(findWithContext('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, '1,2,3');
-    assert.equal(findWithContext('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
-    assert.equal(findWithContext('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
-    assert.equal(findWithContext('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
+    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'not_in');
+    assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, '1,2,3');
+    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
+    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
+    assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
   });
 
   test('it reuses fetched values when creating new queries', async function(assert) {

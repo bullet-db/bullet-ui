@@ -12,7 +12,7 @@ import { findAll } from '@ember/test-helpers';
  * @param {Element} context the element to search within
  * @return {Element} matched element or null
  */
-export function findWithContext(selector, context) {
+export function findIn(selector, context) {
   return context.querySelector(selector);
 }
 
@@ -23,20 +23,20 @@ export function findWithContext(selector, context) {
  * @param {Element} context the element to search within
  * @return {Array} an array of matched elements
  */
-export function findAllWithContext(selector, context) {
+export function findAllIn(selector, context) {
   return context.querySelectorAll(selector);
 }
 
 /**
  * Find all siblings of an element which have a given class.
- * @param  {Element} elem the element to get siblings
+ * @param  {Element} element the element to get siblings
  * @param {string} className the class name to match.
  * @return {Array} an array of all matched sibling nodes
  */
-export function findSiblings(elem, className) {
+export function findSiblings(element, className) {
   let siblings = [];
-  for (let sibling = elem.parentNode.firstChild; sibling; sibling = sibling.nextSibling) {
-    if (sibling.nodeType === 1 && sibling !== elem && sibling.classList.contains(className)) {
+  for (let sibling = element.parentNode.firstChild; sibling; sibling = sibling.nextSibling) {
+    if (sibling.nodeType === 1 && sibling !== element && sibling.classList.contains(className)) {
       siblings.push(sibling);
     }
   }

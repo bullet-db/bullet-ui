@@ -9,7 +9,7 @@ import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
 import { visit, click, fillIn, triggerEvent, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import { findWithContext, findAllWithContext } from '../helpers/find-helpers';
+import { findIn, findAllIn } from '../helpers/find-helpers';
 
 let fragment;
 
@@ -80,19 +80,19 @@ module('Acceptance | query linking', function(hooks) {
     find('.filter-container .rule-filter-container select').value = 'complex_list_column';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
     await click('.output-container .raw-sub-options #select');
-    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
+    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
-      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
+      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
     await triggerEvent(
-      findWithContext('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
+      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'blur'
     );
-    await fillIn(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
+    await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
-    await selectChoose(findWithContext('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
 
     await fillIn('.options-container .aggregation-size input', '40');
     await click('.submit-button');
@@ -112,8 +112,8 @@ module('Acceptance | query linking', function(hooks) {
     assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_list_column');
-    assert.equal(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[0]).value, 'new_name');
-    assert.equal(findWithContext('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
+    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]).value, 'new_name');
+    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
     assert.equal(find('.options-container .aggregation-size input').value, '40');
   });
 
@@ -128,16 +128,16 @@ module('Acceptance | query linking', function(hooks) {
     await click('.output-options #grouped-data');
     await click('.output-container .groups-container .add-group');
     await click('.output-container .groups-container .add-group');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findWithContext('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
     await selectChoose(findAll('.output-container .metrics-container .metrics-selection')[1], 'Average');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
     await click('.submit-button');
     await visit('queries');
@@ -154,16 +154,16 @@ module('Acceptance | query linking', function(hooks) {
     assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_list_column');
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0]).textContent.trim(), 'complex_map_column');
-    assert.equal(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
-    assert.equal(findWithContext('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0]).textContent.trim(), 'Count');
-    assert.equal(findAllWithContext('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
-    assert.equal(findWithContext('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
-    assert.equal(findWithContext('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'Average');
-    assert.equal(findWithContext('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0]).textContent.trim(), 'complex_map_column');
+    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
+    assert.equal(findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0]).textContent.trim(), 'Count');
+    assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
+    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
+    assert.equal(findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'Average');
+    assert.equal(findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
   });
 
   test('linking a distribution query with number of points works', async function(assert) {
@@ -273,11 +273,11 @@ module('Acceptance | query linking', function(hooks) {
     await click('.output-options #top-k');
 
     await click('.output-container .add-field');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
-    await selectChoose(findWithContext('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
-    await fillIn(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await triggerEvent(findWithContext('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
-    await fillIn(findWithContext('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
+    await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
 
     await fillIn('.output-container .top-k-size input', '15');
     await fillIn('.output-container .top-k-min-count input', '1500');
@@ -299,10 +299,10 @@ module('Acceptance | query linking', function(hooks) {
     assert.equal(findAll('.queries-table .query-name-entry .query-description')[1].textContent.trim(), 'test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.ok(find('.output-options #top-k').parentElement.classList.contains('checked'));
-    assert.equal(findWithContext('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
-    assert.equal(findWithContext('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column.*');
-    assert.equal(findWithContext('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
-    assert.equal(findWithContext('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
+    assert.equal(findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column.*');
+    assert.equal(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
+    assert.equal(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
     assert.equal(find('.output-container .top-k-size input').value, '15');
     assert.equal(find('.output-container .top-k-min-count input').value, '1500');
     assert.equal(find('.output-container .top-k-display-name input').value, 'cnt');
