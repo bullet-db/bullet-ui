@@ -31,12 +31,12 @@ export default Service.extend({
 
   makeStompMessageHandler(stompClient, handlers, context) {
     return payload => {
-      let message = JSON.parse(payload.body);
-      if (!isEqual(message.type, ACK_TYPE)) {
-        if (isEqual(message.type, COMPLETE_TYPE)) {
+      let { type, content } = JSON.parse(payload.body);
+      if (!isEqual(type, ACK_TYPE)) {
+        if (isEqual(type, COMPLETE_TYPE)) {
           this.get('querier').cancel();
         }
-        handlers.messageHandler(JSON.parse(message.content), context);
+        handlers.message(JSON.parse(content), context);
       }
     };
   },
@@ -52,13 +52,13 @@ export default Service.extend({
         type: NEW_QUERY_TYPE
       };
       stompClient.send(queryStompRequestChannel, { }, JSON.stringify(request));
-      handlers.successHandler(context);
+      handlers.success(context);
     };
   },
 
   makeStompErrorHandler(handlers, context) {
     return (...args) => {
-      handlers.errorHandler(`Error when connecting the server: ${args}`, context);
+      handlers.error(`Error when connecting the server: ${args}`, context);
     };
   },
 

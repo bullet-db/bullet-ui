@@ -5,13 +5,13 @@
  --}}
 {{#if isWindowless}}
   <div class="subsection-header">No Window</div>
-  <button {{action "addWindow" }} disabled= {{disabled}} class="btn btn-primary btn-xs add-button">
+  <button {{action "addWindow"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button">
     <i class="glyphicon glyphicon-plus"></i>
     Window
   </button>
 {{else}}
   <div class="btn-group pull-right">
-    <button {{action "removeWindow" }} disabled= {{disabled}} class="btn btn-xs btn-danger remove-button">
+    <button {{action "removeWindow"}} disabled={{disabled}} class="btn btn-xs btn-danger remove-button">
       <i class="glyphicon glyphicon-remove"></i>
     </button>
   </div>

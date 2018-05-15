@@ -135,7 +135,7 @@ export default DS.Model.extend(Validations, {
     let emitType = this.get('window.emit.type');
     let emitEvery = this.get('window.emit.every');
     let includeType = this.get('window.include.type');
-    return `Every ${emitEvery} ${isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'seconds' : 'records'} ${isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ',Cumulative' : ''}`;
+    return `Every ${emitEvery} ${isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'seconds' : 'records'} ${isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : ''}`;
   }),
 
   latestResult: computed('results.[]', function() {

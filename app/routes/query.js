@@ -30,9 +30,9 @@ export default Route.extend({
         this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
           this.set('result', result);
           let handlers = {
-            successHandler: this.resultHandler,
-            errorHandler: this.errorHandler,
-            messageHandler: this.segmentHandler
+            success: this.resultHandler,
+            error: this.errorHandler,
+            message: this.segmentHandler
           };
           this.get('querier').send(query, handlers, this);
         });
