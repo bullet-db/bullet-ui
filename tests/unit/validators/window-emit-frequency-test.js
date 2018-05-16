@@ -43,7 +43,7 @@ module('Unit | Validator | window-emit-frequency', function(hooks) {
         }
       }
     });
-    let expected = 'The maintainer has configured Bullet to support a minimum of 10 for emit frequency';
+    let expected = 'The maintainer has configured Bullet to support a minimum of 10s for emit frequency';
     assert.equal(validator.validate(9, null, mockModel), expected);
     assert.ok(validator.validate(10, null, mockModel));
   });

@@ -259,7 +259,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal($('.output-container .top-k-display-name input').val(), 'cnt');
   });
 
-  test('creating a window query', async function(assert) {
+  test('creating a windowed query', async function(assert) {
     assert.expect(7);
     this.mockedAPI.mock([RESULTS.RAW], COLUMNS.BASIC);
 
@@ -279,7 +279,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal($('.window-input .ember-radio-button').length, 4);
     assert.ok($('.window-input #time-based').parent().hasClass('checked'));
 
-    await click('.window-input .remove-button');
+    await click('.window-input .delete-button');
     assert.equal($('.window-input .add-button').length, 1);
   });
 });

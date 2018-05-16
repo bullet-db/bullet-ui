@@ -61,7 +61,7 @@ export default Component.extend({
     return this.get('queryManager').addWindow(this.get('query'));
   },
 
-  removeWindow() {
+  deleteWindow() {
     return this.get('queryManager').deleteWindow(this.get('query'));
   },
 
@@ -83,8 +83,8 @@ export default Component.extend({
       this.addWindow();
     },
 
-    removeWindow() {
-      this.removeWindow();
+    deleteWindow() {
+      this.deleteWindow();
     }
   }
 });

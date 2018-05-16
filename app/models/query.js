@@ -7,6 +7,7 @@ import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import DS from 'ember-data';
+import { pluralize } from 'ember-inflector';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
@@ -53,7 +54,7 @@ export default DS.Model.extend(Validations, {
 
   isWindowless: computed('window', function() {
     return isEmpty(this.get('window.id'));
-  }),
+  }).readOnly(),
 
   hasUnsavedFields: computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
     let projections = this.getWithDefault('projections', A());
@@ -72,7 +73,7 @@ export default DS.Model.extend(Validations, {
 
   groupsSummary: computed('aggregation.groups.@each.name', function() {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
-  }),
+  }).readOnly(),
 
   metricsSummary: computed('aggregation.metrics.@each.{type,name}', function() {
     let metrics = this.getWithDefault('aggregation.metrics', A());
@@ -85,7 +86,7 @@ export default DS.Model.extend(Validations, {
       }
       return isEmpty(name) ? `${type}(${field})` : name;
     }).join(', ');
-  }),
+  }).readOnly(),
 
   aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary', function() {
     let type = this.get('aggregation.type');
@@ -116,7 +117,7 @@ export default DS.Model.extend(Validations, {
       return metricsSummary;
     }
     return `${groupsSummary}, ${metricsSummary}`;
-  }),
+  }).readOnly(),
 
   fieldsSummary: computed('projectionsSummary', 'aggregationSummary', function() {
     let projectionsSummary = this.get('projectionsSummary');
@@ -126,7 +127,7 @@ export default DS.Model.extend(Validations, {
       return isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
     }
     return this.get('aggregationSummary');
-  }),
+  }).readOnly(),
 
   windowSummary: computed('isWindowless', 'window.{emit.type,emit.every,include.type}', function() {
     if (this.get('isWindowless')) {
@@ -135,8 +136,8 @@ export default DS.Model.extend(Validations, {
     let emitType = this.get('window.emit.type');
     let emitEvery = this.get('window.emit.every');
     let includeType = this.get('window.include.type');
-    return `Every ${emitEvery} ${isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'seconds' : 'records'} ${isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : ''}`;
-  }),
+    return `Every ${emitEvery} ${this.getEmitUnit(emitType, emitEvery)} ${this.getIncludeType(includeType)}`;
+  }).readOnly(),
 
   latestResult: computed('results.[]', function() {
     let results = this.get('results');
@@ -162,5 +163,14 @@ export default DS.Model.extend(Validations, {
 
   hasNoName(fieldLike) {
     return isEmpty(fieldLike) ? false : fieldLike.any(f => !isEmpty(f.get('field')) && isEmpty(f.get('name')));
+  },
+
+  getEmitUnit(emitType, emitEvery) {
+    let unit = isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'second' : 'record';
+    return Number(emitEvery) === 1 ? unit : pluralize(unit);
+  },
+
+  getIncludeType(includeType) {
+    return isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : '';
   }
 });

@@ -141,7 +141,7 @@ export default EmberObject.extend({
     this.topLevelPropertyAsPromise('window');
   },
 
-  removeWindow() {
+  deleteWindow() {
     this.set('_window', null);
     this.topLevelPropertyAsPromise('window');
   },
