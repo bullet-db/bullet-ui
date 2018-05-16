@@ -2,7 +2,7 @@
   "default": {
     "queryHost": "https://foo.bar.com:4443",
     "queryNamespace": "bullet/api",
-    "queryPath": "drpc",
+    "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
     "schemaHost": "https://foo.bar.com:4443",

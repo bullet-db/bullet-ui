@@ -58,7 +58,8 @@ export default Service.extend({
 
   makeStompErrorHandler(handlers, context) {
     return (...args) => {
-      handlers.error(`Error when connecting the server: ${args}`, context);
+      handlers.error(`Error while communicating with the server: ${args}`, context);
+      // TODO: Redirect to an error page
     };
   },
 
