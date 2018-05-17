@@ -7,9 +7,9 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, fillIn } from '@ember/test-helpers';
+import { visit, click, fillIn, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import $ from 'jquery';
+import { findSiblings } from '../helpers/find-helpers';
 
 module('Acceptance | query validation', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -20,8 +20,8 @@ module('Acceptance | query validation', function(hooks) {
     await click('.filter-container button[data-add=\'rule\']');
     await click('.save-button');
 
-    assert.ok($('.filter-container .rules-list .rule-container').hasClass('has-error'));
-    assert.equal($('.filter-container .rules-list .error-container').attr('data-original-title'), 'No filter selected');
+    assert.ok(find('.filter-container .rules-list .rule-container').classList.contains('has-error'));
+    assert.equal(find('.filter-container .rules-list .error-container').getAttribute('data-original-title'), 'No filter selected');
   });
 
   test('query showing aggregation validation messages', async function(assert) {
@@ -29,11 +29,11 @@ module('Acceptance | query validation', function(hooks) {
     await visit('/queries/new');
     await fillIn('.options-container .aggregation-size input', '-1');
     await click('.submit-button');
-    assert.equal($('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+    assert.equal(find('.validation-container .alert-message > span').textContent, 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').textContent.trim(),
       'Maximum results must be a positive integer');
-    assert.equal($('.aggregation-size').siblings('.error-tooltip-link').length, 1);
+    assert.equal(findSiblings(find('.aggregation-size'), 'error-tooltip-link').length, 1);
   });
 
   test('query showing options validation messages', async function(assert) {
@@ -41,11 +41,11 @@ module('Acceptance | query validation', function(hooks) {
     await visit('/queries/new');
     await fillIn('.options-container .query-duration input', '-1');
     await click('.submit-button');
-    assert.equal($('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+    assert.equal(find('.validation-container .alert-message > span').textContent, 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').textContent.trim(),
       'Duration must be a positive integer');
-    assert.equal($('.query-duration').siblings('.error-tooltip-link').length, 1);
+    assert.equal(findSiblings(find('.query-duration'), 'error-tooltip-link').length, 1);
   });
 
   test('selecting count distinct without adding fields is an error', async function(assert) {
@@ -54,9 +54,9 @@ module('Acceptance | query validation', function(hooks) {
     await visit('/queries/new');
     await click('.output-options #count-distinct');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').textContent.trim(),
       'A field needs to be selected first');
   });
 
@@ -66,9 +66,9 @@ module('Acceptance | query validation', function(hooks) {
     await visit('/queries/new');
     await click('.output-options #grouped-data');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').text().trim(),
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    assert.equal(find('.validation-container .simple-alert .alert-message .error-list li').textContent.trim(),
       'If you are grouping data, you must add at least one Group Field and/or Metric Field');
   });
 
@@ -79,9 +79,9 @@ module('Acceptance | query validation', function(hooks) {
     await fillIn('.options-container .query-duration input', '-1');
     await click('.save-button');
 
-    assert.equal($('.validation-container .alert-message > span').text(), 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(find('.validation-container .alert-message > span').textContent, 'OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('Duration must be a positive integer'));
     assert.ok(text.includes('No field selected'));
   });
@@ -94,9 +94,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('A field needs to be selected first'));
     assert.ok(text.includes('You must specify the Number of Points you want to generate'));
   });
@@ -109,9 +109,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '-25');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('You must specify a positive Number of Points'));
   });
 
@@ -123,9 +123,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '2500');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('The maintainer has set the maximum number of points you can generate to be 100'));
   });
 
@@ -136,13 +136,13 @@ module('Acceptance | query validation', function(hooks) {
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #generate-points');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('A field needs to be selected first'));
     assert.ok(text.includes('You must specify the Start, End and Increment for the points you want to generate'));
   });
@@ -154,13 +154,13 @@ module('Acceptance | query validation', function(hooks) {
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #generate-points');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '0.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '0.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '0.05');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.05');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('You must specify Start less than End'));
   });
 
@@ -171,13 +171,13 @@ module('Acceptance | query validation', function(hooks) {
     await click('.output-options #distribution');
     await click('.distribution-type-options #frequency');
     await click('.distribution-point-options #generate-points');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '1.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '2.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '-0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '1.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '2.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '-0.5');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('You must specify a positive Increment'));
   });
 
@@ -188,13 +188,13 @@ module('Acceptance | query validation', function(hooks) {
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #generate-points');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(0)')[0], '1.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(1)')[0], '2.5');
-    await fillIn($('.output-container .distribution-type-point-range input:eq(2)')[0], '0.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[0], '1.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '2.5');
+    await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.5');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('Quantiles requires that you specify a Start and End between 0 and 1'));
   });
 
@@ -207,9 +207,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-point-options #points');
     await fillIn('.output-container .distribution-type-points input', '');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('A field needs to be selected first'));
     assert.ok(text.includes('You must specify a comma separated list of points for this option'));
   });
@@ -223,9 +223,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-point-options #points');
     await fillIn('.output-container .distribution-type-points input', '1,2,a,foo,n');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 2);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 2);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('These are not valid points: a,foo,n'));
   });
 
@@ -239,9 +239,9 @@ module('Acceptance | query validation', function(hooks) {
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
     await fillIn('.output-container .distribution-type-points input', '0,0.2,1.5,-1');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 1);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('Quantiles requires points between 0 and 1. These are not: 1.5,-1'));
   });
 
@@ -251,9 +251,9 @@ module('Acceptance | query validation', function(hooks) {
     await visit('/queries/new');
     await click('.output-options #top-k');
     await click('.save-button');
-    assert.equal($('.validation-container .simple-alert').length, 1);
-    assert.equal($('.validation-container .simple-alert .alert-message .error-list li').length, 1);
-    let text = $('.validation-container .simple-alert .alert-message .error-list li').text().trim();
+    assert.equal(findAll('.validation-container .simple-alert').length, 1);
+    assert.equal(findAll('.validation-container .simple-alert .alert-message .error-list li').length, 1);
+    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
     assert.ok(text.includes('A field needs to be selected first'));
   });
 });

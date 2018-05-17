@@ -19,13 +19,13 @@ module('Integration | Component | schema table', function(hooks) {
     this.set('mockColumns', columns);
 
     await render(hbs`{{schema-table fields=mockColumns}}`);
-    assert.equal(this.$('.lt-head .lt-column').eq(0).text().trim(), 'Field');
-    assert.equal(this.$('.lt-head .lt-column').eq(1).text().trim(), 'Type');
-    assert.equal(this.$('.lt-head .lt-column').eq(2).text().trim(), 'Description');
-    assert.equal(this.$('.lt-body .lt-row').length, 1);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').text().trim(), 'foo');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-type-entry').text().trim(), 'STRING');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-description-entry').text().trim(), 'description');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Field');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[1].textContent.trim(), 'Type');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[2].textContent.trim(), 'Description');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 1);
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .schema-name-entry').textContent.trim(), 'foo');
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .schema-type-entry').textContent.trim(), 'STRING');
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .schema-description-entry').textContent.trim(), 'description');
   });
 
   test('it does not expand non-complex columns', async function(assert) {
@@ -34,11 +34,11 @@ module('Integration | Component | schema table', function(hooks) {
     this.set('mockColumns', columns);
 
     await render(hbs`{{schema-table fields=mockColumns}}`);
-    assert.equal(this.$('.lt-body .lt-row').length, 1);
-    assert.equal(this.$('.lt-body .lt-expanded-row').length, 0);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row').length, 0);
 
     await click('.lt-body .lt-row');
-    assert.equal(this.$('.lt-body .lt-expanded-row').length, 0);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row').length, 0);
   });
 
   test('it renders and expands complex columns', async function(assert) {
@@ -49,28 +49,28 @@ module('Integration | Component | schema table', function(hooks) {
     this.set('mockColumns', columns);
 
     await render(hbs`{{schema-table fields=mockColumns}}`);
-    assert.equal(this.$('.lt-head .lt-column').eq(0).text().trim(), 'Field');
-    assert.equal(this.$('.lt-head .lt-column').eq(1).text().trim(), 'Type');
-    assert.equal(this.$('.lt-head .lt-column').eq(2).text().trim(), 'Description');
-    assert.equal(this.$('.lt-body .lt-row.has-enumerations').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Field');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[1].textContent.trim(), 'Type');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[2].textContent.trim(), 'Description');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row.has-enumerations').length, 1);
 
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').text().trim(), 'foo');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-type-entry').text().trim(), 'MAP OF BOOLEANS');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-description-entry').text().trim(), 'description');
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .schema-name-entry').textContent.trim(), 'foo');
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .schema-type-entry').textContent.trim(), 'MAP OF BOOLEANS');
+    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .schema-description-entry').textContent.trim(), 'description');
 
-    assert.equal(this.$('.lt-body .lt-expanded-row').length, 0);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row').length, 0);
 
     await click('.lt-body .lt-row');
-    assert.equal(this.$('.lt-body .lt-expanded-row').length, 1);
-    assert.equal(this.$('.lt-body .lt-expanded-row .schema-table.is-nested').length, 1);
-    assert.equal(this.$('.lt-body .lt-expanded-row .schema-table .lt-row').length, 2);
-    assert.equal(this.$('.lt-body .lt-expanded-row .lt-cell .schema-name-entry').eq(0).text().trim(), 'bar');
-    assert.equal(this.$('.lt-body .lt-expanded-row .lt-cell .schema-type-entry').eq(0).text().trim(), 'BOOLEAN');
-    assert.equal(this.$('.lt-body .lt-expanded-row .lt-cell .schema-description-entry').eq(0).text().trim(), 'nested 1');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .schema-table.is-nested').length, 1);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .schema-table .lt-row').length, 2);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .lt-cell .schema-name-entry')[0].textContent.trim(), 'bar');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .lt-cell .schema-type-entry')[0].textContent.trim(), 'BOOLEAN');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .lt-cell .schema-description-entry')[0].textContent.trim(), 'nested 1');
 
-    assert.equal(this.$('.lt-body .lt-expanded-row .lt-cell .schema-name-entry').eq(1).text().trim(), 'baz');
-    assert.equal(this.$('.lt-body .lt-expanded-row .lt-cell .schema-type-entry').eq(1).text().trim(), 'BOOLEAN');
-    assert.equal(this.$('.lt-body .lt-expanded-row .lt-cell .schema-description-entry').eq(1).text().trim(), 'nested 2');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .lt-cell .schema-name-entry')[1].textContent.trim(), 'baz');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .lt-cell .schema-type-entry')[1].textContent.trim(), 'BOOLEAN');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-expanded-row .lt-cell .schema-description-entry')[1].textContent.trim(), 'nested 2');
   });
 
   test('it default sorts by name ascending and can sort', async function(assert) {
@@ -81,17 +81,17 @@ module('Integration | Component | schema table', function(hooks) {
     this.set('mockColumns', columns);
 
     await render(hbs`{{schema-table fields=mockColumns}}`);
-    assert.equal(this.$('.lt-body .lt-row').length, 3);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').eq(0).text().trim(), 'bar');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').eq(1).text().trim(), 'foo');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').eq(2).text().trim(), 'qux');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 3);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .schema-name-entry')[0].textContent.trim(), 'bar');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .schema-name-entry')[1].textContent.trim(), 'foo');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .schema-name-entry')[2].textContent.trim(), 'qux');
 
     // Click twice for descending sort
-    await click(this.$('.lt-head .lt-column.is-sortable')[0]);
-    await click(this.$('.lt-head .lt-column.is-sortable')[0]);
-    assert.equal(this.$('.lt-body .lt-row').length, 3);
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').eq(0).text().trim(), 'qux');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').eq(1).text().trim(), 'foo');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell .schema-name-entry').eq(2).text().trim(), 'bar');
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 3);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .schema-name-entry')[0].textContent.trim(), 'qux');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .schema-name-entry')[1].textContent.trim(), 'foo');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .schema-name-entry')[2].textContent.trim(), 'bar');
   });
 });

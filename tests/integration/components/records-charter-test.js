@@ -4,10 +4,9 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
-import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, settled } from '@ember/test-helpers';
+import { render, click, settled, triggerEvent } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import RESULTS from '../../fixtures/results';
 
@@ -21,12 +20,12 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', ['Probability', 'Count', 'Range']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
 
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container canvas').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
     await click('.mode-toggle .right-view');
-    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
-    assert.equal(this.$('.visual-container .pivot-table-container .pvtUi').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
 
   test('it charts a single dependent column', async function(assert) {
@@ -35,8 +34,8 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', ['foo', 'timestamp', 'domain']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container canvas').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
   test('it charts multiple dependent columns', async function(assert) {
@@ -45,8 +44,8 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container canvas').length, 1);
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
   test('it enables only the pivot mode if the results are raw', async function(assert) {
@@ -55,9 +54,9 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', ['foo', 'timestamp', 'domain']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
-    assert.equal(this.$('.mode-toggle').length, 0);
-    assert.equal(this.$('.visual-container .pivot-table-container').length, 1);
-    assert.equal(this.$('.visual-container .pivot-table-container .pvtUi').length, 1);
+    assert.equal(this.element.querySelectorAll('.mode-toggle').length, 0);
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
 
   test('it saves pivot table configurations', async function(assert) {
@@ -75,17 +74,14 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', ['Probability', 'Count', 'Range']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
 
-    assert.ok(this.$('.mode-toggle .left-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container canvas').length, 1);
-    run(() => {
-      this.$('.mode-toggle .right-view').click();
-    });
-    assert.ok(this.$('.mode-toggle .right-view').hasClass('selected'));
-    assert.equal(this.$('.visual-container .pivot-table-container .pvtUi').length, 1);
-    assert.equal(this.$('.pvtUi select.pvtRenderer').val(), 'Table');
-    run(() => {
-      this.$('.pivot-table-container select.pvtRenderer').val('Bar Chart').trigger('change');
-    });
+    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
+    await click('.mode-toggle .right-view');
+    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
+    assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
+    assert.equal(this.element.querySelector('.pvtUi select.pvtRenderer').value, 'Table');
+    this.element.querySelector('.pivot-table-container select.pvtRenderer').value = 'Bar Chart';
+    await triggerEvent('.pivot-table-container select.pvtRenderer', 'change');
     return settled().then(() => {
       let options = JSON.parse(this.get('mockModel.pivotOptions'));
       assert.equal(options.rendererName, 'Bar Chart');

@@ -13,23 +13,23 @@ module('Integration | Component | info popover', function(hooks) {
 
   test('it renders', async function(assert) {
     await render(hbs`{{info-popover}}`);
-    assert.ok(this.$('.info-popover-link').hasClass('glyphicon-info-sign'));
-    assert.equal(this.$().text().trim(), '');
+    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('glyphicon-info-sign'));
+    assert.equal(this.element.textContent.trim(), '');
     await render(hbs`
       {{#info-popover}}
         template block text
       {{/info-popover}}
     `);
-    assert.ok(this.$('.info-popover-link').hasClass('glyphicon-info-sign'));
-    assert.equal(this.$().text().trim(), 'template block text');
+    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('glyphicon-info-sign'));
+    assert.equal(this.element.textContent.trim(), 'template block text');
   });
 
   test('it can behave as a link', async function(assert) {
     this.set('asButton', false);
     this.set('mockText', 'foo');
     await render(hbs`{{info-popover isButton=asButton additionalText=mockText}}`);
-    assert.notOk(this.$('.info-popover-link').hasClass('glyphicon-info-sign'));
-    assert.equal(this.$('.info-link-text').text().trim(), 'foo');
+    assert.notOk(this.element.querySelector('.info-popover-link').classList.contains('glyphicon-info-sign'));
+    assert.equal(this.element.querySelector('.info-link-text').textContent.trim(), 'foo');
   });
 
   test('it hides the initial contents', async function(assert) {
@@ -38,8 +38,8 @@ module('Integration | Component | info popover', function(hooks) {
         <p>Test content</p>
       {{/info-popover}}
     `);
-    assert.ok(this.$('.popover-contents').hasClass('hidden'));
-    assert.ok(this.$('p').parent().hasClass('hidden'));
+    assert.ok(this.element.querySelector('.popover-contents').classList.contains('hidden'));
+    assert.ok(this.element.querySelector('p').parentElement.classList.contains('hidden'));
   });
 
   test('it allows customizing the title', async function(assert) {
@@ -48,6 +48,6 @@ module('Integration | Component | info popover', function(hooks) {
         <p>Test content</p>
       {{/info-popover}}
     `);
-    assert.equal(this.$('.popover-title').text().trim(), 'Test title');
+    assert.equal(this.element.querySelector('.popover-title').textContent.trim(), 'Test title');
   });
 });

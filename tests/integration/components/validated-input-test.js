@@ -34,14 +34,14 @@ module('Integration | Component | validated input', function(hooks) {
   test('it does not block render', async function(assert) {
     await render(hbs`{{validated-input}}`);
 
-    assert.equal(this.$().text().trim(), '');
+    assert.equal(this.element.textContent.trim(), '');
     await render(hbs`
       {{#validated-input}}
         template block text
       {{/validated-input}}
     `);
 
-    assert.equal(this.$().text().trim(), '');
+    assert.equal(this.element.textContent.trim(), '');
   });
 
   test('it renders a labeled-input component as input-field', async function(assert) {
@@ -50,8 +50,8 @@ module('Integration | Component | validated input', function(hooks) {
     await render(hbs`
       {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
     `);
-    assert.equal(this.$('label').html(), 'label');
-    assert.equal(this.$('input').val(), '15');
+    assert.equal(this.element.querySelector('label').innerHTML, 'label');
+    assert.equal(this.element.querySelector('input').value, '15');
   });
 
   test('it shows a validation error tooltip if there are errors and the field is dirty', async function(assert) {
@@ -60,7 +60,7 @@ module('Integration | Component | validated input', function(hooks) {
     await render(hbs`
       {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
   });
 
   test('it does not show a error tooltip if there are errors and but the field is not dirty', async function(assert) {
@@ -69,7 +69,7 @@ module('Integration | Component | validated input', function(hooks) {
     await render(hbs`
       {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
   });
 
   test('it does not show a error tooltip if the field is still validating', async function(assert) {
@@ -78,7 +78,7 @@ module('Integration | Component | validated input', function(hooks) {
     await render(hbs`
       {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
   });
 
   test('it does not show a error tooltip if there are errors but the field is forced dirty even if it is not dirty', async function(assert) {
@@ -87,6 +87,6 @@ module('Integration | Component | validated input', function(hooks) {
     await render(hbs`
       {{validated-input model=mockModel forceDirty=true valuePath='bar' fieldName='label' fieldValue='test'}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
   });
 });

@@ -46,7 +46,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockModel', model);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel}}`);
-    assert.equal(this.$('.error-tooltip-link').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
   });
 
   test('it does not show a error tooltip if there are errors and but the field is not dirty', async function(assert) {
@@ -54,7 +54,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockModel', model);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel}}`);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
   });
 
   test('it does not show a error tooltip if the field is still validating', async function(assert) {
@@ -62,7 +62,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockModel', model);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel}}`);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
   });
 
   test('it does not show a error tooltip if there are errors but the field is forced dirty even if it is not dirty', async function(assert) {
@@ -70,7 +70,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockModel', model);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel forceDirty=true}}`);
-    assert.equal(this.$('.error-tooltip-link').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
   });
 
   test('it displays a field, a name and a delete button with yieldable contents', async function(assert) {
@@ -82,14 +82,14 @@ module('Integration | Component | validated field selection', function(hooks) {
         <span class="custom-input">foo</span>
       {{/validated-field-selection}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
-    assert.equal(this.$('.custom-input').length, 1);
-    assert.equal(this.$('.custom-input').text().trim(), 'foo');
-    assert.equal(this.$('.field-selection').length, 1);
-    assert.ok(this.$('.field-selection').hasClass('custom-field'));
-    assert.equal(this.$('.field-name').length, 1);
-    assert.ok(this.$('.field-name').hasClass('custom-name'));
-    assert.equal(this.$('.delete-button').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.custom-input').length, 1);
+    assert.equal(this.element.querySelector('.custom-input').textContent.trim(), 'foo');
+    assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
+    assert.ok(this.element.querySelector('.field-selection').classList.contains('custom-field'));
+    assert.equal(this.element.querySelectorAll('.field-name').length, 1);
+    assert.ok(this.element.querySelector('.field-name').classList.contains('custom-name'));
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
 
   test('it can disable field selection', async function(assert) {
@@ -100,11 +100,11 @@ module('Integration | Component | validated field selection', function(hooks) {
     await render(hbs`
       {{validated-field-selection columns=mockColumns model=mockModel nameClasses="custom-name" disableField=disableField}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
-    assert.equal(this.$('.field-selection').length, 0);
-    assert.equal(this.$('.field-name').length, 1);
-    assert.ok(this.$('.field-name').hasClass('custom-name'));
-    assert.equal(this.$('.delete-button').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.field-selection').length, 0);
+    assert.equal(this.element.querySelectorAll('.field-name').length, 1);
+    assert.ok(this.element.querySelector('.field-name').classList.contains('custom-name'));
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
 
   test('it can disable renaming', async function(assert) {
@@ -115,11 +115,11 @@ module('Integration | Component | validated field selection', function(hooks) {
     await render(hbs`
       {{validated-field-selection columns=mockColumns model=mockModel fieldClasses="custom-field" enableRenaming=enableRenaming}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
-    assert.equal(this.$('.field-selection').length, 1);
-    assert.ok(this.$('.field-selection').hasClass('custom-field'));
-    assert.equal(this.$('.field-name').length, 0);
-    assert.equal(this.$('.delete-button').length, 1);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
+    assert.ok(this.element.querySelector('.field-selection').classList.contains('custom-field'));
+    assert.equal(this.element.querySelectorAll('.field-name').length, 0);
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
 
   test('it can disable deleting', async function(assert) {
@@ -130,10 +130,10 @@ module('Integration | Component | validated field selection', function(hooks) {
     await render(hbs`
       {{validated-field-selection columns=mockColumns model=mockModel fieldClasses="custom-field" enableDeleting=enableDeleting}}
     `);
-    assert.equal(this.$('.error-tooltip-link').length, 0);
-    assert.equal(this.$('.field-selection').length, 1);
-    assert.ok(this.$('.field-selection').hasClass('custom-field'));
-    assert.equal(this.$('.field-name').length, 1);
-    assert.equal(this.$('.delete-button').length, 0);
+    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
+    assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
+    assert.ok(this.element.querySelector('.field-selection').classList.contains('custom-field'));
+    assert.equal(this.element.querySelectorAll('.field-name').length, 1);
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 0);
   });
 });

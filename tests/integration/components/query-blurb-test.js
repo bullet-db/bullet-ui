@@ -16,7 +16,7 @@ module('Integration | Component | query blurb', function(hooks) {
   test('it renders', async function(assert) {
     await render(hbs`{{query-blurb}}`);
 
-    let actualText = this.$().text();
+    let actualText = this.element.textContent;
     let spaceLess = actualText.replace(/\s/g, '');
     assert.equal(spaceLess, 'Filters:Fields:Window:');
 
@@ -26,7 +26,7 @@ module('Integration | Component | query blurb', function(hooks) {
         template block text
       {{/query-blurb}}
     `);
-    actualText = this.$().text();
+    actualText = this.element.textContent;
     spaceLess = actualText.replace(/\s/g, '');
     assert.equal(spaceLess, 'Filters:Fields:Window:');
   });
@@ -39,7 +39,7 @@ module('Integration | Component | query blurb', function(hooks) {
     query.addProjection('bar', 'b');
     this.set('mockedQuery', query);
     await render(hbs`{{query-blurb summary=mockedQuery}}`);
-    let actualText = this.$().text();
+    let actualText = this.element.textContent;
     let spaceLess = actualText.replace(/\s/g, '');
     assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fb0.1,0.2Window:None');
   });

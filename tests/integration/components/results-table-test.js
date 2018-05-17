@@ -19,10 +19,10 @@ module('Integration | Component | results table', function(hooks) {
       EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
-    assert.equal(this.$('.lt-head .lt-column').eq(0).text().trim(), 'Date');
-    assert.equal(this.$('.lt-head .lt-column').eq(1).text().trim(), '# Windows');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(0).text().trim(), '31 Dec 12:00 AM');
-    assert.equal(this.$('.lt-body .lt-row .lt-cell').eq(1).text().trim(), '3');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Date');
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[1].textContent.trim(), '# Windows');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent.trim(), '31 Dec 12:00 AM');
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '3');
   });
 
   test('it sorts by the number of windows column on click', async function(assert) {
@@ -32,9 +32,9 @@ module('Integration | Component | results table', function(hooks) {
       EmberObject.create({ created: new Date(2015, 1, 1), segments: A() })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
-    assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
-    await click(this.$('.lt-head .lt-column.is-sortable')[1]);
-    let text = this.$('.lt-body .lt-row .lt-cell').text();
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
+    let text = this.element.querySelector('.lt-body').textContent;
     let spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, '01Feb12:00AM031Dec12:00AM3');
   });
@@ -46,9 +46,9 @@ module('Integration | Component | results table', function(hooks) {
       EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
-    assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
-    await click(this.$('.lt-head .lt-column.is-sortable')[0]);
-    let text = this.$('.lt-body .lt-row .lt-cell').text();
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
+    let text = this.element.querySelector('.lt-body').textContent;
     let spaceLess = text.replace(/\s/g, '');
     assert.equal(spaceLess, '31Dec12:00AM301Feb12:00AM0');
   });
@@ -63,7 +63,7 @@ module('Integration | Component | results table', function(hooks) {
       EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults resultClick=(action mockResultClick)}}`);
-    assert.equal(this.$('.lt-head .lt-column.is-sortable').length, 2);
-    await click(this.$('.lt-body .lt-row .lt-cell .result-date-entry')[1]);
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
+    await click(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .result-date-entry')[1]);
   });
 });
