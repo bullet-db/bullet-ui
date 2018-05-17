@@ -56,7 +56,7 @@ export default DS.Model.extend(Validations, {
     return isEmpty(this.get('window.id'));
   }).readOnly(),
 
-  hasUnsavedFields: computed('projections.@each.field', 'aggregation.groups.@each.field', function() {
+  hasUnsavedFields: computed('projections.@each.name', 'aggregation.groups.@each.name', function() {
     let projections = this.getWithDefault('projections', A());
     let groups = this.getWithDefault('aggregation.groups', A());
     return this.hasNoName(projections) || this.hasNoName(groups);

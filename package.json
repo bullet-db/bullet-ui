@@ -89,7 +89,7 @@
     "ember-route-action-helper": "2.0.6",
     "ember-scroll-to": "0.6.4",
     "ember-sinon": "~2.1.0",
-    "ember-source": "~3.0.0",
+    "ember-source": "~2.18.0",
     "ember-tether": "0.4.1",
     "ember-tooltips": "2.9.2",
     "eslint": "~4.19.0",
