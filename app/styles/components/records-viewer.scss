@@ -5,11 +5,8 @@
  */
 .records-viewer {
   $records-header-color: #00C877;
-  margin-right: $results-right-space;
 
   .records-title {
-    @import "section-heading-with-help";
-
     margin-top: 35px;
     margin-bottom: 15px;
     padding-left: 0;

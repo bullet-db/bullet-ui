@@ -15,14 +15,9 @@ export default DS.Model.extend({
     }
   }),
   query: DS.belongsTo('query', { autoSave: true }),
-  // TODO: change it to async: true when metadata and records computed properties are removed.
   segments: DS.hasMany('segment', { dependent: 'destroy' }),
   pivotOptions: DS.attr('string'),
   querySnapshot: DS.attr(),
-
-  // TODO: Remove them after result page has been changed.
-  metadata: alias('segments.lastObject.metadata'),
-  records: alias('segments.lastObject.records'),
 
   isRaw: equal('querySnapshot.type', AGGREGATIONS.get('RAW')),
   isCountDistinct: equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')),

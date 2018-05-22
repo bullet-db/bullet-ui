@@ -7,7 +7,7 @@ import { computed } from '@ember/object';
 import Component from '@ember/component';
 
 export default Component.extend({
-  classNames: ['result-metadata'],
+  classNames: ['segment-metadata'],
   classNameBindings: ['expanded:is-expanded'],
   expanded: false,
   expansionIconClasses: computed('expanded', function() {

@@ -3,9 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-.filter-summary-text, .fields-summary-text {
+.filter-summary-text, .fields-summary-text, .window-summary-text {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
