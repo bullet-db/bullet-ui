@@ -1,49 +1,18 @@
 {{!--
-  Copyright 2016, Yahoo Inc.
+  Copyright 2018, Yahoo Inc.
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
 <p>
-  Once Bullet has finished running the query, all the matched records are returned to the browser. The results can be displayed either as raw JSON format, formatted in a tabular view, displayed as a chart or pivoted on. Toggle between the views by clicking <strong>Show Raw Data</strong> or <strong>Show as Table</strong> or <strong>Show as Chart</strong> icons.
+  The results can be displayed either as raw JSON format, formatted in a tabular view, displayed as a chart or pivoted on. Toggle between the views by clicking <strong>Show Raw Data</strong> or <strong>Show as Table</strong> or <strong>Show as Chart</strong> icons.
 </p>
 
 <h5 class="content-header">Saving and Sharing</h5>
 <p>The output can be saved locally as JSON, CSV, or a flattened CSV (where any map fields and lists are exploded till the base elements)</p>
 <p>It is not possible to natively share query or result URLs from Bullet since all queries and results are stored on the local browser only.</p>
 
-<h5 class="content-header">Raw JSON View</h5>
-<p>If you selected the <strong>Show All Fields</strong> option under the Raw Data selection on the Query page, or clicked on Show Raw Data view toggle at the top right of the page, the data is displayed in a raw JSON format.</p>
-
-<h5 class="content-header">Table View</h5>
-<p>If you elected to aggregate data or chose to <strong>Select Fields</strong> under the Raw Data selection on the query page, or clicked on the Show as Table button, the data is displayed in a table format.</p>
-<ul>
-  <li>If a table cell is clicked on, a popup window appears with a JSON representation of the cell data. This is particularly useful for long strings, maps, and other complex data types</li>
-  <li>Columns width can be adjusted by dragging the vertical column divider at the top of the table</li>
-  <li>Columns can be rearranged by dragging and dropping them in the desired location</li>
-  <li>Columns can be also be sorted by clicking on their headers</li>
-</ul>
-
-<h5 class="content-header">Chart View</h5>
-<p>
-  Unless you performed a Group All query (a <strong>Group</strong> query with no Group Fields) or a <strong>Count Distinct</strong> query, you will see a Show as Chart option. This option graphs your data as a chart with a
-  guess as to what your independent and dependent fields are. There are two sub-options that appear in this mode. You can see the pre-determined chart as described before by default or
-  by clicking the <strong>Chart</strong> sub-option. You can also click the <strong>Pivot</strong> option to to pivot and aggregate your result data in various forms by using various aggregations and dragging/dropping
-  various fields to slice and dice.
-</p>
-
 <h6 class="content-subheader">Simple Chart</h6>
 <p>
   For all queries besides Raw Data queries with <strong>Select all Fields</strong>, Bullet will try to find your independent fields by finding the string fields in your result and your dependent fields by using the numeric fields in this view.
   If there are multiple independent fields, Bullet will separate them using a <strong>&#47;</strong> in the chart. The chart is a <strong>Bar</strong> chart.
 </p>
-
-<p>If you performed a Raw data query and chose to Show all Data, the Chart sub-option is <strong>disabled</strong>. You are only able to pivot on the data.</p>
-
-<h6 class="content-subheader">Pivot</h6>
-<p>
-  If you find that the Chart option is not sufficient and you want aggregate your data some more, you can click the Pivot option. This will launch a UI where you can choose various
-  ways to display the data (Table by default) and choose various aggregation operations (Count by default). You can also drag and drop fields from a unused region to either a horizontal
-  or a vertical region to pivot on the data as you would in most spreadsheet applications.
-</p>
-
-<p>You can also click the dropdown next to each field to include or exclude various values for the visualization.</p>

@@ -43,7 +43,6 @@
     font-size: $font-size-regular-large;
   }
 
-
   %query-input-label {
     position: absolute;
     font-size: $font-size-small;
@@ -106,7 +105,6 @@
   %validated-input-row {
     @import "validated-input";
     margin-top: 10px;
-    margin-left: 5px;
     input {
       height: 45px;
     }
@@ -222,7 +220,6 @@
           .aggregation-size {
             padding-right: 0;
             width: 165px;
-            margin-left: -15px;
             margin-right: 0;
           }
           .query-duration {

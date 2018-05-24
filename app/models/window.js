@@ -7,7 +7,7 @@ import EmberObject from '@ember/object';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
-let emitType = EmberObject.extend({
+let EmitTypes = EmberObject.extend({
   TIME: 'Time Based',
   RECORD: 'Record Based',
 
@@ -24,14 +24,14 @@ let emitType = EmberObject.extend({
   }
 });
 
-let includeType = EmberObject.extend({
+let IncludeTypes = EmberObject.extend({
   WINDOW: 'Everything in Window',
-  ALL: 'Everything from Start',
+  ALL: 'Everything from Start of Query',
 
   init() {
     this._super(...arguments);
     this.set('API', {
-      'Everything from Start': 'ALL'
+      'Everything from Start of Query': 'ALL'
     });
   },
 
@@ -40,18 +40,18 @@ let includeType = EmberObject.extend({
   }
 });
 
-export const EMIT_TYPES = emitType.create();
-export const INCLUDE_TYPES = includeType.create();
+export const EMIT_TYPES = EmitTypes.create();
+export const INCLUDE_TYPES = IncludeTypes.create();
 
 let Validations = buildValidations({
   'emit.every': {
-    description: 'emit frequency', validators: [
+    description: 'Emit frequency', validators: [
       validator('presence', true),
       validator('number', {
         integer: true,
         allowString: true,
         gte: 1,
-        message: 'emit frequency must be a positive integer'
+        message: 'Emit frequency must be a positive integer'
       }),
       validator('window-emit-frequency')
     ]

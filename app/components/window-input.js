@@ -31,12 +31,13 @@ export default Component.extend({
   }),
 
   // Helper equalities for template
-  everyForRecordBasedWindow: alias('settings.defaultValues.everyForRecordBasedWindow').readOnly(),
-  everyForTimeBasedWindow: alias('settings.defaultValues.everyForTimeBasedWindow').readOnly(),
+  defaultEveryForRecordWindow: alias('settings.defaultValues.everyForRecordBasedWindow').readOnly(),
+  defaultEveryForTimeWindow: alias('settings.defaultValues.everyForTimeBasedWindow').readOnly(),
   isWindowless: alias('query.isWindowless').readOnly(),
   isTimeBasedWindow: equal('emitType', EMIT_TYPES.get('TIME')).readOnly(),
   isRecordBasedWindow: equal('emitType', EMIT_TYPES.get('RECORD')).readOnly(),
   isRawAggregation: equal('query.aggregation.type', AGGREGATIONS.get('RAW')).readOnly(),
+
   recordBasedWindowDisabled: computed('isRawAggregation', 'disabled', function() {
     return this.get('disabled') || !this.get('isRawAggregation');
   }).readOnly(),
@@ -45,8 +46,9 @@ export default Component.extend({
   allIncludeTypeDisabled: computed('isRawAggregation', 'includeDisabled', function() {
     return this.get('includeDisabled') || this.get('isRawAggregation');
   }).readOnly(),
+
   everyFieldName: computed('isRecordBasedWindow', function() {
-    return this.get('isRecordBasedWindow') ? 'every (records)' : 'every (seconds)';
+    return `Frequency (${this.get('isRecordBasedWindow') ? 'records' : 'seconds'})`;
   }).readOnly(),
 
   replaceWindow(emitType, emitEvery, includeType) {
@@ -59,7 +61,7 @@ export default Component.extend({
     return this.get('queryManager').addWindow(this.get('query'));
   },
 
-  removeWindow() {
+  deleteWindow() {
     return this.get('queryManager').deleteWindow(this.get('query'));
   },
 
@@ -67,9 +69,9 @@ export default Component.extend({
     changeEmitType(emitType) {
       if (isEqual(emitType, EMIT_TYPES.get('RECORD'))) {
         this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
-        this.replaceWindow(emitType, this.get('everyForRecordBasedWindow'), INCLUDE_TYPES.get('WINDOW'));
+        this.replaceWindow(emitType, this.get('defaultEveryForRecordWindow'), INCLUDE_TYPES.get('WINDOW'));
       } else {
-        this.replaceWindow(emitType, this.get('everyForTimeBasedWindow'), this.get('includeType'));
+        this.replaceWindow(emitType, this.get('defaultEveryForTimeWindow'), this.get('includeType'));
       }
     },
 
@@ -81,8 +83,8 @@ export default Component.extend({
       this.addWindow();
     },
 
-    removeWindow() {
-      this.removeWindow();
+    deleteWindow() {
+      this.deleteWindow();
     }
   }
 });

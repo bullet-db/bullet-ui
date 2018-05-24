@@ -15,12 +15,13 @@ export default Route.extend({
       this.transitionTo('missing', 'not-found');
     });
   },
-  // Force the fetching of query and filter
+
   afterModel(model) {
+    // Fetch all the things
     return hash({
-      segments: model.get('segments'),
       query: model.get('query'),
-      filter: model.get('query').then(query => query.get('filter'))
+      filter: model.get('query').then(query => query.get('filter')),
+      segments: model.get('segments')
     });
   },
 

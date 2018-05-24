@@ -143,12 +143,14 @@ export default Service.extend(Filterizer, {
     if (isEmpty(json)) {
       return false;
     }
+
     let emit = EmberObject.create({
       type: EMIT_TYPES.get(json.emit.type),
-      every: Number(json.emit.every) / 1000
+      every: isEqual(json.emit.type, 'TIME') ? Number(json.emit.every) / 1000 : Number(json.emit.every)
     });
+
     let include = EmberObject.create();
-    if (!isEmpty(json.include) && isEqual(json.include.type, INCLUDE_TYPES.apiKey(INCLUDE_TYPES.get('ALL')))) {
+    if (!isEmpty(json.include) && isEqual(json.include.type, 'ALL')) {
       include.set('type', INCLUDE_TYPES.get('ALL'));
     } else {
       include.set('type', INCLUDE_TYPES.get('WINDOW'));
@@ -176,12 +178,15 @@ export default Service.extend(Filterizer, {
   },
 
   reformatWindow(window) {
+    let emitType = window.get('emit.type');
+    let emitEvery = window.get('emit.every');
     let json = {
       emit: {
-        type: EMIT_TYPES.apiKey(window.get('emit.type')),
-        every: Number(window.get('emit.every')) * 1000
+        type: EMIT_TYPES.apiKey(emitType),
+        every: isEqual(emitType, EMIT_TYPES.get('TIME')) ? Number(emitEvery) * 1000 : Number(emitEvery)
       }
     };
+
     let includeType = window.get('include.type');
     if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
       json.include = { type: INCLUDE_TYPES.apiKey(includeType) };

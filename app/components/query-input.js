@@ -30,7 +30,6 @@ export default Component.extend(BuilderAdapter, {
   scroller: service(),
   schema: null,
   isListening: false,
-  listenDuration: 0,
   hasError: false,
   hasSaved: false,
 
@@ -39,9 +38,8 @@ export default Component.extend(BuilderAdapter, {
     return this.builderFilters(schema);
   }).readOnly(),
 
-  showAggregationSize: computed('query.{aggregation.type,window.emit.type,isWindowless}', function() {
-    return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) &&
-      (this.get('query.isWindowless') || isEqual(this.get('query.window.emit.type'), EMIT_TYPES.get('TIME')));
+  showAggregationSize: computed('query.{aggregation.type,isWindowless}', function() {
+    return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) && this.get('query.isWindowless');
   }),
 
   didInsertElement() {
@@ -79,7 +77,6 @@ export default Component.extend(BuilderAdapter, {
   reset() {
     this.setProperties({
       isListening: false,
-      listenDuration: 0,
       hasError: false,
       hasSaved: false
     });
@@ -119,8 +116,7 @@ export default Component.extend(BuilderAdapter, {
       this.save().then(() => {
         this.setProperties({
           isListening: true,
-          hasSaved: true,
-          listenDuration: this.get('query.duration') * 1000
+          hasSaved: true
         });
         this.$(this.get('queryBuilderInputs')).attr('disabled', true);
         this.sendAction('fireQuery');

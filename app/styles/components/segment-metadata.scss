@@ -1,0 +1,67 @@
+/*
+ *  Copyright 2016, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+ .segment-metadata {
+  @import "pretty-json";
+
+  background-color: $background-grey;
+  padding: 5px;
+  margin-top: 10px;
+  border-radius: 4px;
+  max-height: 50px;
+  overflow: hidden;
+  transition: max-height $default-transition-time ease-in-out;
+
+  .information-text h4 {
+    margin-bottom: 15px;
+    font-size: $font-size-regular;
+    font-weight: $font-weight-strong;
+    text-transform: uppercase;
+  }
+
+  .expand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 25px;
+    i {
+      color: $inactive-grey;
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: $background-grey-darker;
+    i {
+      color: $black;
+    }
+  }
+
+  &.is-expanded {
+    padding: 30px;
+    padding-bottom: 0;
+    max-height: 700px;
+    pre {
+      max-height: 600px;
+    }
+    &:hover {
+      cursor: default;
+      background-color: $background-grey;
+      i {
+        color: $inactive-grey;
+      }
+    }
+    .expand-bar {
+      &:hover {
+        cursor: pointer;
+        background-color: $background-grey-darker;
+        i {
+          color: $black;
+        }
+      }
+      margin: 0 -30px 0 -30px;
+    }
+  }
+ }

@@ -6,6 +6,7 @@
 .validated-input {
   .error-tooltip-link {
     @extend %error-icon;
+    margin-left: 15px;
   }
   &.has-error > .labeled-input {
     margin-left: -15px;

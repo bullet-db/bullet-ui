@@ -263,7 +263,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal(find('.output-container .top-k-display-name input').value, 'cnt');
   });
 
-  test('creating a window query', async function(assert) {
+  test('creating a windowed query', async function(assert) {
     assert.expect(7);
     this.mockedAPI.mock([RESULTS.RAW], COLUMNS.BASIC);
 
@@ -283,7 +283,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal(findAll('.window-input .ember-radio-button').length, 4);
     assert.ok(find('.window-input #time-based').parentElement.classList.contains('checked'));
 
-    await click('.window-input .remove-button');
+    await click('.window-input .delete-button');
     assert.equal(findAll('.window-input .add-button').length, 1);
   });
 });

@@ -3,106 +3,25 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-$results-right-space: 30px;
-$results-left-space: $left-bar-separation-width;
-$results-inner-left-space: 20px;
-$results-inner-right-space: 35px;
-$information-wrapper-padding-left: 20px;
-$information-wrapper-padding-right: 35px;
+.results-container {
+  $results-right-space: 30px;
+  $results-left-space: $left-bar-separation-width;
+  $results-inner-left-space: 20px;
+  $results-inner-right-space: 35px;
+  $information-wrapper-padding-left: 20px;
+  $information-wrapper-padding-right: 35px;
 
-.information-container {
+  @import "components/nested-info-container";
+  @import "components/section-heading-with-help";
+
   margin: 22px $results-right-space 0 $results-left-space;
-  color: $heading-text-color;
-}
 
-.query-information{
-  .query-title {
-    margin-bottom: 25px;
-    color: $heading-text-color;
-    font-size: $font-size-large;
-    font-weight: $font-weight-strong;
-  }
-}
-
-.information-container {
-
-  .information-wrapper {
-    padding: 5px $information-wrapper-padding-right 15px $information-wrapper-padding-left;
-    background-color: $background-grey;
-    border-radius: 4px;
-    position: relative;
-
-    .information-text {
-      h4 {
-        margin-bottom: 15px;
-        font-size: $font-size-regular;
-        font-weight: $font-weight-strong;
-        text-transform: uppercase;
-      }
-    }
-
-  }
-}
-.query-information .query-blurb-wrapper {
-  @import "components/query-blurb";
-
-  $button-width: 130px;
-  $button-height: 38px;
-
-  cursor: pointer;
-
-  &:hover {
-    background-color: $background-grey-darker;
+  .query-section {
+    @import "components/result-query-information";
   }
 
-  .query-blurb > .filter-summary-text, .query-blurb > .projections-summary-text {
-    display: block;
-  }
-  .query-text {
-    margin-right: $results-right-space + $button-width;
-  }
-  .query-link-button {
-    @extend %primary-button;
-
-    float: right;
-    display: inline-block;
-    position: absolute;
-    top: 50%;
-    right: $results-right-space;
-    margin-top: (-$button-height)/2;
-    width: $button-width;
-    height: $button-height;
-    font-size: $font-size-regular;
-    font-weight: $font-weight-medium;
-  }
-}
-
-.result-information {
-  margin-top: 10px;
-  margin-bottom: 30px;
-  .metadata-wrapper {
-    padding-bottom: 0;
-    .metadata-text {
-      @import "components/result-metadata";
-      @import "components/section-heading-with-help";
-
-      .section-header .section-title {
-        margin-top: 10px;
-      }
-      .expand-bar {
-        margin-left: (-$information-wrapper-padding-left);
-        margin-right: (-$information-wrapper-padding-right);
-      }
-    }
-  }
-}
-
-.result-container {
-  @import "components/records-viewer";
-  @import "components/no-results-help";
-  margin-left: $left-bar-separation-width;
-  margin-bottom: 30px;
-  .help-text {
-    margin-right: $results-right-space;
+  .result-section {
+    margin-top: 30px;
+    @import "components/result-viewer";
   }
 }

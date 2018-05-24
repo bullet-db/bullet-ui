@@ -20,8 +20,8 @@ export default Component.extend(PaginatedTable, {
       return row.get('created');
     },
 
-    records(row) {
-      return row.get('records.length');
+    segments(row) {
+      return row.get('segments.length');
     }
   }),
 
@@ -31,7 +31,7 @@ export default Component.extend(PaginatedTable, {
 
   columns: A([
     { label: 'Date', valuePath: 'created', width: '150px', cellComponent: 'cells/result-date-entry' },
-    { label: '# Records', valuePath: 'records', width: '80px', cellComponent: 'cells/result-number-entry' }
+    { label: '# Windows', valuePath: 'segments', width: '80px', cellComponent: 'cells/result-number-entry' }
   ]),
 
   init() {
