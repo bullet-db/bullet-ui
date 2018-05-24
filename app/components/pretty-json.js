@@ -15,7 +15,16 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
+    this.$().append(this.getRenderData());
+  },
+
+  didUpdateAttrs() {
+    this._super(...arguments);
+    this.$().empty().append(this.getRenderData());
+  },
+
+  getRenderData() {
     let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels'), { hoverPreviewEnabled: true });
-    this.$().append(formatter.render());
+    return formatter.render();
   }
 });

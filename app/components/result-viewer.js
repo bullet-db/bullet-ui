@@ -10,15 +10,15 @@ export default Component.extend({
   classNames: ['result-viewer'],
   result: null,
 
-  hasSegments: computed('result.segments', function() {
+  hasSegments: computed('result.segments.[]', function() {
     return this.get('result.segments.length') > 0;
   }).readOnly(),
 
-  records: computed('result.segments', function() {
+  records: computed('result.segments.[]', function() {
     return this.get('result.segments.lastObject.records')
   }).readOnly(),
 
-  metadata: computed('result.segments', function() {
+  metadata: computed('result.segments.[]', function() {
     return this.get('result.segments.lastObject.metadata')
   }).readOnly()
 });

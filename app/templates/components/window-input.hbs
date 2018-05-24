@@ -43,6 +43,11 @@
           {{INCLUDE_TYPES.ALL}}
         {{/radio-button}}
       </div>
+      {{#if isRawAggregation}}
+        <div class="row">
+          {{validated-input inputClassNames="col-xs-3 window-size" model=query.aggregation valuePath="size" fieldName="Maximum Rows in Window" type="number" placeholder="Number" disabled=disabled}}
+        </div>
+      {{/if}}
     {{/if}}
 
   </div>

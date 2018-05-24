@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject, { computed } from '@ember/object';
+import EmberObject, { computed, observer } from '@ember/object';
 import Component from '@ember/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/mixins/paginated-table';
@@ -30,11 +30,17 @@ export default Component.extend(PaginatedTable, {
     }));
   }),
 
-  init() {
-    this._super(...arguments);
-    this.set('table', new Table(this.get('columns')));
+  table: computed('columns', function() {
+    return new Table(this.get('columns'));
+  }),
 
-    this.set('rows', this.get('rawRows').map(row => EmberObject.create(row)));
-    this.addPages(1);
+  rows: computed('rawRows', function() {
+    return this.get('rawRows').map(row => EmberObject.create(row));
+  }),
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+    this.reset();
+    this.addPages();
   }
 });

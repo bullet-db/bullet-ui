@@ -136,7 +136,7 @@ export default DS.Model.extend(Validations, {
     let emitType = this.get('window.emit.type');
     let emitEvery = this.get('window.emit.every');
     let includeType = this.get('window.include.type');
-    return `Every ${emitEvery} ${this.getEmitUnit(emitType, emitEvery)} ${this.getIncludeType(includeType)}`;
+    return `Every ${emitEvery} ${this.getEmitUnit(emitType, emitEvery)}${this.getIncludeType(includeType)}`;
   }).readOnly(),
 
   latestResult: computed('results.[]', function() {

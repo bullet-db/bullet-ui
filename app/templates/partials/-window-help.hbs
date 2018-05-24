@@ -20,12 +20,21 @@
       Frequency has a configured minimum of <strong>{{settings.defaultValues.sketches.windowEmitFrequencyMinSecs}}</strong>
       seconds and a maximum of your query duration.
     </p>
+    <p>
+      If you are using this window with a Raw Data query, you can also also choose the maximum numbers of rows you want
+      per window. The allowed maximum is <strong>{{settings.defaultValues.rawMaxSize}}</strong>. This will return the
+      window as soon as this maximum is reached.
+    </p>
+    <p>For other aggregations, the data has to be collected till the window duration is reached because existing rows
+      may be updated with future data. The maximum rows per window is defaulted to
+      <strong>{{settings.defaultValues.aggregationMaxSize}}</strong>.
+    </p>
   </li>
   <li>
     <p>
       <strong>Record Based</strong> lets you get your results as they come in. You can now use Frequency to specify how
-      many records should be present in each window. This is currently <strong>only</strong> allowed if your aggregation
-      is Raw Data and you may only retrieve your records <strong>one</strong> at a time. These correspond to a class of
+      many records should be present in each window. This is currently only allowed if your aggregation is Raw Data and
+      you may only retrieve your records <strong>one</strong> at a time. These correspond to a class of
       <strong>Sliding</strong> windows in streaming windowed queries parlance.
     </p>
   </li>
