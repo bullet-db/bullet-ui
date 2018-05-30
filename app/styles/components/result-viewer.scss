@@ -3,19 +3,59 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+$spacing: 30px;
+
 .section-header .result-title {
-  margin-bottom: 25px;
   font-size: $font-size-large;
 }
 
+.control-container {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  margin-bottom: $spacing;
+
+  .auto-update-wrapper {
+    @import "mode-toggle";
+    .mode-toggle {
+      justify-content: flex-start;
+      .mode {
+        width: 45px;
+      }
+    }
+    span {
+      font-size: $font-size-regular-small;
+      font-color: $inactive-grey;
+      font-family: $font-family-regular;
+    }
+  }
+
+  .segment-selector {
+    $input-height: 38px;
+    width: 400px;
+    @import "power-select-field";
+    .ember-power-select-trigger {
+      border: 1px solid $inactive-grey;
+      border-radius: $input-radius-regular;
+    }
+  }
+
+  .progress-indicator {
+  }
+}
+
+
 .segment-information {
   @import "segment-metadata";
+  margin-bottom: $spacing;
 }
 
 .records-container {
   @import "records-viewer";
-  @import "no-data-help";
-  margin-bottom: 30px;
+  @import "query-step-help";
+  margin-bottom: $spacing;
   .help-text {
     margin-right: $results-right-space;
   }

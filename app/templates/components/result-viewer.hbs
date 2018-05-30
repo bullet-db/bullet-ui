@@ -3,23 +3,46 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="information-container segment-information">
-  <span class="section-header">
-    <h4 class="section-title">Metadata</h4>
-    {{#info-popover title="Metadata"}}
-      {{partial "partials/window-metadata-help"}}
-    {{/info-popover}}
-  </span>
-  {{segment-metadata metadata=metadata}}
+<div class="control-container">
+  <div class="auto-update-wrapper">
+    <span>Auto Update</span>
+    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action (mut autoUpdate))}}
+ </div>
+
+{{#unless hasError}}
+   <div class="segment-selector">
+     {{#power-select disabled=disableSegmentSwapping selected=selectedSegment options=result.segments
+                     searchField="metadataNumber" onchange=(action "changeSegment") as |segment|}}
+       <span class="segment-number">#{{get segment segmentNumberProperty}}:</span>
+       <span class="segment-size">{{segment.records.length}}</span> records at
+       <span class="segment-time">{{moment-format segment.created 'dddd, hh:MM:SS a'}}</span>
+     {{/power-select}}
+   </div>
+ {{/unless}}
+
+ <div class="progress-indicator">
+ </div>
 </div>
 
+{{#if hasData}}
+  <div class="information-container segment-information">
+    <span class="section-header">
+      <h4 class="section-title">Metadata</h4>
+      {{#info-popover title="Metadata"}}
+        {{partial "partials/window-metadata-help"}}
+      {{/info-popover}}
+    </span>
+    {{segment-metadata metadata=metadata}}
+  </div>
+{{/if}}
+
 <div class="records-container">
-  {{#if hasSegments}}
-    {{#if result.isReallyRaw}}
-      {{records-viewer model=result records=records metadata=metadata showRawData=true}}
-    {{else}}
-      {{records-viewer model=result records=records metadata=metadata showTable=true}}
-    {{/if}}
+  {{#if hasError}}
+    {{partial "partials/query-killed"}}
+  {{else if hasData}}
+    {{records-viewer records=records metadata=metadata config=config}}
+  {{else if isRunningQuery}}
+    {{partial "partials/running-query"}}
   {{else}}
     {{partial "partials/no-data-help"}}
   {{/if}}

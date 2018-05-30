@@ -4,7 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
-import EmberObject from '@ember/object';
+import EmberObject, { computed, getProperties } from '@ember/object';
+import { notEmpty } from '@ember/object/computed';
 import DS from 'ember-data';
 
 export default DS.Model.extend({
@@ -24,5 +25,13 @@ export default DS.Model.extend({
     }
   }),
   result: DS.belongsTo('result', { autoSave: true }),
-  pivotOptions: DS.attr('string')
+  pivotOptions: DS.attr('string'),
+
+  metadataNumber: computed('metadata', function() {
+    let mapping = this.get('settings.defaultValues.metadataKeyMapping');
+    let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
+    return this.get(`metadata.${windowSection}.${windowNumber}`);
+  }).readOnly(),
+
+  hasError: notEmpty('metadata.errors').readOnly()
 });

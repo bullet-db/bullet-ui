@@ -16,14 +16,15 @@ export default Component.extend({
   columns: null,
   rows: null,
   chartType: 'bar',
+  settings: null,
 
   simpleMode: true,
   notSimpleMode: not('simpleMode').readOnly(),
-  cannotModeSwitch: alias('model.isRaw').readOnly(),
+  cannotModeSwitch: alias('settings.isRaw').readOnly(),
   canModeSwitch: not('cannotModeSwitch').readOnly(),
   pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),
-  pivotOptions: computed('model.pivotOptions', function() {
-    return JSON.parse(this.get('model.pivotOptions'));
+  pivotOptions: computed('settings.pivotOptions', function() {
+    return JSON.parse(this.get('settings.pivotOptions'));
   }).readOnly(),
 
   sampleRow: computed('rows', 'columns', function() {
@@ -41,9 +42,9 @@ export default Component.extend({
     return typicalRow;
   }),
 
-  independentColumns: computed('model', 'sampleRow', 'columns', function() {
+  independentColumns: computed('settings', 'sampleRow', 'columns', function() {
     let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
-    let isDistribution = this.get('model.isDistribution');
+    let isDistribution = this.get('settings.isDistribution');
     if (isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
@@ -51,9 +52,9 @@ export default Component.extend({
     return A(columns.filter(c => this.isType(sampleRow, c, 'string')));
   }),
 
-  dependentColumns: computed('model', 'sampleRow', 'columns', function() {
+  dependentColumns: computed('settings', 'sampleRow', 'columns', function() {
     let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
-    let isDistribution = this.get('model.isDistribution');
+    let isDistribution = this.get('settings.isDistribution');
     if (isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }
@@ -158,9 +159,7 @@ export default Component.extend({
 
   actions: {
     saveOptions(options) {
-      let model = this.get('model');
-      model.set('pivotOptions', JSON.stringify(options));
-      model.save();
+      this.sendAction('onPivotOptions', JSON.stringify(options));
     }
   }
 });

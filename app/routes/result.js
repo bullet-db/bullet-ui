@@ -20,8 +20,7 @@ export default Route.extend({
     // Fetch all the things
     return hash({
       query: model.get('query'),
-      filter: model.get('query').then(query => query.get('filter')),
-      segments: model.get('segments')
+      filter: model.get('query').then(query => query.get('filter'))
     });
   },
 

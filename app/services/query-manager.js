@@ -5,7 +5,9 @@
  */
 import EmberObject from '@ember/object';
 import Service, { inject as service } from '@ember/service';
-import { isBlank, isEmpty, isEqual } from '@ember/utils';
+import { isBlank, isEmpty, isEqual, isNone } from '@ember/utils';
+import { debounce } from '@ember/runloop';
+import { A } from '@ember/array';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
 import ZLib from 'npm:browserify-zlib';
@@ -15,6 +17,7 @@ import { all, Promise, resolve } from 'rsvp';
 export default Service.extend({
   store: service(),
   querier: service(),
+  segmentDebounceInterval: 100,
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -122,14 +125,16 @@ export default Service.extend({
   },
 
   addSegment(result, data) {
-    let segment = this.get('store').createRecord('segment', {
+    result.get('segments').pushObject({
       metadata: data.meta,
       records: data.records,
-      result: result
+      created: new Date(Date.now())
     });
-    return result.save().then(() => {
-      return segment.save();
-    });
+    return debounce(this, 'saveSegments', result, this.get('segmentDebounceInterval'));
+  },
+
+  saveSegments(result) {
+    return result.save();
   },
 
   setAggregationAttributes(query, fields) {
@@ -312,19 +317,10 @@ export default Service.extend({
   },
 
   deleteResults(query) {
-    return query.get('results').then(results => {
-      let promises = results.toArray().map(r => this.deleteAllSegments(r));
-      return all(promises);
-    }).then(() => {
+    return query.get('results').then(() => {
       return this.deleteMultiple('results', query, 'query').then(() => {
         return query.save();
       });
-    });
-  },
-
-  deleteAllSegments(result) {
-    return this.deleteMultiple('segments', result, 'result').then(() => {
-      return result.save();
     });
   },
 

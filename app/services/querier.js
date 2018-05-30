@@ -6,7 +6,7 @@
 import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEmpty, isEqual } from '@ember/utils';
-import EmberObject from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
@@ -20,6 +20,11 @@ export default Service.extend(Filterizer, {
   subfieldSeparator: '.',
   delimiter: ',',
   apiMode: true,
+  pendingRequest: null,
+
+  isRunningQuery: computed('pendingRequest', function() {
+    return !isNone(this.get('pendingRequest'));
+  }),
 
   /**
    * Recreates a Ember Data like representation from an API query specification.

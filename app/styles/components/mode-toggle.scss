@@ -9,11 +9,7 @@
   $mode-inactive-color: $special-button-inactive-color;
 
   display: flex;
-  justify-content: flex-end;
-  margin: 10px 0;
-
   .mode {
-    width: 70px;
     padding: 0 0 2px 0;
     background-color: $mode-inactive-color;
     color: $white;
