@@ -20,8 +20,8 @@ export default Route.extend({
     context.transitionTo('errored');
   },
 
-  segmentHandler(message, context) {
-    context.get('queryManager').addSegment(context.get('result'), message);
+  windowHandler(message, context) {
+    context.get('queryManager').addResultWindow(context.get('result'), message);
   },
 
   actions: {
@@ -32,7 +32,7 @@ export default Route.extend({
           let handlers = {
             success: this.resultHandler,
             error: this.errorHandler,
-            message: this.segmentHandler
+            message: this.windowHandler
           };
           this.get('querier').send(query, handlers, this);
         });

@@ -32,7 +32,7 @@ $spacing: 30px;
     }
   }
 
-  .segment-selector {
+  .window-selector {
     $input-height: 38px;
     width: 400px;
     @import "power-select-field";
@@ -47,8 +47,8 @@ $spacing: 30px;
 }
 
 
-.segment-information {
-  @import "segment-metadata";
+.window-information {
+  @import "window-metadata";
   margin-bottom: $spacing;
 }
 

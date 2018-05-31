@@ -17,7 +17,7 @@ import { all, Promise, resolve } from 'rsvp';
 export default Service.extend({
   store: service(),
   querier: service(),
-  segmentDebounceInterval: 100,
+  resultWindowSaveDebounceInterval: 100,
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -124,16 +124,17 @@ export default Service.extend({
     });
   },
 
-  addSegment(result, data) {
-    result.get('segments').pushObject({
+  addResultWindow(result, data) {
+    result.get('windows').pushObject({
       metadata: data.meta,
       records: data.records,
       created: new Date(Date.now())
     });
-    return debounce(this, 'saveSegments', result, this.get('segmentDebounceInterval'));
+    return debounce(this, 'saveResultWindows', result, this.get('resultWindowSaveDebounceInterval'));
   },
 
-  saveSegments(result) {
+  saveResultWindows(result) {
+    // Needs a method not a lambda since debounce uses the context and function to uniquely identify what to debounce
     return result.save();
   },
 

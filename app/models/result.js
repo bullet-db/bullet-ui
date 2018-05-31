@@ -19,7 +19,7 @@ export default DS.Model.extend({
   query: DS.belongsTo('query', { autoSave: true }),
 
   // Not using hasMany to handle extremely high volume (rate-limited) results.
-  segments: DS.attr({
+  windows: DS.attr({
     defaultValue() {
       return A();
     }
@@ -27,7 +27,7 @@ export default DS.Model.extend({
 
   pivotOptions: DS.attr('string'),
   querySnapshot: DS.attr(),
-  selectedSegmentIndex: DS.attr('number', { defaultValue: -1 }),
+  selectedWindowIndex: DS.attr('number', { defaultValue: -1 }),
   hasError: DS.attr('boolean', { defaultValue: false }),
 
   isRaw: equal('querySnapshot.type', AGGREGATIONS.get('RAW')).readOnly(),

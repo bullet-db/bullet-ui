@@ -16,7 +16,7 @@ module('Integration | Component | results table', function(hooks) {
   test('it displays a row with two cells in two columns', async function(assert) {
     assert.expect(4);
     this.set('mockResults', A([
-      EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) })
+      EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
     assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Date');
@@ -28,8 +28,8 @@ module('Integration | Component | results table', function(hooks) {
   test('it sorts by the number of windows column on click', async function(assert) {
     assert.expect(2);
     this.set('mockResults', A([
-      EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) }),
-      EmberObject.create({ created: new Date(2015, 1, 1), segments: A() })
+      EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) }),
+      EmberObject.create({ created: new Date(2015, 1, 1), windows: A() })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
     assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
@@ -42,8 +42,8 @@ module('Integration | Component | results table', function(hooks) {
   test('it sorts by the date column on click', async function(assert) {
     assert.expect(2);
     this.set('mockResults', A([
-      EmberObject.create({ created: new Date(2015, 1, 1), segments: A() }),
-      EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) })
+      EmberObject.create({ created: new Date(2015, 1, 1), windows: A() }),
+      EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
     assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
@@ -56,11 +56,11 @@ module('Integration | Component | results table', function(hooks) {
   test('it sends the resultClick action on click', async function(assert) {
     assert.expect(2);
     this.set('mockResultClick', result => {
-      assert.equal(result.get('segments.length'), 3);
+      assert.equal(result.get('windows.length'), 3);
     });
     this.set('mockResults', A([
-      EmberObject.create({ created: new Date(2015, 1, 1), segments: A() }),
-      EmberObject.create({ created: new Date(2014, 11, 31), segments: A([{ }, { }, { }]) })
+      EmberObject.create({ created: new Date(2015, 1, 1), windows: A() }),
+      EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults resultClick=(action mockResultClick)}}`);
     assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);

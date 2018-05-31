@@ -14,33 +14,32 @@ export default Component.extend({
   classNames: ['result-viewer'],
   result: null,
   autoUpdate: true,
-  selectedSegmentIndex: -1,
-  selectedSegment: null,
+  selectedWindowIndex: -1,
+  selectedWindow: null,
 
-  segmentNumberProperty: computed('settings', function() {
+  windowNumberProperty: computed('settings', function() {
     let mapping = this.get('settings.defaultValues.metadataKeyMapping');
     let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
     return `metadata.${windowSection}.${windowNumber}`;
-  }),
+  }).readOnly(),
 
   isRunningQuery: alias('querier.isRunningQuery').readOnly(),
 
-  hasError: computed('result.segments.[]', function() {
-    let result = this.get('result.segments').some(segment => !isNone(segment.metadata.errors));
-    console.log(this.get('result.segments.length'));
+  hasError: computed('result.windows.[]', function() {
+    let result = this.get('result.windows').some(window => !isNone(window.metadata.errors));
     return result;
-  }),
-
-  hasData: computed('result.segments.[]', function() {
-    return !isEmpty(this.get('result.segments'));
   }).readOnly(),
 
-  records: computed('result.segments.[]', function() {
-    return this.get('result.segments.lastObject.records');
+  hasData: computed('result.windows.[]', function() {
+    return !isEmpty(this.get('result.windows'));
   }).readOnly(),
 
-  metadata: computed('result.segments.[]', function() {
-    return this.get('result.segments.lastObject.metadata');
+  records: computed('result.windows.[]', function() {
+    return this.get('result.windows.lastObject.records');
+  }).readOnly(),
+
+  metadata: computed('result.windows.[]', function() {
+    return this.get('result.windows.lastObject.metadata');
   }).readOnly(),
 
   config: computed('result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
@@ -53,8 +52,8 @@ export default Component.extend({
   }).readOnly(),
 
   actions: {
-    changeSegment(segment) {
-      this.set('selectedSegment', segment);
+    changeWindow(selectedWindow) {
+      this.set('selectedWindow', selectedWindow);
     }
   }
 });

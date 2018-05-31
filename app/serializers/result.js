@@ -9,17 +9,17 @@ import { A } from '@ember/array';
 export default ApplicationSerializer.extend({
   serialize(snapshot, options) {
     let json = this._super(...arguments);
-    let segments = json.data.attributes.segments || A();
+    let windows = json.data.attributes.windows || A();
     let array = [];
-    segments.forEach(segment => array.push(segment));
-    json.data.attributes.segments = array;
+    windows.forEach(w => array.push(w));
+    json.data.attributes.windows = array;
     return json;
   },
 
   normalizeResponse() {
     let json = this._super(...arguments);
-    let segments = json.data.attributes.segments;
-    json.data.attributes.segments = A(segments);
+    let windows = json.data.attributes.windows;
+    json.data.attributes.windows = A(windows);
     return json;
   }
 });

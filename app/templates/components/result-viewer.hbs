@@ -10,12 +10,12 @@
  </div>
 
 {{#unless hasError}}
-   <div class="segment-selector">
-     {{#power-select disabled=disableSegmentSwapping selected=selectedSegment options=result.segments
-                     searchField="metadataNumber" onchange=(action "changeSegment") as |segment|}}
-       <span class="segment-number">#{{get segment segmentNumberProperty}}:</span>
-       <span class="segment-size">{{segment.records.length}}</span> records at
-       <span class="segment-time">{{moment-format segment.created 'dddd, hh:MM:SS a'}}</span>
+   <div class="window-selector">
+     {{#power-select disabled=disableWindowSwapping selected=selectedWindow options=result.windows
+                     searchField="metadataNumber" onchange=(action "changeWindow") as |window|}}
+       <span class="window-number">#{{get window windowNumberProperty}}:</span>
+       <span class="window-size">{{window.records.length}}</span> records at
+       <span class="window-time">{{moment-format window.created 'dddd, hh:MM:SS a'}}</span>
      {{/power-select}}
    </div>
  {{/unless}}
@@ -25,14 +25,14 @@
 </div>
 
 {{#if hasData}}
-  <div class="information-container segment-information">
+  <div class="information-container window-information">
     <span class="section-header">
       <h4 class="section-title">Metadata</h4>
       {{#info-popover title="Metadata"}}
         {{partial "partials/window-metadata-help"}}
       {{/info-popover}}
     </span>
-    {{segment-metadata metadata=metadata}}
+    {{window-metadata metadata=metadata}}
   </div>
 {{/if}}
 
