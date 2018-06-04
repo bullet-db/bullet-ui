@@ -12,4 +12,6 @@ $input-height: $query-input-height;
 @import "power-select-field";
 .ember-power-select-trigger {
   border-color: transparent;
+  padding-top: $font-size-small - 2px;
+  padding-left: 2px;
 }

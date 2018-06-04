@@ -34,15 +34,35 @@ $spacing: 30px;
 
   .window-selector {
     $input-height: 38px;
-    width: 400px;
+    $width: 400px;
     @import "power-select-field";
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
     .ember-power-select-trigger {
       border: 1px solid $inactive-grey;
-      border-radius: $input-radius-regular;
+      border-radius: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: $width;
+    }
+    .window-progress-indicator {
+      svg {
+        height: 5px !important;
+        width: $width !important;
+      }
     }
   }
 
-  .progress-indicator {
+  .query-progress-indicator {
+    margin-left: 20px;
+    svg {
+      height: 60px !important;
+      width: 60px !important;
+    }
   }
 }
 

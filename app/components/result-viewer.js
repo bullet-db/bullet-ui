@@ -4,42 +4,51 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@ember/component';
-import { alias } from '@ember/object/computed';
-import { computed, getProperties } from '@ember/object';
+import { computed } from '@ember/object';
+import { alias, none } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isEmpty, isNone } from '@ember/utils';
 
 export default Component.extend({
-  querier: service(),
   classNames: ['result-viewer'],
-  result: null,
-  autoUpdate: true,
-  selectedWindowIndex: -1,
-  selectedWindow: null,
+  querier: service(),
 
-  windowNumberProperty: computed('settings', function() {
-    let mapping = this.get('settings.defaultValues.metadataKeyMapping');
-    let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
-    return `metadata.${windowSection}.${windowNumber}`;
-  }).readOnly(),
+  query: null,
+  result: null,
+  selectedWindow: null,
+  autoUpdate: true,
+  aggregateMode: false,
+  jitter: -500,
 
   isRunningQuery: alias('querier.isRunningQuery').readOnly(),
+  autoAggregateMode: alias('result.isRaw').readOnly(),
+  errorWindow: alias('result.errorWindow').readOnly(),
+  hasData: alias('result.hasData').readOnly(),
+  numberOfWindows: alias('result.windows.length').readOnly(),
+  isTimeWindow: alias('query.window.isTimeBased').readOnly(),
+  windowEmitEvery: alias('query.window.emit.every').readOnly(),
 
-  hasError: computed('result.windows.[]', function() {
-    let result = this.get('result.windows').some(window => !isNone(window.metadata.errors));
-    return result;
+  hasError: computed('errorWindow', function() {
+    return !isNone(this.get('errorWindow'));
   }).readOnly(),
 
-  hasData: computed('result.windows.[]', function() {
-    return !isEmpty(this.get('result.windows'));
+  records: computed('autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
+    return this.getSelectedWindow('records');
   }).readOnly(),
 
-  records: computed('result.windows.[]', function() {
-    return this.get('result.windows.lastObject.records');
+  metadata: computed('hasError', 'autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
+    if (this.get('hasError')) {
+      return this.get('errorWindow.metadata');
+    }
+    return this.getSelectedWindow('metadata');
   }).readOnly(),
 
-  metadata: computed('result.windows.[]', function() {
-    return this.get('result.windows.lastObject.metadata');
+  queryDuration: computed('query.duration', function() {
+    return this.get('query.duration') * 1000;
+  }).readOnly(),
+
+  windowDuration: computed('windowEmitEvery', function() {
+    return this.get('jitter') + this.get('windowEmitEvery') * 1000;
   }).readOnly(),
 
   config: computed('result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
@@ -47,13 +56,30 @@ export default Component.extend({
       isRaw: this.get('result.isRaw'),
       isReallyRaw: this.get('result.isReallyRaw'),
       isDistribution: this.get('result.isDistribution'),
-      isSingleRow: this.get('result.isSingleRow')
+      isSingleRow: this.get('result.isSingleRow'),
+      pivotOptions: this.get('result.pivotOptions')
     };
   }).readOnly(),
+
+  getSelectedWindow(property) {
+    let windowProperty = this.get(`result.windows.lastObject.${property}`);
+    if (!this.get('autoUpdate')) {
+      let selectedWindow = this.get('selectedWindow');
+      windowProperty = isNone(selectedWindow) ? windowProperty : selectedWindow[property];
+    }
+    return windowProperty;
+  },
 
   actions: {
     changeWindow(selectedWindow) {
       this.set('selectedWindow', selectedWindow);
+      this.set('autoUpdate', false);
+    },
+
+    changeAutoUpdate(autoUpdate) {
+      // Turn On => reset selectedWindow. Turn Off => Last window
+      this.set('selectedWindow', autoUpdate ? null : this.get('result.windows.lastObject'));
+      this.set('autoUpdate', autoUpdate);
     }
   }
 });

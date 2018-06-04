@@ -26,21 +26,30 @@
   .query-blurb > .filter-summary-text, .query-blurb > .projections-summary-text {
     display: block;
   }
+
   .query-text {
     margin-right: $results-right-space + $button-width;
   }
-  .query-link-button {
-    @extend %primary-button;
 
+  .query-button {
     float: right;
     display: inline-block;
     position: absolute;
-    top: 50%;
     right: $results-right-space;
     margin-top: (-$button-height)/2;
     width: $button-width;
     height: $button-height;
     font-size: $font-size-regular;
     font-weight: $font-weight-medium;
+  }
+
+  .link-button {
+    @extend %primary-button;
+    top: 25%;
+  }
+
+  .rerun-button {
+    @extend %secondary-button;
+    top: 75%;
   }
 }

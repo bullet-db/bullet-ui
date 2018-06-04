@@ -24,7 +24,8 @@ export default Component.extend({
   canModeSwitch: not('cannotModeSwitch').readOnly(),
   pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),
   pivotOptions: computed('settings.pivotOptions', function() {
-    return JSON.parse(this.get('settings.pivotOptions'));
+    let options = this.get('settings.pivotOptions') || '{}';
+    return JSON.parse(options);
   }).readOnly(),
 
   sampleRow: computed('rows', 'columns', function() {

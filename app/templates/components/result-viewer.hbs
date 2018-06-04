@@ -5,22 +5,31 @@
  --}}
 <div class="control-container">
   <div class="auto-update-wrapper">
-    <span>Auto Update</span>
-    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action (mut autoUpdate))}}
+    <span>Latest Window</span>
+    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
  </div>
 
 {{#unless hasError}}
    <div class="window-selector">
+     {{#if isTimeWindow}}
+       <div class="progress-indicator window-progress-indicator">
+         {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
+                              updateInterval=100 animationDuration=250 retriggerOnChangeIn=numberOfWindows}}
+       </div>
+     {{/if}}
      {{#power-select disabled=disableWindowSwapping selected=selectedWindow options=result.windows
-                     searchField="metadataNumber" onchange=(action "changeWindow") as |window|}}
-       <span class="window-number">#{{get window windowNumberProperty}}:</span>
+                     placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
+                     searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
+                     onchange=(action "changeWindow") as |window|}}
+       <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
        <span class="window-size">{{window.records.length}}</span> records at
        <span class="window-time">{{moment-format window.created 'dddd, hh:MM:SS a'}}</span>
      {{/power-select}}
    </div>
  {{/unless}}
 
- <div class="progress-indicator">
+ <div class="progress-indicator query-progress-indicator">
+   {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
  </div>
 </div>
 

@@ -10,13 +10,13 @@
     "helpLinks": [
       {
         "name": "Tutorials",
-        "link": "https://yahoo.github.io/bullet-docs/ui/usage"
+        "link": "https://bullet-db.github.io/ui/usage"
       }
     ],
-    "bugLink": "https://github.com/yahoo/bullet-ui/issues",
-    "modelVersion": 2,
+    "bugLink": "https://github.com/bullet-db/bullet-ui/issues",
+    "modelVersion": 3,
     "migrations": {
-      "deletions": "result"
+      "deletions": "query"
     },
     "defaultValues": {
       "aggregationMaxSize": 512,
@@ -56,6 +56,7 @@
         "maximumValue": "Maximum Value",
         "windowNumber": "Number",
         "windowSize": "Size",
+        "windowEmitTime": "Emit Time",
         "expectedEmitTime": "Expected Emit Time"
       }
     }

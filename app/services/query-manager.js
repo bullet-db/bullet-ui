@@ -6,6 +6,7 @@
 import EmberObject from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { isBlank, isEmpty, isEqual, isNone } from '@ember/utils';
+import { computed, get, getProperties } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { A } from '@ember/array';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
@@ -17,7 +18,13 @@ import { all, Promise, resolve } from 'rsvp';
 export default Service.extend({
   store: service(),
   querier: service(),
-  resultWindowSaveDebounceInterval: 100,
+  saveSegmentDebounceInterval: 100,
+
+  windowNumberProperty: computed('settings', function() {
+    let mapping = this.get('settings.defaultValues.metadataKeyMapping');
+    let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
+    return `${windowSection}.${windowNumber}`;
+  }).readOnly(),
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -124,18 +131,16 @@ export default Service.extend({
     });
   },
 
-  addResultWindow(result, data) {
+  addSegment(result, data) {
+    let position = result.get('windows.length');
     result.get('windows').pushObject({
       metadata: data.meta,
       records: data.records,
+      sequence: get(data.meta, this.get('windowNumberProperty')),
+      index: position,
       created: new Date(Date.now())
     });
-    return debounce(this, 'saveResultWindows', result, this.get('resultWindowSaveDebounceInterval'));
-  },
-
-  saveResultWindows(result) {
-    // Needs a method not a lambda since debounce uses the context and function to uniquely identify what to debounce
-    return result.save();
+    return debounce(result, result.save, this.get('saveSegmentDebounceInterval'));
   },
 
   setAggregationAttributes(query, fields) {

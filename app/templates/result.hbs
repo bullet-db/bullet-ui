@@ -15,8 +15,11 @@
           <h4>Query Definition</h4>
           {{query-blurb query=model.query summary=model.querySnapshot}}
         </div>
-        <button class="btn btn-info btn-primary query-link-button" {{action "queryClick" model.query}}>
+        <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" model.query bubbles=false}}>
           Edit
+        </button>
+        <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" model.query bubbles=false}}>
+          Rerun
         </button>
       </div>
     </div>
@@ -30,7 +33,7 @@
       {{/info-popover}}
     </div>
     <div class="result-viewer-container">
-      {{result-viewer result=model}}
+      {{result-viewer result=model query=model.query}}
     </div>
   </div>
 </div>

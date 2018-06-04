@@ -241,8 +241,6 @@
     position: fixed;
     bottom: 0;
 
-    @import "timed-progress-bar";
-
     hr {
       margin-left: (-$query-panel-side-padding);
       margin-right: (-$grid-gutter-width/2) + (-$query-panel-side-padding);
@@ -260,15 +258,6 @@
       font-size: $font-size-regular;
     }
 
-    .cancel-button {
-      @extend %secondary-button;
-      border-width: 2px;
-      width: 140px;
-      height: 40px;
-      font-size: $font-size-regular;
-      font-weight: $font-weight-medium;
-    }
-
     .save-button {
       @extend %secondary-button;
       border-width: 2px;
@@ -284,7 +273,7 @@
   // Running state page styling
 
   &.query-running {
-    .btn:not(.cancel-button) {
+    .btn {
       background-color:  $inactive-button-color !important;
       border-color:  $inactive-button-color !important;
     }

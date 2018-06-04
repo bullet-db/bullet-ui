@@ -6,6 +6,8 @@
 import EmberObject from '@ember/object';
 import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
+import { equal } from '@ember/object/computed';
+import { isEqual } from '@ember/utils';
 
 let EmitTypes = EmberObject.extend({
   TIME: 'Time Based',
@@ -75,5 +77,7 @@ export default DS.Model.extend(Validations, {
       });
     }
   }),
-  query: DS.belongsTo('query', { autoSave: true })
+  query: DS.belongsTo('query', { autoSave: true }),
+
+  isTimeBased: equal('emit.type', EMIT_TYPES.get('TIME'))
 });

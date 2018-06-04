@@ -27,8 +27,6 @@ export default DS.Model.extend({
 
   pivotOptions: DS.attr('string'),
   querySnapshot: DS.attr(),
-  selectedWindowIndex: DS.attr('number', { defaultValue: -1 }),
-  hasError: DS.attr('boolean', { defaultValue: false }),
 
   isRaw: equal('querySnapshot.type', AGGREGATIONS.get('RAW')).readOnly(),
   isCountDistinct: equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')).readOnly(),
@@ -48,5 +46,13 @@ export default DS.Model.extend({
     return this.get('isGroup') && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }).readOnly(),
 
-  isSingleRow: or('isCountDistinct', 'isGroupAll').readOnly()
+  isSingleRow: or('isCountDistinct', 'isGroupAll').readOnly(),
+
+  errorWindow: computed('windows.[]', function() {
+    return this.get('windows').find(window => !isNone(window.metadata.errors));
+  }).readOnly(),
+
+  hasData: computed('windows.[]', function() {
+    return !isEmpty(this.get('windows'));
+  }).readOnly()
 });

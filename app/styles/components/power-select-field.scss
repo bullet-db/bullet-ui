@@ -12,14 +12,11 @@
   overflow-y: hidden;
   border-radius: $input-radius-regular;
 
-  .ember-power-select-selected-item {
+  .ember-power-select-selected-item,.ember-power-select-placeholder {
     display: inline-block;
     font-family: $font-family-regular;
     font-weight: $font-weight-regular;
     font-size: $font-size-regular;
-    // margin-top: $font-size-small;
-    padding-top: $font-size-small - 2px;
-    padding-left: 2px;
     color: $text-color-regular;
   }
 }

@@ -48,10 +48,11 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@stomp/stompjs": "~4.0.1",
     "broccoli-asset-rev": "~2.4.5",
     "browserify-zlib": "~0.2.0",
-    "chart.js": "~2.7.2",
     "c3": "~0.5.3",
+    "chart.js": "~2.7.2",
     "ember-ajax": "~3.1.0",
     "ember-browserify": "~1.2.2",
     "ember-cli": "~3.0.0",
@@ -82,6 +83,7 @@
     "ember-localforage": "1.5.8",
     "ember-moment": "7.0.1",
     "ember-power-select": "1.10.4",
+    "ember-progress-bar": "^1.0.0",
     "ember-promise-helpers": "~1.0.3",
     "ember-radio-button": "1.2.3",
     "ember-resolver": "~4.0.0",
@@ -99,8 +101,8 @@
     "eslint-plugin-node": "~6.0.1",
     "file-saver": "~1.3.8",
     "interactjs": "~1.2.8",
-    "jQuery-QueryBuilder-Subfield": "bullet-db/jQuery-QueryBuilder-Subfield#v1.0.2",
     "jQuery-QueryBuilder-Placeholders": "bullet-db/jQuery-QueryBuilder-Placeholders#v1.0.1",
+    "jQuery-QueryBuilder-Subfield": "bullet-db/jQuery-QueryBuilder-Subfield#v1.0.2",
     "jquery-ui": "~1.12.1",
     "jscs": "~3.0.7",
     "json-formatter-js": "~2.2.0",
@@ -108,7 +110,6 @@
     "pivottable": "~2.20.0",
     "pretender": "1.4.0",
     "sockjs-client": "~1.1.4",
-    "@stomp/stompjs": "~4.0.1",
     "urlsafe-base64": "~1.0.0"
   },
   "dependencies": {
