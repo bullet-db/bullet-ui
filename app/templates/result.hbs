@@ -4,24 +4,15 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="results-container">
-
   <div class="section query-section">
     <p class="query-title">
       {{if model.query.name model.query.name "New Untitled Query"}}
     </p>
     <div class="information-container query-information">
-      <div class="information-wrapper query-blurb-wrapper" {{action "queryClick" model.query}}>
-        <div class="information-text query-text">
-          <h4>Query Definition</h4>
-          {{query-blurb query=model.query summary=model.querySnapshot}}
-        </div>
-        <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" model.query bubbles=false}}>
-          Edit
-        </button>
-        <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" model.query bubbles=false}}>
-          Rerun
-        </button>
-      </div>
+      {{query-information query=model.query querySnapshot=model.querySnapshot
+                          reRunClick=(route-action "reRunClick" model.query)
+                          cancelClick=(route-action "cancelClick")
+                          queryClick=(route-action "queryClick" model.query)}}
     </div>
   </div>
 

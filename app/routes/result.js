@@ -46,7 +46,7 @@ export default Route.extend(Queryable, {
       });
     },
 
-    cancelClick(query) {
+    cancelClick() {
       this.get('querier').cancel();
     },
 

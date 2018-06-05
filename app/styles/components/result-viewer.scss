@@ -10,7 +10,7 @@ $spacing: 30px;
 }
 
 .control-container {
-  height: 80px;
+  min-height: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -23,17 +23,19 @@ $spacing: 30px;
       justify-content: flex-start;
       .mode {
         width: 45px;
+        height: 20px;
+        font-size: $font-size-regular-small;
       }
     }
     span {
-      font-size: $font-size-regular-small;
+      font-size: $font-size-regular;
       font-color: $inactive-grey;
       font-family: $font-family-regular;
     }
   }
 
   .window-selector {
-    $input-height: 38px;
+    $input-height: 50px;
     $width: 400px;
     @import "power-select-field";
 
@@ -48,6 +50,7 @@ $spacing: 30px;
       justify-content: center;
       align-items: center;
       width: $width;
+      font-size: $font-size-regular-large;
     }
     .window-progress-indicator {
       svg {
@@ -58,10 +61,9 @@ $spacing: 30px;
   }
 
   .query-progress-indicator {
-    margin-left: 20px;
     svg {
-      height: 60px !important;
-      width: 60px !important;
+      height: 80px !important;
+      width: 80px !important;
     }
   }
 }
