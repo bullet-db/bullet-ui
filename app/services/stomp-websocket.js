@@ -11,6 +11,7 @@ import Stomp from 'npm:@stomp/stompjs';
 
 const ACK_TYPE = 'ACK';
 const COMPLETE_TYPE = 'COMPLETE';
+const FAIL_TYPE = 'FAIL';
 const NEW_QUERY_TYPE = 'NEW_QUERY';
 const SESSION_LENGTH = 64;
 
@@ -33,7 +34,7 @@ export default Service.extend({
     return payload => {
       let { type, content } = JSON.parse(payload.body);
       if (!isEqual(type, ACK_TYPE)) {
-        if (isEqual(type, COMPLETE_TYPE)) {
+        if (isEqual(type, COMPLETE_TYPE) || isEqual(type, FAIL_TYPE)) {
           this.get('querier').cancel();
         }
         handlers.message(JSON.parse(content), context);
