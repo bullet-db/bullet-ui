@@ -3,21 +3,25 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject, { computed, observer } from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import Component from '@ember/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/mixins/paginated-table';
+import { isNone } from '@ember/utils';
 
 export default Component.extend(PaginatedTable, {
   classNames: ['records-table'],
   columnNames: null,
   cellComponent: 'cells/record-entry',
   pageSize: 10,
-  isFixed: true,
+  appendMode: false,
+
+  sortedByColumn: null,
+
   // Use natural types in the results
   useDefaultStringExtractor: false,
-
   rawRows: null,
+  table: null,
 
   columns: computed('columnNames', function() {
     let names = this.get('columnNames');
@@ -30,16 +34,14 @@ export default Component.extend(PaginatedTable, {
     }));
   }),
 
-  table: computed('columns', function() {
-    return new Table(this.get('columns'));
-  }),
-
-  rows: computed('rawRows', function() {
-    return this.get('rawRows').map(row => EmberObject.create(row));
-  }),
+  init() {
+    this._super(...arguments);
+    this.set('table', new Table(this.get('columns')));
+  },
 
   didReceiveAttrs() {
     this._super(...arguments);
+    this.set('rows', this.get('rawRows').map(row => EmberObject.create(row)));
     this.reset();
     this.addPages();
   }

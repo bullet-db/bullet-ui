@@ -16,15 +16,15 @@ export default Component.extend({
   columns: null,
   rows: null,
   chartType: 'bar',
-  settings: null,
+  config: null,
 
   simpleMode: true,
   notSimpleMode: not('simpleMode').readOnly(),
-  cannotModeSwitch: alias('settings.isRaw').readOnly(),
+  cannotModeSwitch: alias('config.isRaw').readOnly(),
   canModeSwitch: not('cannotModeSwitch').readOnly(),
   pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),
-  pivotOptions: computed('settings.pivotOptions', function() {
-    let options = this.get('settings.pivotOptions') || '{}';
+  pivotOptions: computed('config.pivotOptions', function() {
+    let options = this.get('config.pivotOptions') || '{}';
     return JSON.parse(options);
   }).readOnly(),
 
@@ -43,9 +43,9 @@ export default Component.extend({
     return typicalRow;
   }),
 
-  independentColumns: computed('settings', 'sampleRow', 'columns', function() {
+  independentColumns: computed('config', 'sampleRow', 'columns', function() {
     let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
-    let isDistribution = this.get('settings.isDistribution');
+    let isDistribution = this.get('config.isDistribution');
     if (isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
@@ -53,9 +53,9 @@ export default Component.extend({
     return A(columns.filter(c => this.isType(sampleRow, c, 'string')));
   }),
 
-  dependentColumns: computed('settings', 'sampleRow', 'columns', function() {
+  dependentColumns: computed('config', 'sampleRow', 'columns', function() {
     let { columns, sampleRow } = this.getProperties('columns', 'sampleRow');
-    let isDistribution = this.get('settings.isDistribution');
+    let isDistribution = this.get('config.isDistribution');
     if (isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }

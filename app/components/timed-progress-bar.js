@@ -67,8 +67,6 @@ export default Component.extend({
     this.destroyTimer();
     if (this.get('active')) {
       this.startTiming();
-    } else {
-      this.destroyTimer();
     }
   },
 

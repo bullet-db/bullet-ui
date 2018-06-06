@@ -55,8 +55,8 @@
   {{#if showRawData}}
     {{records-raw-viewer data=records}}
   {{else if showTable}}
-    {{records-table columnNames=columns rawRows=records}}
+    {{records-table appendMode=aggregateMode columnNames=columns rawRows=records}}
   {{else if showChart}}
-    {{records-charter settings=settings columns=columns rows=records}}
+    {{records-charter config=config columns=columns rows=records}}
   {{/if}}
 </div>

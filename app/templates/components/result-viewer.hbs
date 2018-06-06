@@ -4,11 +4,15 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="control-container">
-  {{#unless hasError}}
+
+  {{#if showAutoUpdate}}
     <div class="auto-update-wrapper">
        <span>Show Latest</span>
        {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
     </div>
+  {{/if}}
+
+  {{#unless hasError}}
 
     <div class="window-selector">
       {{#if isTimeWindow}}
@@ -17,20 +21,25 @@
                                updateInterval=100 animationDuration=250 retriggerOnChangeIn=numberOfWindows}}
         </div>
       {{/if}}
-      {{#power-select disabled=disableWindowSwapping selected=selectedWindow options=result.windows
-                      placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
-                      searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
-                      onchange=(action "changeWindow") as |window|}}
-        <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
-        <span class="window-size">{{window.records.length}}</span> records at
-        <span class="window-time">{{moment-format window.created 'dddd, hh:MM:SS a'}}</span>
-      {{/power-select}}
+
+      {{#unless isRawRecordWindow}}
+        {{#power-select disabled=disableWindowSwapping selected=selectedWindow options=result.windows
+                        placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
+                        searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
+                        onchange=(action "changeWindow") as |window|}}
+          <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
+          <span class="window-size">{{window.records.length}}</span> records at
+          <span class="window-time">{{moment-format window.created 'dddd, hh:MM:SS a'}}</span>
+        {{/power-select}}
+      {{/unless}}
     </div>
 
     <div class="progress-indicator query-progress-indicator">
       {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
     </div>
+
   {{/unless}}
+
 </div>
 
 {{#if hasData}}
@@ -49,7 +58,7 @@
   {{#if hasError}}
     {{partial "partials/query-killed"}}
   {{else if hasData}}
-    {{records-viewer records=records metadata=metadata config=config}}
+    {{records-viewer records=records metadata=metadata config=config aggregateMode=aggregateMode}}
   {{else if isRunningQuery}}
     {{partial "partials/running-query"}}
   {{else}}

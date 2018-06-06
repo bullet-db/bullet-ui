@@ -13,7 +13,6 @@ export default Component.extend(PaginatedTable, {
   classNames: ['results-table'],
   results: null,
   pageSize: 5,
-  isFixed: true,
 
   extractors: EmberObject.create({
     created(row) {

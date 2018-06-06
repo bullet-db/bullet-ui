@@ -1,6 +1,7 @@
 import { computed } from '@ember/object';
 import $ from 'jquery';
 import Component from '@ember/component';
+import { debounce } from '@ember/runloop';
 
 export default Component.extend({
   rows: null,
@@ -29,6 +30,15 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
+    this.insertPivotTable();
+  },
+
+  didUpdateAttrs() {
+    this._super(...arguments);
+    debounce(this, this.insertPivotTable, 500);
+  },
+
+  insertPivotTable() {
     let { rows, options } = this.getProperties('rows', 'options');
     this.$('.pivot-table-container').pivotUI(rows, options);
   },

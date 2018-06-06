@@ -14,6 +14,7 @@ import Component from '@ember/component';
 export default Component.extend({
   fileSaver: service(),
   classNames: ['records-viewer'],
+  aggregateMode: false,
   showRawData: false,
   showTable: false,
   showChart: false,
