@@ -37,12 +37,18 @@ export default Component.extend(PaginatedTable, {
   init() {
     this._super(...arguments);
     this.set('table', new Table(this.get('columns')));
+    this.set('sortColumn', null);
   },
 
   didReceiveAttrs() {
     this._super(...arguments);
     this.set('rows', this.get('rawRows').map(row => EmberObject.create(row)));
-    this.reset();
+    let sortColumn = this.get('sortColumn');
+    let hasSortedColumn = !isNone(sortColumn);
+    this.reset(hasSortedColumn);
+    if (hasSortedColumn) {
+      this.sortBy(sortColumn.valuePath, sortColumn.ascending ? 'ascending' : 'descending');
+    }
     this.addPages();
   }
 });
