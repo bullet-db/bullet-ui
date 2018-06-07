@@ -17,8 +17,7 @@
     <div class="window-selector">
       {{#if isTimeWindow}}
         <div class="progress-indicator window-progress-indicator">
-          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
-                               updateInterval=100 animationDuration=250 retriggerOnChangeIn=numberOfWindows}}
+          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration retriggerOnChangeIn=numberOfWindows}}
         </div>
       {{/if}}
 

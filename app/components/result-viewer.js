@@ -18,7 +18,7 @@ export default Component.extend({
   selectedWindow: null,
   autoUpdate: true,
   // Tweaks the time for the window duration by this to adjust for Ember scheduling delays
-  jitter: -700,
+  jitter: -300,
 
   isRunningQuery: alias('querier.isRunningQuery').readOnly(),
   isRaw: alias('result.isRaw').readOnly(),

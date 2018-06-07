@@ -12,7 +12,7 @@ export default Component.extend({
   // Component API
   duration: 10000,
   active: false,
-  updateInterval: 500,
+  updateInterval: 200,
   // The value doesn't matter. Using this as a 'observer' to trigger timing again.
   retriggerOnChangeIn: null,
 
@@ -24,7 +24,7 @@ export default Component.extend({
   trailColor: '#eee',
   // https://github.com/jeremyckahn/shifty/blob/e13d78f887b3783b6d93e501d26cc37a9fa2d206/src/easing-functions.js
   easing: 'linear',
-  animationDuration: 800,
+  animationDuration: 200,
   useStep: true,
 
   // Private component configuration
@@ -106,15 +106,10 @@ export default Component.extend({
     let delta = (timeNow - this.get('startTime')) / this.get('runTime');
     this.set('percentNow', Math.min(delta, 1));
     if (timeNow >= this.get('endTime')) {
+      this.set('timingDone', true);
       this.sendAction('finished');
       return;
     }
     this.set('futureTimer', later(this, this.timer, this.get('updateInterval')));
-  },
-
-  actions: {
-    onAnimationDone() {
-      this.set('timingDone', true);
-    }
   }
 });

@@ -5,9 +5,8 @@
  --}}
 <div class="progress-container">
   {{#if timingDone}}
-    {{ember-progress-bar shape=shape useDefaultStep=false setProgress=progress options=options duration=null}}
+    {{ember-progress-bar shape=shape useDefaultStep=false setProgress=progress options=options}}
   {{else}}
-    {{ember-progress-bar shape=shape useDefaultStep=false progress=progress options=options
-                        onAnimationComplete=(action "onAnimationDone")}}
+    {{ember-progress-bar shape=shape useDefaultStep=false progress=progress options=options}}
   {{/if}}
 </div>
