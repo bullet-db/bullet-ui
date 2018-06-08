@@ -65,6 +65,11 @@ export default Component.extend({
     };
   }).readOnly(),
 
+  didReceiveAttrs() {
+    this._super(...arguments);
+    this.set('selectedWindow', null);
+  },
+
   getSelectedWindow(property) {
     let windowProperty = this.get(`result.windows.lastObject.${property}`);
     if (!this.get('autoUpdate')) {

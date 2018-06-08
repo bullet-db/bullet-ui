@@ -4,12 +4,11 @@
   See the LICENSE file associated with the project for terms.
 --}}
 <div class="control-container">
-  {{#if showAutoUpdate}}
-    <div class="auto-update-wrapper">
-       <span>Show Latest</span>
-       {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
-    </div>
-  {{/if}}
+
+  <div class="auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
+    <span>Show Latest</span>
+    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
+  </div>
 
   {{#unless hasError}}
     <div class="window-selector">
