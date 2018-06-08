@@ -5,9 +5,6 @@
  --}}
 <div class="results-container">
   <div class="section query-section">
-    <p class="query-title">
-      {{if model.query.name model.query.name "New Untitled Query"}}
-    </p>
     <div class="information-container query-information">
       {{query-information query=model.query querySnapshot=model.querySnapshot
                           reRunClick=(route-action "reRunClick" model.query)
@@ -17,12 +14,6 @@
   </div>
 
   <div class="section result-section">
-    <div class="section-header">
-      <h3 class="section-title result-title">Results</h3>
-      {{#info-popover title="Results"}}
-        {{partial "partials/results-help"}}
-      {{/info-popover}}
-    </div>
     <div class="result-viewer-container">
       {{result-viewer result=model query=model.query}}
     </div>

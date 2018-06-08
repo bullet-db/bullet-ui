@@ -2,9 +2,8 @@
   Copyright 2018, Yahoo Inc.
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
- --}}
+--}}
 <div class="control-container">
-
   {{#if showAutoUpdate}}
     <div class="auto-update-wrapper">
        <span>Show Latest</span>
@@ -13,7 +12,6 @@
   {{/if}}
 
   {{#unless hasError}}
-
     <div class="window-selector">
       {{#if isTimeWindow}}
         <div class="progress-indicator window-progress-indicator">
@@ -36,17 +34,15 @@
     <div class="progress-indicator query-progress-indicator">
       {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
     </div>
-
   {{/unless}}
-
 </div>
 
 {{#if hasData}}
   <div class="information-container window-information">
     <span class="section-header">
-      <h4 class="section-title">Metadata</h4>
-      {{#info-popover title="Metadata"}}
-        {{partial "partials/window-metadata-help"}}
+      <h4 class="section-title">Results & Metadata</h4>
+      {{#info-popover title="Results"}}
+        {{partial "partials/results-help"}}
       {{/info-popover}}
     </span>
     {{window-metadata metadata=metadata}}

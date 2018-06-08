@@ -31,8 +31,8 @@ export default Component.extend({
   isRawRecordWindow: and('isRecordWindow', 'isRaw').readOnly(),
   aggregateMode: alias('isRawRecordWindow').readOnly(),
 
-  showAutoUpdate: computed('hasError', 'isRawRecordWindow', function() {
-    return !(this.get('hasError') || this.get('aggregateMode'));
+  showAutoUpdate: computed('hasError', 'isRawRecordWindow', 'hasData', function() {
+    return this.get('hasData') && !this.get('hasError') && !this.get('aggregateMode');
   }),
 
   hasError: computed('errorWindow', function() {

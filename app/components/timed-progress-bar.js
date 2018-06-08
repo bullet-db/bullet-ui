@@ -63,8 +63,8 @@ export default Component.extend({
 
   didReceiveAttrs() {
     this._super(...arguments);
-    // Don't do any timing unless active. Also any changes with active true should restart timer.
     this.destroyTimer();
+    // Don't do any timing unless active. Also any changes with active true should restart timer.
     if (this.get('active')) {
       this.startTiming();
     }

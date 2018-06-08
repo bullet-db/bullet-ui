@@ -3,81 +3,26 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-$spacing: 30px;
-
-.section-header .result-title {
-  font-size: $font-size-large;
+.window-information {
+  @import "window-metadata";
+  margin-bottom: 20px;;
 }
 
 .control-container {
-  min-height: 10px;
+  @import "control-container";
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   align-content: center;
-  margin-bottom: $spacing;
-
-  .auto-update-wrapper {
-    @import "mode-toggle";
-    .mode-toggle {
-      justify-content: flex-start;
-      .mode {
-        width: 45px;
-        height: 20px;
-        font-size: $font-size-regular-small;
-      }
-    }
-    span {
-      font-size: $font-size-regular;
-      font-color: $inactive-grey;
-      font-family: $font-family-regular;
-    }
-  }
-
-  .window-selector {
-    $input-height: 50px;
-    $width: 400px;
-    @import "power-select-field";
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .ember-power-select-trigger {
-      border: 1px solid $inactive-grey;
-      border-radius: 2px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: $width;
-      font-size: $font-size-regular-large;
-    }
-    .window-progress-indicator {
-      svg {
-        height: 5px !important;
-        width: $width !important;
-      }
-    }
-  }
-
-  .query-progress-indicator {
-    svg {
-      height: 80px !important;
-      width: 80px !important;
-    }
-  }
-}
-
-
-.window-information {
-  @import "window-metadata";
-  margin-bottom: $spacing;
+  margin-bottom: 20px;
+  min-height: 10px;
 }
 
 .records-container {
   @import "records-viewer";
   @import "query-step-help";
-  margin-bottom: $spacing;
+  margin-bottom: 20px;
   .help-text {
     margin-right: $results-right-space;
   }
