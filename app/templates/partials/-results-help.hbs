@@ -4,15 +4,32 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <p>
-  The results can be displayed either as raw JSON format, formatted in a tabular view, displayed as a chart or pivoted on. Toggle between the views by clicking <strong>Show Raw Data</strong> or <strong>Show as Table</strong> or <strong>Show as Chart</strong> icons.
+  The results page shows you the various rows returned by your running query and lets you navigate through your windows (if your
+  query configured the Window section). You can track of the progress of your query below and use the Cancel/Rerun buttons above
+  to stop or rerun the query. You can also click the query definition above or the Edit button to iterate on your query.
 </p>
 
-<h5 class="content-header">Saving and Sharing</h5>
-<p>The output can be saved locally as JSON, CSV, or a flattened CSV (where any map fields and lists are exploded till the base elements)</p>
-<p>It is not possible to natively share query or result URLs from Bullet since all queries and results are stored on the local browser only.</p>
+<h5 class="content-header">Navigating through Windows</h5>
+If your query included a Window, the UI supports a few different ways to navigate through them.
 
-<h6 class="content-subheader">Simple Chart</h6>
+<h6 class="content-subheader">Window Navigation Dropdown</h6>
 <p>
-  For all queries besides Raw Data queries with <strong>Select all Fields</strong>, Bullet will try to find your independent fields by finding the string fields in your result and your dependent fields by using the numeric fields in this view.
-  If there are multiple independent fields, Bullet will separate them using a <strong>&#47;</strong> in the chart. The chart is a <strong>Bar</strong> chart.
+  If your query had a window and it was not aggregated across windows, you can navigate to a particular window by using the dropdown. If the maintainer configured the <strong>{{settings.defaultValues.metadataKeyMapping.windowNumber}}</strong> metadata entry, the windows can be searched using their expected sequence. The dropdown
+  also shows the total number of windows that have been currently received.
+</p>
+
+<h6 class="content-header">Showing the Last Window</h6>
+<p>If you navigate to a particular window or turn off automatically moving to the latest window, you can investigate the results in a particular window by using the window navigation dropdown.</p>
+
+<h6 class="content-header">Aggregate across Windows</h6>
+<p>If you are running a RAW query with a Record Based Window, the resulting windows are automatically combined and shown together.</p>
+
+<h5 class="content-header">Timing indicators</h5>
+<p>The overall query progress (defined by your Maximum Duration) is shown on the right.</p>
+<p>If you are running a Time Window based query, the approximate time to your next window is shown as a bar above the window selection dropdown.</p>
+
+<h5 class="content-header">Rate Limiting Errors</h5>
+<p>
+  It is possible to write a query (with a Record Based window for instance), that retrieves data from Bullet too fast. If this happens, your query will be killed and an error message will be shown
+  to you. You can edit your query to add more filters or switch to a different kind of window to prevent this from happening. The rate that cuts off a query is defined by your maintainer.
 </p>
