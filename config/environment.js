@@ -8,7 +8,8 @@
 
 
 const INTERNAL_APP_SETTINGS = {
-  adapter: 'indexeddb'
+  adapter: 'indexeddb',
+  debounceSegmentSaves: false
 }
 
 const TEST_SETTINGS = {

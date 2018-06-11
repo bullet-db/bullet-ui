@@ -6,7 +6,8 @@
 import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEmpty, isEqual } from '@ember/utils';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
+import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
@@ -22,9 +23,7 @@ export default Service.extend(Filterizer, {
   apiMode: true,
   pendingRequest: null,
 
-  isRunningQuery: computed('pendingRequest', function() {
-    return !isNone(this.get('pendingRequest'));
-  }),
+  isRunningQuery: alias('stompWebsocket.isConnected').readOnly(),
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
@@ -368,15 +367,10 @@ export default Service.extend(Filterizer, {
    */
   send(data, handlers, context) {
     data = this.reformat(data);
-    let stompClient = this.get('stompWebsocket').createStompClient(data, handlers, context);
-    this.set('pendingRequest', stompClient);
+    this.get('stompWebsocket').createStompClient(data, handlers, context);
   },
 
   cancel() {
-    let pendingRequest = this.get('pendingRequest');
-    if (pendingRequest) {
-      pendingRequest.disconnect();
-      this.set('pendingRequest', null);
-    }
+    this.get('stompWebsocket').disconnect();
   }
 });

@@ -11,6 +11,7 @@ export default EmberObject.extend({
   type: null,
   dataArray: null,
   server: null,
+  respondImmediately: true,
 
   mock(dataArray, columns, delay = 0) {
     this.shutdown();
@@ -44,7 +45,7 @@ export default EmberObject.extend({
     this.set('onStompMessage', onStompMessage);
   },
 
-  send() {
+  respondWithData() {
     let onStompMessage = this.get('onStompMessage');
     let dataArray = this.get('dataArray');
     if (onStompMessage && !isEmpty(dataArray)) {
@@ -62,5 +63,11 @@ export default EmberObject.extend({
     }
   },
 
-  disconnect() {}
+  send() {
+    if (this.get('respondImmediately')) {
+      this.respondWithData();
+    }
+  },
+
+  disconnect() { }
 });

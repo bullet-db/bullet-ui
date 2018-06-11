@@ -26,6 +26,10 @@ export default Service.extend({
     return `${windowSection}.${windowNumber}`;
   }).readOnly(),
 
+  debounceSegmentSaves: computed('settings', function() {
+    return this.get('settings.debounceSegmentSaves');
+  }).readOnly(),
+
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
       to.set(field, from.get(field));
@@ -140,7 +144,8 @@ export default Service.extend({
       index: position,
       created: new Date(Date.now())
     });
-    return debounce(result, result.save, this.get('saveSegmentDebounceInterval'));
+    let shouldDebounce = this.get('debounceSegmentSaves');
+    return shouldDebounce ? debounce(result, result.save, this.get('saveSegmentDebounceInterval')) : result.save();
   },
 
   setAggregationAttributes(query, fields) {
