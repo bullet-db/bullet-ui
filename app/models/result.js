@@ -19,7 +19,7 @@ export default DS.Model.extend({
   query: DS.belongsTo('query', { autoSave: true }),
 
   // Not using hasMany to handle extremely high volume (rate-limited) results.
-  windows: DS.attr({
+  windows: DS.attr('window-array', {
     defaultValue() {
       return A();
     }

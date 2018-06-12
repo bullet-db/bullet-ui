@@ -14,11 +14,13 @@ import { pluralize } from 'ember-inflector';
 import ZLib from 'npm:browserify-zlib';
 import Base64 from 'npm:urlsafe-base64';
 import { all, Promise, resolve } from 'rsvp';
+import config from '../config/environment';
 
 export default Service.extend({
   store: service(),
   querier: service(),
   saveSegmentDebounceInterval: 100,
+  debounceSegmentSaves: config.APP.SETTINGS.debounceSegmentSaves,
 
   windowNumberProperty: computed('settings', function() {
     let mapping = this.get('settings.defaultValues.metadataKeyMapping');
@@ -26,9 +28,6 @@ export default Service.extend({
     return `${windowSection}.${windowNumber}`;
   }).readOnly(),
 
-  debounceSegmentSaves: computed('settings', function() {
-    return this.get('settings.debounceSegmentSaves');
-  }).readOnly(),
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {

@@ -85,6 +85,7 @@ export default Service.extend({
     let client = this.get('client');
     if (!isNone(client)) {
       client.disconnect();
+      this.set('client', null);
     }
   }
 });

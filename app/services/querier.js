@@ -358,16 +358,8 @@ export default Service.extend(Filterizer, {
     return object;
   },
 
-  /**
-   * Exposes the low-level StompClient object in order to abort.
-   *
-   * @param  {Object} data             The Query model.
-   * @param  {Object} handlers         The Object which contains the functions to invoke on success, failure or message.
-   * @param  {Object} context          The context for the handlers.
-   */
   send(data, handlers, context) {
-    data = this.reformat(data);
-    this.get('stompWebsocket').createStompClient(data, handlers, context);
+    this.get('stompWebsocket').createStompClient(this.reformat(data), handlers, context);
   },
 
   cancel() {

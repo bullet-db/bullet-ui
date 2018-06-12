@@ -6,7 +6,6 @@
 
 /* eslint-env node */
 
-
 const INTERNAL_APP_SETTINGS = {
   adapter: 'indexeddb',
   debounceSegmentSaves: false
@@ -32,6 +31,7 @@ const TEST_SETTINGS = {
     deletions: 'none'
   },
   adapter: 'local',
+  debounceSegmentSaves: false,
   defaultValues: {
     aggregationMaxSize: 512,
     rawMaxSize: 100,
