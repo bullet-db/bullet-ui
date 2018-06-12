@@ -160,7 +160,9 @@ export default Component.extend({
 
   actions: {
     saveOptions(options) {
-      this.sendAction('onPivotOptions', JSON.stringify(options));
+      let model = this.get('model');
+      model.set('pivotOptions', JSON.stringify(options));
+      model.save();
     }
   }
 });

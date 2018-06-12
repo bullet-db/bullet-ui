@@ -22,6 +22,7 @@ export default Component.extend({
   metadata: null,
   records: null,
   fileName: 'results',
+  model: null,
 
   enableCharting: not('config.isSingleRow').readOnly(),
 

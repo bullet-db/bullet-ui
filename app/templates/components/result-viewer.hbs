@@ -14,7 +14,8 @@
     <div class="window-selector">
       {{#if isTimeWindow}}
         <div class="progress-indicator window-progress-indicator">
-          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration retriggerOnChangeIn=numberOfWindows}}
+          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
+                               retriggerOnChangeIn=numberOfWindows}}
         </div>
       {{/if}}
 
@@ -52,7 +53,7 @@
   {{#if hasError}}
     {{partial "partials/query-killed"}}
   {{else if hasData}}
-    {{records-viewer records=records metadata=metadata config=config aggregateMode=aggregateMode}}
+    {{records-viewer records=records metadata=metadata config=config aggregateMode=aggregateMode model=result}}
   {{else if isRunningQuery}}
     {{partial "partials/running-query"}}
   {{else}}

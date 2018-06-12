@@ -5,7 +5,6 @@ import { debounce } from '@ember/runloop';
 
 export default Component.extend({
   rows: null,
-  columns: null,
   initialOptions: null,
 
   init() {
@@ -35,7 +34,7 @@ export default Component.extend({
 
   didUpdateAttrs() {
     this._super(...arguments);
-    debounce(this, this.insertPivotTable, 500);
+    debounce(this, this.insertPivotTable, 500, true);
   },
 
   insertPivotTable() {

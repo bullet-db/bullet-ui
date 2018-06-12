@@ -8,7 +8,7 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, currentRouteName, currentURL, find, findAll, triggerEvent } from '@ember/test-helpers';
+import { visit, click, fillIn, currentRouteName, currentURL, find, findAll, triggerEvent, pauseTest } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findContains } from '../helpers/find-helpers';
 
@@ -52,12 +52,12 @@ module('Acceptance | result lifecycle', function(hooks) {
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
     assert.equal(findAll('.records-table').length, 1);
-    assert.equal(findAll('.result-metadata').length, 1);
-    assert.notOk(find('.result-metadata').classList.contains('is-expanded'));
-    assert.equal(findAll('.result-metadata pre').length, 0);
-    await click('.result-metadata .expand-bar');
-    assert.ok(find('.result-metadata').classList.contains('is-expanded'));
-    assert.equal(findAll('.result-metadata pre').length, 1);
+    assert.equal(findAll('.window-metadata').length, 1);
+    assert.notOk(find('.window-metadata').classList.contains('is-expanded'));
+    assert.equal(findAll('.window-metadata pre').length, 0);
+    await click('.window-metadata .expand-bar');
+    assert.ok(find('.window-metadata').classList.contains('is-expanded'));
+    assert.equal(findAll('.window-metadata pre').length, 1);
   });
 
   test('it lets you expand result entries in a popover', async function(assert) {
@@ -93,13 +93,14 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.pretty-json-container').length, 1);
     await click('.chart-view');
+    // await pauseTest();
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.pretty-json-container').length, 0);
     assert.equal(findAll('.records-charter').length, 1);
     assert.equal(findAll('.pivot-table-container').length, 1);
     assert.equal(findAll('.pvtUi').length, 1);
     // Only pivot view
-    assert.equal(findAll('.records-chater .mode-toggle').length, 0);
+    assert.equal(findAll('.records-charter .mode-toggle').length, 0);
   });
 
   test('it lets swap between a row, tabular, simple and pivot chart views when it is not a raw query', async function(assert) {
@@ -127,12 +128,12 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.pretty-json-container').length, 0);
     assert.equal(findAll('.records-charter').length, 1);
     assert.equal(findAll('.records-charter .mode-toggle').length, 1);
-    assert.ok(find('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(find('.records-charter .mode-toggle .left-view').classList.contains('selected'));
     assert.equal(findAll('.records-charter canvas').length, 1);
-    await click('.mode-toggle .right-view');
-    assert.ok(find('.mode-toggle .right-view').classList.contains('selected'));
-    assert.equal(findAll('.pivot-table-container').length, 1);
-    assert.equal(findAll('.pvtUi').length, 1);
+    await click('.records-charter .mode-toggle .right-view');
+    assert.ok(find('.records-charter .mode-toggle .right-view').classList.contains('selected'));
+    assert.equal(findAll('.records-charter .pivot-table-container').length, 1);
+    assert.equal(findAll('.records-charter .pvtUi').length, 1);
   });
 
   test('it saves and restores pivot table options', async function(assert) {
@@ -148,8 +149,8 @@ module('Acceptance | result lifecycle', function(hooks) {
     await click('.submit-button');
 
     await click('.chart-view');
-    await click('.mode-toggle .right-view');
-    assert.ok(find('.mode-toggle .right-view').classList.contains('selected'));
+    await click('.records-charter .mode-toggle .right-view');
+    assert.ok(find('.records-charter .mode-toggle .right-view').classList.contains('selected'));
     assert.equal(findAll('.pivot-table-container').length, 1);
     assert.equal(findAll('.pvtUi').length, 1);
     assert.equal(find('.pvtUi select.pvtRenderer').value, 'Table');
@@ -162,7 +163,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry-popover .results-table .result-date-entry');
     await click('.chart-view');
-    await click('.mode-toggle .right-view');
+    await click('.records-charter .mode-toggle .right-view');
     assert.equal(find('.pvtUi select.pvtRenderer').value, 'Bar Chart');
     assert.equal(find('.pvtUi select.pvtAggregator').value, 'Sum');
   });
@@ -179,7 +180,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.raw-display').length, 1);
     assert.equal(findAll('.pretty-json-container').length, 1);
     assert.equal(findAll('.raw-json-display').length, 0);
-    await click('.mode-toggle .right-view');
+    await click('.records-viewer .mode-toggle .right-view');
     assert.equal(findAll('.records-charter').length, 0);
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.raw-display').length, 1);
