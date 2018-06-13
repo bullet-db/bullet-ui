@@ -1,24 +1,36 @@
-import { moduleForComponent, test } from 'ember-qunit';
+/*
+ *  Copyright 2018, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+import EmberObject from '@ember/object';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('query-information', 'Integration | Component | query information', {
-  integration: true
-});
+module('Integration | Component | query information', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders', function(assert) {
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
+  test('it displays a query summary', async function(assert) {
+    this.set('mockSnapshot', EmberObject.create({ filterSummary: 'foo', fieldsSummary: 'bar', windowSummary: 'baz' }));
+    await render(hbs`{{query-information querySnapshot=mockSnapshot}}`);
+    let textContent = this.element.textContent.trim();
+    assert.ok(textContent.indexOf('foo') !== -1);
+    assert.ok(textContent.indexOf('bar') !== -1);
+    assert.ok(textContent.indexOf('baz') !== -1);
+  })
 
-  this.render(hbs`{{query-information}}`);
+  test('it displays an edit and a rerun button', async function(assert) {
+    await render(hbs`{{query-information}}`);
+    assert.equal(this.element.querySelectorAll('button.link-button').length, 1);
+    assert.equal(this.element.querySelectorAll('button.rerun-button').length, 1);
+  }),
 
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:
-  this.render(hbs`
-    {{#query-information}}
-      template block text
-    {{/query-information}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  test('it displays an edit and a cancel button when running a query', async function(assert) {
+    this.set('mockQuerier', EmberObject.create({ isRunningQuery: true }));
+    await render(hbs`{{query-information querier=mockQuerier}}`);
+    assert.equal(this.element.querySelectorAll('button.link-button').length, 1);
+    assert.equal(this.element.querySelectorAll('button.cancel-button').length, 1);
+  })
 });

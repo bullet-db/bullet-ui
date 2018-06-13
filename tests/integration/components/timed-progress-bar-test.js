@@ -13,33 +13,19 @@ module('Integration | Component | timed progress bar', function(hooks) {
 
   test('it renders', async function(assert) {
     await render(hbs`{{timed-progress-bar}}`);
-    assert.equal(this.element.textContent.trim(), '0%');
+    assert.equal(this.element.textContent.trim(), '100%');
 
     await render(hbs`
       {{#timed-progress-bar}}
         template block text
       {{/timed-progress-bar}}
     `);
-    assert.ok(this.element.textContent.trim().match('0%\\s+template block text'));
-  });
-
-  test('it starts as inactive', async function(assert) {
-    await render(hbs`{{timed-progress-bar}}`);
-    assert.ok(this.element.querySelector('.progress').getAttribute('class').indexOf('hidden') !== -1);
+    assert.ok(this.element.textContent.trim().match('100%'));
   });
 
   test('it can be made active', async function(assert) {
-    this.set('isActive', false);
-    await render(hbs`{{timed-progress-bar active=isActive}}`);
-    assert.ok(this.element.querySelector('.progress').getAttribute('class').indexOf('hidden') !== -1);
-    this.set('isActive', true);
-    assert.ok(this.element.querySelector('.progress').getAttribute('class').indexOf('hidden') === -1);
-  });
-
-  test('it changes from percentage to a message when done', async function(assert) {
-    assert.expect(1);
-    await render(hbs`{{timed-progress-bar active=true duration=100}}`);
-    assert.equal(this.element.textContent.trim(), 'Collecting results...');
+    await render(hbs`{{timed-progress-bar active=true duration=100 updateInterval=100}}`);
+    assert.equal(this.element.textContent.trim(), '100%');
   });
 
   test('it calls the finished action', async function(assert) {
@@ -48,5 +34,10 @@ module('Integration | Component | timed progress bar', function(hooks) {
       assert.ok(true, 'finished was called');
     });
     await render(hbs`{{timed-progress-bar active=true duration=100 finished=(action finishedAction)}}`);
+  });
+
+  test('it can skip displaying a percentage', async function(assert) {
+    await render(hbs`{{timed-progress-bar useStep=false}}`);
+    assert.equal(this.element.textContent.trim(), '');
   });
 });

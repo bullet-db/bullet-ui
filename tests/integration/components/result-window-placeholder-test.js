@@ -1,24 +1,23 @@
-import { moduleForComponent, test } from 'ember-qunit';
+/*
+ *  Copyright 2018, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('result-window-placeholder', 'Integration | Component | result window placeholder', {
-  integration: true
-});
+module('Integration | Component | result window placeholder', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders', function(assert) {
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
+  test('it displays a message to switch between windows', async function(assert) {
+    await render(hbs`{{result-window-placeholder}}`);
+    assert.equal(this.element.textContent.trim(), 'Switch between 0 windows...');
+  });
 
-  this.render(hbs`{{result-window-placeholder}}`);
-
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:
-  this.render(hbs`
-    {{#result-window-placeholder}}
-      template block text
-    {{/result-window-placeholder}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
-});
+  test('it displays a message to switch between the given count of windows', async function(assert) {
+    await render(hbs`{{result-window-placeholder windowCount=100}}`);
+    assert.equal(this.element.textContent.trim(), 'Switch between 100 windows...');
+  });
+})
