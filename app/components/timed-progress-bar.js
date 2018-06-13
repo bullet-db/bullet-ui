@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { cancel, later } from '@ember/runloop';
-import { htmlSafe } from '@ember/string';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 

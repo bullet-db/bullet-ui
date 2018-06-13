@@ -5,7 +5,7 @@
  */
 import { isEqual, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
-import Service, { inject as service } from '@ember/service';
+import Service from '@ember/service';
 import SockJS from 'npm:sockjs-client';
 import Stomp from 'npm:@stomp/stompjs';
 

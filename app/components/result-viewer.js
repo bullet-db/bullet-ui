@@ -5,9 +5,9 @@
  */
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import { alias, none, and, not } from '@ember/object/computed';
+import { alias, and, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { isEmpty, isNone } from '@ember/utils';
+import { isNone } from '@ember/utils';
 
 export default Component.extend({
   classNames: ['result-viewer'],
@@ -31,7 +31,7 @@ export default Component.extend({
   isRawRecordWindow: and('isRecordWindow', 'isRaw').readOnly(),
   aggregateMode: alias('isRawRecordWindow').readOnly(),
 
-  showAutoUpdate: computed('hasError', 'isRawRecordWindow', 'hasData', function() {
+  showAutoUpdate: computed('hasError', 'aggregateMode', 'hasData', function() {
     return this.get('hasData') && !this.get('hasError') && !this.get('aggregateMode');
   }),
 
@@ -52,7 +52,7 @@ export default Component.extend({
   }).readOnly(),
 
   windowDuration: computed('windowEmitEvery', function() {
-    return this.get('jitter') + this.get('windowEmitEvery') * 1000;
+    return this.get('jitter') + (this.get('windowEmitEvery') * 1000);
   }).readOnly(),
 
   config: computed('result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
@@ -80,7 +80,7 @@ export default Component.extend({
   },
 
   getAllWindowRecords() {
-    return this.get('result.windows').getEach('records').reduce((p, c) => p.concat(c), []);;
+    return this.get('result.windows').getEach('records').reduce((p, c) => p.concat(c), []);
   },
 
   actions: {

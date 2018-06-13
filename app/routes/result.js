@@ -54,7 +54,7 @@ export default Route.extend(Queryable, {
       if (this.get('skipCancelling')) {
         // Reset so future queries don't skip cancelling.
         this.set('skipCancelling', false);
-      }  else {
+      } else {
         this.get('querier').cancel();
       }
       return true;

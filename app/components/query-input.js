@@ -11,7 +11,6 @@ import Component from '@ember/component';
 import { isEqual } from '@ember/utils';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES } from 'bullet-ui/models/window';
 import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
 
 export default Component.extend(BuilderAdapter, {

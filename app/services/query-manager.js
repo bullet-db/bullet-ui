@@ -5,10 +5,9 @@
  */
 import EmberObject from '@ember/object';
 import Service, { inject as service } from '@ember/service';
-import { isBlank, isEmpty, isEqual, isNone } from '@ember/utils';
+import { isBlank, isEmpty, isEqual } from '@ember/utils';
 import { computed, get, getProperties } from '@ember/object';
 import { debounce } from '@ember/runloop';
-import { A } from '@ember/array';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
 import ZLib from 'npm:browserify-zlib';
@@ -350,12 +349,5 @@ export default Service.extend({
     return this.get('store').findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
-  },
-
-  setIfNotEmpty(object, key, value) {
-    if (!isEmpty(value)) {
-      object.set(key, value);
-    }
-    return object;
   }
 });

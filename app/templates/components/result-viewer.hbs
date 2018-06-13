@@ -11,6 +11,7 @@
   </div>
 
   {{#unless hasError}}
+
     <div class="window-selector">
       {{#if isTimeWindow}}
         <div class="progress-indicator window-progress-indicator">
@@ -19,8 +20,8 @@
         </div>
       {{/if}}
 
-      {{#unless isRawRecordWindow}}
-        {{#power-select disabled=disableWindowSwapping selected=selectedWindow options=result.windows
+      {{#unless aggregateMode}}
+        {{#power-select selected=selectedWindow options=result.windows
                         placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
                         searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
                         onchange=(action "changeWindow") as |window|}}
@@ -34,6 +35,7 @@
     <div class="progress-indicator query-progress-indicator">
       {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
     </div>
+
   {{/unless}}
 </div>
 

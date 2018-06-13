@@ -46,9 +46,9 @@ module('Integration | Component | records viewer', function(hooks) {
 
   test('it allows swapping between table and the raw views', async function(assert) {
     assert.expect(11);
-    this.set('mockModel', { isSingleRow: true });
+    this.set('mockConfig', { isSingleRow: true });
     this.set('mockRecords', RESULTS.SINGLE.records);
-    await render(hbs`{{records-viewer model=mockModel records=mockRecords}}`);
+    await render(hbs`{{records-viewer config=mockConfig records=mockRecords}}`);
     await click('.table-view');
     assert.equal(this.element.querySelectorAll('.chart-view').length, 0);
     assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
@@ -117,9 +117,9 @@ module('Integration | Component | records viewer', function(hooks) {
   test('it enables charting mode if the results have more than one row', async function(assert) {
     assert.expect(9);
     this.set('tableMode', true);
-    this.set('mockModel', { isSingleRow: false });
+    this.set('mockConfig', { isSingleRow: false });
     this.set('mockRecords', RESULTS.GROUP.records);
-    await render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
+    await render(hbs`{{records-viewer config=mockConfig records=mockRecords showTable=tableMode}}`);
     assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
     assert.equal(this.element.querySelectorAll('.records-table').length, 1);
@@ -136,15 +136,14 @@ module('Integration | Component | records viewer', function(hooks) {
   test('it allows you to switch to pivot mode', async function(assert) {
     assert.expect(12);
     this.set('tableMode', true);
+    this.set('mockConfig', EmberObject.create({ isSingleRow: false, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({
-      isSingleRow: false,
-      pivotOptions: null,
       save() {
         assert.ok(true);
       }
     }));
     this.set('mockRecords', RESULTS.DISTRIBUTION.records);
-    await render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
+    await render(hbs`{{records-viewer model=mockModel config=mockConfig records=mockRecords showTable=tableMode}}`);
     assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
     assert.equal(this.element.querySelectorAll('.records-table').length, 1);
@@ -163,15 +162,14 @@ module('Integration | Component | records viewer', function(hooks) {
   test('it enables only pivot mode if the results are raw', async function(assert) {
     assert.expect(10);
     this.set('tableMode', true);
+    this.set('mockConfig', EmberObject.create({ isRaw: true, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({
-      isRaw: true,
-      pivotOptions: null,
       save() {
         assert.ok(true);
       }
     }));
     this.set('mockRecords', RESULTS.GROUP.records);
-    await render(hbs`{{records-viewer model=mockModel records=mockRecords showTable=tableMode}}`);
+    await render(hbs`{{records-viewer model=mockModel config=mockConfig records=mockRecords showTable=tableMode}}`);
     assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
     assert.equal(this.element.querySelectorAll('.records-table').length, 1);
