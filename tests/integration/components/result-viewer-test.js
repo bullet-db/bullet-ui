@@ -10,26 +10,26 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-function makeQuery(isTimeBased, duration = 0.01) {
-  return EmberObject.create({
-    window: { isTimeBased },
-    duration
-  });
-}
-
-function makeResult(errorWindow, isRaw, hasData, windows) {
-  windows.forEach((window, i) => window.index = i);
-  return EmberObject.create({
-    errorWindow, isRaw, hasData, windows: A(windows)
-  });
-}
-
-function makeWindow(sequence, meta = { }, records = [{ }]) {
-  return { sequence, meta, records, created: Date.now() };
-}
-
 module('Integration | Component | result viewer', function(hooks) {
   setupRenderingTest(hooks);
+
+  function makeQuery(isTimeBased, duration = 0.01) {
+    return EmberObject.create({
+      window: { isTimeBased },
+      duration
+    });
+  }
+
+  function makeResult(errorWindow, isRaw, hasData, windows) {
+    windows.forEach((window, i) => window.index = i);
+    return EmberObject.create({
+      errorWindow, isRaw, hasData, windows: A(windows)
+    });
+  }
+
+  function makeWindow(sequence, meta = { }, records = [{ }]) {
+    return { sequence, meta, records, created: Date.now() };
+  }
 
   test('it allows auto update toggling if there is data, no errors, and not in aggregate mode', async function(assert) {
     // Error window

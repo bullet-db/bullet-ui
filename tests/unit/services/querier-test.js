@@ -11,6 +11,7 @@ import MockQuery from '../../helpers/mocked-query';
 import FILTERS from '../../fixtures/filters';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
+import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 
 module('Unit | Service | querier', function(hooks) {
   setupTest(hooks);
@@ -401,6 +402,42 @@ module('Unit | Service | querier', function(hooks) {
         attributes: { newName: 'bar', threshold: 150 }
       },
       duration: 10000
+    });
+  });
+
+  test('it formats a time window correctly', function(assert) {
+    let service = this.owner.lookup('service:querier');
+    let query = MockQuery.create({ duration: 10 });
+    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
+    query.addWindow(EMIT_TYPES.get('TIME'), 2, null);
+    assert.deepEqual(service.reformat(query), {
+      aggregation: { size: 10, type: 'RAW' },
+      duration: 10000,
+      window: { emit: { type: 'TIME', every: 2000 } }
+    });
+  });
+
+  test('it formats a record window correctly', function(assert) {
+    let service = this.owner.lookup('service:querier');
+    let query = MockQuery.create({ duration: 10 });
+    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
+    query.addWindow(EMIT_TYPES.get('RECORD'), 1, null);
+    assert.deepEqual(service.reformat(query), {
+      aggregation: { size: 10, type: 'RAW' },
+      duration: 10000,
+      window: { emit: { type: 'RECORD', every: 1 } }
+    });
+  });
+
+  test('it formats a include all window correctly', function(assert) {
+    let service = this.owner.lookup('service:querier');
+    let query = MockQuery.create({ duration: 10 });
+    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
+    query.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('ALL'));
+    assert.deepEqual(service.reformat(query), {
+      aggregation: { size: 10, type: 'RAW' },
+      duration: 10000,
+      window: { emit: { type: 'TIME', every: 2000 }, include: { type: 'ALL' } }
     });
   });
 
@@ -835,6 +872,48 @@ module('Unit | Service | querier', function(hooks) {
         attributes: { newName: 'bar', threshold: 150 }
       },
       duration: 10
+    });
+  });
+
+  test('it recreates a time window correctly', function(assert) {
+    let service = this.owner.lookup('service:querier');
+    let query = {
+      aggregation: { type: 'RAW', size: 10 },
+      window: { emit: { type: 'TIME', every: 5000 } },
+      duration: 10000
+    };
+    assertEmberEqual(assert, service.recreate(query), {
+      aggregation: { size: 10, type: 'Raw' },
+      duration: 10,
+      window: { emit: { type: 'Time Based', every: 5 }, include: { type: 'Everything in Window' } }
+    });
+  });
+
+  test('it recreates a record window correctly', function(assert) {
+    let service = this.owner.lookup('service:querier');
+    let query = {
+      aggregation: { type: 'RAW', size: 10 },
+      window: { emit: { type: 'RECORD', every: 1 } },
+      duration: 10000
+    };
+    assertEmberEqual(assert, service.recreate(query), {
+      aggregation: { size: 10, type: 'Raw' },
+      duration: 10,
+      window: { emit: { type: 'Record Based', every: 1 }, include: { type: 'Everything in Window' } }
+    });
+  });
+
+  test('it recreates a include all window correctly', function(assert) {
+    let service = this.owner.lookup('service:querier');
+    let query = {
+      aggregation: { type: 'RAW', size: 10 },
+      window: { emit: { type: 'TIME', every: 1000 }, include: { type: 'ALL' } },
+      duration: 10000
+    };
+    assertEmberEqual(assert, service.recreate(query), {
+      aggregation: { size: 10, type: 'Raw' },
+      duration: 10,
+      window: { emit: { type: 'Time Based', every: 1 }, include: { type: 'Everything from Start of Query' } }
     });
   });
 });
