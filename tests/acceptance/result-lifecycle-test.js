@@ -103,7 +103,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.records-charter .mode-toggle').length, 0);
   });
 
-  test('it lets swap between a row, tabular, simple and pivot chart views when it is not a raw query', async function(assert) {
+  test('it lets you swap between a row, tabular, simple and pivot chart views when it is not a raw query', async function(assert) {
     assert.expect(15);
 
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
@@ -186,5 +186,19 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.raw-display').length, 1);
     assert.equal(findAll('.pretty-json-container').length, 0);
     assert.equal(findAll('.raw-json-display').length, 1);
+  });
+
+  test('it lets you rerun a query', async function(assert) {
+    assert.expect(3);
+
+    this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
+
+    await visit('/queries/new');
+    await click('.submit-button');
+    assert.equal(currentRouteName(), 'result');
+    await click('.rerun-button');
+    assert.equal(currentRouteName(), 'result');
+    await visit('queries');
+    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '2 Results');
   });
 });
