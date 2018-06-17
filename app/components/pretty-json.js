@@ -13,12 +13,7 @@ export default Component.extend({
   data: null,
   defaultLevels: 2,
 
-  didInsertElement() {
-    this._super(...arguments);
-    this.$().append(this.getRenderData());
-  },
-
-  didUpdateAttrs() {
+  didRender() {
     this._super(...arguments);
     this.$().empty().append(this.getRenderData());
   },

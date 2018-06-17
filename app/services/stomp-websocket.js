@@ -67,7 +67,7 @@ export default Service.extend({
     };
   },
 
-  createStompClient(data, handlers, context) {
+  startStompClient(data, handlers, context) {
     let url = this.get('url');
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
@@ -78,7 +78,6 @@ export default Service.extend({
 
     this.set('client', stompClient);
     stompClient.connect({ }, onStompConnect, onStompError);
-    return stompClient;
   },
 
   disconnect() {

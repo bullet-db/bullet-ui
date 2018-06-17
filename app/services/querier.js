@@ -359,7 +359,7 @@ export default Service.extend(Filterizer, {
   },
 
   send(data, handlers, context) {
-    this.get('stompWebsocket').createStompClient(this.reformat(data), handlers, context);
+    this.get('stompWebsocket').startStompClient(this.reformat(data), handlers, context);
   },
 
   cancel() {
