@@ -39,10 +39,11 @@ export default Route.extend(Queryable, {
 
     reRunClick(query) {
       this.get('queryManager').addResult(query.get('id')).then(result => {
-        this.get('querier').cancel();
-        // Sends us to a new result page but don't want to cancel the new query when we transition.
-        this.set('skipCancelling', true);
-        this.submitQuery(query, result, this)
+        this.set('hasPendingSubmit', true);
+        this.set('pendingQuery', query);
+        this.set('savedResult', result);
+        // Sends us to a new result page but don't want to start the new query till we finish transitioning.
+        this.resultHandler(this);
       });
     },
 
@@ -51,11 +52,16 @@ export default Route.extend(Queryable, {
     },
 
     willTransition() {
-      if (this.get('skipCancelling')) {
-        // Reset so future queries don't skip cancelling.
-        this.set('skipCancelling', false);
-      } else {
-        this.get('querier').cancel();
+      this.get('querier').cancel();
+      return true;
+    },
+
+    didTransition() {
+      if (this.get('hasPendingSubmit')) {
+        let pendingQuery = this.get('pendingQuery');
+        this.lateSubmitQuery(pendingQuery, this);
+        this.set('hasPendingSubmit', false);
+        this.set('pendingQuery', null);
       }
       return true;
     }

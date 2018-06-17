@@ -27,5 +27,15 @@ export default Mixin.create({
     };
     routeContext.set('savedResult', result);
     routeContext.get('querier').send(query, handlers, routeContext);
+  },
+
+  lateSubmitQuery(query, routeContext) {
+    let handlers = {
+      success: () => { },
+      error: this.errorHandler,
+      message: this.windowHandler
+    };
+    // savedResult already exists and points to result
+    routeContext.get('querier').send(query, handlers, routeContext);
   }
 });
