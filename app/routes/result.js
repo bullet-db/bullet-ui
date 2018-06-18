@@ -29,7 +29,7 @@ export default Route.extend(Queryable, {
         }),
         window: query.get('window')
       });
-    })
+    });
   },
 
   actions: {

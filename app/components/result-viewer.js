@@ -40,11 +40,11 @@ export default Component.extend({
   }).readOnly(),
 
   metadata: computed('hasError', 'autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
-    return this.get('hasError') ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata')
+    return this.get('hasError') ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata');
   }).readOnly(),
 
   records: computed('autoUpdate', 'aggregateMode', 'selectedWindow', 'result.windows.[]', function() {
-    return this.get('aggregateMode') ? this.getAllWindowRecords() : this.getSelectedWindow('records')
+    return this.get('aggregateMode') ? this.getAllWindowRecords() : this.getSelectedWindow('records');
   }).readOnly(),
 
   queryDuration: computed('query.duration', function() {

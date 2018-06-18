@@ -16,7 +16,7 @@ export default Route.extend(Queryable, {
     fireQuery() {
       this.get('queryManager').addResult(this.paramsFor('query').query_id).then(result => {
         this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
-          this.submitQuery(query, result, this)
+          this.submitQuery(query, result, this);
         });
       });
     }

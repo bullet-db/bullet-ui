@@ -57,7 +57,7 @@ module('Unit | Mixin | queryable', function() {
     };
     let mockSend = (query, handlers, context) => {
       assert.equal(query.get('id'), 'foo');
-      handlers.success(context)
+      handlers.success(context);
       handlers.error('Mocked Test Error', context);
       handlers.message(EmberObject.create({ id: 'baz' }), context);
     };
@@ -85,7 +85,7 @@ module('Unit | Mixin | queryable', function() {
     };
     let mockSend = (query, handlers, context) => {
       assert.equal(query.get('id'), 'foo');
-      handlers.success(context)
+      handlers.success(context);
       handlers.error('Mocked Test Error', context);
       handlers.message(EmberObject.create({ id: 'baz' }), context);
     };

@@ -20,4 +20,4 @@ module('Integration | Component | result window placeholder', function(hooks) {
     await render(hbs`{{result-window-placeholder windowCount=100}}`);
     assert.equal(this.element.textContent.trim(), 'Switch between 100 windows...');
   });
-})
+});

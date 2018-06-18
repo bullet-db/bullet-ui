@@ -9,7 +9,7 @@
 const INTERNAL_APP_SETTINGS = {
   adapter: 'indexeddb',
   debounceSegmentSaves: false
-}
+};
 
 const TEST_SETTINGS = {
   queryHost: 'https://foo.bar.com:4443',
@@ -73,7 +73,7 @@ const TEST_SETTINGS = {
       expectedEmitTime: 'Expected Emit Time'
     }
   }
-}
+};
 
 module.exports = function(environment) {
   let configuration = require('./env-settings.json');
