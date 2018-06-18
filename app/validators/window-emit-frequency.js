@@ -17,7 +17,7 @@ const WindowEmitFrequency = BaseValidator.extend({
       if (emitEvery > duration) {
         return `The window emit frequency should not be longer than the query duration (${duration} seconds)`;
       } else if (emitEvery < windowEmitFrequencyMinSecs) {
-        return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinSecs} for emit frequency`;
+        return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinSecs}s for emit frequency`;
       }
     }
     return true;

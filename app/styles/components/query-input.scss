@@ -43,7 +43,6 @@
     font-size: $font-size-regular-large;
   }
 
-
   %query-input-label {
     position: absolute;
     font-size: $font-size-small;
@@ -106,7 +105,6 @@
   %validated-input-row {
     @import "validated-input";
     margin-top: 10px;
-    margin-left: 5px;
     input {
       height: 45px;
     }
@@ -222,7 +220,6 @@
           .aggregation-size {
             padding-right: 0;
             width: 165px;
-            margin-left: -15px;
             margin-right: 0;
           }
           .query-duration {
@@ -244,8 +241,6 @@
     position: fixed;
     bottom: 0;
 
-    @import "timed-progress-bar";
-
     hr {
       margin-left: (-$query-panel-side-padding);
       margin-right: (-$grid-gutter-width/2) + (-$query-panel-side-padding);
@@ -263,15 +258,6 @@
       font-size: $font-size-regular;
     }
 
-    .cancel-button {
-      @extend %secondary-button;
-      border-width: 2px;
-      width: 140px;
-      height: 40px;
-      font-size: $font-size-regular;
-      font-weight: $font-weight-medium;
-    }
-
     .save-button {
       @extend %secondary-button;
       border-width: 2px;
@@ -287,7 +273,7 @@
   // Running state page styling
 
   &.query-running {
-    .btn:not(.cancel-button) {
+    .btn {
       background-color:  $inactive-button-color !important;
       border-color:  $inactive-button-color !important;
     }

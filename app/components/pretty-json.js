@@ -13,9 +13,13 @@ export default Component.extend({
   data: null,
   defaultLevels: 2,
 
-  didInsertElement() {
+  didRender() {
     this._super(...arguments);
+    this.$().empty().append(this.getRenderData());
+  },
+
+  getRenderData() {
     let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels'), { hoverPreviewEnabled: true });
-    this.$().append(formatter.render());
+    return formatter.render();
   }
 });

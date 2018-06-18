@@ -16,13 +16,12 @@ module('Integration | Component | window-input', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders without window', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
 
     let mockQuery = MockQuery.create();
     this.set('mockQuery', mockQuery);
     await render(hbs `{{window-input query=mockQuery}}`);
-    assert.equal(this.element.querySelector('.subsection-header').textContent.trim(), 'No Window');
-    assert.equal(this.element.querySelectorAll('.add-button').length, 1);
+    assert.equal(this.element.querySelectorAll('.no-window-section .add-button').length, 1);
   });
 
   test('it renders when aggregation is raw', async function(assert) {
@@ -87,7 +86,7 @@ module('Integration | Component | window-input', function(hooks) {
     assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
   });
 
-  test('it adds window', async function(assert) {
+  test('it adds a window', async function(assert) {
     assert.expect(4);
 
     let mockQuery = MockQuery.create();
@@ -103,28 +102,27 @@ module('Integration | Component | window-input', function(hooks) {
 
     await click('.add-button');
     assert.equal(this.element.querySelectorAll('.add-button').length, 0);
-    assert.equal(this.element.querySelectorAll('.remove-button').length, 1);
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
 
-  test('it removes window', async function(assert) {
-    assert.expect(5);
+  test('it deletes a window', async function(assert) {
+    assert.expect(4);
 
     let mockQuery = MockQuery.create();
     mockQuery.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('WINDOW'));
     mockQuery.addAggregation(AGGREGATIONS.get('GROUP'));
     this.set('mockQuery', mockQuery);
-    this.set('mockRemoveWindow', () => {
+    this.set('mockDeleteWindow', () => {
       assert.ok(true);
-      mockQuery.removeWindow();
+      mockQuery.deleteWindow();
       return resolve();
     });
 
-    await render(hbs `{{window-input removeWindow=mockRemoveWindow query=mockQuery}}`);
-    assert.equal(this.element.querySelectorAll('.remove-button').length, 1);
+    await render(hbs `{{window-input deleteWindow=mockDeleteWindow query=mockQuery}}`);
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
 
-    await click('.remove-button');
-    assert.equal(this.element.querySelectorAll('.remove-button').length, 0);
-    assert.equal(this.element.querySelector('.subsection-header').textContent.trim(), 'No Window');
-    assert.equal(this.element.querySelectorAll('.add-button').length, 1);
+    await click('.delete-button');
+    assert.equal(this.element.querySelectorAll('.delete-button').length, 0);
+    assert.equal(this.element.querySelectorAll('.no-window-section .add-button').length, 1);
   });
 });

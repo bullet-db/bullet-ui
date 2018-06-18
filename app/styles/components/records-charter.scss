@@ -13,6 +13,13 @@
   user-select: none;
 
   @import 'mode-toggle';
+  .mode-toggle {
+    justify-content: flex-end;
+    margin: 10px 0;
+    .mode {
+      width: 70px;
+    }
+  }
 
   .visual-container {
     @import 'pivot-table';

@@ -14,16 +14,17 @@ import Component from '@ember/component';
 export default Component.extend({
   fileSaver: service(),
   classNames: ['records-viewer'],
+  aggregateMode: false,
   showRawData: false,
   showTable: false,
   showChart: false,
-  // Copy of the model
-  model: null,
+  config: null,
   metadata: null,
   records: null,
   fileName: 'results',
+  model: null,
 
-  enableCharting: not('model.isSingleRow').readOnly(),
+  enableCharting: not('config.isSingleRow').readOnly(),
 
   columns: computed('records', function() {
     return A(this.extractUniqueColumns(this.get('records')));
@@ -49,6 +50,15 @@ export default Component.extend({
     let rows = this.extractRows(flattenedRows, columns);
     return this.makeCSVString(columns, rows);
   }).readOnly(),
+
+  init() {
+    this._super(...arguments);
+    if (this.get('config.isReallyRaw')) {
+      this.set('showRawData', true);
+    } else {
+      this.set('showTable', true);
+    }
+  },
 
   extractUniqueColumns(records) {
     let columns = new Set();

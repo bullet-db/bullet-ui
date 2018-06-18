@@ -1,0 +1,64 @@
+{{!--
+  Copyright 2018, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+--}}
+<div class="control-container">
+
+  <div class="auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
+    <span>Show Latest</span>
+    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
+  </div>
+
+  {{#unless hasError}}
+
+    <div class="window-selector">
+      {{#if isTimeWindow}}
+        <div class="progress-indicator window-progress-indicator">
+          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
+                               retriggerOnChangeIn=numberOfWindows}}
+        </div>
+      {{/if}}
+
+      {{#unless aggregateMode}}
+        {{#power-select selected=selectedWindow options=result.windows
+                        placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
+                        searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
+                        onchange=(action "changeWindow") as |window|}}
+          <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
+          <span class="window-size">{{window.records.length}}</span> records at
+          <span class="window-time">{{moment-format window.created 'dddd, hh:MM:SS a'}}</span>
+        {{/power-select}}
+      {{/unless}}
+    </div>
+
+    <div class="progress-indicator query-progress-indicator">
+      {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
+    </div>
+
+  {{/unless}}
+</div>
+
+{{#if hasData}}
+  <div class="information-container window-information">
+    <span class="section-header">
+      <h4 class="section-title">Results & Metadata</h4>
+      {{#info-popover title="Results"}}
+        {{partial "partials/results-help"}}
+      {{/info-popover}}
+    </span>
+    {{window-metadata metadata=metadata}}
+  </div>
+{{/if}}
+
+<div class="records-container">
+  {{#if hasError}}
+    {{partial "partials/query-killed"}}
+  {{else if hasData}}
+    {{records-viewer records=records metadata=metadata config=config aggregateMode=aggregateMode model=result}}
+  {{else if isRunningQuery}}
+    {{partial "partials/running-query"}}
+  {{else}}
+    {{partial "partials/no-data-help"}}
+  {{/if}}
+</div>

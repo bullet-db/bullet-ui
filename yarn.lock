@@ -3545,16 +3545,16 @@ ember-concurrency@^0.8.12:
     ember-cli-babel "^6.8.2"
     ember-maybe-import-regenerator "^0.1.5"
 
-ember-cp-validations@3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/ember-cp-validations/-/ember-cp-validations-3.5.1.tgz#55632a87b1db84f3d54bc769c1c07ff241e9f49f"
+ember-cp-validations@3.5.3:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/ember-cp-validations/-/ember-cp-validations-3.5.3.tgz#059d173e2f0904232516b23c4b774675e672ae11"
   dependencies:
     ember-cli-babel "^6.6.0"
     ember-cli-version-checker "^2.0.0"
     ember-getowner-polyfill "^2.0.1"
-    ember-require-module "^0.1.2"
+    ember-require-module "0.1.3"
     ember-string-ishtmlsafe-polyfill "^2.0.0"
-    ember-validators "^1.0.4"
+    ember-validators "1.0.4"
     exists-sync "0.0.4"
     walk-sync "^0.3.1"
 
@@ -3731,6 +3731,15 @@ ember-power-select@1.10.4:
     ember-text-measurer "^0.4.0"
     ember-truth-helpers "^2.0.0"
 
+ember-progress-bar@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ember-progress-bar/-/ember-progress-bar-1.0.0.tgz#5129fdee5efdc69881da567ef6501109de8f8290"
+  dependencies:
+    broccoli-funnel "^1.0.1"
+    ember-cli-babel "^6.6.0"
+    ember-cli-htmlbars "^2.0.1"
+    progressbar.js "^1.0.1"
+
 ember-promise-helpers@~1.0.3:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/ember-promise-helpers/-/ember-promise-helpers-1.0.6.tgz#6ff9f451330f4608ec4696de473a7f54bc179236"
@@ -3762,15 +3771,9 @@ ember-raf-scheduler@0.1.0:
   dependencies:
     ember-cli-babel "^6.6.0"
 
-ember-require-module@^0.1.2:
+ember-require-module@0.1.3, ember-require-module@^0.1.2:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/ember-require-module/-/ember-require-module-0.1.3.tgz#f82f60552142179152d28ec97ebd75d967cae1dc"
-  dependencies:
-    ember-cli-babel "^6.9.2"
-
-ember-require-module@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/ember-require-module/-/ember-require-module-0.2.0.tgz#eafe436737ead4762220a9166b78364abf754274"
   dependencies:
     ember-cli-babel "^6.9.2"
 
@@ -3841,9 +3844,9 @@ ember-sinon@~2.1.0:
     ember-cli-babel "^6.6.0"
     sinon "^4.4.5"
 
-ember-source@~3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ember-source/-/ember-source-3.0.0.tgz#51811cae98d2ceec53bcfbaa876d02b2b5b2159f"
+ember-source@~2.18.0:
+  version "2.18.2"
+  resolved "https://registry.yarnpkg.com/ember-source/-/ember-source-2.18.2.tgz#75d00eef5488bfe504044b025c752ba924eaf87f"
   dependencies:
     broccoli-funnel "^2.0.1"
     broccoli-merge-trees "^2.0.0"
@@ -3852,6 +3855,7 @@ ember-source@~3.0.0:
     ember-cli-normalize-entity-name "^1.0.0"
     ember-cli-path-utils "^1.0.0"
     ember-cli-string-utils "^1.1.0"
+    ember-cli-test-info "^1.0.0"
     ember-cli-valid-component-name "^1.0.0"
     ember-cli-version-checker "^2.1.0"
     ember-router-generator "^1.2.3"
@@ -3895,12 +3899,12 @@ ember-truth-helpers@^2.0.0:
   dependencies:
     ember-cli-babel "^6.8.2"
 
-ember-validators@^1.0.4:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ember-validators/-/ember-validators-1.1.1.tgz#34b06f7c4bde4e57c30cb9dfc6566647c1c140c1"
+ember-validators@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/ember-validators/-/ember-validators-1.0.4.tgz#7d89c2511945c52bd20c5384e715138f902133bb"
   dependencies:
     ember-cli-babel "^6.9.2"
-    ember-require-module "^0.2.0"
+    ember-require-module "^0.1.2"
 
 ember-wormhole@^0.5.1, ember-wormhole@^0.5.2:
   version "0.5.4"
@@ -5717,15 +5721,15 @@ istextorbinary@2.1.0:
     editions "^1.1.1"
     textextensions "1 || 2"
 
-jQuery-QueryBuilder-Placeholders@yahoo/jQuery-QueryBuilder-Placeholders#v1.0.1:
+jQuery-QueryBuilder-Placeholders@bullet-db/jQuery-QueryBuilder-Placeholders#v1.0.1:
   version "1.0.1"
-  resolved "https://codeload.github.com/yahoo/jQuery-QueryBuilder-Placeholders/tar.gz/5e79b0b088fab6b429a031f8ae6d810a5fbf6ad5"
+  resolved "https://codeload.github.com/bullet-db/jQuery-QueryBuilder-Placeholders/tar.gz/5e79b0b088fab6b429a031f8ae6d810a5fbf6ad5"
   dependencies:
     jQuery-QueryBuilder "^2.4.0"
 
-jQuery-QueryBuilder-Subfield@yahoo/jQuery-QueryBuilder-Subfield#v1.0.2:
+jQuery-QueryBuilder-Subfield@bullet-db/jQuery-QueryBuilder-Subfield#v1.0.2:
   version "1.0.2"
-  resolved "https://codeload.github.com/yahoo/jQuery-QueryBuilder-Subfield/tar.gz/029560a1120ac616ba08dd2d184b909396f4ba77"
+  resolved "https://codeload.github.com/bullet-db/jQuery-QueryBuilder-Subfield/tar.gz/029560a1120ac616ba08dd2d184b909396f4ba77"
   dependencies:
     jQuery-QueryBuilder "^2.4.0"
 
@@ -7444,6 +7448,12 @@ progress@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.0.tgz#8a1be366bf8fc23db2bd23f10c6fe920b4389d1f"
 
+progressbar.js@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/progressbar.js/-/progressbar.js-1.0.1.tgz#f7fbfc195240fe0bb32f6f7bdb2e7ff400ea71f9"
+  dependencies:
+    shifty "^1.5.2"
+
 promise-map-series@^0.2.0, promise-map-series@^0.2.1:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/promise-map-series/-/promise-map-series-0.2.3.tgz#c2d377afc93253f6bd03dbb77755eb88ab20a847"
@@ -8214,6 +8224,10 @@ shelljs@0.3.x:
 shellwords@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
+
+shifty@^1.5.2:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/shifty/-/shifty-1.5.4.tgz#d4362fc914dd280ddf6e522be408b21203208346"
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"

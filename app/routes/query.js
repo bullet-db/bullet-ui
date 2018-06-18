@@ -6,35 +6,17 @@
 import { hash, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
+import Queryable from 'bullet-ui/mixins/queryable';
 
-export default Route.extend({
+export default Route.extend(Queryable, {
   querier: service(),
   queryManager: service(),
-
-  resultHandler(context) {
-    context.transitionTo('result', context.get('result.id'));
-  },
-
-  errorHandler(error, context) {
-    console.error(error); // eslint-disable-line no-console
-    context.transitionTo('errored');
-  },
-
-  segmentHandler(message, context) {
-    context.get('queryManager').addSegment(context.get('result'), message);
-  },
 
   actions: {
     fireQuery() {
       this.get('queryManager').addResult(this.paramsFor('query').query_id).then(result => {
         this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
-          this.set('result', result);
-          let handlers = {
-            success: this.resultHandler,
-            error: this.errorHandler,
-            message: this.segmentHandler
-          };
-          this.get('querier').send(query, handlers, this);
+          this.submitQuery(query, result, this);
         });
       });
     }

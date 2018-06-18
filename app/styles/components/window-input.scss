@@ -1,43 +1,45 @@
 .window-input {
-  .add-button {
-    @extend %add-button;
-    margin-bottom: 10px;
-    i {
-      padding-right: 5px;
-    }
-  }
-
-  .remove-button {
-    @extend %remove-button;
-  }
-
-  @import "info-popover";
-  padding: 15px;
   margin-top: 5px;
   margin-bottom: 15px;
   max-width: 800px;
-  background-color: $box-rectangle-color;
-  position: relative;
 
-  .ember-radio-button {
-    @extend %ember-radio-button;
-    display: inline-block;
-    margin-right: 30px;
-  }
-
-  .subsection-header {
-    @extend %subsection-header;
-  }
-
-  .row {
-    @extend %validated-input-row;
-    .validated-input {
-      .labeled-input {
-        padding-right: 0;
-        width: 150px;
-        margin-left: -5px;
-        margin-right: 0;
+  .no-window-section {
+    .add-button {
+      @extend %add-button;
+      margin-top: 15px;
+      i {
+        padding-right: 5px;
       }
     }
+    margin-bottom: 30px;
   }
+
+  .window-section {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 15px;
+    background-color: $box-rectangle-color;
+
+    .subsection-header {
+      @extend %subsection-header;
+    }
+
+    .delete-button {
+      @extend %remove-button;
+      min-height: 20px;
+      align-self: flex-end;
+    }
+
+    .ember-radio-button {
+      @extend %ember-radio-button;
+      display: inline-block;
+      margin-right: 30px;
+    }
+
+    .row {
+      @extend %validated-input-row;
+    }
+
+  }
+
 }

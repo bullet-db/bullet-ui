@@ -6,15 +6,27 @@
 import EmberObject from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { isBlank, isEmpty, isEqual } from '@ember/utils';
+import { computed, get, getProperties } from '@ember/object';
+import { debounce } from '@ember/runloop';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
 import ZLib from 'npm:browserify-zlib';
 import Base64 from 'npm:urlsafe-base64';
 import { all, Promise, resolve } from 'rsvp';
+import config from '../config/environment';
 
 export default Service.extend({
   store: service(),
   querier: service(),
+  saveSegmentDebounceInterval: 100,
+  debounceSegmentSaves: config.APP.SETTINGS.debounceSegmentSaves,
+
+  windowNumberProperty: computed('settings', function() {
+    let mapping = this.get('settings.defaultValues.metadataKeyMapping');
+    let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
+    return `${windowSection}.${windowNumber}`;
+  }).readOnly(),
+
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -122,14 +134,16 @@ export default Service.extend({
   },
 
   addSegment(result, data) {
-    let segment = this.get('store').createRecord('segment', {
+    let position = result.get('windows.length');
+    result.get('windows').pushObject({
       metadata: data.meta,
       records: data.records,
-      result: result
+      sequence: get(data.meta, this.get('windowNumberProperty')),
+      index: position,
+      created: new Date(Date.now())
     });
-    return result.save().then(() => {
-      return segment.save();
-    });
+    let shouldDebounce = this.get('debounceSegmentSaves');
+    return shouldDebounce ? debounce(result, result.save, this.get('saveSegmentDebounceInterval')) : result.save();
   },
 
   setAggregationAttributes(query, fields) {
@@ -312,19 +326,10 @@ export default Service.extend({
   },
 
   deleteResults(query) {
-    return query.get('results').then(results => {
-      let promises = results.toArray().map(r => this.deleteAllSegments(r));
-      return all(promises);
-    }).then(() => {
+    return query.get('results').then(() => {
       return this.deleteMultiple('results', query, 'query').then(() => {
         return query.save();
       });
-    });
-  },
-
-  deleteAllSegments(result) {
-    return this.deleteMultiple('segments', result, 'result').then(() => {
-      return result.save();
     });
   },
 
@@ -344,12 +349,5 @@ export default Service.extend({
     return this.get('store').findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
-  },
-
-  setIfNotEmpty(object, key, value) {
-    if (!isEmpty(value)) {
-      object.set(key, value);
-    }
-    return object;
   }
 });

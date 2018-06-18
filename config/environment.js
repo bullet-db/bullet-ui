@@ -6,10 +6,10 @@
 
 /* eslint-env node */
 
-
 const INTERNAL_APP_SETTINGS = {
-  adapter: 'indexeddb'
-}
+  adapter: 'indexeddb',
+  debounceSegmentSaves: false
+};
 
 const TEST_SETTINGS = {
   queryHost: 'https://foo.bar.com:4443',
@@ -31,6 +31,7 @@ const TEST_SETTINGS = {
     deletions: 'none'
   },
   adapter: 'local',
+  debounceSegmentSaves: false,
   defaultValues: {
     aggregationMaxSize: 512,
     rawMaxSize: 100,
@@ -53,20 +54,26 @@ const TEST_SETTINGS = {
       topKErrorType: 'No False Negatives'
     },
     metadataKeyMapping: {
-      theta: 'theta',
-      uniquesEstimate: 'uniques_estimate',
-      queryCreationTime: 'query_receive_time',
-      queryTerminationTime: 'query_finish_time',
-      estimatedResult: 'was_estimated',
-      standardDeviations: 'standard_deviations',
-      normalizedRankError: 'normalized_rank_error',
-      maximumCountError: 'maximum_count_error',
-      itemsSeen: 'items_seen',
-      minimumValue: 'minimum_value',
-      maximumValue: 'maximum_value'
+      querySection: 'Query',
+      windowSection: 'Window',
+      sketchSection: 'Sketch',
+      theta: 'Theta',
+      uniquesEstimate: 'Uniques Estimate',
+      queryCreationTime: 'Receive Time',
+      queryTerminationTime: 'Finish Time',
+      estimatedResult: 'Was Estimated',
+      standardDeviations: 'Standard Deviations',
+      normalizedRankError: 'Normalized Rank Error',
+      maximumCountError: 'Maximum Count Error',
+      itemsSeen: 'Items Seen',
+      minimumValue: 'Minimum Value',
+      maximumValue: 'Maximum Value',
+      windowNumber: 'Number',
+      windowSize: 'Size',
+      expectedEmitTime: 'Expected Emit Time'
     }
   }
-}
+};
 
 module.exports = function(environment) {
   let configuration = require('./env-settings.json');

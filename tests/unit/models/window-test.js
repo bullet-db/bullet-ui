@@ -24,6 +24,6 @@ module('Unit | Model | window', function(hooks) {
   });
 
   test('it maps the api types for the include types properly', function(assert) {
-    assert.equal(INCLUDE_TYPES.apiKey('Everything from Start'), 'ALL');
+    assert.equal(INCLUDE_TYPES.apiKey('Everything from Start of Query'), 'ALL');
   });
 });

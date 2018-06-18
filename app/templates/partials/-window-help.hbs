@@ -3,4 +3,60 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<p>This section lets you configure your windowing. To be updated. </p>
+<p>
+  This section lets you configure your windowing. This lets you get multiple results while the query is running instead
+  of just one result at the end.
+</p>
+
+<h5 class="content-header">Window Types</h5>
+
+<p>There are three main types of windows currently supported.</p>
+<ul>
+  <li>
+    <p>
+      <strong>Time Based</strong> lets you break up your query duration into chunks of time specified by your Frequency.
+      Your selected aggregation is applied for each window and the result is returned to you at the end. This corresponds
+      to a <strong>Tumbling</strong> window on time if you have done streaming windowed queries before. Note that,
+      Frequency has a configured minimum of <strong>{{settings.defaultValues.sketches.windowEmitFrequencyMinSecs}}</strong>
+      seconds and a maximum of your query duration.
+    </p>
+    <p>
+      If you are using this window with a Raw Data query, you can also also choose the maximum numbers of rows you want
+      per window. The allowed maximum is <strong>{{settings.defaultValues.rawMaxSize}}</strong>. This will return the
+      window as soon as this maximum is reached.
+    </p>
+    <p>For other aggregations, the data has to be collected till the window duration is reached because existing rows
+      may be updated with future data. The maximum rows per window is defaulted to
+      <strong>{{settings.defaultValues.aggregationMaxSize}}</strong>.
+    </p>
+  </li>
+  <li>
+    <p>
+      <strong>Record Based</strong> lets you get your results as they come in. You can now use Frequency to specify how
+      many records should be present in each window. This is currently only allowed if your aggregation is Raw Data and
+      you may only retrieve your records <strong>one</strong> at a time. These correspond to a class of
+      <strong>Sliding</strong> windows in streaming windowed queries parlance.
+    </p>
+  </li>
+  <li>
+    <p>
+      <strong>Everything from Start of Query</strong> windows or Additive windows let you perform your aggregation
+      since the start of the query. This is only allowed for <strong>Time Based</strong> windows whose aggregation is
+      <strong>not Raw Data</strong>.
+    </p>
+  </li>
+</ul>
+
+<h5 class="content-header">Constraints</h5>
+<p>
+  Windowing is an actively developed area in Bullet, so we have only enabled a few simple window types. Different styles
+  of windowing such as <strong>Hopping</strong>, <strong>Session</strong> etc. are planned.
+</p>
+
+<h6 class="content-sub-header">Rate Limiting</h6>
+<p>
+  With Raw Data queries and Record Based windows, it is possible to return entirely too much data from the backend if
+  your query is not configured correctly (with no filters, for example). If this happens, your query will be
+  <strong>terminated</strong> as you exceed the rate limit. You can find out details in the Result Metadata section
+  when that happens.
+</p>

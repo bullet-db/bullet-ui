@@ -7,6 +7,14 @@
   @import 'mode-toggle';
   @import 'pretty-json';
 
+  .mode-toggle {
+    justify-content: flex-end;
+    margin: 10px 0;
+    .mode {
+      width: 70px;
+    }
+  }
+
   .raw-display {
     pre {
       background-color: $white;

@@ -6,14 +6,14 @@
 <div class="records-title">
 
   <span class="section-header">
-    <h3 class="section-title">Query Results</h3>
-    {{#info-popover title="Query Results"}}
-      {{partial "partials/results-help"}}
+    <h3 class="section-title">Records</h3>
+    {{#info-popover title="Visualization"}}
+      {{partial "partials/records-help"}}
     {{/info-popover}}
   </span>
 
   <span class="records-header">
-    {{records.length}} records returned from your query
+    {{records.length}} records in this view
   </span>
 
   <div class="view-controls">
@@ -55,8 +55,8 @@
   {{#if showRawData}}
     {{records-raw-viewer data=records}}
   {{else if showTable}}
-    {{records-table columnNames=columns rawRows=records}}
+    {{records-table appendMode=aggregateMode columnNames=columns rawRows=records}}
   {{else if showChart}}
-    {{records-charter model=model columns=columns rows=records}}
+    {{records-charter config=config columns=columns rows=records model=model}}
   {{/if}}
 </div>

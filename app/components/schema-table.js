@@ -15,7 +15,6 @@ export default Component.extend(PaginatedTable, {
   classNameBindings: ['isNested'],
   queries: null,
   pageSize: 10,
-  isFixed: true,
   /**
    * If set to true, the table behaves as a nested table without headers and will not expand further. Meant to
    * be used when the table is nested within itself.

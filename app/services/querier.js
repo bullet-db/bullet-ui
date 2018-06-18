@@ -7,6 +7,7 @@ import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEmpty, isEqual } from '@ember/utils';
 import EmberObject from '@ember/object';
+import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
@@ -20,6 +21,9 @@ export default Service.extend(Filterizer, {
   subfieldSeparator: '.',
   delimiter: ',',
   apiMode: true,
+  pendingRequest: null,
+
+  isRunningQuery: alias('stompWebsocket.isConnected').readOnly(),
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
@@ -143,12 +147,14 @@ export default Service.extend(Filterizer, {
     if (isEmpty(json)) {
       return false;
     }
+
     let emit = EmberObject.create({
       type: EMIT_TYPES.get(json.emit.type),
-      every: Number(json.emit.every) / 1000
+      every: isEqual(json.emit.type, 'TIME') ? Number(json.emit.every) / 1000 : Number(json.emit.every)
     });
+
     let include = EmberObject.create();
-    if (!isEmpty(json.include) && isEqual(json.include.type, INCLUDE_TYPES.apiKey(INCLUDE_TYPES.get('ALL')))) {
+    if (!isEmpty(json.include) && isEqual(json.include.type, 'ALL')) {
       include.set('type', INCLUDE_TYPES.get('ALL'));
     } else {
       include.set('type', INCLUDE_TYPES.get('WINDOW'));
@@ -176,12 +182,15 @@ export default Service.extend(Filterizer, {
   },
 
   reformatWindow(window) {
+    let emitType = window.get('emit.type');
+    let emitEvery = window.get('emit.every');
     let json = {
       emit: {
-        type: EMIT_TYPES.apiKey(window.get('emit.type')),
-        every: Number(window.get('emit.every')) * 1000
+        type: EMIT_TYPES.apiKey(emitType),
+        every: isEqual(emitType, EMIT_TYPES.get('TIME')) ? Number(emitEvery) * 1000 : Number(emitEvery)
       }
     };
+
     let includeType = window.get('include.type');
     if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
       json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
@@ -349,24 +358,11 @@ export default Service.extend(Filterizer, {
     return object;
   },
 
-  /**
-   * Exposes the low-level StompClient object in order to abort.
-   *
-   * @param  {Object} data             The Query model.
-   * @param  {Object} handlers         The Object which contains the functions to invoke on success, failure or message.
-   * @param  {Object} context          The context for the handlers.
-   */
   send(data, handlers, context) {
-    data = this.reformat(data);
-    let stompClient = this.get('stompWebsocket').createStompClient(data, handlers, context);
-    this.set('pendingRequest', stompClient);
+    this.get('stompWebsocket').startStompClient(this.reformat(data), handlers, context);
   },
 
   cancel() {
-    let pendingRequest = this.get('pendingRequest');
-    if (pendingRequest) {
-      pendingRequest.disconnect();
-      this.set('pendingRequest', null);
-    }
+    this.get('stompWebsocket').disconnect();
   }
 });

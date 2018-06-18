@@ -14,6 +14,8 @@ export default Mixin.create({
   firstNewRow: 0,
   extractors: null,
   useDefaultStringExtractor: true,
+  sortColumn: null,
+  appendMode: false,
 
   numberOfRows: computed('rows.[]', function() {
     return this.get('rows.length');
@@ -79,15 +81,19 @@ export default Mixin.create({
     });
   },
 
-  reset() {
+  reset(forceReset = false) {
     let table = this.get('table');
-    table.setRows([]);
-    this.set('firstNewRow', 0);
+    // Reset table if not in appendMode
+    if (!this.get('appendMode') || forceReset) {
+      table.setRows([]);
+      this.set('firstNewRow', 0);
+    }
   },
 
   actions: {
     onColumnClick(column) {
-      this.reset();
+      this.set('sortColumn', column);
+      this.reset(true);
       this.sortBy(column.valuePath, column.ascending ? 'ascending' : 'descending');
       this.addPages();
     },

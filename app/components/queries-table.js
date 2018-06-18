@@ -14,7 +14,6 @@ export default Component.extend(PaginatedTable, {
   classNames: ['queries-table'],
   queries: null,
   pageSize: 10,
-  isFixed: true,
   extractors: EmberObject.create({
     name(row) {
       let name = row.get('name');

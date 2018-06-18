@@ -11,7 +11,6 @@ import Component from '@ember/component';
 import { isEqual } from '@ember/utils';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES } from 'bullet-ui/models/window';
 import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
 
 export default Component.extend(BuilderAdapter, {
@@ -30,7 +29,6 @@ export default Component.extend(BuilderAdapter, {
   scroller: service(),
   schema: null,
   isListening: false,
-  listenDuration: 0,
   hasError: false,
   hasSaved: false,
 
@@ -39,9 +37,8 @@ export default Component.extend(BuilderAdapter, {
     return this.builderFilters(schema);
   }).readOnly(),
 
-  showAggregationSize: computed('query.{aggregation.type,window.emit.type,isWindowless}', function() {
-    return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) &&
-      (this.get('query.isWindowless') || isEqual(this.get('query.window.emit.type'), EMIT_TYPES.get('TIME')));
+  showAggregationSize: computed('query.{aggregation.type,isWindowless}', function() {
+    return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) && this.get('query.isWindowless');
   }),
 
   didInsertElement() {
@@ -79,7 +76,6 @@ export default Component.extend(BuilderAdapter, {
   reset() {
     this.setProperties({
       isListening: false,
-      listenDuration: 0,
       hasError: false,
       hasSaved: false
     });
@@ -119,8 +115,7 @@ export default Component.extend(BuilderAdapter, {
       this.save().then(() => {
         this.setProperties({
           isListening: true,
-          hasSaved: true,
-          listenDuration: this.get('query.duration') * 1000
+          hasSaved: true
         });
         this.$(this.get('queryBuilderInputs')).attr('disabled', true);
         this.sendAction('fireQuery');

@@ -5,7 +5,7 @@
  */
 import EmberObject from '@ember/object';
 import { setupApplicationTest } from 'ember-qunit';
-import mockedAPI from './mocked-api';
+import MockedAPI from './mocked-api';
 import sinon from 'sinon';
 import Stomp from 'npm:@stomp/stompjs';
 import registerPowerSelectHelpers from 'ember-power-select/test-support/helpers';
@@ -40,7 +40,7 @@ export function setupForAcceptanceTest(hooks, results, columns) {
   basicSetupForAcceptanceTest(hooks);
 
   hooks.beforeEach(function() {
-    this.mockedAPI = mockedAPI.create();
+    this.mockedAPI = MockedAPI.create();
     this.stub = sinon.stub(Stomp, 'over').returns(this.mockedAPI);
     this.mockedAPI.mock(results, columns);
   });

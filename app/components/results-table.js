@@ -13,15 +13,14 @@ export default Component.extend(PaginatedTable, {
   classNames: ['results-table'],
   results: null,
   pageSize: 5,
-  isFixed: true,
 
   extractors: EmberObject.create({
     created(row) {
       return row.get('created');
     },
 
-    records(row) {
-      return row.get('records.length');
+    windows(row) {
+      return row.get('windows.length');
     }
   }),
 
@@ -31,7 +30,7 @@ export default Component.extend(PaginatedTable, {
 
   columns: A([
     { label: 'Date', valuePath: 'created', width: '150px', cellComponent: 'cells/result-date-entry' },
-    { label: '# Records', valuePath: 'records', width: '80px', cellComponent: 'cells/result-number-entry' }
+    { label: '# Windows', valuePath: 'windows', width: '80px', cellComponent: 'cells/result-number-entry' }
   ]),
 
   init() {

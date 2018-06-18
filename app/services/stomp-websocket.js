@@ -3,19 +3,20 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEqual } from '@ember/utils';
+import { isEqual, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
-import Service, { inject as service } from '@ember/service';
+import Service from '@ember/service';
 import SockJS from 'npm:sockjs-client';
 import Stomp from 'npm:@stomp/stompjs';
 
 const ACK_TYPE = 'ACK';
 const COMPLETE_TYPE = 'COMPLETE';
+const FAIL_TYPE = 'FAIL';
 const NEW_QUERY_TYPE = 'NEW_QUERY';
 const SESSION_LENGTH = 64;
 
 export default Service.extend({
-  querier: service(),
+  client: null,
 
   url: computed('settings', function() {
     return `${this.get('settings.queryHost')}/${this.get('settings.queryNamespace')}/${this.get('settings.queryPath')}`;
@@ -29,12 +30,16 @@ export default Service.extend({
     return this.get('settings.queryStompResponseChannel');
   }),
 
+  isConnected: computed('client', function() {
+    return !isNone(this.get('client'));
+  }),
+
   makeStompMessageHandler(stompClient, handlers, context) {
     return payload => {
       let { type, content } = JSON.parse(payload.body);
       if (!isEqual(type, ACK_TYPE)) {
-        if (isEqual(type, COMPLETE_TYPE)) {
-          this.get('querier').cancel();
+        if (isEqual(type, COMPLETE_TYPE) || isEqual(type, FAIL_TYPE)) {
+          this.set('client', null);
         }
         handlers.message(JSON.parse(content), context);
       }
@@ -58,11 +63,11 @@ export default Service.extend({
 
   makeStompErrorHandler(handlers, context) {
     return (...args) => {
-      handlers.error(`Error when connecting the server: ${args}`, context);
+      handlers.error(`Error while communicating with the server: ${args}`, context);
     };
   },
 
-  createStompClient(data, handlers, context) {
+  startStompClient(data, handlers, context) {
     let url = this.get('url');
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
@@ -70,7 +75,16 @@ export default Service.extend({
 
     let onStompConnect = this.makeStompConnectHandler(stompClient, data, handlers, context);
     let onStompError = this.makeStompErrorHandler(handlers, context);
+
+    this.set('client', stompClient);
     stompClient.connect({ }, onStompConnect, onStompError);
-    return stompClient;
+  },
+
+  disconnect() {
+    let client = this.get('client');
+    if (!isNone(client)) {
+      client.disconnect();
+      this.set('client', null);
+    }
   }
 });

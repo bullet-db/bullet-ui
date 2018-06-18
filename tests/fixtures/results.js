@@ -17,6 +17,16 @@ const RESULTS = {
       }
     ]
   },
+  ERROR: {
+    meta: { errors: [] },
+    records: [
+      {
+        foo: 'test',
+        timestamp: 1231231231,
+        domain: 'foo'
+      }
+    ]
+  },
   MULTIPLE: {
     meta: {},
     records: [

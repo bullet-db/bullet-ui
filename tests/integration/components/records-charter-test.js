@@ -15,10 +15,11 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it starts off in chart mode and allows you to switch to pivot mode', async function(assert) {
     assert.expect(5);
-    this.set('mockModel', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null, save() { } }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.DISTRIBUTION.records);
     this.set('mockColumns', ['Probability', 'Count', 'Range']);
-    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
     assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
@@ -30,30 +31,33 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it charts a single dependent column', async function(assert) {
     assert.expect(2);
-    this.set('mockModel', EmberObject.create({ isRaw: false, pivotOptions: null, save() { } }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', ['foo', 'timestamp', 'domain']);
-    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
   test('it charts multiple dependent columns', async function(assert) {
     assert.expect(2);
-    this.set('mockModel', EmberObject.create({ isRaw: false, pivotOptions: null, save() { } }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
-    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
   test('it enables only the pivot mode if the results are raw', async function(assert) {
     assert.expect(3);
-    this.set('mockModel', EmberObject.create({ isRaw: true, pivotOptions: null, save() { } }));
+    this.set('mockConfig', EmberObject.create({ isRaw: true, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', ['foo', 'timestamp', 'domain']);
-    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.equal(this.element.querySelectorAll('.mode-toggle').length, 0);
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
@@ -61,10 +65,8 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it saves pivot table configurations', async function(assert) {
     assert.expect(8);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({
-      isRaw: false,
-      isDistribution: true,
-      pivotOptions: null,
       save() {
         // Called twice
         assert.ok(true);
@@ -72,7 +74,7 @@ module('Integration | Component | records charter', function(hooks) {
     }));
     this.set('mockRows', RESULTS.DISTRIBUTION.records);
     this.set('mockColumns', ['Probability', 'Count', 'Range']);
-    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel}}`);
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
     assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);

@@ -1,10 +1,15 @@
+/*
+ *  Copyright 2018, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
 import { computed } from '@ember/object';
 import $ from 'jquery';
 import Component from '@ember/component';
+import { debounce } from '@ember/runloop';
 
 export default Component.extend({
   rows: null,
-  columns: null,
   initialOptions: null,
 
   init() {
@@ -29,6 +34,15 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
+    this.insertPivotTable();
+  },
+
+  didUpdateAttrs() {
+    this._super(...arguments);
+    debounce(this, this.insertPivotTable, 500, true);
+  },
+
+  insertPivotTable() {
     let { rows, options } = this.getProperties('rows', 'options');
     this.$('.pivot-table-container').pivotUI(rows, options);
   },

@@ -3,9 +3,10 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="progress progress-container {{unless active "hidden"}}">
-  <div class="progress-bar active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={{progressWidth}} style={{progressWidth}}>
-    <span class="progress-display">{{valueNow}}</span>
-    {{yield}}
-  </div>
+<div class="progress-container">
+  {{#if showDone}}
+    {{ember-progress-bar shape=shape useDefaultStep=false setProgress=progress options=options}}
+  {{else}}
+    {{ember-progress-bar shape=shape useDefaultStep=false progress=progress options=options}}
+  {{/if}}
 </div>
