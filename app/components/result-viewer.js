@@ -68,6 +68,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
     this.set('selectedWindow', null);
+    this.set('autoUpdate', true);
   },
 
   getSelectedWindow(property) {

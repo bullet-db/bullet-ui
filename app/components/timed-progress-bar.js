@@ -35,12 +35,17 @@ export default Component.extend({
   futureTimer: null,
   timingDone: true,
 
+  showDone: computed('timingDone', 'active', function() {
+    return this.get('timingDone') || !this.get('active');
+  }).readOnly(),
+
   progress: computed('percentNow', 'timingDone', function() {
+    // Deliberately based on timingDone instead of showDone to show the progress percent at which the query became done
     return this.get('timingDone') ? 1 : this.get('percentNow');
   }).readOnly(),
 
-  strokeColor: computed('timingDone', 'color', function() {
-    return this.get('timingDone') ? this.get('doneColor') : this.get('color');
+  strokeColor: computed('showDone', 'color', function() {
+    return this.get('showDone') ? this.get('doneColor') : this.get('color');
   }),
 
   options: computed('strokeWidth', 'strokeColor', 'trailColor', function() {

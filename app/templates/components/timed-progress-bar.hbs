@@ -4,7 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="progress-container">
-  {{#if timingDone}}
+  {{#if showDone}}
     {{ember-progress-bar shape=shape useDefaultStep=false setProgress=progress options=options}}
   {{else}}
     {{ember-progress-bar shape=shape useDefaultStep=false progress=progress options=options}}
