@@ -27,7 +27,7 @@
                         onchange=(action "changeWindow") as |window|}}
           <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
           <span class="window-size">{{window.records.length}}</span> records at
-          <span class="window-time">{{moment-format window.created 'dddd, hh:MM:SS a'}}</span>
+          <span class="window-time">{{moment-format window.created 'dddd, hh:mm:ss a'}}</span>
         {{/power-select}}
       {{/unless}}
     </div>
