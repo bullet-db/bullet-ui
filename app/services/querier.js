@@ -25,18 +25,13 @@ export default Service.extend(Filterizer, {
 
   isRunningQuery: alias('stompWebsocket.isConnected').readOnly(),
 
-  defaultAPIAggregation: computed('settings.defaultAggregation.{type,size}', function() {
-    return {
-      type: this.get('settings.defaultAggregation.type'),
-      size: this.get('settings.defaultAggregation.size')
-    };
-  }),
+  defaultAPIAggregation: alias('settings.defaultAggregation').readOnly(),
 
   defaultAggregation: computed('defaultAPIAggregation', function() {
     let aggregation = this.get('defaultAPIAggregation');
     aggregation.type = AGGREGATIONS.get(aggregation.type);
     return aggregation;
-  }),
+  }).readOnly(),
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
