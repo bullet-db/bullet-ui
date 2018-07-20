@@ -14,7 +14,7 @@ const INTERNAL_APP_SETTINGS = {
 const TEST_SETTINGS = {
   queryHost: 'https://foo.bar.com:4443',
   queryNamespace: 'bullet/api',
-  queryPath: 'drpc',
+  queryPath: 'ws-query',
   queryStompRequestChannel: '/server/request',
   queryStompResponseChannel: '/client/response',
   schemaHost: 'https://foo.bar.com:4443',
@@ -41,7 +41,6 @@ const TEST_SETTINGS = {
     distributionQuantileStart: 0,
     distributionQuantileEnd: 1,
     distributionQuantileIncrement: 0.1,
-    queryTimeoutSecs: 3,
     windowEmitFrequencyMinSecs: 1,
     everyForRecordBasedWindow: 1,
     everyForTimeBasedWindow: 2,

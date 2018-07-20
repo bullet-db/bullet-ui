@@ -6,14 +6,14 @@
 import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import FILTERS from '../fixtures/filters';
+import QUERIES from '../fixtures/queries';
 import { setupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
 import { visit, findAll } from '@ember/test-helpers';
 import { findIn, findAllIn } from '../helpers/find-helpers';
 
-module('Acceptance | query default filter', function(hooks) {
+module('Acceptance | query default query', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
-  setupForMockSettings(hooks, FILTERS.AND_LIST);
+  setupForMockSettings(hooks, QUERIES.AND_LIST_TUMBLING_WINDOW);
 
   test('it creates new queries with two default filters', async function(assert) {
     assert.expect(7);

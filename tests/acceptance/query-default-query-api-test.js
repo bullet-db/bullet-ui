@@ -6,7 +6,7 @@
 import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import FILTERS from '../fixtures/filters';
+import QUERIES from '../fixtures/queries';
 import { jsonWrap } from '../helpers/pretender';
 import mockedAPI from '../helpers/mocked-api';
 import sinon from 'sinon';
@@ -18,7 +18,7 @@ import { findIn } from '../helpers/find-helpers';
 let url = 'http://foo.bar.com/api/filter';
 let hit = 0;
 
-module('Acceptance | query default api filter', function(hooks) {
+module('Acceptance | query default query api', function(hooks) {
   basicSetupForAcceptanceTest(hooks);
   setupForMockSettings(hooks, url);
 
@@ -31,7 +31,7 @@ module('Acceptance | query default api filter', function(hooks) {
     this.mockedAPI.get('server').map(function() {
       this.get(url, () => {
         hit++;
-        return jsonWrap(200, FILTERS.AND_ENUMERATED);
+        return jsonWrap(200, QUERIES.AND_ENUMERATED_COUNT_DISTINCT);
       });
     });
   });

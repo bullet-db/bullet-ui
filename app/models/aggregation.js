@@ -58,6 +58,9 @@ export const RAWS = RawTypes.create();
 export const DISTRIBUTIONS = DistributionTypes.create();
 export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
+export const DEFAULT_AGGREGATION_TYPE = 'RAW';
+export const DEFAULT_AGGREGATION_SIZE = 1;
+
 let Validations = buildValidations({
   size: {
     description: 'Maximum records', validators: [

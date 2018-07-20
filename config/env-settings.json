@@ -18,6 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
+    "defaultQuery": null,
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,
@@ -27,7 +28,6 @@
       "distributionQuantileStart": 0,
       "distributionQuantileEnd": 1,
       "distributionQuantileIncrement": 0.1,
-      "queryTimeoutSecs": 3,
       "windowEmitFrequencyMinSecs": 1,
       "everyForRecordBasedWindow": 1,
       "everyForTimeBasedWindow": 2,

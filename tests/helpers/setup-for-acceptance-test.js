@@ -10,9 +10,9 @@ import sinon from 'sinon';
 import Stomp from 'npm:@stomp/stompjs';
 import registerPowerSelectHelpers from 'ember-power-select/test-support/helpers';
 
-export function setupForMockSettings(hooks, defaultFilter) {
+export function setupForMockSettings(hooks, defaultQuery) {
   hooks.beforeEach(function() {
-    this.owner.register('settings:mocked', EmberObject.create({ defaultFilter: defaultFilter }), { instantiate: false });
+    this.owner.register('settings:mocked', EmberObject.create({ defaultQuery: defaultQuery }), { instantiate: false });
     this.owner.inject('route', 'settings', 'settings:mocked');
   });
 

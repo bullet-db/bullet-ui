@@ -10,9 +10,11 @@ import EmberObject from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, DISTRIBUTIONS, DEFAULT_AGGREGATION_TYPE, DEFAULT_AGGREGATION_SIZE } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+
+export const DEFAULT_API_AGGREGATION = { type: DEFAULT_AGGREGATION_TYPE, size: DEFAULT_AGGREGATION_SIZE };
 
 export default Service.extend(Filterizer, {
   stompWebsocket: service(),
