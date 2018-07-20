@@ -6,7 +6,7 @@
 import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEmpty, isEqual } from '@ember/utils';
-import EmberObject from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
@@ -24,6 +24,14 @@ export default Service.extend(Filterizer, {
   pendingRequest: null,
 
   isRunningQuery: alias('stompWebsocket.isConnected').readOnly(),
+
+  defaultAPIAggregation: alias('settings.defaultAggregation').readOnly(),
+
+  defaultAggregation: computed('defaultAPIAggregation', function() {
+    let aggregation = this.get('defaultAPIAggregation');
+    aggregation.type = AGGREGATIONS.get(aggregation.type);
+    return aggregation;
+  }).readOnly(),
 
   /**
    * Recreates a Ember Data like representation from an API query specification.

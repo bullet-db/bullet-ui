@@ -6,19 +6,19 @@
 import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
-import FILTERS from '../fixtures/filters';
+import QUERIES from '../fixtures/queries';
 import { jsonWrap } from '../helpers/pretender';
 import mockedAPI from '../helpers/mocked-api';
 import sinon from 'sinon';
 import Stomp from 'npm:@stomp/stompjs';
 import { basicSetupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
-import { visit, findAll } from '@ember/test-helpers';
+import { visit, find, findAll } from '@ember/test-helpers';
 import { findIn } from '../helpers/find-helpers';
 
-let url = 'http://foo.bar.com/api/filter';
+let url = 'http://foo.bar.com/api/custom-query';
 let hit = 0;
 
-module('Acceptance | query default api filter', function(hooks) {
+module('Acceptance | query default query api', function(hooks) {
   basicSetupForAcceptanceTest(hooks);
   setupForMockSettings(hooks, url);
 
@@ -31,7 +31,7 @@ module('Acceptance | query default api filter', function(hooks) {
     this.mockedAPI.get('server').map(function() {
       this.get(url, () => {
         hit++;
-        return jsonWrap(200, FILTERS.AND_ENUMERATED);
+        return jsonWrap(200, QUERIES.AND_ENUMERATED_COUNT_DISTINCT);
       });
     });
   });
@@ -41,8 +41,8 @@ module('Acceptance | query default api filter', function(hooks) {
     this.stub.restore();
   });
 
-  test('it creates new queries with two default filters', async function(assert) {
-    assert.expect(7);
+  test('it creates new queries with two default filters and the count distinct aggregation', async function(assert) {
+    assert.expect(10);
     await visit('/queries/new');
     assert.equal(findAll('.filter-container .builder .rules-list .rule-container').length, 2);
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
@@ -52,6 +52,9 @@ module('Acceptance | query default api filter', function(hooks) {
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
     assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
     assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
+    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
+    assert.equal(find('.output-container .count-distinct-display-name input').value, '');
+    assert.equal(find('.options-container .query-duration input').value, '50');
   });
 
   test('it reuses fetched values when creating new queries', async function(assert) {

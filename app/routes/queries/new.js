@@ -3,71 +3,76 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { resolve } from 'rsvp';
-import { typeOf } from '@ember/utils';
+import { isEmpty, typeOf } from '@ember/utils';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import Filterizer from 'bullet-ui/mixins/filterizer';
 
 export default Route.extend(Filterizer, {
   corsRequest: service(),
-  // Filterizer mixins
-  subfieldSeparator: SUBFIELD_SEPARATOR,
-  subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
-  apiMode: false,
+  querier: service(),
+  queryManager: service(),
 
   beforeModel() {
-    let aggregation = this.store.createRecord('aggregation');
+    return this.addDefaultQuery().then(query => {
+      query.save().then(() => {
+        this.transitionTo('query', query.get('id'));
+      });
+    });
+  },
+
+  addDefaultQuery() {
+    let fetchedQuery = this.get('cachedQuery');
+    // If we already fetched and stored the default query, use that.
+    if (fetchedQuery) {
+      return this.createQuery(fetchedQuery);
+    }
+
+    let defaultQuery = this.get('settings.defaultQuery');
+    // Create an empty query if we don't have defaults
+    if (!defaultQuery) {
+      return this.createEmptyQuery();
+    }
+
+    // If we have a default filter in settings, use that.
+    if (typeOf(defaultQuery) === 'object') {
+      return this.createQuery(defaultQuery);
+    }
+
+    // Otherwise, assume defaultQuery is an url to get the default query from.
+    return this.get('corsRequest').request(defaultQuery).then(query => {
+      this.set('cachedQuery', query);
+      return this.createQuery(query);
+    });
+  },
+
+  createQuery(query) {
+    if (!query) {
+      return this.createEmptyQuery();
+    }
+    // If query does not have a filter, recreate will create it. No need to call createEmptyFilter
+    // If query does not have an aggregation, we must create it.
+    if (isEmpty(query.aggregation)) {
+      query.aggregation = this.get('querier.defaultAPIAggregation');
+    }
+    let queryObject = this.get('querier').recreate(query);
+    return this.get('queryManager').copyQuery(queryObject);
+  },
+
+  createEmptyFilter(query) {
+    let empty = this.store.createRecord('filter', {
+      clause: this.get('emptyClause'),
+      query: query
+    });
+    return empty.save();
+  },
+
+  createEmptyQuery() {
+    let aggregation = this.store.createRecord('aggregation', this.get('querier.defaultAggregation'));
     aggregation.save();
     let query = this.store.createRecord('query', {
       aggregation: aggregation
     });
-    return this.addDefaultFilter(query).then(() => {
-      query.save();
-      this.transitionTo('query', query.get('id'));
-    });
-  },
-
-  /**
-   * Creates and adds any default filter to the query.
-   * @param {Object} query The query model object
-   * @return {Object}      A Promise resolving to the created filter.
-   */
-  addDefaultFilter(query) {
-    let fetchedFilter = this.get('cachedFilter');
-    // If we already fetched and stored the default filter, use that.
-    if (fetchedFilter) {
-      return this.createFilter(fetchedFilter, query);
-    }
-
-    let defaultFilter = this.get('settings.defaultFilter');
-    // Create an empty filter if we don't have defaults
-    if (!defaultFilter) {
-      return this.createFilter(this.get('emptyClause'), query);
-    }
-
-    // If we have a default filter in settings, use that. Assume it is in the API format.
-    if (typeOf(defaultFilter) === 'object') {
-      return this.createFilter(this.convertClauseToRule(defaultFilter), query);
-    }
-
-    // Otherwise, assume defaultFilter is an url to get the default filter from.
-    return this.get('corsRequest').request(defaultFilter).then(filter => {
-      let converted = this.convertClauseToRule(filter);
-      this.set('cachedFilter', converted);
-      return this.createFilter(converted, query);
-    });
-  },
-
-  createFilter(filter, query) {
-    if (!filter) {
-      return resolve();
-    }
-    let created = this.store.createRecord('filter', {
-      clause: filter,
-      query: query
-    });
-    return created.save();
+    return this.createEmptyFilter(query).then(() => query);
   }
 });

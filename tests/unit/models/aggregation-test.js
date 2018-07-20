@@ -14,8 +14,7 @@ module('Unit | Model | aggregation', function(hooks) {
 
   test('it sets its default values right', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('aggregation'));
-    assert.equal(model.get('type'), AGGREGATIONS.get('RAW'));
-    assert.equal(model.get('size'), 1);
+    assert.ok(model.get('attributes'));
   });
 
   test('it maps the api types for the aggregation types properly', function(assert) {

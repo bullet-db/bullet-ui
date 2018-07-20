@@ -7,14 +7,18 @@
 /* eslint-env node */
 
 const INTERNAL_APP_SETTINGS = {
+  // Use the IndexedDB Local Forage adapater
   adapter: 'indexeddb',
-  debounceSegmentSaves: true
+  // Enable debouncing saving of windows
+  debounceSegmentSaves: true,
+  // Only used if defaultQuery does not provide an aggregation
+  defaultAggregation: { type: 'RAW', size: 1 }
 };
 
 const TEST_SETTINGS = {
   queryHost: 'https://foo.bar.com:4443',
   queryNamespace: 'bullet/api',
-  queryPath: 'drpc',
+  queryPath: 'ws-query',
   queryStompRequestChannel: '/server/request',
   queryStompResponseChannel: '/client/response',
   schemaHost: 'https://foo.bar.com:4443',
@@ -32,6 +36,7 @@ const TEST_SETTINGS = {
   },
   adapter: 'local',
   debounceSegmentSaves: false,
+  defaultAggregation: { type: 'RAW', size: 1 },
   defaultValues: {
     aggregationMaxSize: 512,
     rawMaxSize: 100,
@@ -41,7 +46,6 @@ const TEST_SETTINGS = {
     distributionQuantileStart: 0,
     distributionQuantileEnd: 1,
     distributionQuantileIncrement: 0.1,
-    queryTimeoutSecs: 3,
     windowEmitFrequencyMinSecs: 1,
     everyForRecordBasedWindow: 1,
     everyForTimeBasedWindow: 2,

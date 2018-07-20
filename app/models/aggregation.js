@@ -79,8 +79,8 @@ let Validations = buildValidations({
 });
 
 export default DS.Model.extend(Validations, {
-  type: DS.attr('string', { defaultValue: AGGREGATIONS.get('RAW') }),
-  size: DS.attr('number', { defaultValue: 1 }),
+  type: DS.attr('string'),
+  size: DS.attr('number'),
   groups: DS.hasMany('group', { dependent: 'destroy' }),
   metrics: DS.hasMany('metric', { dependent: 'destroy' }),
   attributes: DS.attr({ defaultValue: () => EmberObject.create() }),

@@ -4,7 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <p>
-  Bullet needs to be told upfront how long it should look for records matching the filter criteria. If you are getting Raw Data, you can also select a maximum number of records to find (Maximum Result Count). If Bullet happens to find your maximum number of records before the Maximum Duration is reached, it will finish early and return the found records. In other words, Bullet will run until at least one of the two criteria succeeds. In case, you are aggregating data, Bullet has to wait till your duration is up before returning the data to you because more data that changes the result of an existing group may still arrive even if your max result count number of groups has been reached. So, it does not let you select a Maximum Result Count. It defaults to the maximum size returnable for a Bullet query set by your maintainer to <strong>{{settings.defaultValues.aggregationMaxSize}}</strong>.
+  Bullet needs to be told upfront how long it should look for records matching the filter criteria. If your maintainer has allowed it, you can also run an infinite duration query (make sure to specify a window for such a query or you will never see the results!). If you are getting Raw Data, you can also select a maximum number of records to find (Maximum Result Count). If Bullet happens to find your maximum number of records before the Maximum Duration is reached, it will finish early and return the found records. In other words, Bullet will run until at least one of the two criteria succeeds. In case, you are aggregating data, Bullet has to wait till your duration is up before returning the data to you because more data that changes the result of an existing group may still arrive even if your max result count number of groups has been reached. So, it does not let you select a Maximum Result Count. It defaults to the maximum size returnable for a Bullet query set by your maintainer to <strong>{{settings.defaultValues.aggregationMaxSize}}</strong>.
 </p>
 
 <h5 class="content-header">Maximum Result Count</h5>
@@ -14,5 +14,5 @@
 
 <h5 class="content-header">Maximum Duration</h5>
 <p>
-  The maximum time Bullet will look for records matching the filter criteria. Must be a number between 1 and <strong>{{settings.defaultValues.durationMaxSecs}}</strong> seconds (default). Note that this is a not a guarantee that the results will arrive in this time, only that this is the window for gathering results. Typically, the results take a few seconds (<strong>~{{settings.defaultValues.queryTimeoutSecs}} s</strong>) after the duration to be returned.
+  The maximum time Bullet will look for records matching the filter criteria. Must be a number between 1 and <strong>{{settings.defaultValues.durationMaxSecs}}</strong> seconds (default). Note that this is a not a guarantee that the results will arrive in this time, only that this is the window for gathering results. The results might take a few seconds after the duration to be returned. This is true for a time based window duration as well.
 </p>
