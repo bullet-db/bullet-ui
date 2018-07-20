@@ -1,6 +1,6 @@
 {
   "name": "bullet-ui",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Ember 3 UI for Bullet - Realtime Query Engine",
   "private": true,
   "main": "express-server.js",
