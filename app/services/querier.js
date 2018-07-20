@@ -6,15 +6,13 @@
 import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEmpty, isEqual } from '@ember/utils';
-import EmberObject from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import Filterizer from 'bullet-ui/mixins/filterizer';
-import { AGGREGATIONS, DISTRIBUTIONS, DEFAULT_AGGREGATION_TYPE, DEFAULT_AGGREGATION_SIZE } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
-
-export const DEFAULT_API_AGGREGATION = { type: DEFAULT_AGGREGATION_TYPE, size: DEFAULT_AGGREGATION_SIZE };
 
 export default Service.extend(Filterizer, {
   stompWebsocket: service(),
@@ -26,6 +24,19 @@ export default Service.extend(Filterizer, {
   pendingRequest: null,
 
   isRunningQuery: alias('stompWebsocket.isConnected').readOnly(),
+
+  defaultAPIAggregation: computed('settings.defaultAggregation.{type,size}', function() {
+    return {
+      type: this.get('settings.defaultAggregation.type'),
+      size: this.get('settings.defaultAggregation.size')
+    };
+  }),
+
+  defaultAggregation: computed('defaultAPIAggregation', function() {
+    let aggregation = this.get('defaultAPIAggregation');
+    aggregation.type = AGGREGATIONS.get(aggregation.type);
+    return aggregation;
+  }),
 
   /**
    * Recreates a Ember Data like representation from an API query specification.

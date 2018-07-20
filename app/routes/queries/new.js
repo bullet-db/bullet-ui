@@ -7,7 +7,6 @@ import { isEmpty, typeOf } from '@ember/utils';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import Filterizer from 'bullet-ui/mixins/filterizer';
-import { DEFAULT_API_AGGREGATION } from 'bullet-ui/services/querier';
 
 export default Route.extend(Filterizer, {
   corsRequest: service(),
@@ -54,7 +53,7 @@ export default Route.extend(Filterizer, {
     // If query does not have a filter, recreate will create it. No need to call createEmptyFilter
     // If query does not have an aggregation, we must create it.
     if (isEmpty(query.aggregation)) {
-      query.aggregation = DEFAULT_API_AGGREGATION;
+      query.aggregation = this.get('querier.defaultAPIAggregation');
     }
     let queryObject = this.get('querier').recreate(query);
     return this.get('queryManager').copyQuery(queryObject);
@@ -69,7 +68,7 @@ export default Route.extend(Filterizer, {
   },
 
   createEmptyQuery() {
-    let aggregation = this.store.createRecord('aggregation');
+    let aggregation = this.store.createRecord('aggregation', this.get('querier.defaultAggregation'));
     aggregation.save();
     let query = this.store.createRecord('query', {
       aggregation: aggregation

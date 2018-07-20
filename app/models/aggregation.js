@@ -58,9 +58,6 @@ export const RAWS = RawTypes.create();
 export const DISTRIBUTIONS = DistributionTypes.create();
 export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
-export const DEFAULT_AGGREGATION_TYPE = 'RAW';
-export const DEFAULT_AGGREGATION_SIZE = 1;
-
 let Validations = buildValidations({
   size: {
     description: 'Maximum records', validators: [
@@ -82,8 +79,8 @@ let Validations = buildValidations({
 });
 
 export default DS.Model.extend(Validations, {
-  type: DS.attr('string', { defaultValue: AGGREGATIONS.get('RAW') }),
-  size: DS.attr('number', { defaultValue: 1 }),
+  type: DS.attr('string'),
+  size: DS.attr('number'),
   groups: DS.hasMany('group', { dependent: 'destroy' }),
   metrics: DS.hasMany('metric', { dependent: 'destroy' }),
   attributes: DS.attr({ defaultValue: () => EmberObject.create() }),
