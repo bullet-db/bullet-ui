@@ -6,7 +6,7 @@ const QUERIES = {
     aggregation: {
       type: 'COUNT DISTINCT',
       fields: {
-        simple_column: ''
+        'simple_column': ''
       },
       size: 500
     },
@@ -17,7 +17,8 @@ const QUERIES = {
     filters: [FILTERS.AND_LIST],
     window: {
       emit: { type: 'TIME', every: 2000 }
-    }
+    },
+    duration: 20000
   }
 };
 

@@ -8,7 +8,7 @@ import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import QUERIES from '../fixtures/queries';
 import { setupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
-import { visit, findAll } from '@ember/test-helpers';
+import { visit, find, findAll } from '@ember/test-helpers';
 import { findIn, findAllIn } from '../helpers/find-helpers';
 
 module('Acceptance | query default query', function(hooks) {
@@ -16,7 +16,7 @@ module('Acceptance | query default query', function(hooks) {
   setupForMockSettings(hooks, QUERIES.AND_LIST_TUMBLING_WINDOW);
 
   test('it creates new queries with two default filters', async function(assert) {
-    assert.expect(7);
+    assert.expect(10);
     await visit('/queries/new');
 
     assert.equal(findAll('.filter-container .builder .rules-list .rule-container').length, 2);
@@ -27,5 +27,8 @@ module('Acceptance | query default query', function(hooks) {
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
     assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
     assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
+    assert.equal(find('.window-container .window-emit-every input').value, '2');
+    assert.equal(find('.window-container .window-size input').value, '1');
+    assert.equal(find('.options-container .query-duration input').value, '20');
   });
 });

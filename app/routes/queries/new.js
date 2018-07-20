@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { resolve } from 'rsvp';
 import { isEmpty, typeOf } from '@ember/utils';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
