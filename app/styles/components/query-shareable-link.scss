@@ -37,7 +37,7 @@
       width: 35px;
       height: $row-height;
       border: none;
-      .glyphicon {
+      .fa {
         color: darken($grey, 20%);
         font-size: $font-size-regular-large;
         &:focus {
@@ -46,7 +46,7 @@
       }
       &:hover {
         background-color: $background-grey;
-        .glyphicon {
+        .fa {
           color: $inactive-grey;
         }
       }

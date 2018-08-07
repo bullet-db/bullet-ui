@@ -8,10 +8,9 @@
     cursor: pointer;
   }
   .schema-enumeration-caret {
-    .glyphicon {
+    .fa {
       color: $success-green;
       font-size: $font-size-regular-large;
-      font-weight: $font-weight-strong;
       vertical-align: -3px;
     }
   }

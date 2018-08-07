@@ -36,6 +36,11 @@
     font-weight: $font-weight-medium;
     height: 28px;
     width: 96px;
+    // Because there is text in add buttons, we need to style the icon separately
+    .fa {
+      font-size: $font-size-regular;
+      vertical-align: -1px;
+    }
   }
 
   %remove-button {

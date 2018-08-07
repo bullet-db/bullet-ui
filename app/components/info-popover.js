@@ -9,7 +9,7 @@ import ElementPopover from 'bullet-ui/mixins/element-popover';
 export default Component.extend(ElementPopover, {
   classNames: ['info-popover-wrapper'],
   isButton: true,
-  buttonClasses: 'glyphicon glyphicon-info-sign',
+  buttonClasses: 'fa fa-info-circle',
   additionalText: '',
   title: '',
 

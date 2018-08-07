@@ -6,6 +6,13 @@ module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     'ember-cli-babel': {
       includePolyfill: true
+    },
+    'ember-cli-bootstrap-sassy': {
+      glyphicons: false
+    },
+    'ember-font-awesome': {
+      useScss: true,
+      useLess: false
     }
   });
 

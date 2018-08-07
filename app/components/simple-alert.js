@@ -13,11 +13,11 @@ export default Component.extend({
   alertIconClass: computed('type', function() {
     switch (this.get('type')) {
       case 'error':
-        return 'glyphicon glyphicon-ban-circle';
+        return 'fa fa-ban';
       case 'success':
-        return 'glyphicon glyphicon-ok-sign';
+        return 'fa fa-check-circle';
       case 'warning':
-        return 'glyphicon glyphicon-flag';
+        return 'fa fa-flag';
       default:
         return '';
     }

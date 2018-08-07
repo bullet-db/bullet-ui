@@ -10,9 +10,9 @@
   display: flex;
   align-items: center;
 
-  .glyphicon {
+  .fa {
     color: $inactive-grey;
-    font-size: $font-size-regular;
+    font-size: $font-size-regular-large;
     &:hover {
       color: $black;
     }
@@ -24,6 +24,7 @@
   .query-unsaved {
     flex: 1 1 auto;
     max-width: 20px;
+    margin-right: 5px;
     .unsaved-icon {
       vertical-align: -1px;
     }
@@ -31,7 +32,7 @@
 
   .query-description {
     flex: 1 1 75%;
-    max-width: 75%;
+    max-width: 72%;
     margin-right: 20px;
     .query-real-name {
       white-space: nowrap;
@@ -43,7 +44,7 @@
       display: flex;
       align-items: center;
       .filter-summary-text, .fields-summary-text {
-        padding-right: 10px;
+        padding-right: 5px;
       }
     }
   }

@@ -38,8 +38,8 @@ module('Integration | Component | records table', function(hooks) {
     assert.equal(spaceLess, '123');
   });
 
-  // Skip it until https://github.com/offirgolan/ember-light-table/issues/562 is fixed.
-  skip('it paginates the results by increments', async function(assert) {
+  test('it paginates the results by increments', async function(assert) {
+    // Used to be skipped till https://github.com/offirgolan/ember-light-table/issues/562 was fixed.
     assert.expect(1);
     this.set('columns', A(['foo']));
     let mockRows = [];

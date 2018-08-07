@@ -14,8 +14,7 @@
     outline: 0;
     text-decoration: none;
     color: $info-icon-color;
-    font-weight: $font-weight-regular-medium;
-    font-size: $font-size-regular;
+    font-size: $font-size-regular-large;
     &:hover {
       .info-link-text {
         // Text shouldn't change color on hover

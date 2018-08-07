@@ -4,11 +4,11 @@
  *  See the LICENSE file associated with the project for terms.
  */
 @import "bootstrap";
+@import "font-awesome";
 @import 'ember-power-select/themes/bootstrap';
 // Remove focus shadow
 $ember-power-select-focus-box-shadow: none;
 @import "ember-power-select";
-
 @import "variables";
 @import "common-buttons";
 @import "top-bar";
@@ -59,4 +59,3 @@ body {
     @import "components/popovers/info-popover";
   }
 }
-

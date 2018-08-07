@@ -36,8 +36,7 @@
         color: $white;
         i {
           color: $secondary-button-color;
-          font-weight: 200;
-          line-height: 1.3em;
+          font-size: $font-size-regular;
         }
         text-align: center;
         background-color: $white;
@@ -113,22 +112,6 @@
           }
         }
       }
-
-      .raw-view {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: $font-size-small;
-        i:first-of-type {
-          padding-left: 1px;
-        }
-        .slash {
-          align-self: flex-start;
-          font-size: $font-size-regular;
-          color: $secondary-button-color;
-        }
-      }
-
     }
   }
   .records-display {

@@ -11,7 +11,7 @@
   </div>
   <div class="query-results-entry-popover-body hidden">
     <button class="btn btn-xs close-button" aria-label="Close" {{action "closePopover"}}>
-      <span class="glyphicon glyphicon-remove"></span>
+      {{fa-icon "close" tagName="span"}}
     </button>
     {{#if renderTable}}
       {{results-table results=value resultClick=(action "resultClick") deleteResultsClick=(action "deleteResultsClick")}}

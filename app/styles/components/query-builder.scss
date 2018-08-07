@@ -246,8 +246,8 @@
 
   // Drag handle color should be more muted
   .drag-handle  {
-    margin-right: 0;
     i {
+      margin: 5px;
       color: $drag-icon-color;
       font-size: $font-size-large;
     }

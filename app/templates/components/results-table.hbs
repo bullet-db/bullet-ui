@@ -5,6 +5,6 @@
  --}}
 {{#light-table table height="inherit" tableActions=(hash resultClick=resultClick deleteResultsClick=deleteResultsClick) as |t|}}
   {{t.head onColumnClick=(action "onColumnClick")  fixed=true
-           iconAscending="glyphicon glyphicon-menu-up" iconDescending="glyphicon glyphicon-menu-down"}}
+           iconAscending="fa fa-chevron-up" iconDescending="fa fa-chevron-down"}}
   {{t.body canSelect=false scrollBuffer=1000 onScrolledToBottom=(action "onScrolledToBottom")}}
 {{/light-table}}

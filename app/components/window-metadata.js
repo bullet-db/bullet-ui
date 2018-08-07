@@ -11,7 +11,7 @@ export default Component.extend({
   classNameBindings: ['expanded:is-expanded'],
   expanded: false,
   expansionIconClasses: computed('expanded', function() {
-    return this.get('expanded') ? 'glyphicon glyphicon-menu-up' : 'glyphicon glyphicon-menu-down';
+    return this.get('expanded') ? 'fa fa-chevron-up' : 'fa fa-chevron-down';
   }),
 
   actions: {

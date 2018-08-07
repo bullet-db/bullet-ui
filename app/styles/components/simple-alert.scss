@@ -35,7 +35,6 @@
       background-color: $alert-close-background-color;
       border-color: $alert-close-background-color;
       border-radius: $button-radius-circle;
-      font-size: $font-size-regular-large;
       opacity: 0.6;
       margin-left: auto;
       height: 28px;
@@ -43,8 +42,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      .glyphicon {
-        font-weight: 600;
+      .fa {
+        font-size: $font-size-large;
       }
       &:hover {
         background-color: $alert-close-background-color;
