@@ -67,7 +67,7 @@
   dependencies:
     "@glimmer/util" "^0.27.0"
 
-"@html-next/vertical-collection@^1.0.0-beta.10":
+"@html-next/vertical-collection@^1.0.0-beta.9":
   version "1.0.0-beta.12"
   resolved "https://registry.yarnpkg.com/@html-next/vertical-collection/-/vertical-collection-1.0.0-beta.12.tgz#c5cbed1a7cc9bfe8d4e82474bbb8d265882bc6f9"
   dependencies:
@@ -3624,7 +3624,7 @@ ember-cli-sri@~2.1.1:
   dependencies:
     broccoli-sri-hash "^2.1.0"
 
-ember-cli-string-helpers@^1.8.1:
+ember-cli-string-helpers@^1.5.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/ember-cli-string-helpers/-/ember-cli-string-helpers-1.9.0.tgz#2c1605bc5768ff58cecd2fa1bd0d13d81e47f3d3"
   dependencies:
@@ -3789,7 +3789,7 @@ ember-component-inbound-actions@1.2.1:
   dependencies:
     ember-cli-babel "^5.1.7"
 
-ember-composable-helpers@^2.1.0:
+ember-composable-helpers@^2.0.1:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ember-composable-helpers/-/ember-composable-helpers-2.1.0.tgz#71f75ab2de1c696d21939b5f9dcc62eaf2c947e5"
   dependencies:
@@ -3867,13 +3867,13 @@ ember-export-application-global@~2.0.0:
   dependencies:
     ember-cli-babel "^6.0.0-beta.7"
 
-ember-factory-for-polyfill@^1.3.1:
+ember-factory-for-polyfill@^1.1.0, ember-factory-for-polyfill@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/ember-factory-for-polyfill/-/ember-factory-for-polyfill-1.3.1.tgz#b446ed64916d293c847a4955240eb2c993b86eae"
   dependencies:
     ember-cli-version-checker "^2.1.0"
 
-ember-font-awesome@^4.0.0-rc.4:
+ember-font-awesome@4.0.0-rc.4:
   version "4.0.0-rc.4"
   resolved "https://registry.yarnpkg.com/ember-font-awesome/-/ember-font-awesome-4.0.0-rc.4.tgz#7d4b7fbb401e21afeb7068cbb42ac8d8a84873f7"
   dependencies:
@@ -3890,12 +3890,20 @@ ember-font-awesome@^4.0.0-rc.4:
     postcss "^6.0.14"
     sync-disk-cache "^1.3.2"
 
-ember-get-config@^0.2.3, ember-get-config@^0.2.4:
+ember-get-config@^0.2.2, ember-get-config@^0.2.3:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/ember-get-config/-/ember-get-config-0.2.4.tgz#118492a2a03d73e46004ed777928942021fe1ecd"
   dependencies:
     broccoli-file-creator "^1.1.1"
     ember-cli-babel "^6.3.0"
+
+ember-getowner-polyfill@^1.1.1:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/ember-getowner-polyfill/-/ember-getowner-polyfill-1.2.5.tgz#ceff8a09897d0d7e05c821bb71666a95eb26dc92"
+  dependencies:
+    ember-cli-babel "^5.1.6"
+    ember-cli-version-checker "^1.2.0"
+    ember-factory-for-polyfill "^1.1.0"
 
 ember-getowner-polyfill@^2.0.0, ember-getowner-polyfill@^2.0.1:
   version "2.2.0"
@@ -3911,11 +3919,12 @@ ember-hash-helper-polyfill@^0.1.1:
     ember-cli-babel "^5.1.7"
     ember-cli-version-checker "^1.2.0"
 
-ember-in-viewport@~3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/ember-in-viewport/-/ember-in-viewport-3.0.3.tgz#49c60b52525795246761742ed4495ad6cd9bf70d"
+ember-in-viewport@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/ember-in-viewport/-/ember-in-viewport-2.1.1.tgz#6306c2dd62045211bd57b664bd90c453d13644c0"
   dependencies:
-    ember-cli-babel "^6.6.0"
+    ember-cli-babel "^5.1.6"
+    ember-getowner-polyfill "^1.1.1"
 
 ember-inflector@^2.0.0:
   version "2.3.0"
@@ -3929,20 +3938,20 @@ ember-lifeline@^2.0.0:
   dependencies:
     ember-cli-babel "^6.8.2"
 
-ember-light-table@1.13.1:
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/ember-light-table/-/ember-light-table-1.13.1.tgz#3b0cace7675257737d224c86ff133b961d6c322e"
+ember-light-table@1.12.2:
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/ember-light-table/-/ember-light-table-1.12.2.tgz#6fe7bb87d7a562f2ff8d90bc6b86f7fb7dd32c6d"
   dependencies:
-    "@html-next/vertical-collection" "^1.0.0-beta.10"
-    ember-cli-babel "^6.11.0"
-    ember-cli-htmlbars "^2.0.3"
-    ember-cli-string-helpers "^1.8.1"
-    ember-composable-helpers "^2.1.0"
-    ember-get-config "^0.2.4"
-    ember-in-viewport "~3.0.3"
-    ember-scrollable "^0.4.11"
+    "@html-next/vertical-collection" "^1.0.0-beta.9"
+    ember-cli-babel "^6.6.0"
+    ember-cli-htmlbars "^2.0.2"
+    ember-cli-string-helpers "^1.5.0"
+    ember-composable-helpers "^2.0.1"
+    ember-get-config "^0.2.2"
+    ember-in-viewport "2.1.1"
+    ember-scrollable "^0.4.10"
     ember-truth-helpers "^2.0.0"
-    ember-wormhole "^0.5.4"
+    ember-wormhole "^0.5.1"
 
 ember-load-initializers@~1.0.0:
   version "1.0.0"
@@ -4103,7 +4112,7 @@ ember-scroll-to@0.6.4:
     ember-cli-babel "^5.1.6"
     ember-cli-htmlbars "^1.0.3"
 
-ember-scrollable@^0.4.11:
+ember-scrollable@^0.4.10:
   version "0.4.11"
   resolved "https://registry.yarnpkg.com/ember-scrollable/-/ember-scrollable-0.4.11.tgz#2999e3fb8d8e4a0eb9d194d8773d44ddf1b3afb4"
   dependencies:
@@ -4224,7 +4233,7 @@ ember-weakmap@^3.0.0:
     debug "^3.1.0"
     ember-cli-babel "^6.6.0"
 
-ember-wormhole@^0.5.2, ember-wormhole@^0.5.4:
+ember-wormhole@^0.5.1, ember-wormhole@^0.5.2:
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/ember-wormhole/-/ember-wormhole-0.5.4.tgz#968e80f093494f4aed266e750afa63919c61383d"
   dependencies:
