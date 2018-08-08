@@ -28,7 +28,7 @@ export default Mixin.create(Filterizer, {
           placement: 'auto bottom'
         },
         'sortable': {
-          icon: 'glyphicon glyphicon-option-vertical'
+          icon: 'fa fa-ellipsis-v'
         },
         'subfield': { },
         'placeholders': { }
@@ -58,11 +58,11 @@ export default Mixin.create(Filterizer, {
         rlike: { op: 'RLIKE ?' }
       },
       icons: {
-        add_group: 'glyphicon glyphicon-plus',
-        add_rule: 'glyphicon glyphicon-plus',
-        remove_group: 'glyphicon glyphicon-remove',
-        remove_rule: 'glyphicon glyphicon-remove',
-        error: 'glyphicon glyphicon-exclamation-sign'
+        add_group: 'fa fa-plus',
+        add_rule: 'fa fa-plus',
+        remove_group: 'fa fa-close',
+        remove_rule: 'fa fa-close',
+        error: 'fa fa-exclamation-circle'
       },
       // The non-empty strings are needed!
       lang: {

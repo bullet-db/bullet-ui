@@ -138,7 +138,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     this.set('mockRow', wrap(query));
     await render(hbs`{{cells/query-name-entry row=mockRow}}`);
     assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .glyphicon-alert').length, 1);
+    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
   });
 
   test('it displays an unsaved icon if the query has unsaved fields', async function(assert) {
@@ -148,7 +148,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     this.set('mockRow', wrap(query));
     await render(hbs`{{cells/query-name-entry row=mockRow}}`);
     assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .glyphicon-alert').length, 1);
+    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
   });
 
   test('it displays an unsaved icon if the query is invalid', async function(assert) {
@@ -158,7 +158,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     this.set('mockRow', wrap(query));
     await render(hbs`{{cells/query-name-entry row=mockRow}}`);
     assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .glyphicon-alert').length, 1);
+    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
   });
 
   test('it does not display an unsaved icon if the query is valid', async function(assert) {

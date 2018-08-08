@@ -48,7 +48,7 @@
                                         fieldModified=(action "modifyFieldLike" projection) deleteModel=(action "destroyModel" projection)}}
           {{/each}}
           <button {{action "addFieldLike" "projection" "query" "query"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-projection">
-            <i class="glyphicon glyphicon-plus"></i>
+            {{fa-icon "plus"}}
             Field
           </button>
         </div>
@@ -66,7 +66,7 @@
                                       fieldModified=(action "modifyFieldLike" group) deleteModel=(action "destroyModel" group)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-group">
-          <i class="glyphicon glyphicon-plus"></i>
+          {{fa-icon "plus"}}
           Group Field
         </button>
       </div>
@@ -89,7 +89,7 @@
           {{/validated-field-selection}}
         {{/each}}
         <button {{action "addFieldLike" "metric" "aggregation" "query.aggregation"}} disabled={{disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
-          <i class="glyphicon glyphicon-plus"></i>
+          {{fa-icon "plus"}}
           Metric Field
         </button>
       </div>
@@ -106,7 +106,7 @@
                                       fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
-          <i class="glyphicon glyphicon-plus"></i>
+          {{fa-icon "plus"}}
           Field
         </button>
       </div>
@@ -189,7 +189,7 @@
                                       fieldModified=(action "modifyFieldLike" field) deleteModel=(action "destroyModel" field)}}
         {{/each}}
         <button {{action "addFieldLike" "group" "aggregation" "query.aggregation"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button add-field">
-          <i class="glyphicon glyphicon-plus"></i>
+          {{fa-icon "plus"}}
           Field
         </button>
       </div>

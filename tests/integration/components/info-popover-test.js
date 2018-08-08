@@ -13,14 +13,14 @@ module('Integration | Component | info popover', function(hooks) {
 
   test('it renders', async function(assert) {
     await render(hbs`{{info-popover}}`);
-    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('glyphicon-info-sign'));
+    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('fa-info-circle'));
     assert.equal(this.element.textContent.trim(), '');
     await render(hbs`
       {{#info-popover}}
         template block text
       {{/info-popover}}
     `);
-    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('glyphicon-info-sign'));
+    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('fa-info-circle'));
     assert.equal(this.element.textContent.trim(), 'template block text');
   });
 
@@ -28,7 +28,7 @@ module('Integration | Component | info popover', function(hooks) {
     this.set('asButton', false);
     this.set('mockText', 'foo');
     await render(hbs`{{info-popover isButton=asButton additionalText=mockText}}`);
-    assert.notOk(this.element.querySelector('.info-popover-link').classList.contains('glyphicon-info-sign'));
+    assert.notOk(this.element.querySelector('.info-popover-link').classList.contains('fa-info-circle'));
     assert.equal(this.element.querySelector('.info-link-text').textContent.trim(), 'foo');
   });
 

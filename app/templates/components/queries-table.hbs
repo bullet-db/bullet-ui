@@ -11,7 +11,7 @@
                                                        deleteQueryClick=(action "deleteQueryClick"))
   as |t|}}
   {{t.head onColumnClick=(action "onColumnClick")
-           iconAscending="glyphicon glyphicon-menu-up" iconDescending="glyphicon glyphicon-menu-down"
+           iconAscending="fa fa-chevron-up" iconDescending="fa fa-chevron-down"
            fixed=true}}
 
   {{#t.body canSelect=false canExpand=true expandOnClick=false scrollBuffer=1000
@@ -26,6 +26,6 @@
         {{partial "components/cells/no-queries"}}
       {{/b.no-data}}
     {{/if}}
-    
+
   {{/t.body}}
 {{/light-table}}

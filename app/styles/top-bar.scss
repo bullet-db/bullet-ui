@@ -28,7 +28,7 @@
   .right-panel {
     $right-space: $right-separation-width - 15px;
     .help-button {
-      .glyphicon {
+      .fa {
         font-size: $help-icon-height;
       }
       span {
@@ -74,14 +74,14 @@
       .close-button {
         @extend %close-button;
         position: absolute;
-        padding: 0px 1px 0 2px;
-        margin-top: 2px;
+        padding: 0px 1px 0 1px;
         right: -17px;
         float: right;
         height: 34px;
         width: 34px;
-        font-size: $font-size-extra-large;
-        font-weight: 600;
+        .fa {
+          font-size: $font-size-extra-large;
+        }
       }
     }
 

@@ -26,7 +26,7 @@ module('Integration | Component | simple alert', function(hooks) {
 
   test('it shows a dismiss button', async function(assert) {
     await render(hbs`{{simple-alert}}`);
-    assert.ok(this.element.querySelector('.alert > button i').classList.contains('glyphicon-remove'));
+    assert.ok(this.element.querySelector('.alert > button i').classList.contains('fa-close'));
   });
 
   test('it maps an empty alert type to the proper bootstrap css class', async function(assert) {

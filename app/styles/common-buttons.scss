@@ -46,8 +46,9 @@
   justify-content: center;
   align-items: center;
 
-  .glyphicon {
-    font-weight: 100;
+  .fa {
+    font-size: $font-size-large;
+    margin-bottom: 5px;
   }
   &:hover {
     background-color: $delete-button-hover-color;

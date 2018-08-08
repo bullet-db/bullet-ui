@@ -6,7 +6,7 @@
 {{#if isWindowless}}
   <div class="no-window-section">
     <button {{action "addWindow"}} disabled={{disabled}} class="btn btn-primary btn-xs add-button">
-      <i class="glyphicon glyphicon-plus"></i>
+      {{fa-icon "plus"}}
       Window
     </button>
   </div>
@@ -15,7 +15,7 @@
     <div class="subsection-header">
       <span>Select how your window emits</span>
       <button {{action "deleteWindow"}} disabled={{disabled}} class="btn btn-xs btn-danger pull-right delete-button">
-        <i class="glyphicon glyphicon-remove"></i>
+        {{fa-icon "close"}}
       </button>
     </div>
 
