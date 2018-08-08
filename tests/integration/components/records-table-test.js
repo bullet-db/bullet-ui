@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
-import { module, test, skip } from 'qunit';
+import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
