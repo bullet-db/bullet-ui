@@ -3,24 +3,25 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-.auto-update-wrapper {
+.mode-control-wrapper {
   @import "mode-toggle";
-  .mode-toggle {
-    justify-content: flex-start;
-    .mode {
-      width: 45px;
-      height: 20px;
-      font-size: $font-size-regular-small;
-    }
-  }
-  span {
-    font-size: $font-size-regular;
-    font-color: $inactive-grey;
-    font-family: $font-family-regular;
-  }
   &.no-visibility {
     visibility: hidden;
   }
+  display: flex;
+  .mode-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &.auto-update-wrapper {
+      margin-right: 20px;
+    }
+    &.aggregate-mode-wrapper {
+      // Used to align the window selector
+      margin-right: 90px;
+    }
+  }
+
 }
 
 .window-selector {

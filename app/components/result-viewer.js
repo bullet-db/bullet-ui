@@ -5,7 +5,7 @@
  */
 import Component from '@ember/component';
 import { computed } from '@ember/object';
-import { alias, and, not } from '@ember/object/computed';
+import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
 
@@ -17,6 +17,7 @@ export default Component.extend({
   result: null,
   selectedWindow: null,
   autoUpdate: true,
+  collapseWindows: false,
   // Tweaks the time for the window duration by this to adjust for Ember scheduling delays
   jitter: -300,
 
@@ -29,22 +30,27 @@ export default Component.extend({
   isTimeWindow: alias('query.window.isTimeBased').readOnly(),
   isRecordWindow: not('isTimeWindow').readOnly(),
   isRawRecordWindow: and('isRecordWindow', 'isRaw').readOnly(),
-  aggregateMode: alias('isRawRecordWindow').readOnly(),
+  appendRecordsMode: alias('isRawRecordWindow').readOnly(),
+  aggregateMode: or('appendRecordsMode', 'collapseWindows').readOnly(),
 
-  showAutoUpdate: computed('hasError', 'aggregateMode', 'hasData', function() {
-    return this.get('hasData') && !this.get('hasError') && !this.get('aggregateMode');
+  showAutoUpdate: computed('hasError', 'appendRecordsMode', 'hasData', function() {
+    return this.get('hasData') && !this.get('hasError') && !this.get('appendRecordsMode');
   }),
+
+  showAggregateMode: and('showAutoUpdate', 'isTimeWindow'),
 
   hasError: computed('errorWindow', function() {
     return !isNone(this.get('errorWindow'));
   }).readOnly(),
 
   metadata: computed('hasError', 'autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
-    return this.get('hasError') ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata');
+    let autoUpdate = this.get('autoUpdate');
+    return this.get('hasError') ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata', autoUpdate);
   }).readOnly(),
 
   records: computed('autoUpdate', 'aggregateMode', 'selectedWindow', 'result.windows.[]', function() {
-    return this.get('aggregateMode') ? this.getAllWindowRecords() : this.getSelectedWindow('records');
+    let autoUpdate = this.get('autoUpdate');
+    return this.get('aggregateMode') ? this.getAllWindowRecords() : this.getSelectedWindow('records', autoUpdate);
   }).readOnly(),
 
   queryDuration: computed('query.duration', function() {
@@ -55,12 +61,13 @@ export default Component.extend({
     return this.get('jitter') + (this.get('windowEmitEvery') * 1000);
   }).readOnly(),
 
-  config: computed('result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
+  config: computed('isTimeWindow', 'result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
     return {
       isRaw: this.get('result.isRaw'),
       isReallyRaw: this.get('result.isReallyRaw'),
       isDistribution: this.get('result.isDistribution'),
       isSingleRow: this.get('result.isSingleRow'),
+      isTimeWindow: this.get('isTimeWindow'),
       pivotOptions: this.get('result.pivotOptions')
     };
   }).readOnly(),
@@ -71,9 +78,9 @@ export default Component.extend({
     this.set('autoUpdate', true);
   },
 
-  getSelectedWindow(property) {
+  getSelectedWindow(property, autoUpdate) {
     let windowProperty = this.get(`result.windows.lastObject.${property}`);
-    if (!this.get('autoUpdate')) {
+    if (!autoUpdate) {
       let selectedWindow = this.get('selectedWindow');
       windowProperty = isNone(selectedWindow) ? windowProperty : selectedWindow[property];
     }
@@ -94,6 +101,10 @@ export default Component.extend({
       // Turn On => reset selectedWindow. Turn Off => Last window
       this.set('selectedWindow', autoUpdate ? null : this.get('result.windows.lastObject'));
       this.set('autoUpdate', autoUpdate);
+    },
+
+    changeCollapseWindows(collapseWindows) {
+      this.set('collapseWindows', collapseWindows);
     }
   }
 });

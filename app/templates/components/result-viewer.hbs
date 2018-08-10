@@ -5,22 +5,28 @@
 --}}
 <div class="control-container">
 
-  <div class="auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
-    <span>Show Latest</span>
-    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
+  <div class="mode-control-wrapper">
+    <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
+      <span>Show Latest</span>
+      {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
+    </div>
+    <div class="mode-control aggregate-mode-wrapper {{unless showAggregateMode "no-visibility"}}">
+      <span>Combine Windows</span>
+      {{mode-toggle isToggled=collapseWindows onToggled=(action "changeCollapseWindows")}}
+    </div>
   </div>
 
   {{#unless hasError}}
 
     <div class="window-selector">
-      {{#if isTimeWindow}}
-        <div class="progress-indicator window-progress-indicator">
-          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
-                               retriggerOnChangeIn=numberOfWindows}}
-        </div>
-      {{/if}}
-
       {{#unless aggregateMode}}
+        {{#if isTimeWindow}}
+          <div class="progress-indicator window-progress-indicator">
+            {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
+                                 retriggerOnChangeIn=numberOfWindows}}
+          </div>
+        {{/if}}
+
         {{#power-select selected=selectedWindow options=result.windows
                         placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
                         searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
@@ -30,6 +36,9 @@
           <span class="window-time">{{moment-format window.created 'dddd, hh:mm:ss a'}}</span>
         {{/power-select}}
       {{/unless}}
+    </div>
+
+    <div class="spacer">
     </div>
 
     <div class="progress-indicator query-progress-indicator">
@@ -42,7 +51,7 @@
 {{#if hasData}}
   <div class="information-container window-information">
     <span class="section-header">
-      <h4 class="section-title">Results & Metadata</h4>
+      <h3 class="section-title">Results</h3>
       {{#info-popover title="Results"}}
         {{partial "partials/results-help"}}
       {{/info-popover}}
@@ -55,7 +64,7 @@
   {{#if hasError}}
     {{partial "partials/query-killed"}}
   {{else if hasData}}
-    {{records-viewer records=records metadata=metadata config=config aggregateMode=aggregateMode model=result}}
+    {{records-viewer records=records metadata=metadata config=config model=result aggregateMode=aggregateMode}}
   {{else if isRunningQuery}}
     {{partial "partials/running-query"}}
   {{else}}

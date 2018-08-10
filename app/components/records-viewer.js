@@ -7,7 +7,7 @@ import { merge } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
-import { not } from '@ember/object/computed';
+import { alias, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 

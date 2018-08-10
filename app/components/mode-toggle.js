@@ -9,8 +9,6 @@ import Component from '@ember/component';
 export default Component.extend({
   isToggled: true,
   notToggled: not('isToggled'),
-  toggledText: 'Toggled',
-  notToggledText: 'Not Toggled',
 
   actions: {
     toggle() {

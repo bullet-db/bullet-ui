@@ -18,8 +18,8 @@ export default Component.extend({
   chartType: 'bar',
   config: null,
 
-  simpleMode: true,
-  notSimpleMode: not('simpleMode').readOnly(),
+  notSimpleMode: false,
+  simpleMode: not('notSimpleMode').readOnly(),
   cannotModeSwitch: alias('config.isRaw').readOnly(),
   canModeSwitch: not('cannotModeSwitch').readOnly(),
   pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),

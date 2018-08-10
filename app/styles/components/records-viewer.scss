@@ -16,7 +16,7 @@
     align-items: center;
 
     .records-header {
-      margin-left: 110px;
+      margin-left: 150px;
       color: $records-header-color;
       font-size: $font-size-regular;
       font-weight: $font-weight-strong;
@@ -28,7 +28,7 @@
     .view-controls {
       display: flex;
       justify-content: flex-end;
-      width: 200px;
+      width: 250px;
       .view-control {
         margin-left: 15px;
         border: 2px solid $secondary-button-color;

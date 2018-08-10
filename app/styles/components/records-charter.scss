@@ -4,23 +4,17 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .records-charter {
-  margin: auto;
-
   // Make unselectable
   -moz-user-select: -moz-none;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
 
-  @import 'mode-toggle';
-  .mode-toggle {
-    justify-content: flex-end;
-    margin: 10px 0;
-    .mode {
-      width: 70px;
-    }
+  .pivot-control {
+    @import 'mode-toggle';
+    // margin: 10px 0;
+    float: right;
   }
-
   .visual-container {
     @import 'pivot-table';
   }

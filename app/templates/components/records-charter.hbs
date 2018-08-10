@@ -4,7 +4,10 @@
   See the LICENSE file associated with the project for terms.
  --}}
  {{#if canModeSwitch}}
-   {{mode-toggle isToggled=simpleMode toggledText="Chart" notToggledText="Pivot" onToggled=(action (mut simpleMode))}}
+    <div class="pivot-control">
+      <span>Pivot</span>
+     {{mode-toggle isToggled=notSimpleMode onToggled=(action (mut notSimpleMode))}}
+   </div>
  {{/if}}
  <div class="visual-container">
    {{#if pivotMode}}
