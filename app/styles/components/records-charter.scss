@@ -9,11 +9,12 @@
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  display: flex;
+  flex-direction: column;
 
   .pivot-control {
     @import 'mode-toggle';
-    // margin: 10px 0;
-    float: right;
+    align-self: flex-end;
   }
   .visual-container {
     @import 'pivot-table';

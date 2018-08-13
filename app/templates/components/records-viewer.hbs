@@ -20,7 +20,7 @@
     {{#if enableCharting}}
       <button type="button" class="view-control chart-view {{if showChart "active"}}" {{action "chartMode"}} disabled={{showChart}}>
         {{fa-icon "bar-chart"}}
-        {{#tooltip-on-element}}Show as chart{{/tooltip-on-element}}
+        {{#tooltip-on-element}}Show as bar chart{{/tooltip-on-element}}
       </button>
     {{/if}}
     <button type="button" class="view-control table-view {{if showTable "active"}}" {{action "tableMode"}} disabled={{showTable}}>

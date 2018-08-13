@@ -8,16 +8,18 @@
     <h4>Query Definition</h4>
     {{query-blurb query=query summary=querySnapshot}}
   </div>
-  <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" query bubbles=false}}>
-    Edit
-  </button>
-  {{#if isRunningQuery}}
-    <button class="btn btn-info btn-secondary query-button cancel-button" {{action "cancelClick" query bubbles=false}}>
-      Cancel
+  <div class="query-controls">
+    <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" query bubbles=false}}>
+      {{fa-icon "pencil"}}
     </button>
-  {{else}}
-    <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" query bubbles=false}}>
-      Rerun
-    </button>
-  {{/if}}
+    {{#if isRunningQuery}}
+      <button class="btn btn-info btn-secondary query-button cancel-button" {{action "cancelClick" query bubbles=false}}>
+        {{fa-icon "stop"}}
+      </button>
+    {{else}}
+      <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" query bubbles=false}}>
+        {{fa-icon "repeat"}}
+      </button>
+    {{/if}}
+  </div>
 </div>

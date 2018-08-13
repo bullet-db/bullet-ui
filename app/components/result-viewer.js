@@ -33,15 +33,21 @@ export default Component.extend({
   appendRecordsMode: alias('isRawRecordWindow').readOnly(),
   aggregateMode: or('appendRecordsMode', 'collapseWindows').readOnly(),
 
-  showAutoUpdate: computed('hasError', 'appendRecordsMode', 'hasData', function() {
-    return this.get('hasData') && !this.get('hasError') && !this.get('appendRecordsMode');
+  showData: computed('hasData', 'hasError', function() {
+    return this.get('hasData') && !this.get('hasError');
   }),
-
-  showAggregateMode: and('showAutoUpdate', 'isTimeWindow'),
 
   hasError: computed('errorWindow', function() {
     return !isNone(this.get('errorWindow'));
   }).readOnly(),
+
+  showAutoUpdate: computed('showData', 'aggregateMode', function() {
+    return this.get('showData') && !this.get('aggregateMode');
+  }),
+
+  showAggregateMode: computed('showData', 'isTimeWindow', function () {
+    return this.get('showData') && this.get('isTimeWindow');
+  }),
 
   metadata: computed('hasError', 'autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
     let autoUpdate = this.get('autoUpdate');

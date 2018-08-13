@@ -13,6 +13,6 @@
    {{#if pivotMode}}
      {{pivot-table rows=rows columns=columns initialOptions=pivotOptions onRefresh=(action "saveOptions")}}
    {{else}}
-     {{ember-chart type=chartType data=data options=options}}
+     {{ember-chart type=chartType animate=true data=data options=options}}
    {{/if}}
  </div>

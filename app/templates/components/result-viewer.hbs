@@ -6,14 +6,14 @@
 <div class="control-container">
 
   <div class="mode-control-wrapper">
-    <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
-      <span>Show Latest</span>
-      {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
-    </div>
-    <div class="mode-control aggregate-mode-wrapper {{unless showAggregateMode "no-visibility"}}">
-      <span>Combine Windows</span>
-      {{mode-toggle isToggled=collapseWindows onToggled=(action "changeCollapseWindows")}}
-    </div>
+      <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
+        <span>AutoUpdate</span>
+        {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
+      </div>
+      <div class="mode-control aggregate-mode-wrapper {{unless showAggregateMode "no-visibility"}}">
+        <span>TimeSeries</span>
+        {{mode-toggle isToggled=collapseWindows onToggled=(action "changeCollapseWindows")}}
+      </div>
   </div>
 
   {{#unless hasError}}
@@ -36,9 +36,6 @@
           <span class="window-time">{{moment-format window.created 'dddd, hh:mm:ss a'}}</span>
         {{/power-select}}
       {{/unless}}
-    </div>
-
-    <div class="spacer">
     </div>
 
     <div class="progress-indicator query-progress-indicator">

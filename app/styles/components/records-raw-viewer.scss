@@ -4,14 +4,15 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .records-raw-viewer {
-  @import 'mode-toggle';
   @import 'pretty-json';
+  display: flex;
+  flex-direction: column;
 
-  .mode-toggle {
-    justify-content: flex-end;
-    margin: 10px 0;
-    .mode {
-      width: 70px;
+  .collapse-control {
+    @import 'mode-toggle';
+    align-self: flex-end;
+    .mode-toggle {
+      float: right;
     }
   }
 

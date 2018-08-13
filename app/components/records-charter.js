@@ -109,7 +109,9 @@ export default Component.extend({
     let dataset = {
       label: column,
       data: values,
-      backgroundColor: this.randomColors(values.length)
+      backgroundColor: this.randomColors(values.length),
+      borderColor: this.randomColors(values.length),
+      fill: false
     };
     // Add yAxisID only if we have more than one dataset. More than 2 => Add the first y-axis
     if (index === 1) {
