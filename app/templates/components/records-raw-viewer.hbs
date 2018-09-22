@@ -5,8 +5,9 @@
  --}}
 
 <div class="collapse-control">
-  <span>Collapse</span>
+  <span>Collapsible</span>
   {{mode-toggle isToggled=isToggled onToggled=(action (mut isToggled))}}
+  {{#tooltip-on-element side="left"}}Prettify and make your JSON collapsible{{/tooltip-on-element}}
 </div>
 
  <div class="raw-display">

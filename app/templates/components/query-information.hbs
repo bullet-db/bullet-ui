@@ -11,14 +11,17 @@
   <div class="query-controls">
     <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" query bubbles=false}}>
       {{fa-icon "pencil"}}
+      {{#tooltip-on-element}}Edit your query{{/tooltip-on-element}}
     </button>
     {{#if isRunningQuery}}
       <button class="btn btn-info btn-secondary query-button cancel-button" {{action "cancelClick" query bubbles=false}}>
         {{fa-icon "stop"}}
+        {{#tooltip-on-element}}Cancel your query{{/tooltip-on-element}}
       </button>
     {{else}}
       <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" query bubbles=false}}>
         {{fa-icon "repeat"}}
+        {{#tooltip-on-element}}Rerun your query{{/tooltip-on-element}}
       </button>
     {{/if}}
   </div>

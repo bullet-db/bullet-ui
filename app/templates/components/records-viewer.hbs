@@ -18,7 +18,11 @@
 
   <div class="view-controls">
     {{#if enableCharting}}
-      <button type="button" class="view-control chart-view {{if showChart "active"}}" {{action "chartMode"}} disabled={{showChart}}>
+      <button type="button" class="view-control chart-view line-chart-view {{if showLineChart "active"}}" {{action "lineChartMode"}} disabled={{showLineChart}}>
+        {{fa-icon "line-chart"}}
+        {{#tooltip-on-element}}Show as line chart{{/tooltip-on-element}}
+      </button>
+      <button type="button" class="view-control chart-view bar-chart-view {{if showBarChart "active"}}" {{action "barChartMode"}} disabled={{showBarChart}}>
         {{fa-icon "bar-chart"}}
         {{#tooltip-on-element}}Show as bar chart{{/tooltip-on-element}}
       </button>
@@ -52,8 +56,10 @@
   {{#if showRawData}}
     {{records-raw-viewer data=records}}
   {{else if showTable}}
-    {{records-table appendMode=aggregateMode columnNames=columns rawRows=records}}
-  {{else if showChart}}
-    {{records-charter config=config columns=columns rows=records model=model}}
+    {{records-table appendMode=appendMode timeSeriesMode=timeSeriesMode columnNames=columns rawRows=records}}
+  {{else if showBarChart}}
+    {{records-charter config=config columns=columns rows=records model=model chartType="bar"}}
+  {{else if showLineChart}}
+    {{records-charter config=config columns=columns rows=records model=model chartType="line"}}
   {{/if}}
 </div>

@@ -15,6 +15,9 @@
   .pivot-control {
     @import 'mode-toggle';
     align-self: flex-end;
+    &:focus {
+      outline: none;
+    }
   }
   .visual-container {
     @import 'pivot-table';

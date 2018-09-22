@@ -14,9 +14,13 @@
     .mode-toggle {
       float: right;
     }
+    &:focus {
+      outline: none;
+    }
   }
 
   .raw-display {
+    margin-top: 5px;
     pre {
       background-color: $white;
       overflow: auto;

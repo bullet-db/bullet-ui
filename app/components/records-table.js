@@ -15,8 +15,10 @@ export default Component.extend(PaginatedTable, {
   cellComponent: 'cells/record-entry',
   pageSize: 10,
   appendMode: false,
+  timeSeriesMode: false,
 
   sortedByColumn: null,
+  alreadyReset: false,
 
   // Use natural types in the results
   useDefaultStringExtractor: false,
@@ -36,8 +38,8 @@ export default Component.extend(PaginatedTable, {
 
   init() {
     this._super(...arguments);
-    this.set('table', new Table(this.get('columns')));
     this.set('sortColumn', null);
+    this.resetTable();
   },
 
   didReceiveAttrs() {
@@ -45,10 +47,29 @@ export default Component.extend(PaginatedTable, {
     this.set('rows', this.get('rawRows').map(row => EmberObject.create(row)));
     let sortColumn = this.get('sortColumn');
     let hasSortedColumn = !isNone(sortColumn);
-    this.reset(hasSortedColumn);
+    let alreadyReset = this.get('alreadyReset');
+    let timeSeriesMode = this.get('timeSeriesMode');
+    // If we are switching to timeSeriesMode but have not reset yet, recreate the table
+    if (!alreadyReset && timeSeriesMode) {
+      this.resetTable();
+    }
+    // Reset rows if we have a sorted column or we are switching to timeSeriesMode
+    this.reset(hasSortedColumn || !alreadyReset);
+    /*
+      If timeSeriesMode is going from false to true, alreadyReset was false. So we will force a reset. Update
+      alreadyReset to true now after it is used for resetting, so that on future calls of didReceiveAttrs with
+      timeSeriesMode set to true, we don't reset and just append to the table. When timeSeriesMode goes to false after,
+      alreadyReset will be true and we will set it to false after so that future calls will start this cycle again.
+    */
+    this.set('alreadyReset', timeSeriesMode)
+
     if (hasSortedColumn) {
       this.sortBy(sortColumn.valuePath, sortColumn.ascending ? 'ascending' : 'descending');
     }
     this.addPages();
+  },
+
+  resetTable() {
+    this.set('table', new Table(this.get('columns')));
   }
 });

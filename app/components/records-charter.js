@@ -109,8 +109,8 @@ export default Component.extend({
     let dataset = {
       label: column,
       data: values,
-      backgroundColor: this.randomColors(values.length),
-      borderColor: this.randomColors(values.length),
+      backgroundColor: this.randomColor(),
+      borderColor: this.randomColor(),
       fill: false
     };
     // Add yAxisID only if we have more than one dataset. More than 2 => Add the first y-axis
@@ -131,11 +131,6 @@ export default Component.extend({
     let green = this.randomUpto(255);
     let blue = this.randomUpto(255);
     return `rgb(${red},${green},${blue})`;
-  },
-
-  randomColors(size) {
-    let color = this.randomColor();
-    return new Array(size).fill(color);
   },
 
   isType(row, field, type) {

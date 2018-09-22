@@ -7,7 +7,10 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { isNone } from '@ember/utils';
+import { isEmpty, isNone } from '@ember/utils';
+
+const WINDOW_NUMBER_KEY = 'Window Number';
+const WINDOW_CREATED_KEY = 'Window Created';
 
 export default Component.extend({
   classNames: ['result-viewer'],
@@ -17,10 +20,19 @@ export default Component.extend({
   result: null,
   selectedWindow: null,
   autoUpdate: true,
-  collapseWindows: false,
+  timeSeriesMode: false,
   // Tweaks the time for the window duration by this to adjust for Ember scheduling delays
   jitter: -300,
 
+  // Cache to store all the records when aggregating records across windows. Computed properties to recompute
+  // all the records is not a good option. This is an alternative to observers. These properties are modified by
+  // computed properties and shouldn't be dependencies of other properties. This is currently reset when receiving
+  // new attrs or when turning on timeSeriesMode (not on appendRecordsMode since that can't change without changing
+  // the query).
+  recordsCache: [],
+  windowsInCache: 0,
+
+  // Computed Properties
   isRunningQuery: alias('querier.isRunningQuery').readOnly(),
   isRaw: alias('result.isRaw').readOnly(),
   errorWindow: alias('result.errorWindow').readOnly(),
@@ -31,11 +43,11 @@ export default Component.extend({
   isRecordWindow: not('isTimeWindow').readOnly(),
   isRawRecordWindow: and('isRecordWindow', 'isRaw').readOnly(),
   appendRecordsMode: alias('isRawRecordWindow').readOnly(),
-  aggregateMode: or('appendRecordsMode', 'collapseWindows').readOnly(),
+  aggregateMode: or('appendRecordsMode', 'timeSeriesMode').readOnly(),
 
   showData: computed('hasData', 'hasError', function() {
     return this.get('hasData') && !this.get('hasError');
-  }),
+  }).readOnly(),
 
   hasError: computed('errorWindow', function() {
     return !isNone(this.get('errorWindow'));
@@ -43,20 +55,25 @@ export default Component.extend({
 
   showAutoUpdate: computed('showData', 'aggregateMode', function() {
     return this.get('showData') && !this.get('aggregateMode');
-  }),
+  }).readOnly(),
 
-  showAggregateMode: computed('showData', 'isTimeWindow', function () {
-    return this.get('showData') && this.get('isTimeWindow');
-  }),
+  showTimeSeries: and('showData', 'isTimeWindow').readOnly(),
 
   metadata: computed('hasError', 'autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
     let autoUpdate = this.get('autoUpdate');
     return this.get('hasError') ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata', autoUpdate);
   }).readOnly(),
 
-  records: computed('autoUpdate', 'aggregateMode', 'selectedWindow', 'result.windows.[]', function() {
-    let autoUpdate = this.get('autoUpdate');
-    return this.get('aggregateMode') ? this.getAllWindowRecords() : this.getSelectedWindow('records', autoUpdate);
+  records: computed('appendRecordsMode', 'timeSeriesMode', 'result.windows.[]', 'selectedWindow', 'autoUpdate', function() {
+    // Deliberately not depending on the cache
+    if (this.get('appendRecordsMode')) {
+      return this.getAllWindowRecords();
+    } else if (this.get('timeSeriesMode')) {
+      let windows =  this.getTimeSeriesRecords(this.get('windowsCache'), WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY);
+      return windows;
+    } else {
+      return this.getSelectedWindow('records', this.get('autoUpdate'));
+    }
   }).readOnly(),
 
   queryDuration: computed('query.duration', function() {
@@ -67,14 +84,15 @@ export default Component.extend({
     return this.get('jitter') + (this.get('windowEmitEvery') * 1000);
   }).readOnly(),
 
-  config: computed('isTimeWindow', 'result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
+  config: computed('timeSeriesMode', 'result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
     return {
       isRaw: this.get('result.isRaw'),
       isReallyRaw: this.get('result.isReallyRaw'),
       isDistribution: this.get('result.isDistribution'),
       isSingleRow: this.get('result.isSingleRow'),
-      isTimeWindow: this.get('isTimeWindow'),
-      pivotOptions: this.get('result.pivotOptions')
+      pivotOptions: this.get('result.pivotOptions'),
+      keyMapping: { number: WINDOW_NUMBER_KEY, created: WINDOW_CREATED_KEY },
+      isTimeSeries: this.get('timeSeriesMode')
     };
   }).readOnly(),
 
@@ -82,6 +100,8 @@ export default Component.extend({
     this._super(...arguments);
     this.set('selectedWindow', null);
     this.set('autoUpdate', true);
+    this.set('timeSeriesMode', false);
+    this.resetCache();
   },
 
   getSelectedWindow(property, autoUpdate) {
@@ -94,7 +114,46 @@ export default Component.extend({
   },
 
   getAllWindowRecords() {
-    return this.get('result.windows').getEach('records').reduce((p, c) => p.concat(c), []);
+    // Add all unadded windows' records to the cache and return a new copy
+    return this.updateRecordsCache((c, w) => c.push(...w.records));
+  },
+
+  getTimeSeriesRecords(cache, numberKey, createdKey) {
+    // Add all unadded windows' records with injected dimensions to the cache and return a new copy
+    return this.updateRecordsCache(this.addNewTimeSeriesWindow(numberKey, createdKey))
+  },
+
+  addNewTimeSeriesWindow(numberKey, createdKey) {
+    return (cache, windowEntry) => {
+      let extraColumns = {
+        [numberKey]:  windowEntry.sequence ? windowEntry.sequence : windowEntry.position,
+        [createdKey]: windowEntry.created
+      };
+      // Copy the extra columns and the columns from the record into a new object
+      windowEntry.records.forEach(record => cache.push(Object.assign({ }, extraColumns, record)));
+    };
+  },
+
+  updateRecordsCache(addWindowRecordsFunction) {
+    let cache = this.get('recordsCache');
+    let windows = this.get('result.windows');
+    let windowsInCache = this.get('windowsInCache');
+    let allWindows = windows.length;
+    if (windowsInCache < windows.length) {
+      // Start at X in windows if there are X windows in cache (at positions 0 - X-1)
+      for (let i = windowsInCache; i < allWindows; ++i) {
+        // Expects cache to be updated
+        addWindowRecordsFunction(cache, windows[i]);
+      }
+      this.set('windowsInCache', allWindows);
+    }
+    // Have to return a copy of the cache to cache bust the computed property
+    return [].concat(cache);
+  },
+
+  resetCache() {
+    this.set('recordsCache', []);
+    this.set('windowsInCache', 0);
   },
 
   actions: {
@@ -109,8 +168,12 @@ export default Component.extend({
       this.set('autoUpdate', autoUpdate);
     },
 
-    changeCollapseWindows(collapseWindows) {
-      this.set('collapseWindows', collapseWindows);
+    changeTimeSeriesMode(timeSeriesMode) {
+      // Reset cache if we are turning timeSeriesMode on
+      if (timeSeriesMode) {
+        this.resetCache();
+      }
+      this.set('timeSeriesMode', timeSeriesMode);
     }
   }
 });

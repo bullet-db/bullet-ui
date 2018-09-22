@@ -9,10 +9,12 @@
       <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
         <span>AutoUpdate</span>
         {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
+        {{#tooltip-on-element side="right"}}Automatically show the latest window when it arrives{{/tooltip-on-element}}
       </div>
-      <div class="mode-control aggregate-mode-wrapper {{unless showAggregateMode "no-visibility"}}">
+      <div class="mode-control time-series-wrapper {{unless showTimeSeries "no-visibility"}}">
         <span>TimeSeries</span>
-        {{mode-toggle isToggled=collapseWindows onToggled=(action "changeCollapseWindows")}}
+        {{mode-toggle isToggled=timeSeriesMode onToggled=(action "changeTimeSeriesMode")}}
+        {{#tooltip-on-element side="right"}}Combine data using your last windows as points on a timeline{{/tooltip-on-element}}
       </div>
   </div>
 
@@ -24,7 +26,7 @@
           <div class="progress-indicator window-progress-indicator">
             {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
                                  retriggerOnChangeIn=numberOfWindows}}
-          </div>
+        </div>
         {{/if}}
 
         {{#power-select selected=selectedWindow options=result.windows
@@ -61,7 +63,8 @@
   {{#if hasError}}
     {{partial "partials/query-killed"}}
   {{else if hasData}}
-    {{records-viewer records=records metadata=metadata config=config model=result aggregateMode=aggregateMode}}
+    {{records-viewer records=records metadata=metadata config=config appendMode=aggregateMode
+                     timeSeriesMode=timeSeriesMode model=result}}
   {{else if isRunningQuery}}
     {{partial "partials/running-query"}}
   {{else}}

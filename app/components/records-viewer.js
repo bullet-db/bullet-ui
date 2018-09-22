@@ -14,17 +14,21 @@ import Component from '@ember/component';
 export default Component.extend({
   fileSaver: service(),
   classNames: ['records-viewer'],
-  aggregateMode: false,
   showRawData: false,
   showTable: false,
-  showChart: false,
+  showBarChart: false,
+  showLineChart: false,
   config: null,
   metadata: null,
   records: null,
   fileName: 'results',
   model: null,
+  appendMode: false,
+  timeSeriesMode: false,
 
-  enableCharting: not('config.isSingleRow').readOnly(),
+  enableCharting: computed('config.isSingleRow', 'timeSeriesMode', function() {
+    return !this.get('config.isSingleRow') || this.get('timeSeriesMode');
+  }),
 
   columns: computed('records', function() {
     return A(this.extractUniqueColumns(this.get('records')));
@@ -124,7 +128,8 @@ export default Component.extend({
   flipTo(field) {
     this.set('showRawData', false);
     this.set('showTable', false);
-    this.set('showChart', false);
+    this.set('showBarChart', false);
+    this.set('showLineChart', false);
     this.set(field, true);
   },
 
@@ -137,8 +142,12 @@ export default Component.extend({
       this.flipTo('showTable');
     },
 
-    chartMode() {
-      this.flipTo('showChart');
+    barChartMode() {
+      this.flipTo('showBarChart');
+    },
+
+    lineChartMode() {
+      this.flipTo('showLineChart');
     },
 
     downloadAsJSON() {

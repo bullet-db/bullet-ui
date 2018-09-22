@@ -7,6 +7,7 @@
     <div class="pivot-control">
       <span>Pivot</span>
      {{mode-toggle isToggled=notSimpleMode onToggled=(action (mut notSimpleMode))}}
+     {{#tooltip-on-element side="left"}}Slice, dice and visualize your data in Pivot mode{{/tooltip-on-element}}
    </div>
  {{/if}}
  <div class="visual-container">
