@@ -7,7 +7,7 @@ import { merge } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
-import { alias, not } from '@ember/object/computed';
+import { alias, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
@@ -26,9 +26,12 @@ export default Component.extend({
   appendMode: false,
   timeSeriesMode: false,
 
+
   enableCharting: computed('config.isSingleRow', 'timeSeriesMode', function() {
     return !this.get('config.isSingleRow') || this.get('timeSeriesMode');
   }),
+
+  isShowingChart: or('showBarChart', 'showLineChart'),
 
   columns: computed('records', function() {
     return A(this.extractUniqueColumns(this.get('records')));
@@ -60,6 +63,14 @@ export default Component.extend({
     if (this.get('config.isReallyRaw')) {
       this.set('showRawData', true);
     } else {
+      this.set('showTable', true);
+    }
+  },
+
+  didUpdateAttrs() {
+    this._super(...arguments);
+    // If we should suddenly stop showing charts but we were showing a chart, go back to table
+    if (this.get('isShowingChart') && !this.get('enableCharting')) {
       this.set('showTable', true);
     }
   },

@@ -49,10 +49,13 @@ export default Component.extend(PaginatedTable, {
     let hasSortedColumn = !isNone(sortColumn);
     let alreadyReset = this.get('alreadyReset');
     let timeSeriesMode = this.get('timeSeriesMode');
-    // If we are switching to timeSeriesMode but have not reset yet, recreate the table
-    if (!alreadyReset && timeSeriesMode) {
+
+    // If we are switching to timeSeriesMode but have not reset yet or if we have reset but are switching off
+    // timeSeriesMode (to remove the old extra columns), recreate the table
+    if ((!alreadyReset && timeSeriesMode) || (alreadyReset && !timeSeriesMode)) {
       this.resetTable();
     }
+
     // Reset rows if we have a sorted column or we are switching to timeSeriesMode
     this.reset(hasSortedColumn || !alreadyReset);
     /*

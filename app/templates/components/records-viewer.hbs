@@ -57,9 +57,11 @@
     {{records-raw-viewer data=records}}
   {{else if showTable}}
     {{records-table appendMode=appendMode timeSeriesMode=timeSeriesMode columnNames=columns rawRows=records}}
-  {{else if showBarChart}}
-    {{records-charter config=config columns=columns rows=records model=model chartType="bar"}}
-  {{else if showLineChart}}
-    {{records-charter config=config columns=columns rows=records model=model chartType="line"}}
+  {{else if enableCharting}}
+    {{#if showBarChart}}
+      {{records-charter timeSeriesMode=timeSeriesMode config=config columns=columns rows=records model=model chartType="bar"}}
+    {{else if showLineChart}}
+      {{records-charter timeSeriesMode=timeSeriesMode config=config columns=columns rows=records model=model chartType="line"}}
+    {{/if}}
   {{/if}}
 </div>

@@ -9,8 +9,8 @@ import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isEmpty, isNone } from '@ember/utils';
 
-const WINDOW_NUMBER_KEY = 'Window Number';
-const WINDOW_CREATED_KEY = 'Window Created';
+export const WINDOW_NUMBER_KEY = 'Window Number';
+export const WINDOW_CREATED_KEY = 'Window Created';
 
 export default Component.extend({
   classNames: ['result-viewer'],
@@ -84,15 +84,13 @@ export default Component.extend({
     return this.get('jitter') + (this.get('windowEmitEvery') * 1000);
   }).readOnly(),
 
-  config: computed('timeSeriesMode', 'result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
+  config: computed('result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
     return {
       isRaw: this.get('result.isRaw'),
       isReallyRaw: this.get('result.isReallyRaw'),
       isDistribution: this.get('result.isDistribution'),
       isSingleRow: this.get('result.isSingleRow'),
-      pivotOptions: this.get('result.pivotOptions'),
-      keyMapping: { number: WINDOW_NUMBER_KEY, created: WINDOW_CREATED_KEY },
-      isTimeSeries: this.get('timeSeriesMode')
+      pivotOptions: this.get('result.pivotOptions')
     };
   }).readOnly(),
 
@@ -169,9 +167,12 @@ export default Component.extend({
     },
 
     changeTimeSeriesMode(timeSeriesMode) {
-      // Reset cache if we are turning timeSeriesMode on
+      // Reset cache if we are turning timeSeriesMode on. We don't need to do that for if we aren't in timeSeriesMode
+      // because appendRecordsMode is only active for record based windows (mutually exclusive from time series)
       if (timeSeriesMode) {
         this.resetCache();
+        this.set('autoUpdate', true);
+        this.set('selectedWindow', null);
       }
       this.set('timeSeriesMode', timeSeriesMode);
     }
