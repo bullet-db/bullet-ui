@@ -9,26 +9,29 @@
       <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
         <span>AutoUpdate</span>
         {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
-        {{#tooltip-on-element side="right"}}Automatically show the latest window when it arrives{{/tooltip-on-element}}
+        {{#tooltip-on-element side="right"}}Automatically show the latest data when it arrives{{/tooltip-on-element}}
       </div>
       <div class="mode-control time-series-wrapper {{unless showTimeSeries "no-visibility"}}">
         <span>TimeSeries</span>
         {{mode-toggle isToggled=timeSeriesMode onToggled=(action "changeTimeSeriesMode")}}
-        {{#tooltip-on-element side="right"}}Combine data using your last windows as points on a timeline{{/tooltip-on-element}}
+        {{#tooltip-on-element side="right"}}Combine data across your windows against the first numeric column in your data{{/tooltip-on-element}}
       </div>
   </div>
 
   {{#unless hasError}}
 
     <div class="window-selector">
-      {{#unless aggregateMode}}
+      {{#unless appendRecordsMode}}
         {{#if isTimeWindow}}
           <div class="progress-indicator window-progress-indicator">
             {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
                                  retriggerOnChangeIn=numberOfWindows}}
-        </div>
+            {{#tooltip-on-element side="top"}}Your next estimated window arrival time{{/tooltip-on-element}}
+          </div>
         {{/if}}
+      {{/unless}}
 
+      {{#unless aggregateMode}}
         {{#power-select selected=selectedWindow options=result.windows
                         placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
                         searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
@@ -42,6 +45,7 @@
 
     <div class="progress-indicator query-progress-indicator">
       {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
+      {{#tooltip-on-element side="left"}}How long your query has been running compared to its total duration{{/tooltip-on-element}}
     </div>
 
   {{/unless}}

@@ -53,8 +53,8 @@ export default Component.extend({
     return !isNone(this.get('errorWindow'));
   }).readOnly(),
 
-  showAutoUpdate: computed('showData', 'aggregateMode', function() {
-    return this.get('showData') && !this.get('aggregateMode');
+  showAutoUpdate: computed('showData', 'appendRecordsMode', function() {
+    return this.get('showData') && !this.get('appendRecordsMode');
   }).readOnly(),
 
   showTimeSeries: and('showData', 'isTimeWindow').readOnly(),
@@ -68,11 +68,12 @@ export default Component.extend({
     // Deliberately not depending on the cache
     if (this.get('appendRecordsMode')) {
       return this.getAllWindowRecords();
-    } else if (this.get('timeSeriesMode')) {
-      let windows =  this.getTimeSeriesRecords(this.get('windowsCache'), WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY);
-      return windows;
+    }
+    let autoUpdate = this.get('autoUpdate');
+    if (this.get('timeSeriesMode')) {
+      return autoUpdate ? this.getTimeSeriesRecords(this.get('windowsCache'), WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY) : this.get('recordsCache');
     } else {
-      return this.getSelectedWindow('records', this.get('autoUpdate'));
+      return this.getSelectedWindow('records', autoUpdate);
     }
   }).readOnly(),
 
@@ -162,8 +163,8 @@ export default Component.extend({
 
     changeAutoUpdate(autoUpdate) {
       // Turn On => reset selectedWindow. Turn Off => Last window
-      this.set('selectedWindow', autoUpdate ? null : this.get('result.windows.lastObject'));
       this.set('autoUpdate', autoUpdate);
+      this.set('selectedWindow', autoUpdate ? null : this.get('result.windows.lastObject'));
     },
 
     changeTimeSeriesMode(timeSeriesMode) {
@@ -171,7 +172,6 @@ export default Component.extend({
       // because appendRecordsMode is only active for record based windows (mutually exclusive from time series)
       if (timeSeriesMode) {
         this.resetCache();
-        this.set('autoUpdate', true);
         this.set('selectedWindow', null);
       }
       this.set('timeSeriesMode', timeSeriesMode);

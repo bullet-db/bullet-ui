@@ -65,6 +65,9 @@
         .download  {
           box-shadow: none;
         }
+        &:focus {
+          outline: none;
+        }
         .download-options {
           left: -50px;
           top: 40px;

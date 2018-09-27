@@ -50,11 +50,17 @@
       height: 5px !important;
       width: $width !important;
     }
+    &:focus {
+      outline: none;
+    }
   }
 }
 
 .query-progress-indicator {
   margin-bottom: $bottom-spacing;
+  &:focus {
+    outline: none;
+  }
   svg {
     height: 70px !important;
     width: 70px !important;
