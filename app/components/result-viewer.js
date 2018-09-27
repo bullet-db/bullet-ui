@@ -172,6 +172,7 @@ export default Component.extend({
       // because appendRecordsMode is only active for record based windows (mutually exclusive from time series)
       if (timeSeriesMode) {
         this.resetCache();
+        this.updateRecordsCache(this.addNewTimeSeriesWindow(WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY))
         this.set('selectedWindow', null);
       }
       this.set('timeSeriesMode', timeSeriesMode);
