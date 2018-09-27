@@ -13,7 +13,9 @@
  <div class="visual-container">
    {{#if pivotMode}}
      {{pivot-table rows=rows columns=columns initialOptions=pivotOptions onRefresh=(action "saveOptions")}}
+   {{else if timeSeriesMode}}
+     {{ember-chart type=chartType animate=true data=timeSeriesData options=timeSeriesOptions}}
    {{else}}
-     {{ember-chart type=chartType animate=true data=data options=options}}
+     {{ember-chart type=chartType animate=true data=regularData options=regularOptions}}
    {{/if}}
  </div>

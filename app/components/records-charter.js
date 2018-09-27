@@ -20,16 +20,16 @@ export default Component.extend({
   rows: null,
   chartType: 'bar',
   config: null,
-  timeSeriesMode: false,
 
+  timeSeriesMode: false,
+  regularMode: not('timeSeriesMode').readOnly(),
   notSimpleMode: false,
   simpleMode: not('notSimpleMode').readOnly(),
   cannotModeSwitch: alias('config.isRaw').readOnly(),
   canModeSwitch: not('cannotModeSwitch').readOnly(),
   pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),
   pivotOptions: computed('config.pivotOptions', function() {
-    let options = this.get('config.pivotOptions') || '{}';
-    return JSON.parse(options);
+    return JSON.parse(this.get('config.pivotOptions') || '{}');
   }).readOnly(),
 
   sampleRow: computed('rows', 'columns', function() {
@@ -47,16 +47,17 @@ export default Component.extend({
     return typicalRow;
   }).readOnly(),
 
-  timeSeriesMetric: computed('sampleRow', 'columns', function() {
-    let { sampleRow, columns } = this.getProperties('sampleRow', 'columns');
-    let fieldIndex = columns.findIndex(c => this.isType(sampleRow, c, 'number'));
-    return columns.get(fieldIndex);
+  //////////////////////////////////////////////// Regular Chart Items  //////////////////////////////////////////////
+
+  regularOptions: computed('regularDependentColumns', function() {
+    if (this.get('regularDependentColumns.length') > 1) {
+      return {
+        scales: { yAxes: [{ position: 'left', id: '0' }, { position: 'right', id: '1' }] }
+      };
+    }
   }).readOnly(),
 
-  independentColumns: computed('config', 'timeSeriesMode', 'sampleRow', 'columns', function() {
-    if (this.get('timeSeriesMode')) {
-      return A([WINDOW_CREATED_KEY]);
-    }
+  regularIndependentColumns: computed('config', 'sampleRow', 'columns', function() {
     let columns = this.get('columns');
     if (this.get('config.isDistribution')) {
       return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
@@ -66,14 +67,8 @@ export default Component.extend({
     return A(columns.filter(c => this.isType(sampleRow, c, 'string')));
   }).readOnly(),
 
-  dependentColumns: computed('config', 'sampleRow', 'columns', 'timeSeriesMode', 'timeSeriesMetric', function() {
+  regularDependentColumns: computed('config', 'sampleRow', 'columns', function() {
     let columns = this.get('columns');
-    if (this.get('timeSeriesMode')) {
-      let onlyMetric = this.get('timeSeriesMetric');
-      // For time series data, all other columns besides the metric and the injected window keys make up unique time lines
-      // If there are no such columns, this is empty.
-      return A(columns.filter(c => !this.isAny(c, WINDOW_CREATED_KEY, WINDOW_NUMBER_KEY, onlyMetric)));
-    }
     if (this.get('config.isDistribution')) {
       return A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }
@@ -82,88 +77,121 @@ export default Component.extend({
     return A(columns.filter(c => this.isType(sampleRow, c, 'number')));
   }).readOnly(),
 
-  scales: computed('timeSeriesMode', 'dependentColumns', function() {
-    // No need for more than one Y Axis
-    if (this.get('timeSeriesMode')) {
-      return {
-        scales: { xAxes: [{ type: 'time' }] }
-      };
-    }
-    if (this.get('dependentColumns.length') > 1) {
-      return {
-        scales: { yAxes: [{ position: 'left', id: '0' }, { position: 'right', id: '1' }] }
-      };
-    }
-  }).readOnly(),
-
-  defaultOptions: computed('timeSeriesMode', function() {
-    let defaults = { };
-    if (this.get('timeSeriesMode')) {
-      defaults = {
-        animation: { duration: 0 },
-        hover: { animationDuration: 0 },
-        responsiveAnimationDuration: 0,
-        elements: {
-          line: { tension: 0 }
-        }
-      };
-    }
-    return defaults;
-  }).readOnly(),
-
-  options: computed('defaultOptions', 'scales', function() {
-    return Object.assign({ }, this.get('defaultOptions'), this.get('scales'));
-  }).readOnly(),
-
-  labels: computed('independentColumns', 'rows', function() {
+  regularLabels: computed('regularIndependentColumns', 'rows', function() {
     // Only one independent column for now
     let rows = this.get('rows');
+    let columns = this.get('regularIndependentColumns');
     // [ [column1 values...], [column2 values...], ...]
-    let valuesList = this.get('independentColumns').map(column => this.getColumnValues(column, rows));
+    let valuesList = columns.map(column => this.getColumnValues(column, rows));
     // valuesList won't be empty because all non-Raw aggregations will have at least one string field
     return this.zip(valuesList);
   }).readOnly(),
 
-  datasets: computed('dependentColumns', 'rows', 'timeSeriesMode', 'timeSeriesMetric', function() {
-    let dependentColumns = this.get('dependentColumns');
+  regularDatasets: computed('regularDependentColumns', 'rows', function() {
     let rows = this.get('rows');
-    if (this.get('timeSeriesMode')) {
-      let metricColumn = this.get('timeSeriesMetric');
-      return this.timeSeriesDatasets(metricColumn, dependentColumns, rows);
+    return this.get('regularDependentColumns').map((column, i) => this.columnarDataset(column, rows, i));
+  }).readOnly(),
+
+  regularData: computed('regularLabels', 'regularDatasets', function() {
+    return { labels: this.get('regularLabels'), datasets: this.get('regularDatasets') };
+  }).readOnly(),
+
+  /////////////////////////////////////////////// TimeSeries Chart Items  //////////////////////////////////////////////
+
+  timeSeriesIndependentColumn: WINDOW_CREATED_KEY,
+  timeSeriesWindowColumn: WINDOW_NUMBER_KEY,
+
+  timeSeriesOptions: {
+    scales: { xAxes: [{ type: 'time' }] },
+    animation: { duration: 0 },
+    hover: { animationDuration: 0 },
+    responsiveAnimationDuration: 0,
+    elements: {
+      line: { tension: 0 }
     }
-    return dependentColumns.map((c, i) => this.columnarDataset(c, rows, i));
+  },
+
+  timeSeriesMetric: computed('sampleRow', 'columns', function() {
+    let { sampleRow, columns } = this.getProperties('sampleRow', 'columns');
+    // Find the first numeric field
+    let fieldIndex = columns.findIndex(c => this.isType(sampleRow, c, 'number'));
+    return columns.get(fieldIndex);
   }).readOnly(),
 
-  data: computed('labels', 'datasets', function() {
-    return {
-      labels: this.get('labels'),
-      datasets: this.get('datasets')
-    };
+  timeSeriesDependentColumns: computed('columns', 'timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'timeSeriesMetric', function() {
+    let columns = this.get('columns');
+    let independentColumn = this.get('timeSeriesIndependentColumn');
+    let windowColumn = this.get('timeSeriesWindowColumn');
+    let metricColumn = this.get('timeSeriesMetric');
+    // For time series data, all other columns besides the metric and the injected window keys make up
+    // unique time lines. If there are no such columns, this is empty.
+    return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn)));
+  }),
+
+  timeSeriesLabels: computed('timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'rows', function() {
+    let labelColumn = this.get('timeSeriesIndependentColumn');
+    let windowColumn = this.get('timeSeriesWindowColumn');
+    // Map preserves insertion order
+    let labels = [];
+    let windows = new Map();
+    let timeLabels = this.get('rows').forEach(row => windows.set(row[windowColumn], row[labelColumn]));
+    windows.forEach(v => labels.push(v));
+    return labels;
   }).readOnly(),
 
-  //////////////////////////////////////////////////// Helpers //////////////////////////////////////////////////
-
-  timeSeriesDatasets(metricColumn, columns, rows) {
+  timeSeriesDatasets: computed('timeSeriesMetric', 'timeSeriesWindowColumn', 'timeSeriesDependentColumns', 'rows', function() {
+    let metricColumn = this.get('timeSeriesMetric');
+    let columns = this.get('timeSeriesDependentColumns');
+    let rows = this.get('rows');
     // If no columns, then the metricColumn is the only dataset.
     if (isEmpty(columns)) {
       return [this.timeSeriesDataset(metricColumn, rows.map(row => row[metricColumn]))];
     }
-
+    let windows = this.groupTimeSeriesData(rows, columns, this.get('timeSeriesWindowColumn'), metricColumn);
     let datasets =  { };
     // If a dataset (a unique set of values for the columns) does not have a timeseries already. Generate one by
-    // scanning all rows. This is n^2 in rows. However, if windows share the same values for rows, it should be n
+    // scanning all rows. This is n*w (rows * windows). However, if all or most windows contain the dataset in its
+    // rows, it should be ~n instead.
+    // One value per window in windows - a Map of Maps. Add null if the values map per window does not have one for
+    // dataset. Values per dataset look like: [ 13, null, -2, null, ...], where its length === number of windows
     rows.forEach(row => {
-      // Generate a name for the dataset using all the row values in column order
+      // Generate a name using all the row values in column order. Nothing to do if this dataset has already been populated
       let dataset = this.getJoinedRowValues(columns, row);
-      // Nothing to do if this dataset has already been populated
       if (!isEmpty(datasets[dataset])) {
         return;
       }
-      // Add nulls if row does not have the same lineName for its values: [ 13, null, null, -2, null, ...]
-      let values = rows.map(row => isEqual(dataset, this.getJoinedRowValues(columns, row)) ? row[metricColumn] : null);
+      let values = []
+      windows.forEach(valueMap => values.push(valueMap.has(dataset) ? valueMap.get(dataset) : null));
       datasets[dataset] = this.timeSeriesDataset(dataset, values);
-    })
+    });
     return Object.keys(datasets).map(dataset => datasets[dataset]);
+  }).readOnly(),
+
+  timeSeriesData: computed('timeSeriesLabels', 'timeSeriesDatasets', function() {
+    return { labels: this.get('timeSeriesLabels'), datasets: this.get('timeSeriesDatasets') };
+  }).readOnly(),
+
+  //////////////////////////////////////////////////// Helpers //////////////////////////////////////////////////
+
+  // This goes over the rows and builds a Map of Maps where each first level contains all the unique groupKeys
+  // and each second level contains all the unique dataset names and its one metric value (per group).
+  groupTimeSeriesData(rows, columns, groupKey, metricKey) {
+    let grouped = new Map();
+    // Since rows are sorted by groupKey, we will insert in groupKey order
+    rows.forEach(row => {
+      let groupName = row[groupKey];
+      let dataset = this.getJoinedRowValues(columns, row);
+      let metricValue = row[metricKey];
+      let group = grouped.get(groupName);
+      // No definition for nested Map, create and insert now to keep insertion order).
+      if (isEmpty(group)) {
+        group = new Map();
+        grouped.set(groupName, group);
+      }
+      // Don't care about insertion order in nested Map
+      group.set(dataset, metricValue);
+    });
+    return grouped;
   },
 
   timeSeriesDataset(datasetName, values) {
@@ -173,7 +201,6 @@ export default Component.extend({
       data: values,
       backgroundColor: this.fixedColor(datasetName),
       borderColor: this.fixedColor(datasetName),
-      spanGaps: true,
       fill: false
     };
   },

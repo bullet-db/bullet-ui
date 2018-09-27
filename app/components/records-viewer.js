@@ -67,11 +67,11 @@ export default Component.extend({
     }
   },
 
-  didUpdateAttrs() {
+  didReceiveAttrs() {
     this._super(...arguments);
     // If we should suddenly stop showing charts but we were showing a chart, go back to table
     if (this.get('isShowingChart') && !this.get('enableCharting')) {
-      this.set('showTable', true);
+      this.flipTo('showTable');
     }
   },
 
