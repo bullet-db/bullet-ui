@@ -71,7 +71,7 @@ export default Component.extend({
     }
     let autoUpdate = this.get('autoUpdate');
     if (this.get('timeSeriesMode')) {
-      return autoUpdate ? this.getTimeSeriesRecords(this.get('windowsCache'), WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY) : this.get('recordsCache');
+      return autoUpdate ? this.getTimeSeriesRecords(WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY) : this.get('recordsCache');
     } else {
       return this.getSelectedWindow('records', autoUpdate);
     }
@@ -117,7 +117,7 @@ export default Component.extend({
     return this.updateRecordsCache((c, w) => c.push(...w.records));
   },
 
-  getTimeSeriesRecords(cache, numberKey, createdKey) {
+  getTimeSeriesRecords(numberKey, createdKey) {
     // Add all unadded windows' records with injected dimensions to the cache and return a new copy
     return this.updateRecordsCache(this.addNewTimeSeriesWindow(numberKey, createdKey))
   },
