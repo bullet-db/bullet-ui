@@ -111,10 +111,15 @@ export default Component.extend({
     }
   },
 
-  timeSeriesMetric: computed('sampleRow', 'columns', function() {
+  timeSeriesMetric: computed('config', 'sampleRow', 'columns', function() {
     let { sampleRow, columns } = this.getProperties('sampleRow', 'columns');
-    // Find the first numeric field
-    let fieldIndex = columns.findIndex(c => this.isType(sampleRow, c, 'number'));
+    let fieldIndex;
+    if (this.get('config.isDistribution')) {
+      fieldIndex = columns.findIndex(c => isEqual(c, 'Count') || isEqual(c, 'Value'));
+    } else {
+      // Find the first numeric field
+      fieldIndex = columns.findIndex(c => this.isType(sampleRow, c, 'number'));
+    }
     return columns.get(fieldIndex);
   }).readOnly(),
 
@@ -196,11 +201,12 @@ export default Component.extend({
 
   timeSeriesDataset(datasetName, values) {
     // Picks the same color deterministically for a datasetName
+    let color = this.fixedColor(datasetName);
     return {
       label: datasetName,
       data: values,
-      backgroundColor: this.fixedColor(datasetName),
-      borderColor: this.fixedColor(datasetName),
+      backgroundColor: color,
+      borderColor: color,
       fill: false
     };
   },
@@ -240,7 +246,9 @@ export default Component.extend({
     return this.join(columns.map(column => row[column]), delimiter);
   },
 
-  fixedColor(string) {
+  fixedColor(atom) {
+    // Multiply by a large prime if number. Then stick the result into a string regardless.
+    let string = `${isEqual(typeOf(atom), 'number') ? atom * 104729 : atom}`;
     let hash = this.hash(string);
     let colors = [];
     for (let i = 0; i <= 2; ++i, hash = hash >> 8) {
