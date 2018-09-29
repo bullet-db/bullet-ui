@@ -6,6 +6,35 @@
 .records-viewer {
   $records-header-color: #00C877;
 
+  %icon-control {
+    margin-left: 15px;
+    border: 2px solid $secondary-button-color;
+    border-radius: $button-radius-circle;
+    color: $white;
+    i {
+      color: $secondary-button-color;
+    }
+    text-align: center;
+    background-color: $white;
+    padding: 0;
+
+    &:not(.active):hover {
+      border-color: $secondary-button-hover-color;
+      i, span {
+        color: $secondary-button-hover-color;
+      }
+    }
+    &:focus {
+      outline: none;
+    }
+    &.active {
+      background-color: $secondary-button-color;
+      i, span {
+        color: $white;
+      }
+    }
+  }
+
   .records-title {
     margin-top: 15px;
     margin-bottom: 15px;
@@ -29,35 +58,13 @@
       display: flex;
       justify-content: flex-end;
       width: 250px;
-      .view-control {
-        margin-left: 15px;
-        border: 2px solid $secondary-button-color;
-        border-radius: $button-radius-circle;
-        color: $white;
-        i {
-          color: $secondary-button-color;
-          font-size: $font-size-regular;
-        }
-        text-align: center;
-        background-color: $white;
-        width: 30px;
-        height: 30px;
-        padding: 0;
 
-        &:not(.active):hover {
-          border-color: $secondary-button-hover-color;
-          i, span {
-            color: $secondary-button-hover-color;
-          }
-        }
-        &:focus {
-          outline: none;
-        }
-        &.active {
-          background-color: $secondary-button-color;
-          i, span {
-            color: $white;
-          }
+      .view-control {
+        @extend %icon-control;
+        width: 35px;
+        height: 35px;
+        i {
+          font-size: $font-size-regular-large;
         }
       }
 
@@ -114,9 +121,11 @@
             }
           }
         }
-      }
-    }
-  }
+
+      } // download-wrapper
+    } // view-controls
+  } // records-title
+
   .records-display {
     @import "records-raw-viewer";
     @import "records-table";

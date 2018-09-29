@@ -18,13 +18,9 @@
 
   <div class="view-controls">
     {{#if enableCharting}}
-      <button type="button" class="view-control chart-view line-chart-view {{if showLineChart "active"}}" {{action "lineChartMode"}} disabled={{showLineChart}}>
-        {{fa-icon "line-chart"}}
-        {{#tooltip-on-element}}Show as line chart{{/tooltip-on-element}}
-      </button>
-      <button type="button" class="view-control chart-view bar-chart-view {{if showBarChart "active"}}" {{action "barChartMode"}} disabled={{showBarChart}}>
-        {{fa-icon "bar-chart"}}
-        {{#tooltip-on-element}}Show as bar chart{{/tooltip-on-element}}
+      <button type="button" class="view-control chart-view {{if showChart "active"}}" {{action "chartMode"}} disabled={{showChart}}>
+        {{fa-icon "area-chart"}}
+        {{#tooltip-on-element}}Chart, pivot and visualize your data{{/tooltip-on-element}}
       </button>
     {{/if}}
     <button type="button" class="view-control table-view {{if showTable "active"}}" {{action "tableMode"}} disabled={{showTable}}>
@@ -59,10 +55,6 @@
   {{else if showTable}}
     {{records-table appendMode=appendMode timeSeriesMode=timeSeriesMode columnNames=columns rawRows=records}}
   {{else if enableCharting}}
-    {{#if showBarChart}}
-      {{records-charter timeSeriesMode=timeSeriesMode config=config columns=columns rows=records model=model chartType="bar"}}
-    {{else if showLineChart}}
-      {{records-charter timeSeriesMode=timeSeriesMode config=config columns=columns rows=records model=model chartType="line"}}
-    {{/if}}
+    {{records-charter timeSeriesMode=timeSeriesMode config=config columns=columns rows=records model=model}}
   {{/if}}
 </div>

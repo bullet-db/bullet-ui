@@ -7,7 +7,7 @@ import { merge } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
-import { alias, or, not } from '@ember/object/computed';
+import { alias, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
@@ -16,8 +16,7 @@ export default Component.extend({
   classNames: ['records-viewer'],
   showRawData: false,
   showTable: false,
-  showBarChart: false,
-  showLineChart: false,
+  showChart: false,
   config: null,
   metadata: null,
   records: null,
@@ -26,12 +25,11 @@ export default Component.extend({
   appendMode: false,
   timeSeriesMode: false,
 
-
   enableCharting: computed('config.isSingleRow', 'timeSeriesMode', function() {
     return !this.get('config.isSingleRow') || this.get('timeSeriesMode');
   }),
 
-  isShowingChart: or('showBarChart', 'showLineChart'),
+  isShowingChart: alias('showChart').readOnly(),
 
   columns: computed('records', function() {
     return A(this.extractUniqueColumns(this.get('records')));
@@ -139,8 +137,7 @@ export default Component.extend({
   flipTo(field) {
     this.set('showRawData', false);
     this.set('showTable', false);
-    this.set('showBarChart', false);
-    this.set('showLineChart', false);
+    this.set('showChart', false);
     this.set(field, true);
   },
 
@@ -153,12 +150,8 @@ export default Component.extend({
       this.flipTo('showTable');
     },
 
-    barChartMode() {
-      this.flipTo('showBarChart');
-    },
-
-    lineChartMode() {
-      this.flipTo('showLineChart');
+    chartMode() {
+      this.flipTo('showChart');
     },
 
     downloadAsJSON() {

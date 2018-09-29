@@ -8,29 +8,38 @@ import { WINDOW_CREATED_KEY, WINDOW_NUMBER_KEY } from 'bullet-ui/components/resu
 import { A } from '@ember/array';
 import { isEmpty, isEqual, typeOf } from '@ember/utils';
 import { computed } from '@ember/object';
-import { not, alias, or } from '@ember/object/computed';
+import { not, alias, or, equal } from '@ember/object/computed';
 import Component from '@ember/component';
-import { inject as service } from '@ember/service';
 
 export default Component.extend({
-  moment: Ember.inject.service(),
   classNames: ['records-charter'],
   model: null,
   columns: null,
   rows: null,
-  chartType: 'bar',
   config: null,
+  chartType: 'line',
+
+  showLineChart: true,
+  showBarChart: false,
+  showPieChart: false,
+  showPivotMode: false,
 
   timeSeriesMode: false,
   regularMode: not('timeSeriesMode').readOnly(),
-  notSimpleMode: false,
-  simpleMode: not('notSimpleMode').readOnly(),
-  cannotModeSwitch: alias('config.isRaw').readOnly(),
-  canModeSwitch: not('cannotModeSwitch').readOnly(),
-  pivotMode: or('notSimpleMode', 'cannotModeSwitch').readOnly(),
+  canShowPieChart: not('timeSeriesMode').readOnly(),
+  canOnlyPivot: alias('config.isRaw').readOnly(),
+  pivotMode: or('showPivotMode', 'canOnlyPivot').readOnly(),
   pivotOptions: computed('config.pivotOptions', function() {
     return JSON.parse(this.get('config.pivotOptions') || '{}');
   }).readOnly(),
+
+  didReceiveAttrs() {
+    this._super(...arguments);
+    // If we were in pie chart mode and switched to time series, reset to line
+    if (this.get('timeSeriesMode') && this.get('showPieChart')) {
+      this.changeChart('showLineChart', 'line');
+    }
+  },
 
   sampleRow: computed('rows', 'columns', function() {
     let typicalRow = { };
@@ -48,14 +57,6 @@ export default Component.extend({
   }).readOnly(),
 
   //////////////////////////////////////////////// Regular Chart Items  //////////////////////////////////////////////
-
-  regularOptions: computed('regularDependentColumns', function() {
-    if (this.get('regularDependentColumns.length') > 1) {
-      return {
-        scales: { yAxes: [{ position: 'left', id: '0' }, { position: 'right', id: '1' }] }
-      };
-    }
-  }).readOnly(),
 
   regularIndependentColumns: computed('config', 'sampleRow', 'columns', function() {
     let columns = this.get('columns');
@@ -87,9 +88,22 @@ export default Component.extend({
     return this.zip(valuesList);
   }).readOnly(),
 
-  regularDatasets: computed('regularDependentColumns', 'rows', function() {
+  regularColors: computed('showPieChart', 'regularLabels', function() {
+    return this.get('showPieChart') ? this.fixedColors(this.get('regularLabels')) : undefined;
+  }).readOnly(),
+
+  regularDatasets: computed('regularLabels', 'regularDependentColumns', 'regularColors', 'rows', function() {
     let rows = this.get('rows');
-    return this.get('regularDependentColumns').map((column, i) => this.columnarDataset(column, rows, i));
+    let colors = this.get('regularColors');
+    return this.get('regularDependentColumns').map((column, i) => this.columnarDataset(column, rows, colors, i));
+  }).readOnly(),
+
+  regularOptions: computed('regularDependentColumns', function() {
+    if (this.get('regularDependentColumns.length') > 1) {
+      return {
+        scales: { yAxes: [{ position: 'left', id: '0' }, { position: 'right', id: '1' }] }
+      };
+    }
   }).readOnly(),
 
   regularData: computed('regularLabels', 'regularDatasets', function() {
@@ -172,7 +186,7 @@ export default Component.extend({
     return Object.keys(datasets).map(dataset => datasets[dataset]);
   }).readOnly(),
 
-  timeSeriesData: computed('timeSeriesLabels', 'timeSeriesDatasets', function() {
+  timeSeriesData: computed('chartType', 'timeSeriesLabels', 'timeSeriesDatasets', function() {
     return { labels: this.get('timeSeriesLabels'), datasets: this.get('timeSeriesDatasets') };
   }).readOnly(),
 
@@ -211,13 +225,14 @@ export default Component.extend({
     };
   },
 
-  columnarDataset(column, rows, index) {
+  columnarDataset(column, rows, color, index) {
     let values = this.getColumnValues(column, rows);
+    let colorValue = color ? color : this.randomColor();
     let dataset = {
       label: column,
       data: values,
-      backgroundColor: this.randomColor(),
-      borderColor: this.randomColor(),
+      backgroundColor: colorValue,
+      borderColor: colorValue,
       fill: false
     };
     // Add yAxisID only if we have more than one dataset. More than 2 => Add the first y-axis
@@ -257,6 +272,14 @@ export default Component.extend({
     return `rgb(${colors[0]},${colors[1]},${colors[2]})`;
   },
 
+  fixedColors(names) {
+    let colors = [];
+    for (let i = 0; i < names.length; ++i) {
+      colors.push(this.fixedColor(names[i]));
+    }
+    return colors;
+  },
+
   randomColor() {
     let red = this.randomUpto(255);
     let green = this.randomUpto(255);
@@ -293,11 +316,33 @@ export default Component.extend({
     return hash;
   },
 
+  turnOffAllCharts() {
+    this.set('showBarChart', false);
+    this.set('showLineChart', false);
+    this.set('showPieChart', false);
+  },
+
+  changeChart(fieldToSet, chartType) {
+    this.turnOffAllCharts();
+    this.set(fieldToSet, true);
+    this.set('chartType', chartType);
+  },
+
   actions: {
     saveOptions(options) {
       let model = this.get('model');
       model.set('pivotOptions', JSON.stringify(options));
       model.save();
+    },
+
+    togglePivot() {
+      this.turnOffAllCharts();
+      this.toggleProperty('showPivotMode');
+    },
+
+    changeChart(field, chartType) {
+      this.set('showPivotMode', false);
+      this.changeChart(field, chartType);
     }
   }
 });
