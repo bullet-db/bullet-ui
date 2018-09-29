@@ -27,6 +27,7 @@ export default Component.extend({
   timeSeriesMode: false,
   regularMode: not('timeSeriesMode').readOnly(),
   canShowPieChart: not('timeSeriesMode').readOnly(),
+  needsColorArray: alias('showPieChart').readOnly(),
   canOnlyPivot: alias('config.isRaw').readOnly(),
   pivotMode: or('showPivotMode', 'canOnlyPivot').readOnly(),
   pivotOptions: computed('config.pivotOptions', function() {
@@ -88,8 +89,8 @@ export default Component.extend({
     return this.zip(valuesList);
   }).readOnly(),
 
-  regularColors: computed('showPieChart', 'regularLabels', function() {
-    return this.get('showPieChart') ? this.fixedColors(this.get('regularLabels')) : undefined;
+  regularColors: computed('needsColorArray', 'regularLabels', function() {
+    return this.get('needsColorArray') ? this.fixedColors(this.get('regularLabels')) : undefined;
   }).readOnly(),
 
   regularDatasets: computed('regularLabels', 'regularDependentColumns', 'regularColors', 'rows', function() {
@@ -114,7 +115,6 @@ export default Component.extend({
 
   timeSeriesIndependentColumn: WINDOW_CREATED_KEY,
   timeSeriesWindowColumn: WINDOW_NUMBER_KEY,
-
   timeSeriesOptions: {
     scales: { xAxes: [{ type: 'time' }] },
     animation: { duration: 0 },
@@ -261,6 +261,14 @@ export default Component.extend({
     return this.join(columns.map(column => row[column]), delimiter);
   },
 
+  fixedColors(names) {
+    let colors = [];
+    for (let i = 0; i < names.length; ++i) {
+      colors.push(this.fixedColor(names[i]));
+    }
+    return colors;
+  },
+
   fixedColor(atom) {
     // Multiply by a large prime if number. Then stick the result into a string regardless.
     let string = `${isEqual(typeOf(atom), 'number') ? atom * 104729 : atom}`;
@@ -270,14 +278,6 @@ export default Component.extend({
       colors.push(hash >> 8 & 0xFF)
     }
     return `rgb(${colors[0]},${colors[1]},${colors[2]})`;
-  },
-
-  fixedColors(names) {
-    let colors = [];
-    for (let i = 0; i < names.length; ++i) {
-      colors.push(this.fixedColor(names[i]));
-    }
-    return colors;
   },
 
   randomColor() {
