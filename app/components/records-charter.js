@@ -137,14 +137,19 @@ export default Component.extend({
     return columns.get(fieldIndex);
   }).readOnly(),
 
-  timeSeriesDependentColumns: computed('columns', 'timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'timeSeriesMetric', function() {
+  timeSeriesDependentColumns: computed('config', 'columns', 'sampleRow', 'timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'timeSeriesMetric', function() {
     let columns = this.get('columns');
+    let sampleRow = this.get('sampleRow');
     let independentColumn = this.get('timeSeriesIndependentColumn');
     let windowColumn = this.get('timeSeriesWindowColumn');
     let metricColumn = this.get('timeSeriesMetric');
-    // For time series data, all other columns besides the metric and the injected window keys make up
+    let filter = c => !this.isAny(c, independentColumn, windowColumn, metricColumn);
+    if (this.get('config.isDistribution')) {
+      return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn)));
+    };
+    // For other time series data, all other string columns besides the metric and the injected window keys make up
     // unique time lines. If there are no such columns, this is empty.
-    return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn)));
+    return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn) && this.isType(sampleRow, c, 'string')));
   }),
 
   timeSeriesLabels: computed('timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'rows', function() {
@@ -275,7 +280,7 @@ export default Component.extend({
     let hash = this.hash(string);
     let colors = [];
     for (let i = 0; i <= 2; ++i, hash = hash >> 8) {
-      colors.push(hash >> 8 & 0xFF)
+      colors.push(hash & 0xFF);
     }
     return `rgb(${colors[0]},${colors[1]},${colors[2]})`;
   },
