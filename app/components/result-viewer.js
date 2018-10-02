@@ -71,7 +71,7 @@ export default Component.extend({
     }
     let autoUpdate = this.get('autoUpdate');
     if (this.get('timeSeriesMode')) {
-      return autoUpdate ? this.getTimeSeriesRecords(WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY) : this.get('recordsCache');
+      return autoUpdate ? this.getTimeSeriesRecords() : this.get('recordsCache');
     } else {
       return this.getSelectedWindow('records', autoUpdate);
     }
@@ -117,9 +117,9 @@ export default Component.extend({
     return this.updateRecordsCache((c, w) => c.push(...w.records));
   },
 
-  getTimeSeriesRecords(numberKey, createdKey) {
+  getTimeSeriesRecords() {
     // Add all unadded windows' records with injected dimensions to the cache and return a new copy
-    return this.updateRecordsCache(this.addNewTimeSeriesWindow(numberKey, createdKey));
+    return this.updateRecordsCache(this.addNewTimeSeriesWindow(WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY));
   },
 
   addNewTimeSeriesWindow(numberKey, createdKey) {
@@ -162,14 +162,19 @@ export default Component.extend({
     },
 
     changeAutoUpdate(autoUpdate) {
-      // Turn On => reset selectedWindow. Turn Off => Last window
       this.set('autoUpdate', autoUpdate);
-      this.set('selectedWindow', autoUpdate ? null : this.get('result.windows.lastObject'));
+      // Turn On or if aggregating (and turn off) => reset selectedWindow. Turn Off => Last window
+      let aggregateMode = this.get('aggregateMode');
+      this.set('selectedWindow', autoUpdate || aggregateMode ? null : this.get('result.windows.lastObject'));
     },
 
     changeTimeSeriesMode(timeSeriesMode) {
       if (timeSeriesMode) {
         this.set('selectedWindow', null);
+        // If we don't have autoupdate on, we should update cache
+        if (!this.get('autoUpdate')) {
+          this.getTimeSeriesRecords();
+        }
       }
       this.set('timeSeriesMode', timeSeriesMode);
     }

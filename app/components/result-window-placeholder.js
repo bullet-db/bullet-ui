@@ -8,6 +8,6 @@ import Component from '@ember/component';
 export default Component.extend({
   classNames: ['result-window-placeholder'],
   tagName: 'span',
-  aggregateMode: false,
   windowCount: 0,
+  aggregateMode: false
 });
