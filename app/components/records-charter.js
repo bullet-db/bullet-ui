@@ -8,8 +8,18 @@ import { WINDOW_CREATED_KEY, WINDOW_NUMBER_KEY } from 'bullet-ui/components/resu
 import { A } from '@ember/array';
 import { isEmpty, isEqual, typeOf } from '@ember/utils';
 import { computed } from '@ember/object';
-import { not, alias, or, equal } from '@ember/object/computed';
+import { not, alias, or } from '@ember/object/computed';
 import Component from '@ember/component';
+
+const TIME_SERIES_OPTIONS = {
+  scales: { xAxes: [{ type: 'time' }] },
+  animation: { duration: 0 },
+  hover: { animationDuration: 0 },
+  responsiveAnimationDuration: 0,
+  elements: {
+    line: { tension: 0 }
+  }
+};
 
 export default Component.extend({
   classNames: ['records-charter'],
@@ -115,15 +125,7 @@ export default Component.extend({
 
   timeSeriesIndependentColumn: WINDOW_CREATED_KEY,
   timeSeriesWindowColumn: WINDOW_NUMBER_KEY,
-  timeSeriesOptions: {
-    scales: { xAxes: [{ type: 'time' }] },
-    animation: { duration: 0 },
-    hover: { animationDuration: 0 },
-    responsiveAnimationDuration: 0,
-    elements: {
-      line: { tension: 0 }
-    }
-  },
+  timeSeriesOptions: TIME_SERIES_OPTIONS,
 
   timeSeriesMetric: computed('config', 'sampleRow', 'columns', function() {
     let { sampleRow, columns } = this.getProperties('sampleRow', 'columns');
@@ -143,10 +145,9 @@ export default Component.extend({
     let independentColumn = this.get('timeSeriesIndependentColumn');
     let windowColumn = this.get('timeSeriesWindowColumn');
     let metricColumn = this.get('timeSeriesMetric');
-    let filter = c => !this.isAny(c, independentColumn, windowColumn, metricColumn);
     if (this.get('config.isDistribution')) {
       return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn)));
-    };
+    }
     // For other time series data, all other string columns besides the metric and the injected window keys make up
     // unique time lines. If there are no such columns, this is empty.
     return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn) && this.isType(sampleRow, c, 'string')));
@@ -158,7 +159,7 @@ export default Component.extend({
     // Map preserves insertion order
     let labels = [];
     let windows = new Map();
-    let timeLabels = this.get('rows').forEach(row => windows.set(row[windowColumn], row[labelColumn]));
+    this.get('rows').forEach(row => windows.set(row[windowColumn], row[labelColumn]));
     windows.forEach(v => labels.push(v));
     return labels;
   }).readOnly(),
@@ -172,7 +173,7 @@ export default Component.extend({
       return [this.timeSeriesDataset(metricColumn, rows.map(row => row[metricColumn]))];
     }
     let windows = this.groupTimeSeriesData(rows, columns, this.get('timeSeriesWindowColumn'), metricColumn);
-    let datasets =  { };
+    let datasets = { };
     // If a dataset (a unique set of values for the columns) does not have a timeseries already. Generate one by
     // scanning all rows. This is n*w (rows * windows). However, if all or most windows contain the dataset in its
     // rows, it should be ~n instead.
@@ -184,7 +185,7 @@ export default Component.extend({
       if (!isEmpty(datasets[dataset])) {
         return;
       }
-      let values = []
+      let values = [];
       windows.forEach(valueMap => values.push(valueMap.has(dataset) ? valueMap.get(dataset) : null));
       datasets[dataset] = this.timeSeriesDataset(dataset, values);
     });
@@ -316,7 +317,7 @@ export default Component.extend({
     }
     let hash = 0;
     for (let i = 0; i < s.length; ++i) {
-      hash = ((hash << 5) - hash) + s.charCodeAt(i);;
+      hash = ((hash << 5) - hash) + s.charCodeAt(i);
     }
     return hash;
   },

@@ -64,7 +64,7 @@ export default Component.extend(PaginatedTable, {
       timeSeriesMode set to true, we don't reset and just append to the table. When timeSeriesMode goes to false after,
       alreadyReset will be true and we will set it to false after so that future calls will start this cycle again.
     */
-    this.set('alreadyReset', timeSeriesMode)
+    this.set('alreadyReset', timeSeriesMode);
 
     if (hasSortedColumn) {
       this.sortBy(sortColumn.valuePath, sortColumn.ascending ? 'ascending' : 'descending');

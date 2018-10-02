@@ -8,21 +8,19 @@
 
 .mode-control-wrapper {
   @import "mode-toggle";
+  width: 120px;
   .mode-control {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    .fa {
-      transform: scale(1.3, 1.3);
-    }
+    justify-content: space-between;
     &:focus {
       outline: none;
     }
     &.no-visibility {
       visibility: hidden;
     }
+    margin-bottom: 5px;
   }
-  margin-bottom: $bottom-spacing;
 }
 
 .window-selector {

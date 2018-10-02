@@ -7,7 +7,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { isEmpty, isNone } from '@ember/utils';
+import { isNone } from '@ember/utils';
 
 export const WINDOW_NUMBER_KEY = 'Window Number';
 export const WINDOW_CREATED_KEY = 'Window Created';
@@ -29,7 +29,7 @@ export default Component.extend({
   // computed properties and shouldn't be dependencies of other properties. This is currently reset when receiving
   // new attrs or when turning on timeSeriesMode (not on appendRecordsMode since that can't change without changing
   // the query).
-  recordsCache: [],
+  recordsCache: null,
   windowsInCache: 0,
 
   // Computed Properties
@@ -119,13 +119,13 @@ export default Component.extend({
 
   getTimeSeriesRecords(numberKey, createdKey) {
     // Add all unadded windows' records with injected dimensions to the cache and return a new copy
-    return this.updateRecordsCache(this.addNewTimeSeriesWindow(numberKey, createdKey))
+    return this.updateRecordsCache(this.addNewTimeSeriesWindow(numberKey, createdKey));
   },
 
   addNewTimeSeriesWindow(numberKey, createdKey) {
     return (cache, windowEntry) => {
       let extraColumns = {
-        [numberKey]:  windowEntry.sequence ? windowEntry.sequence : windowEntry.position,
+        [numberKey]: windowEntry.sequence ? windowEntry.sequence : windowEntry.position,
         [createdKey]: windowEntry.created
       };
       // Copy the extra columns and the columns from the record into a new object
