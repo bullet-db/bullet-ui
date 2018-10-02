@@ -14,6 +14,7 @@ export default Route.extend({
   model() {
     return hash({
       queries: this.store.findAll('query'),
+      results: this.store.findAll('result'),
       groups: this.store.findAll('group'),
       aggregations: this.store.findAll('aggregation'),
       projections: this.store.findAll('projection'),
