@@ -63,16 +63,46 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.notOk(this.element.querySelector('.auto-update-wrapper').classList.contains('no-visibility'));
   });
 
-  test('it does not show window switching controls if there is an error or if in aggregate mode', async function(assert) {
-    // Error
+  test('it allows time series toggling if there is data, no errors, and a time window', async function(assert) {
+    // Error window
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult({ }, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.equal(this.element.querySelectorAll('.window-selector .ember-power-select-trigger').length, 0);
+    assert.ok(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
 
-    // Raw Record -> auto aggregate
+    // No data
+    this.set('mockQuery', makeQuery(true));
+    this.set('mockResult', makeResult(null, false, false, []));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    assert.ok(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+
+    // Raw but Record based window
     this.set('mockQuery', makeQuery(false));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    assert.ok(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+
+    // Raw and Time Based
+    this.set('mockQuery', makeQuery(true));
+    this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    assert.notOk(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+
+    // Not Raw and Time Based
+    this.set('mockQuery', makeQuery(true));
+    this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    assert.notOk(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+  });
+
+  test('it does not show window switching controls if there is an error', async function(assert) {
+    // Error
+    this.set('mockQuery', makeQuery(true));
+    this.set('mockResult', makeResult({ }, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
     assert.equal(this.element.querySelectorAll('.window-selector .ember-power-select-trigger').length, 0);
 
@@ -87,6 +117,21 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
     assert.equal(this.element.querySelectorAll('.window-selector .ember-power-select-trigger').length, 1);
+  });
+
+  test('it disables the window switching controls if in aggregate mode', async function(assert) {
+    // Raw Record -> auto aggregate
+    this.set('mockQuery', makeQuery(false));
+    this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
+
+    // Timeseries mode -> aggregate mode
+    this.set('mockQuery', makeQuery(true));
+    this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    await click('.time-series-wrapper .mode-toggle .off-view');
+    assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
   });
 
   test('it only shows window timing progress if it is a time window', async function(assert) {
@@ -127,14 +172,35 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, false, true, [makeWindow(1), makeWindow(2)]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.auto-update-wrapper .mode-toggle .left-view').classList.contains('selected'));
-    let selectedWindowText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
-    assert.equal(selectedWindowText, 'Switch between 2 windows...');
+    assert.ok(this.element.querySelector('.auto-update-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.auto-update-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    let placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Switch between 2 windows...');
 
-    await click('.auto-update-wrapper .mode-toggle .right-view');
-    assert.ok(this.element.querySelector('.auto-update-wrapper .mode-toggle .right-view').classList.contains('selected'));
-    selectedWindowText = this.element.querySelector('.window-selector .ember-power-select-selected-item').textContent.trim();
+    await click('.auto-update-wrapper .mode-toggle .off-view');
+    assert.ok(this.element.querySelector('.auto-update-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.auto-update-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    let selectedWindowText = this.element.querySelector('.window-selector .ember-power-select-selected-item').textContent.trim();
     assert.equal(this.element.querySelectorAll('.window-selector .result-window-placeholder').length, 0);
     assert.ok(selectedWindowText.indexOf('#2') !== -1);
+  });
+
+  test('it lets you turn time series on and off', async function(assert) {
+    this.set('mockQuery', makeQuery(true));
+    this.set('mockResult', makeResult(null, false, true, [makeWindow(1), makeWindow(2)]));
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    // Starts off
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    let placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Switch between 2 windows...');
+    assert.notOk(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
+
+    await click('.time-series-wrapper .mode-toggle .on-view');
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Aggregating across your windows...');
+    assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
   });
 });

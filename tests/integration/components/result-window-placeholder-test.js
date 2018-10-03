@@ -20,4 +20,9 @@ module('Integration | Component | result window placeholder', function(hooks) {
     await render(hbs`{{result-window-placeholder windowCount=100}}`);
     assert.equal(this.element.textContent.trim(), 'Switch between 100 windows...');
   });
+
+  test('it displays a different message in aggregate mode', async function(assert) {
+    await render(hbs`{{result-window-placeholder windowCount=100 aggregateMode=true}}`);
+    assert.equal(this.element.textContent.trim(), 'Aggregating across your windows...');
+  });
 });

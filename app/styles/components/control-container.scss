@@ -42,7 +42,11 @@
     align-items: center;
     width: $width;
     font-size: $font-size-regular-large;
+    &[aria-disabled=true] {
+      cursor: not-allowed;
+    }
   }
+
   .window-progress-indicator {
     svg {
       height: 5px !important;
