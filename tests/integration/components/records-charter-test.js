@@ -13,7 +13,7 @@ import RESULTS from '../../fixtures/results';
 module('Integration | Component | records charter', function(hooks) {
   setupRenderingTest(hooks);
 
-  test('it starts off in chart mode and allows you to switch to pivot mode', async function(assert) {
+  test('it starts off in line chart mode and allows you to switch to pivot mode', async function(assert) {
     assert.expect(5);
     this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({ save() { } }));
@@ -21,10 +21,10 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', ['Probability', 'Count', 'Range']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
-    await click('.mode-toggle .right-view');
-    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
+    await click('.records-charter .pivot-control');
+    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
@@ -36,7 +36,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', ['foo', 'timestamp', 'domain']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
@@ -47,18 +47,19 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
   test('it enables only the pivot mode if the results are raw', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
     this.set('mockConfig', EmberObject.create({ isRaw: true, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', ['foo', 'timestamp', 'domain']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.equal(this.element.querySelectorAll('.mode-toggle').length, 0);
+    assert.equal(this.element.querySelectorAll('.records-charter .chart-control').length, 0);
+    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
@@ -76,10 +77,10 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', ['Probability', 'Count', 'Range']);
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
-    await click('.mode-toggle .right-view');
-    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
+    await click('.records-charter .pivot-control');
+    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
     assert.equal(this.element.querySelector('.pvtUi select.pvtRenderer').value, 'Table');
     this.element.querySelector('.pivot-table-container select.pvtRenderer').value = 'Bar Chart';

@@ -128,8 +128,8 @@ module('Integration | Component | records viewer', function(hooks) {
     await click('.chart-view');
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
-    // Defaults to simple chart view
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    // Defaults to line chart view
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
@@ -152,10 +152,10 @@ module('Integration | Component | records viewer', function(hooks) {
     await click('.chart-view');
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
-    await click('.mode-toggle .right-view');
-    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
+    await click('.records-charter .pivot-control');
+    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
   });
 
@@ -178,7 +178,7 @@ module('Integration | Component | records viewer', function(hooks) {
     await click('.chart-view');
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
-    assert.equal(this.element.querySelectorAll('.mode-toggle').length, 0);
+    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
   });
 
@@ -190,10 +190,10 @@ module('Integration | Component | records viewer', function(hooks) {
     assert.equal(this.element.querySelectorAll('.chart-view').length, 1);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
     assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
-    assert.ok(this.element.querySelector('.mode-toggle .left-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.collapse-control .mode-toggle .on-view').hasAttribute('hidden'));
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
-    await click('.mode-toggle .right-view');
+    await click('.mode-toggle .on-view');
+    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
     assert.equal(this.element.querySelector('pre').textContent.trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
-    assert.ok(this.element.querySelector('.mode-toggle .right-view').classList.contains('selected'));
   });
 });
