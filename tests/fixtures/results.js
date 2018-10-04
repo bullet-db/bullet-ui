@@ -233,6 +233,238 @@ const RESULTS = {
         Count: 210
       }
     ]
+  },
+  WINDOWED_GROUP_MULTIPLE_METRICS: {
+    meta: { },
+    records: [
+      {
+        avg_bar: 42.3424,
+        sum_foo: 12,
+        COUNT: 1342,
+        foo: 'value1',
+        bar: 'value2',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        avg_bar: 22.02,
+        sum_foo: 92,
+        COUNT: 302,
+        foo: 'value1',
+        bar: null,
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        avg_bar: 3.12,
+        sum_foo: 14212,
+        COUNT: 2,
+        foo: 'value1',
+        bar: 'value2',
+        'Window Number': 2,
+        'Window Created': new Date(1538606895000)
+      },
+      {
+        avg_bar: 23.02,
+        sum_foo: 32,
+        COUNT: 412,
+        foo: 'value1',
+        bar: null,
+        'Window Number': 2,
+        'Window Created': new Date(1538606895000)
+      },
+      {
+        avg_bar: 92.3424,
+        sum_foo: 123192,
+        COUNT: 32,
+        foo: null,
+        bar: 'value2',
+        'Window Number': 2,
+        'Window Created': new Date(1538606895000)
+      },
+      {
+        avg_bar: 2.12,
+        sum_foo: 12,
+        COUNT: 223,
+        foo: 'value1',
+        bar: 'value2',
+        'Window Number': 3,
+        'Window Created': new Date(1538606899000)
+      },
+      {
+        avg_bar: 7.02,
+        sum_foo: 32,
+        COUNT: 203,
+        foo: 'value1',
+        bar: null,
+        'Window Number': 3,
+        'Window Created': new Date(1538606899000)
+      },
+      {
+        avg_bar: 0.3424,
+        sum_foo: 992,
+        COUNT: 32,
+        foo: null,
+        bar: 'value2',
+        'Window Number': 3,
+        'Window Created': new Date(1538606899000)
+      }
+    ]
+  },
+  WINDOWED_COUNT_DISTINCT: {
+    meta: { },
+    records: [
+      {
+        foo: 424004.3424,
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        foo: 923404.4,
+        'Window Number': 2,
+        'Window Created': new Date(1538606894000)
+      },
+      {
+        foo: 240004.0343,
+        'Window Number': 3,
+        'Window Created': new Date(1538606897000)
+      },
+      {
+        foo: 40004.9342,
+        'Window Number': 4,
+        'Window Created': new Date(1538606900000)
+      }
+    ]
+  },
+  WINDOWED_DISTRIBUTION: {
+    meta: { },
+    records: [
+      {
+        Probability: 0.0,
+        Count: 0,
+        Range: '(-Inf to 5.0)',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Probability: 0.40,
+        Count: 10230,
+        Range: '[5.0 to 505.0)',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Probability: 0.60,
+        Count: 15345,
+        Range: '(505.0 to 1005.0)',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Probability: 0.0,
+        Count: 0,
+        Range: '(-Inf to 5.0)',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Probability: 0.40,
+        Count: 10230,
+        Range: '[5.0 to 505.0)',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Probability: 0.60,
+        Count: 15345,
+        Range: '(505.0 to 1005.0)',
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Probability: 0.01,
+        Count: 4,
+        Range: '(-Inf to 5.0)',
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Probability: 0.45,
+        Count: 13230,
+        Range: '[5.0 to 505.0)',
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Probability: 0.10,
+        Count: 345,
+        Range: '(505.0 to 1005.0)',
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Probability: 0.07,
+        Count: 230,
+        Range: '(-Inf to 5.0)',
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Probability: 0.02,
+        Count: 230,
+        Range: '[5.0 to 505.0)',
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Probability: 0.35,
+        Count: 9345,
+        Range: '(505.0 to 1005.0)',
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      }
+    ]
+  },
+  WINDOWED_QUANTILE: {
+    meta: { },
+    records: [
+      {
+        Value: 0,
+        Quantile: 0,
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Value: 10230,
+        Quantile: 0.5,
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Value: 15345,
+        Quantile: 0.75,
+        'Window Number': 1,
+        'Window Created': new Date(1538606891000)
+      },
+      {
+        Value: 4,
+        Quantile: 0,
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Value: 13230,
+        Quantile: 0.75,
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      },
+      {
+        Value: 34503,
+        Quantile: 0.75,
+        'Window Number': 2,
+        'Window Created': new Date(1538606896000)
+      }
+    ]
   }
 };
 

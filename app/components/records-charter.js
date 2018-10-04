@@ -146,7 +146,7 @@ export default Component.extend({
     let windowColumn = this.get('timeSeriesWindowColumn');
     let metricColumn = this.get('timeSeriesMetric');
     if (this.get('config.isDistribution')) {
-      return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn)));
+      return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
     // For other time series data, all other string columns besides the metric and the injected window keys make up
     // unique time lines. If there are no such columns, this is empty.
@@ -312,9 +312,6 @@ export default Component.extend({
 
   // A modified version of https://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
   hash(s) {
-    if (s.length === 0) {
-      return 0;
-    }
     let hash = 0;
     for (let i = 0; i < s.length; ++i) {
       hash = ((hash << 5) - hash) + s.charCodeAt(i);

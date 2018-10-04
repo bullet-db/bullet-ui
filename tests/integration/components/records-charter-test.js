@@ -4,6 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
+import { A } from '@ember/array';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click, settled, triggerEvent } from '@ember/test-helpers';
@@ -18,7 +19,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.DISTRIBUTION.records);
-    this.set('mockColumns', ['Probability', 'Count', 'Range']);
+    this.set('mockColumns', A(['Probability', 'Count', 'Range']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
     assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
@@ -34,7 +35,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
-    this.set('mockColumns', ['foo', 'timestamp', 'domain']);
+    this.set('mockColumns', A(['foo', 'timestamp', 'domain']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
@@ -45,10 +46,42 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
-    this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
+    this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
+  });
+
+  test('it lets you swap to a bar chart', async function(assert) {
+    assert.expect(6);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
+    this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+    await click('.records-charter .chart-control.bar-view');
+    assert.ok(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+  });
+
+  test('it lets you swap to a pie chart', async function(assert) {
+    assert.expect(6);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
+    this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+    await click('.records-charter .chart-control.pie-view');
+    assert.ok(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.notOk(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
   });
 
   test('it enables only the pivot mode if the results are raw', async function(assert) {
@@ -56,7 +89,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockConfig', EmberObject.create({ isRaw: true, pivotOptions: null }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
-    this.set('mockColumns', ['foo', 'timestamp', 'domain']);
+    this.set('mockColumns', A(['foo', 'timestamp', 'domain']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control').length, 0);
     assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
@@ -74,7 +107,7 @@ module('Integration | Component | records charter', function(hooks) {
       }
     }));
     this.set('mockRows', RESULTS.DISTRIBUTION.records);
-    this.set('mockColumns', ['Probability', 'Count', 'Range']);
+    this.set('mockColumns', A(['Probability', 'Count', 'Range']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
     assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
@@ -89,5 +122,60 @@ module('Integration | Component | records charter', function(hooks) {
       let options = JSON.parse(this.get('mockModel.pivotOptions'));
       assert.equal(options.rendererName, 'Bar Chart');
     });
+  });
+
+  test('it shows timeseries data without pie charting options', async function(assert) {
+    assert.expect(2);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.WINDOWED_GROUP_MULTIPLE_METRICS.records);
+    this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
+  });
+
+  test('it shows timeseries data for distribution data', async function(assert) {
+    assert.expect(2);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.WINDOWED_DISTRIBUTION.records);
+    this.set('mockColumns', A(['Probability', 'Count', 'Range']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
+  });
+
+  test('it shows timeseries data for only metric data', async function(assert) {
+    assert.expect(2);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.WINDOWED_COUNT_DISTINCT.records);
+    this.set('mockColumns', A(['foo']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
+  });
+
+  test('it shows timeseries data for numeric non-metric data', async function(assert) {
+    assert.expect(2);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.WINDOWED_QUANTILE.records);
+    this.set('mockColumns', A(['Quantile', 'Value']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
+  });
+
+  test('it shows line chart if it starts in time series mode but also in pie chart view', async function(assert) {
+    assert.expect(2);
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockRows', RESULTS.WINDOWED_QUANTILE.records);
+    this.set('mockColumns', A(['Quantile', 'Value']));
+    await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true showPieChart=true}}`);
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
   });
 });
