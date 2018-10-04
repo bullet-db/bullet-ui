@@ -37,6 +37,7 @@ export default Component.extend({
   isRaw: alias('result.isRaw').readOnly(),
   errorWindow: alias('result.errorWindow').readOnly(),
   hasData: alias('result.hasData').readOnly(),
+  hasNoWindow: alias('query.isWindowless').readOnly(),
   numberOfWindows: alias('result.windows.length').readOnly(),
   windowEmitEvery: alias('query.window.emit.every').readOnly(),
   isTimeWindow: alias('query.window.isTimeBased').readOnly(),

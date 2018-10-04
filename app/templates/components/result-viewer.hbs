@@ -31,14 +31,16 @@
         {{/if}}
       {{/unless}}
 
-      {{#power-select selected=selectedWindow options=result.windows
-                      placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows aggregateMode=aggregateMode)
-                      searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
-                      onchange=(action "changeWindow") disabled=aggregateMode as |window|}}
-        <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
-        <span class="window-size">{{window.records.length}}</span> records at
-        <span class="window-time">{{moment-format window.created 'dddd, hh:mm:ss a'}}</span>
-      {{/power-select}}
+      {{#unless hasNoWindow}}
+        {{#power-select selected=selectedWindow options=result.windows
+                        placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows aggregateMode=aggregateMode)
+                        searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
+                        onchange=(action "changeWindow") disabled=aggregateMode as |window|}}
+          <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
+          <span class="window-size">{{window.records.length}}</span> records at
+          <span class="window-time">{{moment-format window.created 'dddd, hh:mm:ss a'}}</span>
+        {{/power-select}}
+      {{/unless}}
 
     </div>
 
