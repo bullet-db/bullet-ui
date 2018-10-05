@@ -227,7 +227,7 @@ module('Integration | Component | result viewer', function(hooks) {
 
     // Add some more windows
     let anotherResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2), makeWindow(3)]);
-    mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2))
+    mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2));
     await click('.view-controls .table-view');
     assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '3 records in this view');
   });
@@ -258,7 +258,7 @@ module('Integration | Component | result viewer', function(hooks) {
 
     // Add some more windows but it should not update
     let anotherResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2), makeWindow(3)]);
-    mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2))
+    mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2));
     await click('.view-controls .table-view');
     assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
   });
