@@ -176,6 +176,11 @@ export default Component.extend({
         if (!this.get('autoUpdate')) {
           this.getTimeSeriesRecords();
         }
+      } else {
+        // If we don't have autoupdate on, we should set the selected window to the last one
+        if (!this.get('autoUpdate')) {
+          this.set('selectedWindow', this.get('result.windows.lastObject'));
+        }
       }
       this.set('timeSeriesMode', timeSeriesMode);
     }
