@@ -8,20 +8,17 @@
   $results-left-space: $left-bar-separation-width;
   $results-inner-left-space: 20px;
   $results-inner-right-space: 35px;
-  $information-wrapper-padding-left: 20px;
-  $information-wrapper-padding-right: 35px;
 
-  @import "components/nested-info-container";
   @import "components/section-heading-with-help";
 
-  margin: 22px $results-right-space 0 $results-left-space;
+  margin: 20px $results-right-space 0 $results-left-space;
 
   .query-section {
     @import "components/result-query-information";
   }
 
   .result-section {
-    margin-top: 20px;
+    margin-top: 15px;
     @import "components/result-viewer";
   }
 }

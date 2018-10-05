@@ -4,20 +4,28 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .records-charter {
-  margin: auto;
-
   // Make unselectable
   -moz-user-select: -moz-none;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  display: flex;
+  flex-direction: column;
 
-  @import 'mode-toggle';
-  .mode-toggle {
-    justify-content: flex-end;
-    margin: 10px 0;
-    .mode {
-      width: 70px;
+  .visual-controls {
+    align-self: flex-end;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+
+    .chart-control, .pivot-control {
+      @extend %icon-control;
+      width: 30px;
+      height: 30px;
+      i {
+        font-size: $font-size-regular;
+      }
+      margin-left: 10px;
     }
   }
 

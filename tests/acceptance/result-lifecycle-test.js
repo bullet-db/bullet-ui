@@ -93,18 +93,17 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.pretty-json-container').length, 1);
     await click('.chart-view');
-    // await pauseTest();
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.pretty-json-container').length, 0);
     assert.equal(findAll('.records-charter').length, 1);
     assert.equal(findAll('.pivot-table-container').length, 1);
     assert.equal(findAll('.pvtUi').length, 1);
     // Only pivot view
-    assert.equal(findAll('.records-charter .mode-toggle').length, 0);
+    assert.equal(findAll('.records-charter .chart-control').length, 0);
   });
 
-  test('it lets you swap between a row, tabular, simple and pivot chart views when it is not a raw query', async function(assert) {
-    assert.expect(15);
+  test('it lets you swap between a row, tabular, line, bar, pie and pivot chart views when it is not a raw query', async function(assert) {
+    assert.expect(17);
 
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
@@ -127,11 +126,13 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.pretty-json-container').length, 0);
     assert.equal(findAll('.records-charter').length, 1);
-    assert.equal(findAll('.records-charter .mode-toggle').length, 1);
-    assert.ok(find('.records-charter .mode-toggle .left-view').classList.contains('selected'));
+    assert.equal(findAll('.records-charter .chart-control.pie-view').length, 1);
+    assert.equal(findAll('.records-charter .chart-control.line-view').length, 1);
+    assert.equal(findAll('.records-charter .chart-control.bar-view').length, 1);
+    assert.ok(find('.records-charter .chart-control.line-view').classList.contains('active'));
     assert.equal(findAll('.records-charter canvas').length, 1);
-    await click('.records-charter .mode-toggle .right-view');
-    assert.ok(find('.records-charter .mode-toggle .right-view').classList.contains('selected'));
+    await click('.records-charter .pivot-control');
+    assert.ok(find('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(findAll('.records-charter .pivot-table-container').length, 1);
     assert.equal(findAll('.records-charter .pvtUi').length, 1);
   });
@@ -149,8 +150,8 @@ module('Acceptance | result lifecycle', function(hooks) {
     await click('.submit-button');
 
     await click('.chart-view');
-    await click('.records-charter .mode-toggle .right-view');
-    assert.ok(find('.records-charter .mode-toggle .right-view').classList.contains('selected'));
+    await click('.records-charter .pivot-control');
+    assert.ok(find('.records-charter .pivot-control').classList.contains('active'));
     assert.equal(findAll('.pivot-table-container').length, 1);
     assert.equal(findAll('.pvtUi').length, 1);
     assert.equal(find('.pvtUi select.pvtRenderer').value, 'Table');
@@ -163,7 +164,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry-popover .results-table .result-date-entry');
     await click('.chart-view');
-    await click('.records-charter .mode-toggle .right-view');
+    await click('.records-charter .pivot-control');
     assert.equal(find('.pvtUi select.pvtRenderer').value, 'Bar Chart');
     assert.equal(find('.pvtUi select.pvtAggregator').value, 'Sum');
   });
@@ -180,7 +181,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.equal(findAll('.raw-display').length, 1);
     assert.equal(findAll('.pretty-json-container').length, 1);
     assert.equal(findAll('.raw-json-display').length, 0);
-    await click('.records-viewer .mode-toggle .right-view');
+    await click('.records-viewer .mode-toggle .off-view');
     assert.equal(findAll('.records-charter').length, 0);
     assert.equal(findAll('.lt-body .lt-row .lt-cell').length, 0);
     assert.equal(findAll('.raw-display').length, 1);

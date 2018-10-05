@@ -5,35 +5,48 @@
 --}}
 <div class="control-container">
 
-  <div class="auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
-    <span>Show Latest</span>
-    {{mode-toggle isToggled=autoUpdate toggledText="On" notToggledText="Off" onToggled=(action "changeAutoUpdate")}}
+  <div class="mode-control-wrapper">
+      <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
+        <span>AutoUpdate</span>
+        {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
+        {{#tooltip-on-element side="right"}}Automatically show the latest data when it arrives{{/tooltip-on-element}}
+      </div>
+      <div class="mode-control time-series-wrapper {{unless showTimeSeries "no-visibility"}}">
+        <span>TimeSeries</span>
+        {{mode-toggle isToggled=timeSeriesMode onToggled=(action "changeTimeSeriesMode")}}
+        {{#tooltip-on-element side="right"}}Compare data across your windows against the first numeric column in your data{{/tooltip-on-element}}
+      </div>
   </div>
 
   {{#unless hasError}}
 
     <div class="window-selector">
-      {{#if isTimeWindow}}
-        <div class="progress-indicator window-progress-indicator">
-          {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
-                               retriggerOnChangeIn=numberOfWindows}}
-        </div>
-      {{/if}}
+      {{#unless appendRecordsMode}}
+        {{#if isTimeWindow}}
+          <div class="progress-indicator window-progress-indicator">
+            {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
+                                 retriggerOnChangeIn=numberOfWindows}}
+            {{#tooltip-on-element side="top"}}Your next estimated window arrival time{{/tooltip-on-element}}
+          </div>
+        {{/if}}
+      {{/unless}}
 
-      {{#unless aggregateMode}}
+      {{#unless hasNoWindow}}
         {{#power-select selected=selectedWindow options=result.windows
-                        placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows)
+                        placeholderComponent=(component "result-window-placeholder" windowCount=numberOfWindows aggregateMode=aggregateMode)
                         searchField="sequence" searchPlaceholder="Search with your window number in the metadata..."
-                        onchange=(action "changeWindow") as |window|}}
+                        onchange=(action "changeWindow") disabled=aggregateMode as |window|}}
           <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
           <span class="window-size">{{window.records.length}}</span> records at
           <span class="window-time">{{moment-format window.created 'dddd, hh:mm:ss a'}}</span>
         {{/power-select}}
       {{/unless}}
+
     </div>
 
     <div class="progress-indicator query-progress-indicator">
       {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
+      {{#tooltip-on-element side="left"}}How long your query has been running compared to its total duration{{/tooltip-on-element}}
     </div>
 
   {{/unless}}
@@ -42,7 +55,7 @@
 {{#if hasData}}
   <div class="information-container window-information">
     <span class="section-header">
-      <h4 class="section-title">Results & Metadata</h4>
+      <h3 class="section-title">Results</h3>
       {{#info-popover title="Results"}}
         {{partial "partials/results-help"}}
       {{/info-popover}}
@@ -55,7 +68,8 @@
   {{#if hasError}}
     {{partial "partials/query-killed"}}
   {{else if hasData}}
-    {{records-viewer records=records metadata=metadata config=config aggregateMode=aggregateMode model=result}}
+    {{records-viewer records=records metadata=metadata config=config appendMode=aggregateMode
+                     timeSeriesMode=timeSeriesMode model=result}}
   {{else if isRunningQuery}}
     {{partial "partials/running-query"}}
   {{else}}

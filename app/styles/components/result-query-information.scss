@@ -3,52 +3,61 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-.query-title {
-  margin-bottom: 25px;
-  color: $heading-text-color;
-  font-size: $font-size-large;
-  font-weight: $font-weight-strong;
-}
-
 .query-blurb-wrapper {
-  $button-width: 130px;
-  $button-height: 38px;
-
   @import "query-blurb";
 
-  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 
+  padding: 0 10px 10px 20px;
+  background-color: $background-grey;
+  border-radius: 4px;
+
+  cursor: pointer;
   &:hover {
     background-color: $background-grey-darker;
   }
 
-  .query-blurb > .filter-summary-text, .query-blurb > .projections-summary-text {
-    display: block;
+  h4 {
+    margin-bottom: 5px;
+    font-size: $font-size-regular;
+    font-weight: $font-weight-strong;
+    text-transform: uppercase;
   }
 
   .query-text {
-    margin-right: $results-right-space + $button-width;
+    width: 85%;
+    .query-blurb {
+      display: flex;
+      align-items: flex-start;
+      div {
+        padding-right: 10px;
+      }
+    }
   }
 
-  .query-button {
-    float: right;
-    display: inline-block;
-    position: absolute;
-    right: $results-right-space;
-    margin-top: (-$button-height)/2;
-    width: $button-width;
-    height: $button-height;
-    font-size: $font-size-regular;
-    font-weight: $font-weight-medium;
+  .query-controls {
+    align-self: flex-end;
+
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+
+    .query-button {
+      width: 40px;
+      height: 40px;
+      font-size: $font-size-regular-large;
+    }
+
+    .link-button {
+      @extend %primary-button;
+      margin-right: 5px;
+    }
+
+    .rerun-button,.cancel-button {
+      @extend %secondary-button;
+    }
   }
 
-  .link-button {
-    @extend %primary-button;
-    top: 25%;
-  }
-
-  .rerun-button,.cancel-button {
-    @extend %secondary-button;
-    top: 75%;
-  }
 }

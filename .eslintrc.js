@@ -73,7 +73,6 @@ module.exports = {
       'linebreak-style': [2, 'unix'],
       'new-parens': 2,
       'no-array-constructor': 2,
-      'no-bitwise': 2,
       'no-lonely-if': 2,
       'no-mixed-operators': 2,
       'no-plusplus': 0,

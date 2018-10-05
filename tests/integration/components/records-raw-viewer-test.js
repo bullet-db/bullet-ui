@@ -81,7 +81,7 @@ module('Integration | Component | records raw viewer', function(hooks) {
     await render(hbs`{{records-raw-viewer data=mockData}}`);
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
     assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 0);
-    await click('.mode-toggle .right-view');
+    await click('.mode-toggle .off-view');
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 1);
     assert.equal(this.element.querySelector('.raw-display .raw-json-display').textContent.trim(), '');
@@ -96,7 +96,7 @@ module('Integration | Component | records raw viewer', function(hooks) {
     await render(hbs`{{records-raw-viewer data=mockData spacing=mockSpacing}}`);
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
     assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 0);
-    await click('.mode-toggle .right-view');
+    await click('.mode-toggle .off-view');
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 1);
     assert.equal(this.element.querySelector('.raw-display .raw-json-display').textContent.trim(), JSON.stringify(data, null, 8));

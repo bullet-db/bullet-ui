@@ -11,35 +11,30 @@ import hbs from 'htmlbars-inline-precompile';
 module('Integration | Component | mode toggle', function(hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders two buttons with texts', async function(assert) {
+  test('it renders two modes with the on view toggled by default', async function(assert) {
     await render(hbs`{{mode-toggle}}`);
-    assert.equal(this.element.textContent.trim(), 'Toggled\n Not Toggled');
-    assert.equal(this.element.querySelectorAll('button').length, 2);
+    assert.equal(this.element.querySelectorAll('.mode').length, 2);
     await render(hbs`
       {{#mode-toggle}}
         template block text
       {{/mode-toggle}}
     `);
-    assert.equal(this.element.textContent.trim(), 'Toggled\n Not Toggled');
-    assert.equal(this.element.querySelectorAll('button').length, 2);
-    assert.ok(this.element.querySelector('.left-view').classList.contains('selected'));
-  });
-
-  test('it renders two buttons with provided texts', async function(assert) {
-    await render(hbs`{{mode-toggle toggledText="Foo" notToggledText="Bar"}}`);
-    assert.equal(this.element.textContent.trim(), 'Foo\n Bar');
-    assert.equal(this.element.querySelectorAll('button').length, 2);
+    assert.equal(this.element.querySelectorAll('.mode').length, 2);
+    // You show the off-view when you're on
+    assert.ok(this.element.querySelector('.on-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.off-view').hasAttribute('hidden'));
   });
 
   test('it allows you to toggle modes', async function(assert) {
-    assert.expect(4);
+    assert.expect(5);
     this.set('mockToggled', isToggled => {
       assert.notOk(isToggled);
     });
     await render(hbs`{{mode-toggle onToggled=mockToggled}}`);
-    assert.ok(this.element.querySelector('.left-view').classList.contains('selected'));
-    await click('.right-view');
-    assert.notOk(this.element.querySelector('.left-view').classList.contains('selected'));
-    assert.ok(this.element.querySelector('.right-view').classList.contains('selected'));
+    assert.ok(this.element.querySelector('.on-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.off-view').hasAttribute('hidden'));
+    await click('.off-view');
+    assert.ok(this.element.querySelector('.off-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.on-view').hasAttribute('hidden'));
   });
 });

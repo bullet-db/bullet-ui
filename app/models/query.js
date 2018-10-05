@@ -88,7 +88,7 @@ export default DS.Model.extend(Validations, {
     }).join(', ');
   }).readOnly(),
 
-  aggregationSummary: computed('aggregation.type', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary', function() {
+  aggregationSummary: computed('aggregation.{type,size}', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary', function() {
     let type = this.get('aggregation.type');
     if (type === AGGREGATIONS.get('RAW')) {
       return '';

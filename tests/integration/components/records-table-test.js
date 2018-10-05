@@ -18,9 +18,7 @@ module('Integration | Component | records table', function(hooks) {
     await render(hbs`{{records-table columnNames=columns rawRows=rows}}`);
     assert.equal(this.element.querySelector('.lt-head .lt-column').textContent.trim(), 'foo');
     assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
-    let text = this.element.querySelector('.lt-body').textContent;
-    let spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, '123');
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '123');
   });
 
   test('it sorts a column on click', async function(assert) {
@@ -29,13 +27,47 @@ module('Integration | Component | records table', function(hooks) {
     this.set('rows', A([{ foo: 2 }, { foo: 1 }, { foo: 3 }]));
     await render(hbs`{{records-table columnNames=columns rawRows=rows}}`);
     assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 1);
-    let text = this.element.querySelector('.lt-body').textContent;
-    let spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, '213');
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '213');
     await click('.lt-head .lt-column.is-sortable');
-    text = this.element.querySelector('.lt-body').textContent;
-    spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, '123');
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '123');
+  });
+
+  test('it keeps a column sorted when receiving new data', async function(assert) {
+    assert.expect(5);
+    this.set('columns', A(['foo']));
+    this.set('rows', A([{ foo: 2 }, { foo: 1 }, { foo: 3 }]));
+    await render(hbs`{{records-table columnNames=columns rawRows=rows}}`);
+    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 1);
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '213');
+    await click('.lt-head .lt-column.is-sortable');
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '123');
+    this.set('rows', A([{ foo: 2 }, { foo: 9 }, { foo: 1 }, { foo: 3 }]));
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '1239');
+    // Descending
+    await click('.lt-head .lt-column.is-sortable');
+    this.set('rows', A([{ foo: 2 }, { foo: 0 }, { foo: 1 }, { foo: 3 }]));
+    assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '3210');
+  });
+
+  test('it resets the table when switching to and from time series', async function(assert) {
+    assert.expect(5);
+    this.set('columns', A(['foo']));
+    this.set('rows', A([{ foo: 2 }, { foo: 1 }, { foo: 3 }]));
+    this.set('mockTimeSeriesMode', false);
+    await render(hbs`{{records-table columnNames=columns rawRows=rows timeSeriesMode=mockTimeSeriesMode}}`);
+    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'foo');
+    // Does not update
+    this.set('columns', A(['bar']));
+    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'foo');
+    //  Now it updates
+    this.set('mockTimeSeriesMode', true);
+    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'bar');
+    // Does not update
+    this.set('columns', A(['foo']));
+    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'bar');
+    //  Now it updates
+    this.set('mockTimeSeriesMode', false);
+    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'foo');
   });
 
   // Skip it until https://github.com/offirgolan/ember-light-table/issues/562 is fixed.

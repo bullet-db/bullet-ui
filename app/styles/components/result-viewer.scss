@@ -5,7 +5,16 @@
  */
 .window-information {
   @import "window-metadata";
-  margin-bottom: 20px;;
+  margin-bottom: 10px;
+  text-align: center;
+  .section-header > .section-title {
+    font-size: $font-size-regular-large;
+    // To center this after padding with elements below
+    padding-left: 20px;
+  }
+  .window-metadata {
+    text-align: left;
+  }
 }
 
 .control-container {
@@ -13,17 +22,16 @@
   justify-content: space-between;
   align-items: center;
   align-content: center;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
   min-height: 10px;
-  
-  @import "control-container";
 
+  @import "control-container";
 }
 
 .records-container {
   @import "records-viewer";
   @import "query-step-help";
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   .help-text {
     margin-right: $results-right-space;
   }

@@ -11,6 +11,7 @@ module.exports = function(defaults) {
       glyphicons: false
     },
     'ember-font-awesome': {
+      removeUnusedIcons: EmberApp.env() === 'production',
       useScss: true,
       useLess: false
     }

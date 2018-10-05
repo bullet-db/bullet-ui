@@ -44,7 +44,7 @@ export default Mixin.create({
       // for unknown column names. When we define columns, we should not add columns with '.' in the name
       let value = row[column];
       let valueType = typeOf(value);
-      if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      if (valueType === 'string' || valueType === 'number' || valueType === 'boolean' || valueType === 'date') {
         return value;
       }
       // If not a primitive, return a String version

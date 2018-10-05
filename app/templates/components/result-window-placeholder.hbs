@@ -3,4 +3,8 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-Switch between <strong class="result-window-placeholder-count">{{windowCount}}</strong> windows...
+{{#if aggregateMode}}
+  Aggregating across your windows...
+{{else}}
+  Switch between <strong class="result-window-placeholder-count">{{windowCount}}</strong> windows...
+{{/if}}
