@@ -203,4 +203,63 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.equal(placeHolderText, 'Aggregating across your windows...');
     assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
   });
+
+  test('it caches records in time series and also auto updates', async function(assert) {
+    this.set('mockQuery', makeQuery(true));
+    let mockResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2)]);
+    this.set('mockResult', mockResult);
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    // Starts off
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    let placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Switch between 2 windows...');
+    assert.notOk(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
+
+    await click('.time-series-wrapper .mode-toggle .on-view');
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Aggregating across your windows...');
+    assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
+    await click('.view-controls .raw-view');
+    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
+
+    // Add some more windows
+    let anotherResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2), makeWindow(3)]);
+    mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2))
+    await click('.view-controls .table-view');
+    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '3 records in this view');
+  });
+
+  test('it caches records but does not auto update if it is turned off', async function(assert) {
+    this.set('mockQuery', makeQuery(true));
+    let mockResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2)]);
+    this.set('mockResult', mockResult);
+    await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
+    // Starts off
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    let placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Switch between 2 windows...');
+    assert.notOk(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
+
+    await click('.time-series-wrapper .mode-toggle .on-view');
+    assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
+    assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
+    placeHolderText = this.element.querySelector('.window-selector .result-window-placeholder').textContent.trim();
+    assert.equal(placeHolderText, 'Aggregating across your windows...');
+    assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
+    await click('.view-controls .raw-view');
+    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
+
+    // Turn off autoupdate
+    await click('.auto-update-wrapper .mode-toggle .off-view');
+
+    // Add some more windows but it should not update
+    let anotherResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2), makeWindow(3)]);
+    mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2))
+    await click('.view-controls .table-view');
+    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
+  });
 });
