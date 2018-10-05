@@ -170,18 +170,13 @@ export default Component.extend({
     },
 
     changeTimeSeriesMode(timeSeriesMode) {
-      if (timeSeriesMode) {
-        this.set('selectedWindow', null);
-        // If we don't have autoupdate on, we should update cache
-        if (!this.get('autoUpdate')) {
-          this.getTimeSeriesRecords();
-        }
-      } else {
-        // If we don't have autoupdate on, we should set the selected window to the last one
-        if (!this.get('autoUpdate')) {
-          this.set('selectedWindow', this.get('result.windows.lastObject'));
-        }
+      let autoUpdate = this.get('autoUpdate');
+      // If we don't have autoupdate on in timeSeriesMode, we should update cache to the latest to avoid confusion
+      if (timeSeriesMode && !autoUpdate) {
+        this.getTimeSeriesRecords();
       }
+      // If we don't have autoupdate on and not in time series mode, we should set the selected window to the last one
+      this.set('selectedWindow', timeSeriesMode || autoUpdate ? null : this.get('result.windows.lastObject'));
       this.set('timeSeriesMode', timeSeriesMode);
     }
   }

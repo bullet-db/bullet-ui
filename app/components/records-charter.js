@@ -103,7 +103,7 @@ export default Component.extend({
     return this.get('needsColorArray') ? this.fixedColors(this.get('regularLabels')) : undefined;
   }).readOnly(),
 
-  regularDatasets: computed('regularLabels', 'regularDependentColumns', 'regularColors', 'rows', function() {
+  regularDatasets: computed('regularDependentColumns', 'regularColors', 'rows', function() {
     let rows = this.get('rows');
     let colors = this.get('regularColors');
     return this.get('regularDependentColumns').map((column, i) => this.columnarDataset(column, rows, colors, i));
