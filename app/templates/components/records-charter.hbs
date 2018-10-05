@@ -10,16 +10,16 @@
   </button>
   {{#unless canOnlyPivot}}
     {{#if canShowPieChart}}
-      <button type="button" class="chart-control pie-view {{if showPieChart "active"}}" {{action "changeChart" "showPieChart" "doughnut"}} disabled={{showPieChart}}>
+      <button type="button" class="chart-control pie-view {{if showPieChart "active"}}" {{action "changeChart" "showPieChart"}} disabled={{showPieChart}}>
         {{fa-icon "pie-chart"}}
         {{#tooltip-on-element}}Show as pie chart{{/tooltip-on-element}}
       </button>
     {{/if}}
-    <button type="button" class="chart-control line-view {{if showLineChart "active"}}" {{action "changeChart" "showLineChart" "line"}} disabled={{showLineChart}}>
+    <button type="button" class="chart-control line-view {{if showLineChart "active"}}" {{action "changeChart" "showLineChart"}} disabled={{showLineChart}}>
       {{fa-icon "line-chart"}}
       {{#tooltip-on-element}}Show as line chart{{/tooltip-on-element}}
     </button>
-    <button type="button" class="chart-control bar-view {{if showBarChart "active"}}" {{action "changeChart" "showBarChart" "bar"}} disabled={{showBarChart}}>
+    <button type="button" class="chart-control bar-view {{if showBarChart "active"}}" {{action "changeChart" "showBarChart"}} disabled={{showBarChart}}>
       {{fa-icon "bar-chart"}}
       {{#tooltip-on-element side="left"}}Show as bar chart{{/tooltip-on-element}}
     </button>

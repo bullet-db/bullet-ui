@@ -27,7 +27,7 @@ export default Component.extend({
   columns: null,
   rows: null,
   config: null,
-  chartType: 'line',
+  // Can't use to pass to ember-chart the type because it only uses the type on creation
 
   showLineChart: true,
   showBarChart: false,
@@ -48,7 +48,7 @@ export default Component.extend({
     this._super(...arguments);
     // If we were in pie chart mode and switched to time series, reset to line
     if (this.get('timeSeriesMode') && this.get('showPieChart')) {
-      this.changeChart('showLineChart', 'line');
+      this.changeChart('showLineChart');
     }
   },
 
@@ -192,14 +192,14 @@ export default Component.extend({
     return Object.keys(datasets).map(dataset => datasets[dataset]);
   }).readOnly(),
 
-  timeSeriesData: computed('chartType', 'timeSeriesLabels', 'timeSeriesDatasets', function() {
+  timeSeriesData: computed('timeSeriesLabels', 'timeSeriesDatasets', function() {
     return { labels: this.get('timeSeriesLabels'), datasets: this.get('timeSeriesDatasets') };
   }).readOnly(),
 
   //////////////////////////////////////////////////// Helpers //////////////////////////////////////////////////
 
   // This goes over the rows and builds a Map of Maps where each first level contains all the unique groupKeys
-  // and each second level contains all the unique dataset names and its one metric value (per group).
+  // and each second level contains all the unique dataset names and its one metric value (per group)
   groupTimeSeriesData(rows, columns, groupKey, metricKey) {
     let grouped = new Map();
     // Since rows are sorted by groupKey, we will insert in groupKey order
@@ -208,7 +208,7 @@ export default Component.extend({
       let dataset = this.getJoinedRowValues(columns, row);
       let metricValue = row[metricKey];
       let group = grouped.get(groupName);
-      // No definition for nested Map, create and insert now to keep insertion order).
+      // No definition for nested Map, create and insert now to keep insertion order
       if (isEmpty(group)) {
         group = new Map();
         grouped.set(groupName, group);
@@ -325,10 +325,9 @@ export default Component.extend({
     this.set('showPieChart', false);
   },
 
-  changeChart(fieldToSet, chartType) {
+  changeChart(fieldToSet) {
     this.turnOffAllCharts();
     this.set(fieldToSet, true);
-    this.set('chartType', chartType);
   },
 
   actions: {
@@ -343,9 +342,9 @@ export default Component.extend({
       this.toggleProperty('showPivotMode');
     },
 
-    changeChart(field, chartType) {
+    changeChart(field) {
       this.set('showPivotMode', false);
-      this.changeChart(field, chartType);
+      this.changeChart(field);
     }
   }
 });

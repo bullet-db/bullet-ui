@@ -35,17 +35,27 @@ module('Integration | Component | records viewer', function(hooks) {
     window.saveAs = originalSave;
   });
 
-  test('it renders the data by default in pretty json ', async function(assert) {
+  test('it renders the data by default in pretty json if it is raw', async function(assert) {
+    assert.expect(3);
+    this.set('mockConfig', { isReallyRaw: true });
     this.set('mockRecords', RESULTS.SINGLE.records);
-    this.set('rawMode', true);
-    await render(hbs`{{records-viewer records=mockRecords showRawData=rawMode}}`);
+    await render(hbs`{{records-viewer records=mockRecords config=mockConfig}}`);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
     assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
     assert.ok(this.element.querySelector('.pretty-json-container').textContent.trim().startsWith('Array[1]'));
   });
 
+  test('it renders the data as a table if it is now raw', async function(assert) {
+    assert.expect(3);
+    this.set('mockRecords', RESULTS.SINGLE.records);
+    await render(hbs`{{records-viewer records=mockRecords}}`);
+    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
+  });
+
   test('it allows swapping between table and the raw views', async function(assert) {
-    assert.expect(11);
+    assert.expect(14);
     this.set('mockConfig', { isSingleRow: true });
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer config=mockConfig records=mockRecords}}`);
@@ -62,6 +72,10 @@ module('Integration | Component | records viewer', function(hooks) {
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
     assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
+    await click('.table-view');
+    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
+    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
   });
 
   test('it allows downloading the data in 3 formats', async function(assert) {
@@ -195,5 +209,22 @@ module('Integration | Component | records viewer', function(hooks) {
     await click('.mode-toggle .on-view');
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
     assert.equal(this.element.querySelector('pre').textContent.trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
+  });
+
+  test('it switches out of charting mode to table mode if charting is not allowed anymore', async function(assert) {
+    assert.expect(7);
+    this.set('mockConfig', { isSingleRow: false });
+    this.set('mockRecords', RESULTS.GROUP.records);
+    await render(hbs`{{records-viewer config=mockConfig records=mockRecords timeSeriesMode=false}}`);
+    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 4);
+    await click('.chart-view');
+    assert.ok(this.element.querySelector('.chart-view').classList.contains('active'));
+    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
+    this.set('mockConfig', { isSingleRow: true });
+    // Swaps to table automatically
+    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.equal(this.element.querySelectorAll('.lt-column').length, 4);
   });
 });
