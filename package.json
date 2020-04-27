@@ -1,6 +1,6 @@
 {
   "name": "bullet-ui",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "Ember 3 UI for Bullet - Realtime Query Engine",
   "private": true,
   "main": "express-server.js",
@@ -36,7 +36,7 @@
     "url": "https://github.com/bullet-db/bullet-ui/issues"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 8"
   },
   "author": "Akshai Sarma akshaisarma@gmail.com",
   "contributors": [
@@ -70,7 +70,7 @@
     "ember-cli-pretender": "1.0.1",
     "ember-cli-qunit": "~4.3.2",
     "ember-cli-release": "~0.2.9",
-    "ember-cli-sass": "~7.2.0",
+    "ember-cli-sass": "~10.0.0",
     "ember-cli-shims": "~1.2.0",
     "ember-cli-sri": "~2.1.1",
     "ember-cli-test-loader": "~2.2.0",
@@ -110,6 +110,7 @@
     "loader.js": "~4.6.0",
     "pivottable": "~2.20.0",
     "pretender": "1.4.0",
+    "sass": "^1.26.3",
     "sockjs-client": "~1.1.4",
     "urlsafe-base64": "~1.0.0"
   },
