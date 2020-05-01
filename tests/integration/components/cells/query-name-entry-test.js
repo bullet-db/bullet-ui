@@ -7,7 +7,7 @@ import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click, triggerEvent } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 import MockQuery from '../../../helpers/mocked-query';
 
 module('Integration | Component | Cell | query name entry', function(hooks) {

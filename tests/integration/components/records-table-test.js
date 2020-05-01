@@ -7,7 +7,7 @@ import { A } from '@ember/array';
 import { module, test, skip } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | records table', function(hooks) {
   setupRenderingTest(hooks);
