@@ -1,9 +1,8 @@
 {
   "name": "bullet-ui",
   "version": "1.0.0",
-  "description": "Ember 3 UI for Bullet - Realtime Query Engine",
   "private": true,
-  "main": "express-server.js",
+  "description": "Ember 3 UI for Bullet - Realtime Query Engine",
   "keywords": [
     "Big Data",
     "Streaming",
@@ -12,32 +11,14 @@
     "No Persistence",
     "Ember 3"
   ],
-  "directories": {
-    "doc": "doc",
-    "test": "tests"
-  },
-  "scripts": {
-    "clean": "rm -rf tmp dist node_modules",
-    "build": "ember build --environment=production",
-    "test": "COVERAGE=true ember test",
-    "local-build": "ember build",
-    "local-test": "ember test --server",
-    "start": "ember server",
-    "lint": "yarn run eslint config/* app/* tests/*",
-    "lint-fix": "yarn run eslint config/* app/* tests/* --fix",
-    "build-package": "yarn && yarn run -s build &&  rm -rf node_modules && yarn install --production && yarn run -s archive",
-    "archive": "tar --exclude='.eslintrc.js' --exclude='.DS_Store' --exclude='coverage.js' --exclude='environment.js' -czf bullet-ui-v${BULLET_VERSION}.tar.gz dist express-server.js server config node_modules/"
+  "bugs": {
+    "url": "https://github.com/bullet-db/bullet-ui/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/bullet-db/bullet-ui"
   },
-  "bugs": {
-    "url": "https://github.com/bullet-db/bullet-ui/issues"
-  },
-  "engines": {
-    "node": ">= 10"
-  },
+  "license": "Apache-2.0",
   "author": "Akshai Sarma akshaisarma@gmail.com",
   "contributors": [
     {
@@ -46,7 +27,27 @@
       "url": "http://github.com/akshaisarma"
     }
   ],
-  "license": "Apache-2.0",
+  "main": "express-server.js",
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "scripts": {
+    "archive": "tar --exclude='.eslintrc.js' --exclude='.DS_Store' --exclude='coverage.js' --exclude='environment.js' -czf bullet-ui-v${BULLET_VERSION}.tar.gz dist express-server.js server config node_modules/",
+    "build": "ember build --environment=production",
+    "build-package": "yarn && yarn run -s build &&  rm -rf node_modules && yarn install --production && yarn run -s archive",
+    "clean": "rm -rf tmp dist node_modules",
+    "lint": "yarn run eslint config/* app/* tests/*",
+    "lint-fix": "yarn run eslint config/* app/* tests/* --fix",
+    "local-build": "ember build",
+    "local-test": "ember test --server",
+    "start": "ember server",
+    "test": "COVERAGE=true ember test"
+  },
+  "dependencies": {
+    "cheerio": "~0.19.0",
+    "express": "~4.16.2"
+  },
   "devDependencies": {
     "@ember/jquery": "^1.1.0",
     "@ember/optional-features": "^1.3.0",
@@ -113,8 +114,10 @@
     "sockjs-client": "~1.4.0",
     "urlsafe-base64": "~1.0.0"
   },
-  "dependencies": {
-    "cheerio": "~0.19.0",
-    "express": "~4.16.2"
+  "engines": {
+    "node": ">= 10"
+  },
+  "ember": {
+    "edition": "octane"
   }
 }
