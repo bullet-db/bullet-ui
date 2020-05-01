@@ -6,8 +6,8 @@
 import { isEqual, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
 import Service from '@ember/service';
-import SockJS from 'npm:sockjs-client';
-import Stomp from 'npm:@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import Stomp from '@stomp/stompjs';
 
 const ACK_TYPE = 'ACK';
 const COMPLETE_TYPE = 'COMPLETE';

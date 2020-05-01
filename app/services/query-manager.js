@@ -10,8 +10,8 @@ import { computed, get, getProperties } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
-import ZLib from 'npm:browserify-zlib';
-import Base64 from 'npm:urlsafe-base64';
+import ZLib from 'node-builtins';
+import Base64 from 'urlsafe-base64';
 import { all, Promise, resolve } from 'rsvp';
 import config from '../config/environment';
 

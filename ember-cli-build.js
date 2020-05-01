@@ -14,6 +14,18 @@ module.exports = function(defaults) {
       removeUnusedIcons: EmberApp.env() === 'production',
       useScss: true,
       useLess: false
+    },
+    autoImport: {
+      alias: {
+        // Replaced browserify-zlib with a rollup (that was needed to get node primitives) but it included zlib already
+        'rollup-plugin-node-builtins': 'node-builtins'
+      }
+      /*
+      // Enable this if jquery is not being bound to by our jquery plugins
+      webpack: {
+        externals: { jquery: 'jQuery' }
+      }
+      */
     }
   });
 
@@ -31,9 +43,9 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   // Query Builder
-  app.import('node_modules/jquery-extendext/jQuery.extendext.js');
+  app.import('node_modules/jquery-extendext/jquery-extendext.js');
   app.import('node_modules/dot/doT.js');
-  app.import('node_modules/interactjs/interact.js');
+  app.import('node_modules/interactjs/dist/interact.js');
   app.import('node_modules/jQuery-QueryBuilder/dist/js/query-builder.js');
   app.import('node_modules/jQuery-QueryBuilder/dist/css/query-builder.default.css');
   // Query Builder Standalone plugins
@@ -42,7 +54,7 @@ module.exports = function(defaults) {
   app.import('node_modules/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
 
   // FileSaver
-  app.import('node_modules/file-saver/FileSaver.js');
+  app.import('node_modules/file-saver/dist/FileSaver.js');
 
   // pivottable
   app.import('node_modules/c3/c3.js');

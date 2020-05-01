@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@ember/component';
-import JSONFormatterModule from 'npm:json-formatter-js';
+import JSONFormatterModule from 'json-formatter-js';
 const JSONFormatter = JSONFormatterModule.default;
 
 export default Component.extend({

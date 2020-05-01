@@ -7,7 +7,7 @@ import EmberObject from '@ember/object';
 import { setupApplicationTest } from 'ember-qunit';
 import MockedAPI from './mocked-api';
 import sinon from 'sinon';
-import Stomp from 'npm:@stomp/stompjs';
+import Stomp from '@stomp/stompjs';
 import registerPowerSelectHelpers from 'ember-power-select/test-support/helpers';
 
 export function setupForMockSettings(hooks, defaultQuery) {

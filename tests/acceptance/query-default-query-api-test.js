@@ -10,7 +10,7 @@ import QUERIES from '../fixtures/queries';
 import { jsonWrap } from '../helpers/pretender';
 import mockedAPI from '../helpers/mocked-api';
 import sinon from 'sinon';
-import Stomp from 'npm:@stomp/stompjs';
+import Stomp from '@stomp/stompjs';
 import { basicSetupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
 import { visit, find, findAll } from '@ember/test-helpers';
 import { findIn } from '../helpers/find-helpers';
