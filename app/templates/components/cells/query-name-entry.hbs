@@ -7,7 +7,7 @@
 {{#if (await isUnsaved)}}
   <div class="query-unsaved">
     <i class="unsaved-icon fa fa-exclamation-triangle">
-      {{#ember-tooltip}}Your query needs to be saved or has issues{{/ember-tooltip}}
+      {{#ember-tooltip side="bottom"}}Your query needs to be saved or has issues{{/ember-tooltip}}
     </i>
   </div>
 {{/if}}
@@ -21,15 +21,15 @@
 </div>
 <div class="query-name-actions {{if hasHover 'is-visible'}}">
   <i class="query-name-action-icon edit-icon fa fa-edit" {{action "editClick" bubbles=false}}>
-    {{#ember-tooltip}}Edit this query{{/ember-tooltip}}
+    {{#ember-tooltip side="bottom"}}Edit this query{{/ember-tooltip}}
   </i>
   <i class="query-name-action-icon link-icon fa fa-share-square-o" {{action "linkClick" bubbles=false}}>
-    {{#ember-tooltip}}Create a link to this query that you can share{{/ember-tooltip}}
+    {{#ember-tooltip side="bottom"}}Create a link to this query that you can share{{/ember-tooltip}}
   </i>
   <i class="query-name-action-icon copy-icon fa fa-clone" {{action "copyClick" bubbles=false}}>
-    {{#ember-tooltip}}Make a copy of this query without results{{/ember-tooltip}}
+    {{#ember-tooltip side="bottom"}}Make a copy of this query without results{{/ember-tooltip}}
   </i>
   <i class="query-name-action-icon delete-icon fa fa-trash-o" {{action "deleteClick" bubbles=false}}>
-    {{#ember-tooltip}}Delete this query and all results{{/ember-tooltip}}
+    {{#ember-tooltip side="bottom"}}Delete this query and all results{{/ember-tooltip}}
   </i>
 </div>

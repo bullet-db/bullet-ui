@@ -8,7 +8,7 @@
   {{#if (is-clipboard-supported)}}
     {{#copy-button clipboardTarget=queryIDSelector}}
         {{fa-icon "clipboard" class="copy-icon"}}
-        {{#ember-tooltip}}Copy to your clipboard{{/ember-tooltip}}
+        {{#ember-tooltip side="bottom"}}Copy to your clipboard{{/ember-tooltip}}
     {{/copy-button}}
   {{/if}}
 </div>

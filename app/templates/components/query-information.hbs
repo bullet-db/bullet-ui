@@ -11,7 +11,7 @@
   <div class="query-controls">
     <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" query bubbles=false}}>
       {{fa-icon "pencil"}}
-      {{#ember-tooltip}}Edit your query{{/ember-tooltip}}
+      {{#ember-tooltip side="bottom"}}Edit your query{{/ember-tooltip}}
     </button>
     {{#if isRunningQuery}}
       <button class="btn btn-info btn-secondary query-button cancel-button" {{action "cancelClick" query bubbles=false}}>
