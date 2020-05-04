@@ -6,22 +6,22 @@
 <div class="visual-controls">
   <button type="button" class="pivot-control {{if pivotMode "active"}}" {{action "togglePivot"}} disabled={{pivotMode}}>
     {{fa-icon "sliders"}}
-    {{#tooltip-on-element}}Slice, dice and visualize your data{{/tooltip-on-element}}
+    {{#ember-tooltip}}Slice, dice and visualize your data{{/ember-tooltip}}
   </button>
   {{#unless canOnlyPivot}}
     {{#if canShowPieChart}}
       <button type="button" class="chart-control pie-view {{if showPieChart "active"}}" {{action "changeChart" "showPieChart"}} disabled={{showPieChart}}>
         {{fa-icon "pie-chart"}}
-        {{#tooltip-on-element}}Show as pie chart{{/tooltip-on-element}}
+        {{#ember-tooltip}}Show as pie chart{{/ember-tooltip}}
       </button>
     {{/if}}
     <button type="button" class="chart-control line-view {{if showLineChart "active"}}" {{action "changeChart" "showLineChart"}} disabled={{showLineChart}}>
       {{fa-icon "line-chart"}}
-      {{#tooltip-on-element}}Show as line chart{{/tooltip-on-element}}
+      {{#ember-tooltip}}Show as line chart{{/ember-tooltip}}
     </button>
     <button type="button" class="chart-control bar-view {{if showBarChart "active"}}" {{action "changeChart" "showBarChart"}} disabled={{showBarChart}}>
       {{fa-icon "bar-chart"}}
-      {{#tooltip-on-element side="left"}}Show as bar chart{{/tooltip-on-element}}
+      {{#ember-tooltip side="left"}}Show as bar chart{{/ember-tooltip}}
     </button>
   {{/unless}}
 </div>

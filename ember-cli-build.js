@@ -17,7 +17,7 @@ module.exports = function(defaults) {
     },
     autoImport: {
       /*
-      // Enable this if jquery is not being bound to by our jquery plugins
+      // TODO: Enable this if jquery is not being bound to by our jquery plugins
       webpack: {
         externals: { jquery: 'jQuery' }
       }

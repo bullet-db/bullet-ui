@@ -20,21 +20,21 @@
     {{#if enableCharting}}
       <button type="button" class="view-control chart-view {{if showChart "active"}}" {{action "chartMode"}} disabled={{showChart}}>
         {{fa-icon "area-chart"}}
-        {{#tooltip-on-element}}Chart, pivot and visualize your data{{/tooltip-on-element}}
+        {{#ember-tooltip}}Chart, pivot and visualize your data{{/ember-tooltip}}
       </button>
     {{/if}}
     <button type="button" class="view-control table-view {{if showTable "active"}}" {{action "tableMode"}} disabled={{showTable}}>
       {{fa-icon "table"}}
-      {{#tooltip-on-element}}Show as table{{/tooltip-on-element}}
+      {{#ember-tooltip}}Show as table{{/ember-tooltip}}
     </button>
     <button type="button" class="view-control raw-view {{if showRawData "active"}}" {{action "rawDataMode"}} disabled={{showRawData}}>
       {{fa-icon "code"}}
-      {{#tooltip-on-element}}Show raw data{{/tooltip-on-element}}
+      {{#ember-tooltip}}Show raw data{{/ember-tooltip}}
     </button>
     <div class="btn-group download-wrapper">
       <button type="button" class="view-control download dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         {{fa-icon "download"}}
-        {{#tooltip-on-element side="left"}}Download your data{{/tooltip-on-element}}
+        {{#ember-tooltip side="left"}}Download your data{{/ember-tooltip}}
       </button>
       <ul class="download-options dropdown-menu">
         <div class="triangle">

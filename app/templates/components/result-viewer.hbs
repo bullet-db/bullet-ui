@@ -9,12 +9,12 @@
       <div class="mode-control auto-update-wrapper {{unless showAutoUpdate "no-visibility"}}">
         <span>AutoUpdate</span>
         {{mode-toggle isToggled=autoUpdate onToggled=(action "changeAutoUpdate")}}
-        {{#tooltip-on-element side="right"}}Automatically show the latest data when it arrives{{/tooltip-on-element}}
+        {{#ember-tooltip side="right"}}Automatically show the latest data when it arrives{{/ember-tooltip}}
       </div>
       <div class="mode-control time-series-wrapper {{unless showTimeSeries "no-visibility"}}">
         <span>TimeSeries</span>
         {{mode-toggle isToggled=timeSeriesMode onToggled=(action "changeTimeSeriesMode")}}
-        {{#tooltip-on-element side="right"}}Compare data across your windows against the first numeric column in your data{{/tooltip-on-element}}
+        {{#ember-tooltip side="right"}}Compare data across your windows against the first numeric column in your data{{/ember-tooltip}}
       </div>
   </div>
 
@@ -26,7 +26,7 @@
           <div class="progress-indicator window-progress-indicator">
             {{timed-progress-bar shape='Line' active=isRunningQuery useStep=false duration=windowDuration
                                  retriggerOnChangeIn=numberOfWindows}}
-            {{#tooltip-on-element side="top"}}Your next estimated window arrival time{{/tooltip-on-element}}
+            {{#ember-tooltip side="top"}}Your next estimated window arrival time{{/ember-tooltip}}
           </div>
         {{/if}}
       {{/unless}}
@@ -46,7 +46,7 @@
 
     <div class="progress-indicator query-progress-indicator">
       {{timed-progress-bar shape='Circle' active=isRunningQuery duration=queryDuration}}
-      {{#tooltip-on-element side="left"}}How long your query has been running compared to its total duration{{/tooltip-on-element}}
+      {{#ember-tooltip side="left"}}How long your query has been running compared to its total duration{{/ember-tooltip}}
     </div>
 
   {{/unless}}

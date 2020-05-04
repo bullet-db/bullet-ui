@@ -71,6 +71,7 @@
     "ember-cli-dependency-checker": "~3.2.0",
     "ember-cli-htmlbars": "~4.3.1",
     "ember-cli-inject-live-reload": "~2.0.2",
+    "ember-cli-moment-shim": "^3.7.1",
     "ember-cli-sass": "~10.0.0",
     "ember-cli-sri": "^2.1.1",
     "ember-cli-template-lint": "^1.0.0-beta.3",
@@ -79,7 +80,7 @@
     "ember-data": "~3.16.0",
     "ember-export-application-global": "^2.0.1",
     "ember-font-awesome": "4.0.0-rc.4",
-    "ember-light-table": "2.0.0-beta.4",
+    "ember-light-table": "2.0.0-beta.5",
     "ember-load-initializers": "~2.1.1",
     "ember-localforage": "1.5.8",
     "ember-moment": "8.0.0",
@@ -113,6 +114,9 @@
     "sass": "^1.26.3",
     "sockjs-client": "~1.4.0",
     "urlsafe-base64": "~1.0.0"
+  },
+  "resolutions": {
+    "ember-composable-helpers": "^3.1.1"
   },
   "engines": {
     "node": ">= 10"

@@ -73,6 +73,6 @@ export default Component.extend(PaginatedTable, {
   },
 
   resetTable() {
-    this.set('table', new Table(this.get('columns')));
+    this.set('table', Table.create({ columns: this.get('columns') }));
   }
 });
