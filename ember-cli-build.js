@@ -16,10 +16,6 @@ module.exports = function(defaults) {
       useLess: false
     },
     autoImport: {
-      alias: {
-        // Replaced browserify-zlib with a rollup (that was needed to get node primitives) but it included zlib already
-        'rollup-plugin-node-builtins': 'node-builtins'
-      }
       /*
       // Enable this if jquery is not being bound to by our jquery plugins
       webpack: {

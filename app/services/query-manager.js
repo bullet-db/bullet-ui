@@ -10,7 +10,6 @@ import { computed, get, getProperties } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
-import ZLib from 'node-builtins';
 import Base64 from 'urlsafe-base64';
 import { all, Promise, resolve } from 'rsvp';
 import config from '../config/environment';
@@ -89,7 +88,7 @@ export default Service.extend({
     querier.set('apiMode', true);
     let string = JSON.stringify(json);
     return new Promise(resolve => {
-      ZLib.deflate(string, (_, result) => resolve(Base64.encode(result)));
+      resolve(Base64.encode(string));
     });
   },
 
@@ -97,10 +96,8 @@ export default Service.extend({
     let querier = this.get('querier');
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
-      ZLib.inflate(buffer, (_, result) => {
-        let json = JSON.parse(result.toString());
-        resolve(querier.recreate(json));
-      });
+      let json = JSON.parse(buffer.toString());
+      resolve(querier.recreate(json));
     });
   },
 
