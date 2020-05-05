@@ -7,7 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, triggerEvent, currentRouteName, find, findAll } from '@ember/test-helpers';
+import { visit, click, fillIn, triggerEvent, currentRouteName, find, findAll, blur } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from '../helpers/find-helpers';
 
@@ -34,13 +34,13 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal(currentRouteName(), 'result');
     data = find('pre').textContent;
     await visit('queries');
-    assert.equal(findAll('.queries-table .query-name-entry .query-description').length, 1);
+    assert.dom('.queries-table .query-name-entry .query-description').exists({ count: 1 });
     assert.notEqual(find('.queries-table .query-date-entry').textContent.trim(), '--');
-    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
+    assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
     await click('.queries-table .query-results-entry');
     await click('.result-date-entry');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(find('pre').textContent, data);
+    assert.dom('pre').hasText(data);
   });
 
   test('query firing and redirecting to error', async function(assert) {
@@ -71,14 +71,16 @@ module('Acceptance | query firing', function(hooks) {
     await click('.save-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(find('.filter-container .rule-filter-container select').value, 'simple_column');
-    assert.equal(find('.filter-container .rule-operator-container select').value, 'equal');
-    assert.equal(find('.filter-container .rule-value-container input').value, 'foo,bar');
-    assert.equal(find('.projections-container .column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'simple_column');
+    assert.dom('.filter-container .rule-filter-container select').hasValue('simple_column');
+    assert.dom('.filter-container .rule-operator-container select').hasValue('equal');
+    assert.dom('.filter-container .rule-value-container input').hasValue('foo,bar');
+    assert.dom(
+      '.projections-container .column-onlyfield .ember-power-select-selected-item'
+    ).hasText('simple_column');
     // Test that the projection name was autofilled
-    assert.equal(find('.projections-container .field-name input').value, 'simple_column');
+    assert.dom('.projections-container .field-name input').hasValue('simple_column');
     // Size field shown
-    assert.equal(findAll('.aggregation-size').length, 1);
+    assert.dom('.aggregation-size').exists({ count: 1 });
   });
 
   test('creating a query, adding filters and raw data projections, and save on submit', async function(assert) {
@@ -93,19 +95,23 @@ module('Acceptance | query firing', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.projections-container .field-selection-container .field-selection .column-subfield input', 'foo');
-    await triggerEvent('.projections-container .field-selection-container .field-selection .column-subfield input', 'blur');
+    await await blur(
+      '.projections-container .field-selection-container .field-selection .column-subfield input'
+    );
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(find('.filter-container .rule-filter-container select').value, 'simple_column');
-    assert.equal(find('.filter-container .rule-operator-container select').value, 'equal');
-    assert.equal(find('.filter-container .rule-value-container input').value, 'foo,bar');
-    assert.equal(find('.projections-container .column-mainfield .ember-power-select-selected-item').textContent.trim(), 'complex_map_column.*');
-    assert.equal(find('.projections-container .field-selection-container .column-subfield input').value, 'foo');
+    assert.dom('.filter-container .rule-filter-container select').hasValue('simple_column');
+    assert.dom('.filter-container .rule-operator-container select').hasValue('equal');
+    assert.dom('.filter-container .rule-value-container input').hasValue('foo,bar');
+    assert.dom(
+      '.projections-container .column-mainfield .ember-power-select-selected-item'
+    ).hasText('complex_map_column.*');
+    assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
     // Test that the projection name was autofilled
-    assert.equal(find('.projections-container .field-name input').value, 'complex_map_column.foo');
+    assert.dom('.projections-container .field-name input').hasValue('complex_map_column.foo');
     // Size field shown
-    assert.equal(findAll('.aggregation-size').length, 1);
+    assert.dom('.aggregation-size').exists({ count: 1 });
   });
 
   test('creating a query with a filter subfield column filled', async function(assert) {
@@ -121,10 +127,10 @@ module('Acceptance | query firing', function(hooks) {
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_map_column.*');
-    assert.equal(find('.filter-container .rule-subfield-container input').value, 'foo');
-    assert.equal(find('.filter-container .rule-operator-container select').value, 'equal');
-    assert.equal(find('.filter-container .rule-value-container input').value, 'bar');
+    assert.dom('.filter-container .rule-filter-container select').hasValue('complex_map_column.*');
+    assert.dom('.filter-container .rule-subfield-container input').hasValue('foo');
+    assert.dom('.filter-container .rule-operator-container select').hasValue('equal');
+    assert.dom('.filter-container .rule-value-container input').hasValue('bar');
   });
 
   test('creating a query with a filter subfield column not filled', async function(assert) {
@@ -139,10 +145,10 @@ module('Acceptance | query firing', function(hooks) {
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(find('.filter-container .rule-filter-container select').value, 'complex_map_column.*');
-    assert.equal(find('.filter-container .rule-subfield-container input').value, '');
-    assert.equal(find('.filter-container .rule-operator-container select').value, 'equal');
-    assert.equal(find('.filter-container .rule-value-container input').value, 'bar');
+    assert.dom('.filter-container .rule-filter-container select').hasValue('complex_map_column.*');
+    assert.dom('.filter-container .rule-subfield-container input').hasValue('');
+    assert.dom('.filter-container .rule-operator-container select').hasValue('equal');
+    assert.dom('.filter-container .rule-value-container input').hasValue('bar');
   });
 
   test('creating a query, adding count distinct output fields, and save on submit', async function(assert) {
@@ -158,13 +164,17 @@ module('Acceptance | query firing', function(hooks) {
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
-    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column');
-    assert.equal(find('.output-container .count-distinct-display-name input').value, 'cnt');
+    assert.dom(
+      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0])
+    ).hasText('simple_column');
+    assert.dom(
+      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
+    ).hasText('complex_map_column');
+    assert.dom('.output-container .count-distinct-display-name input').hasValue('cnt');
     // No names for fields for count distinct
-    assert.equal(findAll('.output-container .field-selection-container .field-name').length, 0);
+    assert.dom('.output-container .field-selection-container .field-name').doesNotExist();
     // No size field shown
-    assert.equal(findAll('.aggregation-size').length, 0);
+    assert.dom('.aggregation-size').doesNotExist();
   });
 
   test('creating a query, adding groups and metrics for grouped data output fields, and save on submit', async function(assert) {
@@ -190,22 +200,32 @@ module('Acceptance | query firing', function(hooks) {
     await visit('queries');
     await click('.queries-table .query-name-entry');
     // Name was autofilled for simple_column
-    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0]).textContent.trim(), 'complex_map_column');
+    assert.dom(
+      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0])
+    ).hasText('complex_map_column');
     assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
-    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.dom(
+      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1])
+    ).hasText('simple_column');
     assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
 
     // No field and name for count
-    assert.equal(findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0]).textContent.trim(), 'Count');
+    assert.dom(
+      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
+    ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
     assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
 
-    assert.equal(findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'Average');
-    assert.equal(findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1]).textContent.trim(), 'simple_column');
+    assert.dom(
+      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
+    ).hasText('Average');
+    assert.dom(
+      findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
+    ).hasText('simple_column');
     assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
 
     // No size field shown
-    assert.equal(findAll('.aggregation-size').length, 0);
+    assert.dom('.aggregation-size').doesNotExist();
   });
 
   test('creating a distribution query, adding free-form points and saving on submit', async function(assert) {
@@ -222,14 +242,20 @@ module('Acceptance | query firing', function(hooks) {
     await visit('queries');
     await click('.queries-table .query-name-entry');
     // No names for fields for distribution
-    assert.equal(findAll('.output-container .field-selection-container .field-name').length, 0);
+    assert.dom('.output-container .field-selection-container .field-name').doesNotExist();
     // No size field shown
-    assert.equal(findAll('.aggregation-size').length, 0);
-    assert.ok(find('.output-options #distribution').parentElement.classList.contains('checked'));
-    assert.ok(find('.output-container .distribution-type-options #quantile').parentElement.classList.contains('checked'));
-    assert.ok(find('.output-container .distribution-point-options #points').parentElement.classList.contains('checked'));
-    assert.equal(find('.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'simple_column');
-    assert.equal(find('.output-container .distribution-type-points input').value, '0,0.2,1');
+    assert.dom('.aggregation-size').doesNotExist();
+    assert.dom(find('.output-options #distribution').parentElement).hasClass('checked');
+    assert.dom(
+      find('.output-container .distribution-type-options #quantile').parentElement
+    ).hasClass('checked');
+    assert.dom(
+      find('.output-container .distribution-point-options #points').parentElement
+    ).hasClass('checked');
+    assert.dom(
+      '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
+    ).hasText('simple_column');
+    assert.dom('.output-container .distribution-type-points input').hasValue('0,0.2,1');
   });
 
   test('creating a top k query, adding a custom k, threshold and name', async function(assert) {
@@ -242,7 +268,9 @@ module('Acceptance | query firing', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await triggerEvent(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'blur');
+    await await blur(
+      findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
+    );
     await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
     await fillIn('.output-container .top-k-size input', '20');
     await fillIn('.output-container .top-k-min-count input', '2000');
@@ -251,16 +279,20 @@ module('Acceptance | query firing', function(hooks) {
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(findAll('.output-container .field-selection-container .field-name').length, 2);
-    assert.equal(findAll('.aggregation-size').length, 0);
-    assert.ok(find('.output-options #top-k').parentElement.classList.contains('checked'));
-    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
-    assert.equal(findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1]).textContent.trim(), 'complex_map_column.*');
+    assert.dom('.output-container .field-selection-container .field-name').exists({ count: 2 });
+    assert.dom('.aggregation-size').doesNotExist();
+    assert.dom(find('.output-options #top-k').parentElement).hasClass('checked');
+    assert.dom(
+      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0])
+    ).hasText('simple_column');
+    assert.dom(
+      findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
+    ).hasText('complex_map_column.*');
     assert.equal(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
     assert.equal(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
-    assert.equal(find('.output-container .top-k-size input').value, '20');
-    assert.equal(find('.output-container .top-k-min-count input').value, '2000');
-    assert.equal(find('.output-container .top-k-display-name input').value, 'cnt');
+    assert.dom('.output-container .top-k-size input').hasValue('20');
+    assert.dom('.output-container .top-k-min-count input').hasValue('2000');
+    assert.dom('.output-container .top-k-display-name input').hasValue('cnt');
   });
 
   test('creating a windowed query', async function(assert) {
@@ -272,18 +304,18 @@ module('Acceptance | query firing', function(hooks) {
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.equal(findAll('.window-input .ember-radio-button').length, 4);
-    assert.ok(find('.window-input #time-based').parentElement.classList.contains('checked'));
+    assert.dom('.window-input .ember-radio-button').exists({ count: 4 });
+    assert.dom(find('.window-input #time-based').parentElement).hasClass('checked');
 
     await click('.window-input #record-based');
-    assert.equal(findAll('.window-input .ember-radio-button').length, 2);
-    assert.ok(find('.window-input #record-based').parentElement.classList.contains('checked'));
+    assert.dom('.window-input .ember-radio-button').exists({ count: 2 });
+    assert.dom(find('.window-input #record-based').parentElement).hasClass('checked');
 
     await click('.window-input #time-based');
-    assert.equal(findAll('.window-input .ember-radio-button').length, 4);
-    assert.ok(find('.window-input #time-based').parentElement.classList.contains('checked'));
+    assert.dom('.window-input .ember-radio-button').exists({ count: 4 });
+    assert.dom(find('.window-input #time-based').parentElement).hasClass('checked');
 
     await click('.window-input .delete-button');
-    assert.equal(findAll('.window-input .add-button').length, 1);
+    assert.dom('.window-input .add-button').exists({ count: 1 });
   });
 });

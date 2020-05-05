@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { merge } from '@ember/polyfills';
+import { assign } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
@@ -129,7 +129,7 @@ export default Component.extend({
     prefix = prefix === undefined ? '' : `${prefix}:`;
     for (let item in json) {
       let nested = this.flatten(json[item], `${prefix}${item}`);
-      merge(flattened, nested);
+      assign(flattened, nested);
     }
     return flattened;
   },

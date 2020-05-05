@@ -39,24 +39,24 @@ module('Integration | Component | window-input', function(hooks) {
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
-    assert.ok(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
+    assert.dom(this.element.querySelector('#time-based').parentElement).hasClass('checked');
+    assert.dom(this.element.querySelector('#record-based').parentElement).hasNoClass('checked');
+    assert.dom(this.element.querySelector('#include-window').parentElement).hasClass('checked');
+    assert.dom(this.element.querySelector('#include-all').parentElement).hasNoClass('checked');
     assert.equal(this.element.querySelector('#include-all').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
     await click('#record-based');
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 2);
-    assert.notOk(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
-    assert.ok(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
+    assert.dom(this.element.querySelector('#time-based').parentElement).hasNoClass('checked');
+    assert.dom(this.element.querySelector('#record-based').parentElement).hasClass('checked');
     assert.equal(this.element.querySelector('.validated-input input').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 1);
 
     await click('#time-based');
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
+    assert.dom(this.element.querySelector('#time-based').parentElement).hasClass('checked');
+    assert.dom(this.element.querySelector('#record-based').parentElement).hasNoClass('checked');
   });
 
   test('it renders when aggregation is not raw', async function(assert) {
@@ -74,16 +74,16 @@ module('Integration | Component | window-input', function(hooks) {
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
     assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
-    assert.ok(this.element.querySelector('#time-based').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#record-based').parentElement.classList.contains('checked'));
-    assert.ok(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
-    assert.notOk(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
+    assert.dom(this.element.querySelector('#time-based').parentElement).hasClass('checked');
+    assert.dom(this.element.querySelector('#record-based').parentElement).hasNoClass('checked');
+    assert.dom(this.element.querySelector('#include-window').parentElement).hasClass('checked');
+    assert.dom(this.element.querySelector('#include-all').parentElement).hasNoClass('checked');
     assert.equal(this.element.querySelector('#record-based').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
     await click('#include-all');
-    assert.notOk(this.element.querySelector('#include-window').parentElement.classList.contains('checked'));
-    assert.ok(this.element.querySelector('#include-all').parentElement.classList.contains('checked'));
+    assert.dom(this.element.querySelector('#include-window').parentElement).hasNoClass('checked');
+    assert.dom(this.element.querySelector('#include-all').parentElement).hasClass('checked');
   });
 
   test('it adds a window', async function(assert) {

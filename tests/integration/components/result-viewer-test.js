@@ -37,31 +37,31 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult({ }, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.auto-update-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.auto-update-wrapper')).hasClass('no-visibility');
 
     // Raw but Record based window -> auto aggregate
     this.set('mockQuery', makeQuery(false));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.auto-update-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.auto-update-wrapper')).hasClass('no-visibility');
 
     // No data
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, false, false, []));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.auto-update-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.auto-update-wrapper')).hasClass('no-visibility');
 
     // Not Raw and Time Based
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.notOk(this.element.querySelector('.auto-update-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.auto-update-wrapper')).hasNoClass('no-visibility');
 
     // Raw and Time Based
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.notOk(this.element.querySelector('.auto-update-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.auto-update-wrapper')).hasNoClass('no-visibility');
   });
 
   test('it allows time series toggling if there is data, no errors, and a time window', async function(assert) {
@@ -69,25 +69,25 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult({ }, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.time-series-wrapper')).hasClass('no-visibility');
 
     // No data
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, false, false, []));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.time-series-wrapper')).hasClass('no-visibility');
 
     // Raw but Record based window
     this.set('mockQuery', makeQuery(false));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.ok(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.time-series-wrapper')).hasClass('no-visibility');
 
     // Raw and Time Based
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.notOk(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.time-series-wrapper')).hasNoClass('no-visibility');
     assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
     assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
 
@@ -95,7 +95,7 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult}}`);
-    assert.notOk(this.element.querySelector('.time-series-wrapper').classList.contains('no-visibility'));
+    assert.dom(this.element.querySelector('.time-series-wrapper')).hasNoClass('no-visibility');
     assert.notOk(this.element.querySelector('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden'));
     assert.ok(this.element.querySelector('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden'));
   });
@@ -166,7 +166,7 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
     this.set('mockQuerier', EmberObject.create({ isRunningQuery: false }));
     await render(hbs`{{result-viewer query=mockQuery result=mockResult querier=mockQuerier}}`);
-    assert.equal(this.element.querySelector('.control-container .query-progress-indicator').textContent.trim(), '100%');
+    assert.dom(this.element.querySelector('.control-container .query-progress-indicator')).hasText('100%');
   });
 
   test('it lets you turn auto update on and off', async function(assert) {
@@ -240,13 +240,13 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.equal(placeHolderText, 'Aggregating across your windows...');
     assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
     await click('.view-controls .raw-view');
-    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
+    assert.dom(this.element.querySelector('.records-title .records-header')).hasText('2 records in this view');
 
     // Add some more windows
     let anotherResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2), makeWindow(3)]);
     mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2));
     await settled();
-    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '3 records in this view');
+    assert.dom(this.element.querySelector('.records-title .records-header')).hasText('3 records in this view');
   });
 
   test('it caches records but does not auto update if it is turned off', async function(assert) {
@@ -268,7 +268,7 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.equal(placeHolderText, 'Aggregating across your windows...');
     assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
     await settled();
-    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
+    assert.dom(this.element.querySelector('.records-title .records-header')).hasText('2 records in this view');
 
     // Turn off autoupdate
     await click('.auto-update-wrapper .mode-toggle .off-view');
@@ -277,7 +277,7 @@ module('Integration | Component | result viewer', function(hooks) {
     let anotherResult = makeResult(null, false, true, [makeWindow(1), makeWindow(2), makeWindow(3)]);
     mockResult.get('windows').pushObject(anotherResult.get('windows').objectAt(2));
     await settled();
-    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '2 records in this view');
+    assert.dom(this.element.querySelector('.records-title .records-header')).hasText('2 records in this view');
   });
 
   test('it resets the window to no window when autoupdate is on and time series is turned off', async function(assert) {
@@ -374,6 +374,6 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.equal(placeHolderText, 'Aggregating across your windows...');
     assert.ok(this.element.querySelector('.window-selector .ember-power-select-trigger').hasAttribute('aria-disabled'));
     await settled();
-    assert.equal(this.element.querySelector('.records-title .records-header').textContent.trim(), '3 records in this view');
+    assert.dom(this.element.querySelector('.records-title .records-header')).hasText('3 records in this view');
   });
 });

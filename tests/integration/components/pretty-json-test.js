@@ -13,26 +13,26 @@ module('Integration | Component | pretty json', function(hooks) {
 
   test('it renders edge cases', async function(assert) {
     await render(hbs`{{pretty-json}}`);
-    assert.equal(this.element.textContent.trim(), 'null');
+    assert.dom(this.element).hasText('null');
 
     await render(hbs`
       {{#pretty-json}}
         template block text
       {{/pretty-json}}
     `);
-    assert.equal(this.element.textContent.trim(), 'null');
+    assert.dom(this.element).hasText('null');
 
     this.set('json', undefined);
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.element.textContent.trim(), 'undefined');
+    assert.dom(this.element).hasText('undefined');
 
     this.set('json', []);
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.element.textContent.trim(), 'Array[0][]');
+    assert.dom(this.element).hasText('Array[0][]');
 
     this.set('json', { });
     await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.element.textContent.trim(), 'Object{}');
+    assert.dom(this.element).hasText('Object{}');
   });
 
   test('it wraps content in a pre tag', async function(assert) {

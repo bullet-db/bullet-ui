@@ -44,7 +44,7 @@ module('Acceptance | query default query api', function(hooks) {
   test('it creates new queries with two default filters and the count distinct aggregation', async function(assert) {
     assert.expect(10);
     await visit('/queries/new');
-    assert.equal(findAll('.filter-container .builder .rules-list .rule-container').length, 2);
+    assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
       'enumerated_map_column.nested_1');
     assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'not_in');
@@ -52,9 +52,11 @@ module('Acceptance | query default query api', function(hooks) {
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
     assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
     assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
-    assert.equal(findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0]).textContent.trim(), 'simple_column');
-    assert.equal(find('.output-container .count-distinct-display-name input').value, '');
-    assert.equal(find('.options-container .query-duration input').value, '50');
+    assert.dom(
+      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0])
+    ).hasText('simple_column');
+    assert.dom('.output-container .count-distinct-display-name input').hasValue('');
+    assert.dom('.options-container .query-duration input').hasValue('50');
   });
 
   test('it reuses fetched values when creating new queries', async function(assert) {

@@ -13,16 +13,16 @@ module('Integration | Component | result window placeholder', function(hooks) {
 
   test('it displays a message to switch between windows', async function(assert) {
     await render(hbs`{{result-window-placeholder}}`);
-    assert.equal(this.element.textContent.trim(), 'Switch between 0 windows...');
+    assert.dom(this.element).hasText('Switch between 0 windows...');
   });
 
   test('it displays a message to switch between the given count of windows', async function(assert) {
     await render(hbs`{{result-window-placeholder windowCount=100}}`);
-    assert.equal(this.element.textContent.trim(), 'Switch between 100 windows...');
+    assert.dom(this.element).hasText('Switch between 100 windows...');
   });
 
   test('it displays a different message in aggregate mode', async function(assert) {
     await render(hbs`{{result-window-placeholder windowCount=100 aggregateMode=true}}`);
-    assert.equal(this.element.textContent.trim(), 'Aggregating across your windows...');
+    assert.dom(this.element).hasText('Aggregating across your windows...');
   });
 });

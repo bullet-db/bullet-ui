@@ -14,19 +14,19 @@ module('Integration | Component | simple alert', function(hooks) {
 
   test('it renders a message in block form', async function(assert) {
     await render(hbs`{{simple-alert}}`);
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
 
     await render(hbs`
       {{#simple-alert}}
         template block text
       {{/simple-alert}}
     `);
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.dom(this.element).hasText('template block text');
   });
 
   test('it shows a dismiss button', async function(assert) {
     await render(hbs`{{simple-alert}}`);
-    assert.ok(this.element.querySelector('.alert > button i').classList.contains('fa-close'));
+    assert.dom(this.element.querySelector('.alert > button i')).hasClass('fa-close');
   });
 
   test('it maps an empty alert type to the proper bootstrap css class', async function(assert) {

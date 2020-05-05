@@ -118,7 +118,7 @@ module('Integration | Component | query input', function(hooks) {
       // We should be triggered if everything is ok.
       assert.ok(true);
       // There should be no validation messages
-      assert.equal(this.element.querySelector('.validation-container').textContent.trim(), '');
+      assert.dom(this.element.querySelector('.validation-container')).hasText('');
     });
 
     await render(

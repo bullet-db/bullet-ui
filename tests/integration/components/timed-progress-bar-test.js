@@ -13,7 +13,7 @@ module('Integration | Component | timed progress bar', function(hooks) {
 
   test('it renders', async function(assert) {
     await render(hbs`{{timed-progress-bar}}`);
-    assert.equal(this.element.textContent.trim(), '100%');
+    assert.dom(this.element).hasText('100%');
 
     await render(hbs`
       {{#timed-progress-bar}}
@@ -25,7 +25,7 @@ module('Integration | Component | timed progress bar', function(hooks) {
 
   test('it can be made active', async function(assert) {
     await render(hbs`{{timed-progress-bar active=true duration=100 updateInterval=100}}`);
-    assert.equal(this.element.textContent.trim(), '100%');
+    assert.dom(this.element).hasText('100%');
   });
 
   test('it calls the finished action', async function(assert) {
@@ -38,6 +38,6 @@ module('Integration | Component | timed progress bar', function(hooks) {
 
   test('it can skip displaying a percentage', async function(assert) {
     await render(hbs`{{timed-progress-bar useStep=false}}`);
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
   });
 });

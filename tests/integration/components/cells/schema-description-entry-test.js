@@ -14,13 +14,13 @@ module('Integration | Component | Cell | schema description entry', function(hoo
   test('it renders', async function(assert) {
     await render(hbs`{{cells/schema-description-entry value='foo'}}`);
 
-    assert.equal(this.element.textContent.trim(), 'foo');
+    assert.dom(this.element).hasText('foo');
   });
 
   test('it renders html', async function(assert) {
     await render(hbs`{{cells/schema-description-entry value='<div><p>foo</p></div>'}}`);
 
-    assert.equal(this.element.textContent.trim(), 'foo');
+    assert.dom(this.element).hasText('foo');
     assert.equal(this.element.querySelectorAll('div > p').length, 1);
   });
 });

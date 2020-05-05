@@ -22,10 +22,10 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', A(['Probability', 'Count', 'Range']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
     await click('.records-charter .pivot-control');
-    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .pivot-control')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
@@ -37,7 +37,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', A(['foo', 'timestamp', 'domain']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
@@ -48,7 +48,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
@@ -59,13 +59,13 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.bar-view')).hasNoClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.pie-view')).hasNoClass('active');
     await click('.records-charter .chart-control.bar-view');
-    assert.ok(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.bar-view')).hasClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasNoClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.pie-view')).hasNoClass('active');
   });
 
   test('it lets you swap to a pie chart', async function(assert) {
@@ -75,13 +75,13 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.bar-view')).hasNoClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.pie-view')).hasNoClass('active');
     await click('.records-charter .chart-control.pie-view');
-    assert.ok(this.element.querySelector('.records-charter .chart-control.pie-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
-    assert.notOk(this.element.querySelector('.records-charter .chart-control.bar-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.pie-view')).hasClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasNoClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.bar-view')).hasNoClass('active');
   });
 
   test('it enables only the pivot mode if the results are raw', async function(assert) {
@@ -92,7 +92,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', A(['foo', 'timestamp', 'domain']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control').length, 0);
-    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .pivot-control')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
   });
@@ -110,10 +110,10 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockColumns', A(['Probability', 'Count', 'Range']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig}}`);
 
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
     await click('.records-charter .pivot-control');
-    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .pivot-control')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container .pvtUi').length, 1);
     assert.equal(this.element.querySelector('.pvtUi select.pvtRenderer').value, 'Table');
     this.element.querySelector('.pivot-table-container select.pvtRenderer').value = 'Bar Chart';
@@ -131,7 +131,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.WINDOWED_GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
   });
 
@@ -142,7 +142,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.WINDOWED_DISTRIBUTION.records);
     this.set('mockColumns', A(['Probability', 'Count', 'Range']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
   });
 
@@ -153,7 +153,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.WINDOWED_COUNT_DISTINCT.records);
     this.set('mockColumns', A(['foo']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
   });
 
@@ -164,7 +164,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.WINDOWED_QUANTILE.records);
     this.set('mockColumns', A(['Quantile', 'Value']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
   });
 
@@ -175,7 +175,7 @@ module('Integration | Component | records charter', function(hooks) {
     this.set('mockRows', RESULTS.WINDOWED_QUANTILE.records);
     this.set('mockColumns', A(['Quantile', 'Value']));
     await render(hbs`{{records-charter rows=mockRows columns=mockColumns model=mockModel config=mockConfig timeSeriesMode=true showPieChart=true}}`);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.records-charter .chart-control.pie-view').length, 0);
   });
 });

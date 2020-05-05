@@ -57,7 +57,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
 
     await render(hbs`{{cells/query-name-entry row=mockRow}}`);
     await triggerEvent('.query-name-entry', 'mouseover');
-    assert.ok(this.element.querySelector('.query-name-actions').classList.contains('is-visible'));
+    assert.dom(this.element.querySelector('.query-name-actions')).hasClass('is-visible');
   });
 
   test('it removes the hasHover class on mouse leave', async function(assert) {
@@ -66,9 +66,9 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
 
     await render(hbs`{{cells/query-name-entry row=mockRow}}`);
     await triggerEvent('.query-name-entry', 'mouseover');
-    assert.ok(this.element.querySelector('.query-name-actions').classList.contains('is-visible'));
+    assert.dom(this.element.querySelector('.query-name-actions')).hasClass('is-visible');
     await triggerEvent('.query-name-entry', 'mouseout');
-    assert.notOk(this.element.querySelector('.query-name-actions').classList.contains('is-visible'));
+    assert.dom(this.element.querySelector('.query-name-actions')).hasNoClass('is-visible');
   });
 
   test('it calls the table action queryClick on clicking edit', async function(assert) {

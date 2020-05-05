@@ -16,7 +16,7 @@ module('Integration | Component | records table', function(hooks) {
     this.set('columns', A(['foo']));
     this.set('rows', A([{ foo: 1 }, { foo: 2 }, { foo: 3 }]));
     await render(hbs`{{records-table columnNames=columns rawRows=rows}}`);
-    assert.equal(this.element.querySelector('.lt-head .lt-column').textContent.trim(), 'foo');
+    assert.dom(this.element.querySelector('.lt-head .lt-column')).hasText('foo');
     assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
     assert.equal(this.element.querySelector('.lt-body').textContent.replace(/\s/g, ''), '123');
   });

@@ -15,12 +15,12 @@ module('Integration | Component | Cell | query results entry', function(hooks) {
 
   test('it renders the empty state when there are no results', async function(assert) {
     await render(hbs`{{cells/query-results-entry}}`);
-    assert.equal(this.element.textContent.trim(), '--');
+    assert.dom(this.element).hasText('--');
   });
 
   test('it renders the run count if there were results', async function(assert) {
     this.set('mockValue', A([EmberObject.create({ foo: 2 })]));
     await render(hbs`{{cells/query-results-entry value=mockValue}}`);
-    assert.equal(this.element.querySelector('.length-entry').textContent.trim(), '1 Results');
+    assert.dom(this.element.querySelector('.length-entry')).hasText('1 Results');
   });
 });

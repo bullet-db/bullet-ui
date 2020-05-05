@@ -84,7 +84,7 @@ module('Integration | Component | records raw viewer', function(hooks) {
     await click('.mode-toggle .off-view');
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 1);
-    assert.equal(this.element.querySelector('.raw-display .raw-json-display').textContent.trim(), '');
+    assert.dom(this.element.querySelector('.raw-display .raw-json-display')).hasText('');
   });
 
   test('it renders raw json in a pre tag with the given spacing', async function(assert) {
@@ -99,6 +99,6 @@ module('Integration | Component | records raw viewer', function(hooks) {
     await click('.mode-toggle .off-view');
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 1);
-    assert.equal(this.element.querySelector('.raw-display .raw-json-display').textContent.trim(), JSON.stringify(data, null, 8));
+    assert.dom(this.element.querySelector('.raw-display .raw-json-display')).hasText(JSON.stringify(data, null, 8));
   });
 });

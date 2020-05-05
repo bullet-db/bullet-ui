@@ -13,13 +13,13 @@ module('Integration | Component | window metadata', function(hooks) {
 
   test('it does not block render', async function(assert) {
     await render(hbs`{{window-metadata}}`);
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
     await render(hbs`
       {{#window-metadata}}
         template block text
       {{/window-metadata}}
     `);
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
   });
 
   test('it expands metadata on clicking the expand bar', async function(assert) {
@@ -27,9 +27,9 @@ module('Integration | Component | window metadata', function(hooks) {
 
     this.set('mockMetadata', 'custom metadata');
     await render(hbs`{{window-metadata metadata=mockMetadata}}`);
-    assert.notOk(this.element.querySelector('.window-metadata').classList.contains('is-expanded'));
+    assert.dom(this.element.querySelector('.window-metadata')).hasNoClass('is-expanded');
     await click('.expand-bar');
-    assert.ok(this.element.querySelector('.window-metadata').classList.contains('is-expanded'));
-    assert.equal(this.element.querySelector('pre').textContent.trim(), '"custom metadata"');
+    assert.dom(this.element.querySelector('.window-metadata')).hasClass('is-expanded');
+    assert.dom(this.element.querySelector('pre')).hasText('"custom metadata"');
   });
 });

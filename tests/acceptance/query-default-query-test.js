@@ -19,7 +19,7 @@ module('Acceptance | query default query', function(hooks) {
     assert.expect(10);
     await visit('/queries/new');
 
-    assert.equal(findAll('.filter-container .builder .rules-list .rule-container').length, 2);
+    assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
       'complex_list_column');
     assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'is_not_null');
@@ -27,8 +27,8 @@ module('Acceptance | query default query', function(hooks) {
     assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
     assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
     assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
-    assert.equal(find('.window-container .window-emit-every input').value, '2');
-    assert.equal(find('.window-container .window-size input').value, '1');
-    assert.equal(find('.options-container .query-duration input').value, '20');
+    assert.dom('.window-container .window-emit-every input').hasValue('2');
+    assert.dom('.window-container .window-size input').hasValue('1');
+    assert.dom('.options-container .query-duration input').hasValue('20');
   });
 });

@@ -19,10 +19,10 @@ module('Integration | Component | results table', function(hooks) {
       EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
     await render(hbs`{{results-table results=mockResults}}`);
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Date');
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[1].textContent.trim(), '# Windows');
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent.trim(), '31 Dec 12:00 AM');
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '3');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[0]).hasText('Date');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[1]).hasText('# Windows');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).hasText('31 Dec 12:00 AM');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('3');
   });
 
   test('it sorts by the number of windows column on click', async function(assert) {

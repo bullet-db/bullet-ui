@@ -25,7 +25,7 @@ module('Acceptance | result error', function(hooks) {
     await visit('/queries/new');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(findAll('.records-container .killed').length, 1);
+    assert.dom('.records-container .killed').exists({ count: 1 });
   });
 
   test('it handles a fail response from the client by still display the result', async function(assert) {
@@ -36,6 +36,6 @@ module('Acceptance | result error', function(hooks) {
     await visit('/queries/new');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(findAll('.records-container .raw-display').length, 1);
+    assert.dom('.records-container .raw-display').exists({ count: 1 });
   });
 });

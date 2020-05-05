@@ -23,7 +23,7 @@ module('Integration | Component | Cell | record entry', function(hooks) {
     this.set('mockRow', { content: { bar: ['foo'] } });
     this.set('mockColumn', { label: 'bar' });
     await render(hbs`{{cells/record-entry row=mockRow column=mockColumn}}`);
-    assert.equal(this.element.querySelector('.plain-entry').textContent, '["foo"]');
+    assert.dom(this.element.querySelector('.plain-entry')).hasText('["foo"]');
   });
 
   test('it adds the popover to the provided element selector on click', async function(assert) {
@@ -37,7 +37,7 @@ module('Integration | Component | Cell | record entry', function(hooks) {
     await click('#test-record-entry');
     return settled().then(() => {
       assert.equal(this.element.querySelectorAll('.record-popover-title').length, 1);
-      assert.equal(this.element.querySelector('.record-popover-title > span').textContent, 'bar');
+      assert.dom(this.element.querySelector('.record-popover-title > span')).hasText('bar');
     });
   });
 });

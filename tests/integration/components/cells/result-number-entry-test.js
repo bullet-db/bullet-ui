@@ -20,7 +20,7 @@ module('Integration | Component | Cell | result number entry', function(hooks) {
       }
     });
     await render(hbs`{{cells/result-number-entry tableActions=mockTableActions value='length is 12' row='foo'}}`);
-    assert.equal(this.element.textContent.trim(), '12');
+    assert.dom(this.element).hasText('12');
     await click('span');
   });
 });

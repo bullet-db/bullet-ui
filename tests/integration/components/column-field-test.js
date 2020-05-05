@@ -23,7 +23,7 @@ module('Integration | Component | column field', function(hooks) {
     await render(hbs`{{column-field}}`);
 
     // There is at least this label
-    assert.equal(this.element.textContent.trim(), 'Field');
+    assert.dom(this.element).hasText('Field');
 
     // Template block usage:"
     await render(hbs`
@@ -33,7 +33,7 @@ module('Integration | Component | column field', function(hooks) {
     `);
 
     // It is not meant to be used in block form
-    assert.equal(this.element.textContent.trim(), 'Field');
+    assert.dom(this.element).hasText('Field');
   });
 
   test('it only takes in an initial value if it does not already have one', async function(assert) {
@@ -42,15 +42,21 @@ module('Integration | Component | column field', function(hooks) {
     await render(
       hbs`{{column-field columns=mockColumns subfieldSeperator='.' subfieldSuffix='.*' initialValue=field}}`
     );
-    assert.equal(this.element.querySelector('.column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'foo');
+    assert.dom(
+      this.element.querySelector('.column-onlyfield .ember-power-select-selected-item')
+    ).hasText('foo');
     this.set('field', 'bar');
-    assert.equal(this.element.querySelector('.column-onlyfield .ember-power-select-selected-item').textContent.trim(), 'foo');
+    assert.dom(
+      this.element.querySelector('.column-onlyfield .ember-power-select-selected-item')
+    ).hasText('foo');
   });
 
   test('it shows a subfield for a composite field', async function(assert) {
     this.set('selected', { id: 'baz', hasFreeformField: true });
     await render(hbs`{{column-field selectedColumn=selected subfieldKey='hasFreeformField' initialValue=field}}`);
-    assert.equal(this.element.querySelector('.column-mainfield .ember-power-select-trigger').textContent.trim(), 'baz');
+    assert.dom(
+      this.element.querySelector('.column-mainfield .ember-power-select-trigger')
+    ).hasText('baz');
     assert.ok(this.element.querySelectorAll('.column-subfield input').length, 1);
   });
 
@@ -58,7 +64,9 @@ module('Integration | Component | column field', function(hooks) {
     this.set('selected', { id: 'baz', hasFreeformField: true });
     this.set('sub', 'foo');
     await render(hbs`{{column-field selectedColumn=selected subfieldKey='hasFreeformField' subfield=sub}}`);
-    assert.equal(this.element.querySelector('.column-mainfield .ember-power-select-trigger').textContent.trim(), 'baz');
+    assert.dom(
+      this.element.querySelector('.column-mainfield .ember-power-select-trigger')
+    ).hasText('baz');
     assert.equal(this.element.querySelector('.column-subfield input').value, 'foo');
   });
 
@@ -73,7 +81,9 @@ module('Integration | Component | column field', function(hooks) {
       hbs`{{column-field columns=mockColumns initialValue='bar.baz' subfieldKey='hasFreeformField' subfieldSuffix='.*' subfieldSeparator='.' onDone=(action doneHandler)}}`
     );
     this.element.querySelector('.column-subfield input').value = 'foo';
-    assert.equal(this.element.querySelector('.column-mainfield .ember-power-select-trigger').textContent.trim(), 'bar.*');
+    assert.dom(
+      this.element.querySelector('.column-mainfield .ember-power-select-trigger')
+    ).hasText('bar.*');
     assert.equal(this.element.querySelector('.column-subfield input').value, 'foo');
     await triggerEvent('.column-subfield input', 'blur');
   });

@@ -13,6 +13,6 @@ module('Integration | Component | Cell | schema type entry', function(hooks) {
 
   test('it displays a type value', async function(assert) {
     await render(hbs`{{cells/schema-type-entry value='MAP OF STRINGS TO STRINGS'}}`);
-    assert.equal(this.element.textContent.trim(), 'MAP OF STRINGS TO STRINGS');
+    assert.dom(this.element).hasText('MAP OF STRINGS TO STRINGS');
   });
 });

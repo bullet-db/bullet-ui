@@ -13,23 +13,23 @@ module('Integration | Component | info popover', function(hooks) {
 
   test('it renders', async function(assert) {
     await render(hbs`{{info-popover}}`);
-    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('fa-info-circle'));
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element.querySelector('.info-popover-link')).hasClass('fa-info-circle');
+    assert.dom(this.element).hasText('');
     await render(hbs`
       {{#info-popover}}
         template block text
       {{/info-popover}}
     `);
-    assert.ok(this.element.querySelector('.info-popover-link').classList.contains('fa-info-circle'));
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.dom(this.element.querySelector('.info-popover-link')).hasClass('fa-info-circle');
+    assert.dom(this.element).hasText('template block text');
   });
 
   test('it can behave as a link', async function(assert) {
     this.set('asButton', false);
     this.set('mockText', 'foo');
     await render(hbs`{{info-popover isButton=asButton additionalText=mockText}}`);
-    assert.notOk(this.element.querySelector('.info-popover-link').classList.contains('fa-info-circle'));
-    assert.equal(this.element.querySelector('.info-link-text').textContent.trim(), 'foo');
+    assert.dom(this.element.querySelector('.info-popover-link')).hasNoClass('fa-info-circle');
+    assert.dom(this.element.querySelector('.info-link-text')).hasText('foo');
   });
 
   test('it hides the initial contents', async function(assert) {
@@ -38,8 +38,8 @@ module('Integration | Component | info popover', function(hooks) {
         <p>Test content</p>
       {{/info-popover}}
     `);
-    assert.ok(this.element.querySelector('.popover-contents').classList.contains('hidden'));
-    assert.ok(this.element.querySelector('p').parentElement.classList.contains('hidden'));
+    assert.dom(this.element.querySelector('.popover-contents')).hasClass('hidden');
+    assert.dom(this.element.querySelector('p').parentElement).hasClass('hidden');
   });
 
   test('it allows customizing the title', async function(assert) {
@@ -48,6 +48,6 @@ module('Integration | Component | info popover', function(hooks) {
         <p>Test content</p>
       {{/info-popover}}
     `);
-    assert.equal(this.element.querySelector('.popover-title').textContent.trim(), 'Test title');
+    assert.dom(this.element.querySelector('.popover-title')).hasText('Test title');
   });
 });

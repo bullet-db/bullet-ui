@@ -24,13 +24,13 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([query]));
 
     await render(hbs`{{queries-table queries=mockQueries}}`);
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[0].textContent.trim(), 'Query');
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[1].textContent.trim(), 'Last Result');
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column')[2].textContent.trim(), 'Historical Results');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[0]).hasText('Query');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[1]).hasText('Last Result');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[2]).hasText('Historical Results');
     assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 1);
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent.trim(), 'foo');
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '03 Jan 12:00 AM');
-    assert.equal(this.element.querySelector('.lt-body .lt-row .lt-cell .length-entry').textContent.trim(), '2 Results');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).hasText('foo');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('03 Jan 12:00 AM');
+    assert.dom(this.element.querySelector('.lt-body .lt-row .lt-cell .length-entry')).hasText('2 Results');
   });
 
   test('it has a default sort by name and can manually sort on click', async function(assert) {
@@ -80,10 +80,10 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([queryA, queryB]));
     await render(hbs`{{queries-table queries=mockQueries}}`);
 
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '04 Jan 12:00 AM');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('04 Jan 12:00 AM');
 
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1].textContent.trim(), '02 Jan 12:00 AM');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('02 Jan 12:00 AM');
   });
 
   test('it sorts by the number of results column on click', async function(assert) {
@@ -102,11 +102,15 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([queryA, queryB]));
     await render(hbs`{{queries-table queries=mockQueries}}`);
 
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0].textContent.trim(), '3 Results');
+    assert.dom(
+      this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0]
+    ).hasText('3 Results');
 
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[2]);
 
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0].textContent.trim(), '1 Results');
+    assert.dom(
+      this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0]
+    ).hasText('1 Results');
   });
 
   test('it calls the queryClick action on clicking the query name', async function(assert) {

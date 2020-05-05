@@ -34,14 +34,14 @@ module('Integration | Component | validated input', function(hooks) {
   test('it does not block render', async function(assert) {
     await render(hbs`{{validated-input}}`);
 
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
     await render(hbs`
       {{#validated-input}}
         template block text
       {{/validated-input}}
     `);
 
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
   });
 
   test('it renders a labeled-input component as input-field', async function(assert) {

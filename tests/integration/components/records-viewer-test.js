@@ -49,7 +49,7 @@ module('Integration | Component | records viewer', function(hooks) {
     assert.expect(3);
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
-    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.table-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
     assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
   });
@@ -61,19 +61,19 @@ module('Integration | Component | records viewer', function(hooks) {
     await render(hbs`{{records-viewer config=mockConfig records=mockRecords}}`);
     await click('.table-view');
     assert.equal(this.element.querySelectorAll('.chart-view').length, 0);
-    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.table-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
     assert.equal(this.element.querySelectorAll('.records-table').length, 1);
     assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
     assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
     await click('.raw-view');
     assert.equal(this.element.querySelectorAll('.chart-view').length, 0);
-    assert.ok(this.element.querySelector('.raw-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.raw-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 1);
     assert.equal(this.element.querySelectorAll('.pretty-json-container').length, 1);
     await click('.table-view');
-    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.table-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.lt-column').length, 3);
     assert.equal(this.element.querySelectorAll('.lt-body .lt-row .lt-cell').length, 3);
   });
@@ -83,9 +83,9 @@ module('Integration | Component | records viewer', function(hooks) {
     this.set('mockRecords', RESULTS.SINGLE.records);
     await render(hbs`{{records-viewer records=mockRecords}}`);
     assert.equal(this.element.querySelectorAll('.download-option').length, 3);
-    assert.equal(this.element.querySelectorAll('.download-option > a')[0].textContent, 'JSON');
-    assert.equal(this.element.querySelectorAll('.download-option > a')[1].textContent, 'CSV');
-    assert.equal(this.element.querySelectorAll('.download-option > a')[2].textContent, 'Flat CSV');
+    assert.dom(this.element.querySelectorAll('.download-option > a')[0]).hasText('JSON');
+    assert.dom(this.element.querySelectorAll('.download-option > a')[1]).hasText('CSV');
+    assert.dom(this.element.querySelectorAll('.download-option > a')[2]).hasText('Flat CSV');
   });
 
   test('it allows downloading the data as JSON', async function(assert) {
@@ -143,7 +143,7 @@ module('Integration | Component | records viewer', function(hooks) {
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
     // Defaults to line chart view
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
   });
 
@@ -166,10 +166,10 @@ module('Integration | Component | records viewer', function(hooks) {
     await click('.chart-view');
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
     await click('.records-charter .pivot-control');
-    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .pivot-control')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
   });
 
@@ -192,7 +192,7 @@ module('Integration | Component | records viewer', function(hooks) {
     await click('.chart-view');
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     assert.equal(this.element.querySelectorAll('.raw-display').length, 0);
-    assert.ok(this.element.querySelector('.records-charter .pivot-control').classList.contains('active'));
+    assert.dom(this.element.querySelector('.records-charter .pivot-control')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container .pivot-table-container').length, 1);
   });
 
@@ -208,7 +208,7 @@ module('Integration | Component | records viewer', function(hooks) {
     assert.equal(this.element.querySelectorAll('.records-table').length, 0);
     await click('.mode-toggle .on-view');
     assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
-    assert.equal(this.element.querySelector('pre').textContent.trim(), JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
+    assert.dom(this.element.querySelector('pre')).hasText(JSON.stringify(RESULTS.SINGLE.records, null, 4).trim());
   });
 
   test('it switches out of charting mode to table mode if charting is not allowed anymore', async function(assert) {
@@ -216,15 +216,15 @@ module('Integration | Component | records viewer', function(hooks) {
     this.set('mockConfig', { isSingleRow: false });
     this.set('mockRecords', RESULTS.GROUP.records);
     await render(hbs`{{records-viewer config=mockConfig records=mockRecords timeSeriesMode=false}}`);
-    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.table-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.lt-column').length, 4);
     await click('.chart-view');
-    assert.ok(this.element.querySelector('.chart-view').classList.contains('active'));
-    assert.ok(this.element.querySelector('.records-charter .chart-control.line-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.chart-view')).hasClass('active');
+    assert.dom(this.element.querySelector('.records-charter .chart-control.line-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.visual-container canvas').length, 1);
     this.set('mockConfig', { isSingleRow: true });
     // Swaps to table automatically
-    assert.ok(this.element.querySelector('.table-view').classList.contains('active'));
+    assert.dom(this.element.querySelector('.table-view')).hasClass('active');
     assert.equal(this.element.querySelectorAll('.lt-column').length, 4);
   });
 });

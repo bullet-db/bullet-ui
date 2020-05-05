@@ -84,11 +84,11 @@ module('Integration | Component | validated field selection', function(hooks) {
     `);
     assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
     assert.equal(this.element.querySelectorAll('.custom-input').length, 1);
-    assert.equal(this.element.querySelector('.custom-input').textContent.trim(), 'foo');
+    assert.dom(this.element.querySelector('.custom-input')).hasText('foo');
     assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
-    assert.ok(this.element.querySelector('.field-selection').classList.contains('custom-field'));
+    assert.dom(this.element.querySelector('.field-selection')).hasClass('custom-field');
     assert.equal(this.element.querySelectorAll('.field-name').length, 1);
-    assert.ok(this.element.querySelector('.field-name').classList.contains('custom-name'));
+    assert.dom(this.element.querySelector('.field-name')).hasClass('custom-name');
     assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
 
@@ -103,7 +103,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
     assert.equal(this.element.querySelectorAll('.field-selection').length, 0);
     assert.equal(this.element.querySelectorAll('.field-name').length, 1);
-    assert.ok(this.element.querySelector('.field-name').classList.contains('custom-name'));
+    assert.dom(this.element.querySelector('.field-name')).hasClass('custom-name');
     assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
 
@@ -117,7 +117,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     `);
     assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
     assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
-    assert.ok(this.element.querySelector('.field-selection').classList.contains('custom-field'));
+    assert.dom(this.element.querySelector('.field-selection')).hasClass('custom-field');
     assert.equal(this.element.querySelectorAll('.field-name').length, 0);
     assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
   });
@@ -132,7 +132,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     `);
     assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
     assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
-    assert.ok(this.element.querySelector('.field-selection').classList.contains('custom-field'));
+    assert.dom(this.element.querySelector('.field-selection')).hasClass('custom-field');
     assert.equal(this.element.querySelectorAll('.field-name').length, 1);
     assert.equal(this.element.querySelectorAll('.delete-button').length, 0);
   });

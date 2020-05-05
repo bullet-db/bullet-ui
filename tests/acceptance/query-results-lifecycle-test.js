@@ -21,11 +21,11 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await click('.submit-button');
 
     await visit('queries');
-    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
+    assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry-popover .results-table .result-date-entry');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(findAll('pre').length, 1);
+    assert.dom('pre').exists({ count: 1 });
   });
 
   test('query submission with raw output with projections opens the table view by default', async function(assert) {
@@ -37,7 +37,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(findAll('.records-table').length, 1);
+    assert.dom('.records-table').exists({ count: 1 });
   });
 
   test('query submission with grouped data opens the table view by default', async function(assert) {
@@ -50,7 +50,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    assert.equal(findAll('.records-table').length, 1);
+    assert.dom('.records-table').exists({ count: 1 });
   });
 
   test('result table popover open and close', async function(assert) {
@@ -60,13 +60,13 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await click('.submit-button');
 
     await visit('queries');
-    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '1 Results');
+    assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
     await click('.queries-table .query-results-entry');
-    assert.equal(findAll('.query-results-entry-popover').length, 1);
+    assert.dom('.query-results-entry-popover').exists({ count: 1 });
     await click('.query-results-entry-popover .close-button');
     // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
     later(() => {
-      assert.equal(findAll('.query-results-entry-popover .results-table .result-date-entry').length, 0);
+      assert.dom('.query-results-entry-popover .results-table .result-date-entry').doesNotExist();
     }, 500);
   });
 
@@ -79,9 +79,9 @@ module('Acceptance | query results lifecycle', function(hooks) {
     await click('.queries-table .query-name-entry .query-name-actions .edit-icon');
     await click('.submit-button');
     await visit('queries');
-    assert.equal(find('.queries-table .query-results-entry .length-entry').textContent.trim(), '2 Results');
+    assert.dom('.queries-table .query-results-entry .length-entry').hasText('2 Results');
     await click('.queries-table .query-results-entry');
     await click('.query-results-entry .clear-history');
-    assert.equal(find('.queries-table .query-results-entry').textContent.trim(), '--');
+    assert.dom('.queries-table .query-results-entry').hasText('--');
   });
 });

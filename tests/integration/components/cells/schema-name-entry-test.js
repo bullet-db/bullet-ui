@@ -18,7 +18,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     }));
     await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-    assert.equal(this.element.textContent.trim(), 'foo');
+    assert.dom(this.element).hasText('foo');
     assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
   });
 
@@ -29,7 +29,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     }));
     await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
 
-    assert.equal(this.element.textContent.trim(), 'bar');
+    assert.dom(this.element).hasText('bar');
     assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
   });
 

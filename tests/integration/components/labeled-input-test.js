@@ -13,14 +13,14 @@ module('Integration | Component | labeled input', function(hooks) {
 
   test('it renders and yields nothing', async function(assert) {
     await render(hbs`{{labeled-input}}`);
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
 
     await render(hbs`
       {{#labeled-input}}
         template block text
       {{/labeled-input}}
     `);
-    assert.equal(this.element.textContent.trim(), '');
+    assert.dom(this.element).hasText('');
   });
 
   test('it has text input type', async function(assert) {
