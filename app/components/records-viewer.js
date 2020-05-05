@@ -26,30 +26,30 @@ export default Component.extend({
   timeSeriesMode: false,
 
   enableCharting: computed('config.isSingleRow', 'timeSeriesMode', function() {
-    return !this.get('config.isSingleRow') || this.get('timeSeriesMode');
+    return !this.get('config.isSingleRow') || this.timeSeriesMode;
   }),
 
   isShowingChart: alias('showChart').readOnly(),
 
   columns: computed('records', function() {
-    return A(this.extractUniqueColumns(this.get('records')));
+    return A(this.extractUniqueColumns(this.records));
   }).readOnly(),
 
   rows: computed('records', 'columns', function() {
-    return A(this.extractRows(this.get('records'), this.get('columns')));
+    return A(this.extractRows(this.records, this.columns));
   }).readOnly(),
 
   asJSON: computed('records', function() {
-    let records = this.get('records');
+    let records = this.records;
     return JSON.stringify(records, null, 2);
   }).readOnly(),
 
   asCSV: computed('columns', 'rows', function() {
-    return this.makeCSVString(this.get('columns'), this.get('rows'));
+    return this.makeCSVString(this.columns, this.rows);
   }).readOnly(),
 
   asFlatCSV: computed('records', function() {
-    let records = this.get('records');
+    let records = this.records;
     let flattenedRows = records.map(item => this.flatten(item), this);
     let columns = this.extractUniqueColumns(flattenedRows);
     let rows = this.extractRows(flattenedRows, columns);
@@ -68,7 +68,7 @@ export default Component.extend({
   didReceiveAttrs() {
     this._super(...arguments);
     // If we should suddenly stop showing charts but we were showing a chart, go back to table
-    if (this.get('isShowingChart') && !this.get('enableCharting')) {
+    if (this.isShowingChart && !this.enableCharting) {
       this.flipTo('showTable');
     }
   },
@@ -155,15 +155,15 @@ export default Component.extend({
     },
 
     downloadAsJSON() {
-      this.get('fileSaver').save(this.get('asJSON'), 'application/json', `${this.get('fileName')}.json`);
+      this.fileSaver.save(this.asJSON, 'application/json', `${this.fileName}.json`);
     },
 
     downloadAsCSV() {
-      this.get('fileSaver').save(this.get('asCSV'), 'text/csv', `${this.get('fileName')}.csv`);
+      this.fileSaver.save(this.asCSV, 'text/csv', `${this.fileName}.csv`);
     },
 
     downloadAsFlatCSV() {
-      this.get('fileSaver').save(this.get('asFlatCSV'), 'text/csv', `${this.get('fileName')}_flat.csv`);
+      this.fileSaver.save(this.asFlatCSV, 'text/csv', `${this.fileName}_flat.csv`);
     }
   }
 });

@@ -10,6 +10,6 @@ export default Component.extend({
   classNames: ['result-number-entry'],
 
   click() {
-    this.get('tableActions.resultClick')(this.get('row'));
+    this.get('tableActions.resultClick')(this.row);
   }
 });

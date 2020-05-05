@@ -15,7 +15,7 @@ export default Route.extend({
 
   model(params) {
     let hash = params.hash;
-    let manager = this.get('queryManager');
+    let manager = this.queryManager;
     return manager.decodeQuery(hash).then(object => manager.copyQuery(object));
   },
 

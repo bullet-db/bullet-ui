@@ -25,7 +25,7 @@ export default Component.extend(PaginatedTable, {
   }),
 
   rows: computed('results.[]', function() {
-    return this.get('results').toArray();
+    return this.results.toArray();
   }),
 
   columns: A([
@@ -35,7 +35,7 @@ export default Component.extend(PaginatedTable, {
 
   init() {
     this._super(...arguments);
-    this.set('table', Table.create({ columns: this.get('columns') }));
+    this.set('table', Table.create({ columns: this.columns }));
     this.addPages(1);
   }
 });

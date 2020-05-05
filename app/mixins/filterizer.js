@@ -115,12 +115,12 @@ export default Mixin.create({
     let rule = {
       id: field,
       field: field,
-      value: values.join(this.get('multipleValueSeparator'))
+      value: values.join(this.multipleValueSeparator)
     };
     // If we have a subfield param set, subfield separated field, set the field and subfield again
-    if (filter.subfield && field.indexOf(this.get('subfieldSeparator')) !== -1) {
-      let split = field.split(this.get('subfieldSeparator'));
-      let fieldOnly = `${split[0]}${this.get('subfieldSuffix')}`;
+    if (filter.subfield && field.indexOf(this.subfieldSeparator) !== -1) {
+      let split = field.split(this.subfieldSeparator);
+      let fieldOnly = `${split[0]}${this.subfieldSuffix}`;
       rule.id = fieldOnly;
       rule.field = fieldOnly;
       rule.subfield = split[1];
@@ -220,10 +220,10 @@ export default Mixin.create({
       values: [value]
     };
     if (field && rule.subfield) {
-      let index = rule.field.lastIndexOf(this.get('subfieldSuffix'));
-      filter.field = `${field.substring(0, index)}${this.get('subfieldSeparator')}${rule.subfield}`;
+      let index = rule.field.lastIndexOf(this.subfieldSuffix);
+      filter.field = `${field.substring(0, index)}${this.subfieldSeparator}${rule.subfield}`;
       // We'll add this to make sure our inverse function works but only if we're not in apiMode
-      if (!this.get('apiMode')) {
+      if (!this.apiMode) {
         filter.subfield = true;
       }
     }
@@ -232,12 +232,12 @@ export default Mixin.create({
       filter.operation = '==';
     } else if (op === 'in') {
       filter.operation = '==';
-      filter.values = value.split(this.get('multipleValueSeparator')).map(i => i.trim());
+      filter.values = value.split(this.multipleValueSeparator).map(i => i.trim());
     } else if (op === 'not_equal') {
       filter.operation = '!=';
     } else if (op === 'not_in') {
       filter.operation = '!=';
-      filter.values = value.split(this.get('multipleValueSeparator')).map(i => i.trim());
+      filter.values = value.split(this.multipleValueSeparator).map(i => i.trim());
     } else if (op === 'is_null') {
       filter.operation = '==';
       filter.values = ['NULL'];
@@ -260,7 +260,7 @@ export default Mixin.create({
       filter.operation = '<';
     } else if (op === 'rlike') {
       filter.operation = 'RLIKE';
-      filter.values = value.split(this.get('multipleValueSeparator')).map(i => i.trim());
+      filter.values = value.split(this.multipleValueSeparator).map(i => i.trim());
     } else {
       throw new Error(`Unknown operator: ${op} in rule: ${JSON.stringify(rule)}`);
     }

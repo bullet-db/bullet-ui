@@ -26,7 +26,7 @@ export default Component.extend(ElementPopover, {
   },
 
   click() {
-    if (this.get('hasPopover')) {
+    if (this.hasPopover) {
       this.set('renderTable', true);
       this.getPopover().popover('toggle');
     }
@@ -40,7 +40,7 @@ export default Component.extend(ElementPopover, {
     deleteResultsClick() {
       this.removePopover();
       this.set('hasPopover', false);
-      this.get('tableActions.deleteResultsClick')(this.get('row'));
+      this.get('tableActions.deleteResultsClick')(this.row);
     },
 
     resultClick(result) {

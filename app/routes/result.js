@@ -38,7 +38,7 @@ export default Route.extend(Queryable, {
     },
 
     reRunClick(query) {
-      this.get('queryManager').addResult(query.get('id')).then(result => {
+      this.queryManager.addResult(query.get('id')).then(result => {
         this.set('hasPendingSubmit', true);
         this.set('pendingQuery', query);
         this.set('savedResult', result);
@@ -48,17 +48,17 @@ export default Route.extend(Queryable, {
     },
 
     cancelClick() {
-      this.get('querier').cancel();
+      this.querier.cancel();
     },
 
     willTransition() {
-      this.get('querier').cancel();
+      this.querier.cancel();
       return true;
     },
 
     didTransition() {
-      if (this.get('hasPendingSubmit')) {
-        let pendingQuery = this.get('pendingQuery');
+      if (this.hasPendingSubmit) {
+        let pendingQuery = this.pendingQuery;
         this.lateSubmitQuery(pendingQuery, this);
         this.set('hasPendingSubmit', false);
         this.set('pendingQuery', null);

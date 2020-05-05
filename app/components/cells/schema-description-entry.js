@@ -13,6 +13,6 @@ export default Component.extend({
 
   // As the user of this UI, you are expected to make sure any html in the description is safe.
   htmlSafeValue: computed('value', function() {
-    return htmlSafe(this.get('value'));
+    return htmlSafe(this.value);
   })
 });

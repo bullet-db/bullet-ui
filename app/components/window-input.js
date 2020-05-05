@@ -39,44 +39,44 @@ export default Component.extend({
   isRawAggregation: equal('query.aggregation.type', AGGREGATIONS.get('RAW')).readOnly(),
 
   recordBasedWindowDisabled: computed('isRawAggregation', 'disabled', function() {
-    return this.get('disabled') || !this.get('isRawAggregation');
+    return this.disabled || !this.isRawAggregation;
   }).readOnly(),
   everyDisabled: or('isRecordBasedWindow', 'disabled').readOnly(),
   includeDisabled: or('isRecordBasedWindow', 'disabled').readOnly(),
   allIncludeTypeDisabled: computed('isRawAggregation', 'includeDisabled', function() {
-    return this.get('includeDisabled') || this.get('isRawAggregation');
+    return this.includeDisabled || this.isRawAggregation;
   }).readOnly(),
 
   everyFieldName: computed('isRecordBasedWindow', function() {
-    return `Frequency (${this.get('isRecordBasedWindow') ? 'records' : 'seconds'})`;
+    return `Frequency (${this.isRecordBasedWindow ? 'records' : 'seconds'})`;
   }).readOnly(),
 
   replaceWindow(emitType, emitEvery, includeType) {
-    return this.get('queryManager').replaceWindow(this.get('query'), emitType, emitEvery, includeType);
+    return this.queryManager.replaceWindow(this.query, emitType, emitEvery, includeType);
   },
 
   addWindow() {
     this.set('emitType', EMIT_TYPES.get('TIME'));
     this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
-    return this.get('queryManager').addWindow(this.get('query'));
+    return this.queryManager.addWindow(this.query);
   },
 
   deleteWindow() {
-    return this.get('queryManager').deleteWindow(this.get('query'));
+    return this.queryManager.deleteWindow(this.query);
   },
 
   actions: {
     changeEmitType(emitType) {
       if (isEqual(emitType, EMIT_TYPES.get('RECORD'))) {
         this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
-        this.replaceWindow(emitType, this.get('defaultEveryForRecordWindow'), INCLUDE_TYPES.get('WINDOW'));
+        this.replaceWindow(emitType, this.defaultEveryForRecordWindow, INCLUDE_TYPES.get('WINDOW'));
       } else {
-        this.replaceWindow(emitType, this.get('defaultEveryForTimeWindow'), this.get('includeType'));
+        this.replaceWindow(emitType, this.defaultEveryForTimeWindow, this.includeType);
       }
     },
 
     changeIncludeType(includeType) {
-      this.replaceWindow(this.get('emitType'), this.get('query.window.emit.every'), includeType);
+      this.replaceWindow(this.emitType, this.get('query.window.emit.every'), includeType);
     },
 
     addWindow() {

@@ -19,7 +19,7 @@ export default Component.extend({
   },
 
   getRenderData() {
-    let formatter = new JSONFormatter(this.get('data'), this.get('defaultLevels'), { hoverPreviewEnabled: true });
+    let formatter = new JSONFormatter(this.data, this.defaultLevels, { hoverPreviewEnabled: true });
     return formatter.render();
   }
 });

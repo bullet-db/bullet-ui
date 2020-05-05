@@ -9,7 +9,7 @@ export default Component.extend({
   classNames: ['query-date-entry'],
 
   click() {
-    let result = this.get('value');
+    let result = this.value;
     if (result) {
       this.get('tableActions.resultClick')(result);
     }

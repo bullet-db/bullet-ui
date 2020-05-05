@@ -36,21 +36,21 @@ export default Component.extend({
   timingDone: true,
 
   showDone: computed('timingDone', 'active', function() {
-    return this.get('timingDone') || !this.get('active');
+    return this.timingDone || !this.active;
   }).readOnly(),
 
   progress: computed('percentNow', 'timingDone', function() {
     // Deliberately based on timingDone instead of showDone to show the progress percent at which the query became done
-    return this.get('timingDone') ? 1 : this.get('percentNow');
+    return this.timingDone ? 1 : this.percentNow;
   }).readOnly(),
 
   strokeColor: computed('showDone', 'color', function() {
-    return this.get('showDone') ? this.get('doneColor') : this.get('color');
+    return this.showDone ? this.doneColor : this.color;
   }),
 
   options: computed('strokeWidth', 'strokeColor', 'trailColor', function() {
     let { strokeWidth, strokeColor, trailColor, easing, animationDuration, useStep }
-      = this.getProperties('strokeWidth', 'strokeColor', 'trailColor', 'easing', 'animationDuration', 'useStep');
+      = this;
 
     let options = {
       strokeWidth,
@@ -60,7 +60,7 @@ export default Component.extend({
       duration: animationDuration
     };
     if (useStep) {
-      options.step = this.get('step');
+      options.step = this.step;
     }
     return options;
   }).readOnly(),
@@ -69,7 +69,7 @@ export default Component.extend({
     this._super(...arguments);
     this.destroyTimer();
     // Don't do any timing unless active. Also any changes with active true should restart timer.
-    if (this.get('active')) {
+    if (this.active) {
       this.startTiming();
     }
   },
@@ -81,7 +81,7 @@ export default Component.extend({
 
   destroyTimer() {
     // Docs say this should return false or undefined if it doesn't exist
-    cancel(this.get('futureTimer'));
+    cancel(this.futureTimer);
   },
 
   willDestroy() {
@@ -90,7 +90,7 @@ export default Component.extend({
 
   startTiming() {
     let now = Date.now();
-    let magnitude = parseFloat(this.get('duration'));
+    let magnitude = parseFloat(this.duration);
     magnitude = magnitude <= 0 ? 1 : magnitude;
     let end = new Date(now + magnitude).getTime();
 
@@ -101,19 +101,19 @@ export default Component.extend({
       runTime: end - now,
       percentNow: 0.0,
       timingDone: false,
-      futureTimer: later(this, this.timer, this.get('updateInterval'))
+      futureTimer: later(this, this.timer, this.updateInterval)
     });
   },
 
   timer() {
     let timeNow = Date.now();
-    let delta = (timeNow - this.get('startTime')) / this.get('runTime');
+    let delta = (timeNow - this.startTime) / this.runTime;
     this.set('percentNow', Math.min(delta, 1));
-    if (timeNow >= this.get('endTime')) {
+    if (timeNow >= this.endTime) {
       this.set('timingDone', true);
       this.sendAction('finished');
       return;
     }
-    this.set('futureTimer', later(this, this.timer, this.get('updateInterval')));
+    this.set('futureTimer', later(this, this.timer, this.updateInterval));
   }
 });

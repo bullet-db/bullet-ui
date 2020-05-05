@@ -29,22 +29,22 @@ export default Component.extend(ElementPopover, {
   }).readOnly(),
 
   hasPopover: computed('data', function() {
-    return !isEmpty(this.get('data'));
+    return !isEmpty(this.data);
   }).readOnly(),
 
   isComplex: computed('data', function() {
-    let type = typeOf(this.get('data'));
+    let type = typeOf(this.data);
     return type === 'object' || type === 'array';
   }).readOnly(),
 
   textValue: computed('isComplex', 'data', function() {
-    let data = this.get('data');
-    return this.get('isComplex') ? JSON.stringify(data) : data;
+    let data = this.data;
+    return this.isComplex ? JSON.stringify(data) : data;
   }).readOnly(),
 
   formattedValue: computed('isComplex', 'data', function() {
-    let data = this.get('data');
-    return this.get('isComplex') ? JSON.stringify(data, null, 2) : data;
+    let data = this.data;
+    return this.isComplex ? JSON.stringify(data, null, 2) : data;
   }).readOnly(),
 
   willDestroyElement() {

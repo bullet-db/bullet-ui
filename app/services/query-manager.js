@@ -43,7 +43,7 @@ export default Service.extend({
     if (isEmpty(original)) {
       return resolve();
     }
-    let copy = this.get('store').createRecord(name);
+    let copy = this.store.createRecord(name);
     return this.copyModelRelationship(original, copy, fields, inverseName, target);
   },
 
@@ -54,14 +54,14 @@ export default Service.extend({
     }
     let promises = [];
     originals.forEach(original => {
-      let copy = this.get('store').createRecord(name);
+      let copy = this.store.createRecord(name);
       promises.push(this.copyModelRelationship(original, copy, fields, inverseName, target));
     });
     return all(promises);
   },
 
   copyQuery(query) {
-    let copied = this.get('store').createRecord('query', {
+    let copied = this.store.createRecord('query', {
       name: query.get('name'),
       duration: query.get('duration')
     });
@@ -85,7 +85,7 @@ export default Service.extend({
   },
 
   encodeQuery(query) {
-    let querier = this.get('querier');
+    let querier = this.querier;
     querier.set('apiMode', false);
     let json = querier.reformat(query);
     querier.set('apiMode', true);
@@ -96,7 +96,7 @@ export default Service.extend({
   },
 
   decodeQuery(hash) {
-    let querier = this.get('querier');
+    let querier = this.querier;
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
       let json = JSON.parse(buffer.toString());
@@ -108,13 +108,13 @@ export default Service.extend({
     // Autosave takes care of updating parent model
     let opts = {};
     opts[modelFieldName] = model;
-    let childModel = this.get('store').createRecord(childModelName, opts);
+    let childModel = this.store.createRecord(childModelName, opts);
     return childModel.save();
   },
 
   addResult(id) {
-    return this.get('store').findRecord('query', id).then(query => {
-      let result = this.get('store').createRecord('result', {
+    return this.store.findRecord('query', id).then(query => {
+      let result = this.store.createRecord('result', {
         querySnapshot: {
           type: query.get('aggregation.type'),
           groupsSize: query.get('aggregation.groups.length'),
@@ -138,12 +138,12 @@ export default Service.extend({
     result.get('windows').pushObject({
       metadata: data.meta,
       records: data.records,
-      sequence: get(data.meta, this.get('windowNumberProperty')),
+      sequence: get(data.meta, this.windowNumberProperty),
       index: position,
       created: new Date(Date.now())
     });
-    let shouldDebounce = this.get('debounceSegmentSaves');
-    return shouldDebounce ? debounce(result, result.save, this.get('saveSegmentDebounceInterval')) : result.save();
+    let shouldDebounce = this.debounceSegmentSaves;
+    return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
   },
 
   setAggregationAttributes(query, fields) {
@@ -184,7 +184,7 @@ export default Service.extend({
   },
 
   addWindow(query) {
-    let window = this.get('store').createRecord('window', {
+    let window = this.store.createRecord('window', {
       query: query
     });
     query.set('window', window);
@@ -346,7 +346,7 @@ export default Service.extend({
   },
 
   deleteAllResults() {
-    return this.get('store').findAll('query').then(queries => {
+    return this.store.findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
   }

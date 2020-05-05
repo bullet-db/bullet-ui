@@ -24,7 +24,7 @@ export default Component.extend(PaginatedTable, {
   isNested: false,
 
   rows: computed('fields.[]', function() {
-    let fields = this.get('fields');
+    let fields = this.fields;
     // This needs to handle arrays (for enumeratedColumns) and the model result collection
     return typeOf(fields) === 'array' ? fields : fields.toArray();
   }),
@@ -37,7 +37,7 @@ export default Component.extend(PaginatedTable, {
 
   init() {
     this._super(...arguments);
-    this.set('table', Table.create({ columns: this.get('columns') }));
+    this.set('table', Table.create({ columns: this.columns }));
     this.sortBy('name', 'ascending');
     this.addPages(2);
   },

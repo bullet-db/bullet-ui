@@ -18,7 +18,7 @@ export default Component.extend({
   }).readOnly(),
 
   queryIDSelector: computed('queryID', function() {
-    return `#${this.get('queryID')}`;
+    return `#${this.queryID}`;
   }).readOnly(),
 
   actions: {

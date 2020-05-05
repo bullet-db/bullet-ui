@@ -16,10 +16,10 @@ import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
 export default Component.extend(BuilderAdapter, {
   queryBuilderClass: 'builder',
   queryBuilderElement: computed('queryBuilderClass', function() {
-    return `.${this.get('queryBuilderClass')}`;
+    return `.${this.queryBuilderClass}`;
   }),
   queryBuilderInputs: computed('queryBuilderElement', function() {
-    let element = this.get('queryBuilderElement');
+    let element = this.queryBuilderElement;
     return `${element} input, ${element} select, ${element} button`;
   }),
   subfieldSeparator: SUBFIELD_SEPARATOR,
@@ -33,7 +33,7 @@ export default Component.extend(BuilderAdapter, {
   hasSaved: false,
 
   columns: computed('schema', function() {
-    let schema = this.get('schema');
+    let schema = this.schema;
     return this.builderFilters(schema);
   }).readOnly(),
 
@@ -43,9 +43,9 @@ export default Component.extend(BuilderAdapter, {
 
   didInsertElement() {
     this._super(...arguments);
-    let element = this.get('queryBuilderElement');
+    let element = this.queryBuilderElement;
     let options = this.builderOptions();
-    options.filters = this.get('columns');
+    options.filters = this.columns;
 
     this.$(element).queryBuilder(options);
 
@@ -53,22 +53,22 @@ export default Component.extend(BuilderAdapter, {
     if (rules && !$.isEmptyObject(rules)) {
       this.$(element).queryBuilder('setRules', rules);
     } else {
-      this.$(element).queryBuilder('setRules', this.get('emptyClause'));
+      this.$(element).queryBuilder('setRules', this.emptyClause);
     }
   },
 
   isCurrentFilterValid() {
-    let element = this.get('queryBuilderElement');
+    let element = this.queryBuilderElement;
     return this.$(element).queryBuilder('validate');
   },
 
   currentFilterClause() {
-    let element = this.get('queryBuilderElement');
+    let element = this.queryBuilderElement;
     return this.$(element).queryBuilder('getRules');
   },
 
   currentFilterSummary() {
-    let element = this.get('queryBuilderElement');
+    let element = this.queryBuilderElement;
     let sql = this.$(element).queryBuilder('getSQL', false);
     return sql.sql;
   },
@@ -79,13 +79,13 @@ export default Component.extend(BuilderAdapter, {
       hasError: false,
       hasSaved: false
     });
-    this.$(this.get('queryBuilderInputs')).removeAttr('disabled');
+    this.$(this.queryBuilderInputs).removeAttr('disabled');
   },
 
   validate() {
     this.reset();
-    let query = this.get('query');
-    return this.get('queryManager').cleanup(query).then(() => {
+    let query = this.query;
+    return this.queryManager.cleanup(query).then(() => {
       return query.validate().then(hash => {
         let isValid = this.isCurrentFilterValid() && hash.validations.get('isValid');
         return isValid ? resolve() : reject();
@@ -95,10 +95,10 @@ export default Component.extend(BuilderAdapter, {
 
   save() {
     return this.validate().then(() => {
-      return this.get('queryManager').save(this.get('query'), this.currentFilterClause(), this.currentFilterSummary());
+      return this.queryManager.save(this.query, this.currentFilterClause(), this.currentFilterSummary());
     }, () => {
       this.set('hasError', true);
-      this.get('scroller').scrollVertical('.validation-container');
+      this.scroller.scrollVertical('.validation-container');
       return reject();
     });
   },
@@ -107,7 +107,7 @@ export default Component.extend(BuilderAdapter, {
     save() {
       this.save().then(() => {
         this.set('hasSaved', true);
-        this.get('scroller').scrollVertical('.validation-container');
+        this.scroller.scrollVertical('.validation-container');
       });
     },
 
@@ -117,7 +117,7 @@ export default Component.extend(BuilderAdapter, {
           isListening: true,
           hasSaved: true
         });
-        this.$(this.get('queryBuilderInputs')).attr('disabled', true);
+        this.$(this.queryBuilderInputs).attr('disabled', true);
         this.sendAction('fireQuery');
       });
     }

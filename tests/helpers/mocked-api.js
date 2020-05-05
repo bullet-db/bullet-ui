@@ -24,7 +24,7 @@ export default EmberObject.extend({
   },
 
   sendFailMessageAt(index) {
-    let dataArray = this.get('dataArray');
+    let dataArray = this.dataArray;
     if (isEmpty(dataArray) || dataArray.length <= index) {
       return;
     }
@@ -38,14 +38,14 @@ export default EmberObject.extend({
   },
 
   shutdown() {
-    let server = this.get('server');
+    let server = this.server;
     if (server) {
       server.shutdown();
     }
   },
 
   connect(_, onStompConnect, onStompError) {
-    if (isEqual(this.get('type'), 'mockAPI')) {
+    if (isEqual(this.type, 'mockAPI')) {
       onStompConnect();
     } else {
       onStompError();
@@ -64,11 +64,11 @@ export default EmberObject.extend({
   },
 
   respondWithData() {
-    let onStompMessage = this.get('onStompMessage');
-    let dataArray = this.get('dataArray');
+    let onStompMessage = this.onStompMessage;
+    let dataArray = this.dataArray;
     if (onStompMessage && !isEmpty(dataArray)) {
       let length = dataArray.length;
-      let errorMessageIndex = this.get('errorMessageIndex');
+      let errorMessageIndex = this.errorMessageIndex;
       dataArray.forEach((data, i) => {
         let responseType = this.getResponseType(i, length, errorMessageIndex);
         let response = {
@@ -83,7 +83,7 @@ export default EmberObject.extend({
   },
 
   send() {
-    if (this.get('respondImmediately')) {
+    if (this.respondImmediately) {
       this.respondWithData();
     }
   },

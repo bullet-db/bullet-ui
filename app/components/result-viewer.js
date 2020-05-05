@@ -47,32 +47,32 @@ export default Component.extend({
   aggregateMode: or('appendRecordsMode', 'timeSeriesMode').readOnly(),
 
   showData: computed('hasData', 'hasError', function() {
-    return this.get('hasData') && !this.get('hasError');
+    return this.hasData && !this.hasError;
   }).readOnly(),
 
   hasError: computed('errorWindow', function() {
-    return !isNone(this.get('errorWindow'));
+    return !isNone(this.errorWindow);
   }).readOnly(),
 
   showAutoUpdate: computed('showData', 'appendRecordsMode', function() {
-    return this.get('showData') && !this.get('appendRecordsMode');
+    return this.showData && !this.appendRecordsMode;
   }).readOnly(),
 
   showTimeSeries: and('showData', 'isTimeWindow').readOnly(),
 
   metadata: computed('hasError', 'autoUpdate', 'selectedWindow', 'result.windows.[]', function() {
-    let autoUpdate = this.get('autoUpdate');
-    return this.get('hasError') ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata', autoUpdate);
+    let autoUpdate = this.autoUpdate;
+    return this.hasError ? this.get('errorWindow.metadata') : this.getSelectedWindow('metadata', autoUpdate);
   }).readOnly(),
 
   records: computed('appendRecordsMode', 'timeSeriesMode', 'result.windows.[]', 'selectedWindow', 'autoUpdate', function() {
     // Deliberately not depending on the cache
-    if (this.get('appendRecordsMode')) {
+    if (this.appendRecordsMode) {
       return this.getAllWindowRecords();
     }
-    let autoUpdate = this.get('autoUpdate');
-    if (this.get('timeSeriesMode')) {
-      return autoUpdate ? this.getTimeSeriesRecords() : this.get('recordsCache');
+    let autoUpdate = this.autoUpdate;
+    if (this.timeSeriesMode) {
+      return autoUpdate ? this.getTimeSeriesRecords() : this.recordsCache;
     } else {
       return this.getSelectedWindow('records', autoUpdate);
     }
@@ -83,7 +83,7 @@ export default Component.extend({
   }).readOnly(),
 
   windowDuration: computed('windowEmitEvery', function() {
-    return this.get('jitter') + (this.get('windowEmitEvery') * 1000);
+    return this.jitter + (this.windowEmitEvery * 1000);
   }).readOnly(),
 
   config: computed('result.{isRaw,isReallyRaw,isDistribution,isSingleRow}', function() {
@@ -107,7 +107,7 @@ export default Component.extend({
   getSelectedWindow(property, autoUpdate) {
     let windowProperty = this.get(`result.windows.lastObject.${property}`);
     if (!autoUpdate) {
-      let selectedWindow = this.get('selectedWindow');
+      let selectedWindow = this.selectedWindow;
       windowProperty = isNone(selectedWindow) ? windowProperty : selectedWindow[property];
     }
     return windowProperty;
@@ -135,9 +135,9 @@ export default Component.extend({
   },
 
   updateRecordsCache(addWindowRecordsFunction) {
-    let cache = this.get('recordsCache');
+    let cache = this.recordsCache;
     let windows = this.get('result.windows');
-    let windowsInCache = this.get('windowsInCache');
+    let windowsInCache = this.windowsInCache;
     let allWindows = windows.length;
     if (windowsInCache < windows.length) {
       // Start at X in windows if there are X windows in cache (at positions 0 - X-1)
@@ -165,12 +165,12 @@ export default Component.extend({
     changeAutoUpdate(autoUpdate) {
       this.set('autoUpdate', autoUpdate);
       // Turn On or if aggregating (and turn off) => reset selectedWindow. Turn Off => Last window
-      let aggregateMode = this.get('aggregateMode');
+      let aggregateMode = this.aggregateMode;
       this.set('selectedWindow', autoUpdate || aggregateMode ? null : this.get('result.windows.lastObject'));
     },
 
     changeTimeSeriesMode(timeSeriesMode) {
-      let autoUpdate = this.get('autoUpdate');
+      let autoUpdate = this.autoUpdate;
       // If we don't have autoupdate on in timeSeriesMode, we should update cache to the latest to avoid confusion
       if (timeSeriesMode && !autoUpdate) {
         this.getTimeSeriesRecords();

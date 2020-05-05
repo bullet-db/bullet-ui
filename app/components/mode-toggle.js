@@ -14,7 +14,7 @@ export default Component.extend({
   actions: {
     toggle() {
       this.toggleProperty('isToggled');
-      this.sendAction('onToggled', this.get('isToggled'));
+      this.sendAction('onToggled', this.isToggled);
     }
   }
 });

@@ -31,9 +31,9 @@ let Metric = EmberObject.extend({
 
   asList() {
     return [
-      EmberObject.create({ name: this.get('SUM') }), EmberObject.create({ name: this.get('COUNT') }),
-      EmberObject.create({ name: this.get('MIN') }), EmberObject.create({ name: this.get('MAX') }),
-      EmberObject.create({ name: this.get('AVG') })
+      EmberObject.create({ name: this.SUM }), EmberObject.create({ name: this.COUNT }),
+      EmberObject.create({ name: this.MIN }), EmberObject.create({ name: this.MAX }),
+      EmberObject.create({ name: this.AVG })
     ];
   }
 });
@@ -52,7 +52,7 @@ export default Model.extend(Validations, {
   aggregation: belongsTo('aggregation', { autoSave: true }),
 
   hasNoField: computed('type', function() {
-    let type = this.get('type');
+    let type = this.type;
     return type === 'Count';
   })
 });

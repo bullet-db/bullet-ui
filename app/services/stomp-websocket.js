@@ -31,7 +31,7 @@ export default Service.extend({
   }),
 
   isConnected: computed('client', function() {
-    return !isNone(this.get('client'));
+    return !isNone(this.client);
   }),
 
   makeStompMessageHandler(stompClient, handlers, context) {
@@ -47,8 +47,8 @@ export default Service.extend({
   },
 
   makeStompConnectHandler(stompClient, data, handlers, context) {
-    let queryStompRequestChannel = this.get('queryStompRequestChannel');
-    let queryStompResponseChannel = this.get('queryStompResponseChannel');
+    let queryStompRequestChannel = this.queryStompRequestChannel;
+    let queryStompResponseChannel = this.queryStompResponseChannel;
     let onStompMessage = this.makeStompMessageHandler(stompClient, handlers, context);
     return () => {
       stompClient.subscribe(queryStompResponseChannel, onStompMessage);
@@ -68,7 +68,7 @@ export default Service.extend({
   },
 
   startStompClient(data, handlers, context) {
-    let url = this.get('url');
+    let url = this.url;
     let ws = new SockJS(url, [], { sessionId: SESSION_LENGTH });
     let stompClient = Stomp.over(ws);
     stompClient.debug = null;
@@ -81,7 +81,7 @@ export default Service.extend({
   },
 
   disconnect() {
-    let client = this.get('client');
+    let client = this.client;
     if (!isNone(client)) {
       client.disconnect();
       this.set('client', null);

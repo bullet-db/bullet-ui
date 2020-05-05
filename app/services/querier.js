@@ -28,7 +28,7 @@ export default Service.extend(Filterizer, {
   defaultAPIAggregation: alias('settings.defaultAggregation').readOnly(),
 
   defaultAggregation: computed('defaultAPIAggregation', function() {
-    let aggregation = this.get('defaultAPIAggregation');
+    let aggregation = this.defaultAPIAggregation;
     aggregation.type = AGGREGATIONS.get(aggregation.type);
     return aggregation;
   }).readOnly(),
@@ -47,7 +47,7 @@ export default Service.extend(Filterizer, {
 
     let filter = EmberObject.create();
     if (!this.isTruthy(clause)) {
-      clause = this.get('emptyClause');
+      clause = this.emptyClause;
     }
     filter.set('clause', clause);
     // One additional non-API key placed into the object for summarizing. Copy the summary as is
@@ -80,7 +80,7 @@ export default Service.extend(Filterizer, {
     if (filter) {
       json.filters = [filter];
     }
-    if (!this.get('apiMode')) {
+    if (!this.apiMode) {
       this.assignIfTruthy(json, 'name', query.get('name'));
       this.assignIfTruthy(json, 'filterSummary', query.get('filter.summary'));
     }
@@ -269,7 +269,7 @@ export default Service.extend(Filterizer, {
     this.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
     this.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
     this.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
-    if (!this.get('apiMode')) {
+    if (!this.apiMode) {
       this.assignIfTruthy(json, 'pointType', aggregation.get('attributes.pointType'));
     }
     this.assignIfTruthy(json, 'type', DISTRIBUTIONS.apiKey(aggregation.get('attributes.type')));
@@ -367,10 +367,10 @@ export default Service.extend(Filterizer, {
   },
 
   send(data, handlers, context) {
-    this.get('stompWebsocket').startStompClient(this.reformat(data), handlers, context);
+    this.stompWebsocket.startStompClient(this.reformat(data), handlers, context);
   },
 
   cancel() {
-    this.get('stompWebsocket').disconnect();
+    this.stompWebsocket.disconnect();
   }
 });

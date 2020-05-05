@@ -45,12 +45,12 @@ export default Route.extend({
     },
 
     copyQueryClick(query, callback) {
-      this.validate(query).then(query => this.get('queryManager').copyQuery(query)).then(copy => callback(copy));
+      this.validate(query).then(query => this.queryManager.copyQuery(query)).then(copy => callback(copy));
     },
 
     linkQueryClick(query, callback) {
       this.validate(query)
-        .then(query => this.get('queryManager').encodeQuery(query))
+        .then(query => this.queryManager.encodeQuery(query))
         .then(encoded => {
           let origin = this.getOrigin();
           let path = this.router.generate('create', EmberObject.create({ hash: encoded }));
@@ -63,11 +63,11 @@ export default Route.extend({
     },
 
     deleteResultsClick(query) {
-      this.get('queryManager').deleteResults(query);
+      this.queryManager.deleteResults(query);
     },
 
     deleteQueryClick(query) {
-      this.get('queryManager').deleteQuery(query);
+      this.queryManager.deleteQuery(query);
     }
   }
 });

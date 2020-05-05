@@ -22,18 +22,18 @@ export default Mixin.create({
   }),
 
   haveMoreRows: computed('firstNewRow', 'numberOfRows', function() {
-    return this.get('firstNewRow') < this.get('numberOfRows');
+    return this.firstNewRow < this.numberOfRows;
   }),
 
   addRows(start, end) {
-    end = Math.min(this.get('numberOfRows'), end);
-    let toAdd = this.get('rows').slice(start, end);
+    end = Math.min(this.numberOfRows, end);
+    let toAdd = this.rows.slice(start, end);
     this.set('firstNewRow', end);
-    this.get('table').addRows(toAdd);
+    this.table.addRows(toAdd);
   },
 
   addPages(pages = 1) {
-    let { firstNewRow, pageSize } = this.getProperties('firstNewRow', 'pageSize');
+    let { firstNewRow, pageSize } = this;
     let lastNewRow = firstNewRow + (pageSize * pages);
     return this.addRows(firstNewRow, lastNewRow);
   },
@@ -58,7 +58,7 @@ export default Mixin.create({
       return extractor;
     }
     // Default String convertor
-    if (this.get('useDefaultStringExtractor')) {
+    if (this.useDefaultStringExtractor) {
       return a => String(a.get(column));
     }
     // Identity
@@ -66,7 +66,7 @@ export default Mixin.create({
   },
 
   sortBy(column, direction = 'ascending') {
-    let rows = this.get('rows');
+    let rows = this.rows;
     rows.sort((a, b) => {
       let extractor = this.getExtractor(column);
       let itemA = extractor(a);
@@ -82,9 +82,9 @@ export default Mixin.create({
   },
 
   reset(forceReset = false) {
-    let table = this.get('table');
+    let table = this.table;
     // Reset table if not in appendMode
-    if (!this.get('appendMode') || forceReset) {
+    if (!this.appendMode || forceReset) {
       table.setRows([]);
       this.set('firstNewRow', 0);
     }
@@ -99,7 +99,7 @@ export default Mixin.create({
     },
 
     onScrolledToBottom() {
-      if (!this.get('isDestroyed') && !this.get('isDestroying') && this.get('haveMoreRows')) {
+      if (!this.isDestroyed && !this.isDestroying && this.haveMoreRows) {
         this.addPages();
       }
     }

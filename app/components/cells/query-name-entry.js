@@ -21,7 +21,7 @@ export default Component.extend({
   }),
 
   click() {
-    this.get('tableActions.queryClick')(this.get('row'));
+    this.get('tableActions.queryClick')(this.row);
   },
 
   mouseEnter() {
@@ -34,19 +34,19 @@ export default Component.extend({
 
   actions: {
     editClick() {
-      this.get('tableActions.queryClick')(this.get('row'));
+      this.get('tableActions.queryClick')(this.row);
     },
 
     copyClick() {
-      this.get('tableActions.copyQueryClick')(this.get('row'));
+      this.get('tableActions.copyQueryClick')(this.row);
     },
 
     linkClick() {
-      this.get('tableActions.linkQueryClick')(this.get('row'));
+      this.get('tableActions.linkQueryClick')(this.row);
     },
 
     deleteClick() {
-      this.get('tableActions.deleteQueryClick')(this.get('row'));
+      this.get('tableActions.deleteQueryClick')(this.row);
     }
   }
 });

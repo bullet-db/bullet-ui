@@ -18,8 +18,8 @@ export default Model.extend({
   enumerations: attr(),
 
   qualifiedType: computed('type', 'subtype', function() {
-    let type = this.get('type');
-    let subType = this.get('subtype');
+    let type = this.type;
+    let subType = this.subtype;
     let qualifiedType = type;
     if (!isEmpty(subType)) {
       qualifiedType = type === 'MAP' ? `MAP OF STRINGS TO ${subType}S` : `${type} OF ${subType}S`;
@@ -28,22 +28,22 @@ export default Model.extend({
   }),
 
   hasEnumerations: computed('enumerations', function() {
-    return !isEmpty(this.get('enumerations'));
+    return !isEmpty(this.enumerations);
   }).readOnly(),
 
   hasFreeformField: computed('type', 'subtype', 'enumerations', function() {
-    return this.get('type') === 'MAP' && !isEmpty(this.get('subtype')) && isEmpty(this.get('enumerations'));
+    return this.type === 'MAP' && !isEmpty(this.subtype) && isEmpty(this.enumerations);
   }).readOnly(),
 
   enumeratedColumns: computed('name', 'subtype', 'enumerations', function() {
-    let subColumns = A(this.get('enumerations'));
+    let subColumns = A(this.enumerations);
     if (isEmpty(subColumns)) {
       return false;
     }
-    let subColumnType = this.get('subtype');
+    let subColumnType = this.subtype;
     return subColumns.map(item => {
       let subColumn = EmberObject.create(item);
-      let name = this.get('name');
+      let name = this.name;
       subColumn.set('name', `${name}${SUBFIELD_SEPARATOR}${item.name}`);
       subColumn.set('type', subColumnType);
       subColumn.set('qualifiedType', subColumnType);
@@ -57,20 +57,20 @@ export default Model.extend({
     let simplifiedColumns = A();
     // The main column
     simplifiedColumns.pushObject(EmberObject.create({
-      name: this.get('name'),
-      type: this.get('type')
+      name: this.name,
+      type: this.type
     }));
     // The free form subfield
-    let hasFreeformField = this.get('hasFreeformField');
+    let hasFreeformField = this.hasFreeformField;
     if (hasFreeformField) {
       simplifiedColumns.pushObject(EmberObject.create({
-        name: this.get('name'),
-        type: this.get('subtype'),
-        description: this.get('description'),
+        name: this.name,
+        type: this.subtype,
+        description: this.description,
         hasFreeformField: hasFreeformField
       }));
     }
-    let enumerated = this.get('enumeratedColumns');
+    let enumerated = this.enumeratedColumns;
     if (enumerated) {
       simplifiedColumns.addObjects(enumerated);
     }

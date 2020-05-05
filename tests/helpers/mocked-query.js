@@ -74,11 +74,11 @@ export default EmberObject.extend({
   },
 
   isWindowless: computed('_window', function() {
-    return isEmpty(this.get('_window'));
+    return isEmpty(this._window);
   }),
 
   topLevelPropertyAsPromise(attr) {
-    if (this.get('promisify')) {
+    if (this.promisify) {
       this.set(attr, resolve(this.get(`_${attr}`)));
     } else {
       this.set(attr, this.get(`_${attr}`));
@@ -87,7 +87,7 @@ export default EmberObject.extend({
 
   nestedPropertyAsPromise(top, nested) {
     let attr = `${top}.${nested}`;
-    if (this.get('promisify')) {
+    if (this.promisify) {
       this.set(attr, resolve(this.get(`_${top}._${nested}`)));
     } else {
       this.set(attr, this.get(`_${top}._${nested}`));
@@ -100,7 +100,7 @@ export default EmberObject.extend({
   },
 
   addProjection(field, name) {
-    this.get('_projections').pushObject(MockProjection.create({ field, name }));
+    this._projections.pushObject(MockProjection.create({ field, name }));
     this.topLevelPropertyAsPromise('projections');
   },
 
@@ -112,19 +112,19 @@ export default EmberObject.extend({
   },
 
   addGroup(field, name) {
-    let aggregation = this.get('_aggregation');
+    let aggregation = this._aggregation;
     aggregation.get('_groups').pushObject(MockGroup.create({ field, name }));
     this.nestedPropertyAsPromise('aggregation', 'groups');
   },
 
   addMetric(type, field, name) {
-    let aggregation = this.get('_aggregation');
+    let aggregation = this._aggregation;
     aggregation.get('_metrics').pushObject(MockMetric.create({ type, field, name }));
     this.nestedPropertyAsPromise('aggregation', 'metrics');
   },
 
   addResult(records, created = new Date(Date.now()), metadata = null, querySnapshot = null, pivotOptions = null) {
-    this.get('_results').pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
+    this._results.pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
     this.topLevelPropertyAsPromise('results');
   },
 
@@ -147,7 +147,7 @@ export default EmberObject.extend({
   },
 
   validate() {
-    let shouldValidate = this.get('shouldValidate');
+    let shouldValidate = this.shouldValidate;
     if (shouldValidate) {
       return resolve({ validations: EmberObject.create({ isValid: true }) });
     }
@@ -157,7 +157,7 @@ export default EmberObject.extend({
   filterSummary: oneWay('_filter.summary'),
 
   fieldsSummary: computed('_projections.[]', '_aggregation.{_groups.[],_metrics.[]}', function() {
-    let projections = this.concatFieldLikes(this.get('_projections'));
+    let projections = this.concatFieldLikes(this._projections);
     let groups = this.concatFieldLikes(this.get('_aggregation._groups'));
     let metrics = this.concatFieldLikes(this.get('_aggregation._metrics'));
     let fields = ['newName', 'points', 'numberOfPoints', 'start', 'end', 'increment'];
@@ -166,7 +166,7 @@ export default EmberObject.extend({
   }),
 
   windowSummary: computed('_window.{emitType,emitEvery,includeType}', function() {
-    if (isEmpty(this.get('_window'))) {
+    if (isEmpty(this._window)) {
       return 'None';
     }
     return `${this.get('_window.emitType')}${this.get('_window.emitEvery')}${this.get('_window.includeType')}`;

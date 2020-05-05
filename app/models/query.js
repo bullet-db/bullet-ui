@@ -68,7 +68,7 @@ export default Model.extend(Validations, {
   }).readOnly(),
 
   projectionsSummary: computed('projections.@each.name', function() {
-    return this.summarizeFieldLike(this.get('projections'));
+    return this.summarizeFieldLike(this.projections);
   }).readOnly(),
 
   groupsSummary: computed('aggregation.groups.@each.name', function() {
@@ -93,7 +93,7 @@ export default Model.extend(Validations, {
     if (type === AGGREGATIONS.get('RAW')) {
       return '';
     }
-    let groupsSummary = this.get('groupsSummary');
+    let groupsSummary = this.groupsSummary;
     if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
       return `${type} ON (${groupsSummary})`;
     }
@@ -109,7 +109,7 @@ export default Model.extend(Validations, {
       return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;
     }
     // Otherwise 'GROUP'
-    let metricsSummary = this.get('metricsSummary');
+    let metricsSummary = this.metricsSummary;
 
     if (isEmpty(metricsSummary)) {
       return groupsSummary;
@@ -120,17 +120,17 @@ export default Model.extend(Validations, {
   }).readOnly(),
 
   fieldsSummary: computed('projectionsSummary', 'aggregationSummary', function() {
-    let projectionsSummary = this.get('projectionsSummary');
-    let aggregationSummary = this.get('aggregationSummary');
+    let projectionsSummary = this.projectionsSummary;
+    let aggregationSummary = this.aggregationSummary;
     if (isEmpty(aggregationSummary)) {
       // If All fields with Raw Aggregation
       return isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
     }
-    return this.get('aggregationSummary');
+    return this.aggregationSummary;
   }).readOnly(),
 
   windowSummary: computed('isWindowless', 'window.{emit.type,emit.every,include.type}', function() {
-    if (this.get('isWindowless')) {
+    if (this.isWindowless) {
       return 'None';
     }
     let emitType = this.get('window.emit.type');
@@ -140,7 +140,7 @@ export default Model.extend(Validations, {
   }).readOnly(),
 
   latestResult: computed('results.[]', function() {
-    let results = this.get('results');
+    let results = this.results;
     if (isEmpty(results)) {
       return null;
     }

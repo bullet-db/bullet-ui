@@ -16,15 +16,15 @@ export default Component.extend({
 
   numberOflevels: computed('data', 'maxLevels', function() {
     let rows = this.get('data.length');
-    let max = this.get('maxlevels');
+    let max = this.maxlevels;
     return Math.max(1, parseInt((max - (rows / 20))));
   }).readOnly(),
 
   formattedData: computed('data', function() {
-    let data = this.get('data');
+    let data = this.data;
     if (isEmpty(data)) {
       return '';
     }
-    return JSON.stringify(data, null, parseFloat(this.get('spacing')));
+    return JSON.stringify(data, null, parseFloat(this.spacing));
   }).readOnly()
 });

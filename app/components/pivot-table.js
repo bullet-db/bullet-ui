@@ -26,8 +26,8 @@ export default Component.extend({
   },
 
   options: computed('initialOptions', 'defaultOptions', function() {
-    let deserialized = this.get('initialOptions');
-    let options = this.get('defaultOptions');
+    let deserialized = this.initialOptions;
+    let options = this.defaultOptions;
     // Attach refresh handler
     return $.extend({ onRefresh: this.refreshHandler(this) }, deserialized, options);
   }),
@@ -43,7 +43,7 @@ export default Component.extend({
   },
 
   insertPivotTable() {
-    let { rows, options } = this.getProperties('rows', 'options');
+    let { rows, options } = this;
     this.$('.pivot-table-container').pivotUI(rows, options);
   },
 

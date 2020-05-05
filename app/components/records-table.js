@@ -26,13 +26,13 @@ export default Component.extend(PaginatedTable, {
   table: null,
 
   columns: computed('columnNames', function() {
-    let names = this.get('columnNames');
+    let names = this.columnNames;
     return names.map(item => EmberObject.create({
       label: item,
       valuePath: item,
       resizable: true,
       draggable: true,
-      cellComponent: this.get('cellComponent')
+      cellComponent: this.cellComponent
     }));
   }),
 
@@ -44,11 +44,11 @@ export default Component.extend(PaginatedTable, {
 
   didReceiveAttrs() {
     this._super(...arguments);
-    this.set('rows', this.get('rawRows').map(row => EmberObject.create(row)));
-    let sortColumn = this.get('sortColumn');
+    this.set('rows', this.rawRows.map(row => EmberObject.create(row)));
+    let sortColumn = this.sortColumn;
     let hasSortedColumn = !isNone(sortColumn);
-    let alreadyReset = this.get('alreadyReset');
-    let timeSeriesMode = this.get('timeSeriesMode');
+    let alreadyReset = this.alreadyReset;
+    let timeSeriesMode = this.timeSeriesMode;
 
     // If we are switching to timeSeriesMode but have not reset yet or if we have reset but are switching off
     // timeSeriesMode (to remove the old extra columns), recreate the table
@@ -73,6 +73,6 @@ export default Component.extend(PaginatedTable, {
   },
 
   resetTable() {
-    this.set('table', Table.create({ columns: this.get('columns') }));
+    this.set('table', Table.create({ columns: this.columns }));
   }
 });

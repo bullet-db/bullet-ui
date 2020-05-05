@@ -22,7 +22,7 @@ export default Route.extend(Filterizer, {
   },
 
   addDefaultQuery() {
-    let fetchedQuery = this.get('cachedQuery');
+    let fetchedQuery = this.cachedQuery;
     // If we already fetched and stored the default query, use that.
     if (fetchedQuery) {
       return this.createQuery(fetchedQuery);
@@ -40,7 +40,7 @@ export default Route.extend(Filterizer, {
     }
 
     // Otherwise, assume defaultQuery is an url to get the default query from.
-    return this.get('corsRequest').request(defaultQuery).then(query => {
+    return this.corsRequest.request(defaultQuery).then(query => {
       this.set('cachedQuery', query);
       return this.createQuery(query);
     });
@@ -55,13 +55,13 @@ export default Route.extend(Filterizer, {
     if (isEmpty(query.aggregation)) {
       query.aggregation = this.get('querier.defaultAPIAggregation');
     }
-    let queryObject = this.get('querier').recreate(query);
-    return this.get('queryManager').copyQuery(queryObject);
+    let queryObject = this.querier.recreate(query);
+    return this.queryManager.copyQuery(queryObject);
   },
 
   createEmptyFilter(query) {
     let empty = this.store.createRecord('filter', {
-      clause: this.get('emptyClause'),
+      clause: this.emptyClause,
       query: query
     });
     return empty.save();

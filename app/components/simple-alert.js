@@ -11,7 +11,7 @@ export default Component.extend({
   type: null,
 
   alertIconClass: computed('type', function() {
-    switch (this.get('type')) {
+    switch (this.type) {
       case 'error':
         return 'fa fa-ban';
       case 'success':
@@ -24,7 +24,7 @@ export default Component.extend({
   }),
 
   alertClass: computed('type', function() {
-    switch (this.get('type')) {
+    switch (this.type) {
       case 'error':
         return 'alert-danger';
       case 'success':

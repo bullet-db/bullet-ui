@@ -35,7 +35,7 @@ export default Component.extend(PaginatedTable, {
   }),
 
   rows: computed('queries.[]', function() {
-    return this.get('queries').toArray();
+    return this.queries.toArray();
   }),
 
   columns: A([
@@ -46,13 +46,13 @@ export default Component.extend(PaginatedTable, {
 
   init() {
     this._super(...arguments);
-    this.set('table', Table.create({ columns: this.get('columns') }));
+    this.set('table', Table.create({ columns: this.columns }));
     this.sortBy('name', 'ascending');
     this.addPages(1);
   },
 
   insertNewRowAfter(currentRow) {
-    let table = this.get('table');
+    let table = this.table;
     let index = table.get('rows').indexOf(currentRow);
     return row => {
       table.insertRowAt(index + 1, row);
@@ -92,7 +92,7 @@ export default Component.extend(PaginatedTable, {
     },
 
     deleteQueryClick(row) {
-      this.get('table').removeRow(row);
+      this.table.removeRow(row);
       this.sendAction('deleteQueryClick', row.get('content'));
     }
   }

@@ -16,7 +16,7 @@ export default Mixin.create({
   createdPopover: false,
 
   removePopover() {
-    if (this.get('createdPopover')) {
+    if (this.createdPopover) {
       this.$().popover('destroy');
       this.set('createdPopover', false);
     }
@@ -24,11 +24,11 @@ export default Mixin.create({
 
   getPopover() {
     let element = this.$();
-    if (this.get('createdPopover')) {
+    if (this.createdPopover) {
       return element;
     }
     let { titleElement, bodyElement, createOn, placeOn, triggering, additionalClass, hasHtml } =
-      this.getProperties('titleElement', 'bodyElement', 'createOn', 'placeOn', 'triggering', 'additionalClass', 'hasHtml');
+      this;
     let popoverTitleElement = this.$(titleElement);
     let popoverBodyElement = this.$(bodyElement);
     this.$().popover({

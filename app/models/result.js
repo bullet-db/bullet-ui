@@ -35,24 +35,24 @@ export default Model.extend({
   isTopK: equal('querySnapshot.type', AGGREGATIONS.get('TOP_K')).readOnly(),
 
   isReallyRaw: computed('isRaw', 'querySnapshot.projectionsSize', function() {
-    return this.get('isRaw') && this.get('querySnapshot.projectionsSize') === 0;
+    return this.isRaw && this.get('querySnapshot.projectionsSize') === 0;
   }).readOnly(),
 
   isGroupAll: computed('isGroup', 'querySnapshot.groupsSize', function() {
-    return this.get('isGroup') && this.get('querySnapshot.groupsSize') === 0;
+    return this.isGroup && this.get('querySnapshot.groupsSize') === 0;
   }).readOnly(),
 
   isGroupBy: computed('isGroup', 'querySnapshot.{metricsSize,groupsSize}', function() {
-    return this.get('isGroup') && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
+    return this.isGroup && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }).readOnly(),
 
   isSingleRow: or('isCountDistinct', 'isGroupAll').readOnly(),
 
   errorWindow: computed('windows.[]', function() {
-    return this.get('windows').find(window => !isNone(window.metadata.errors));
+    return this.windows.find(window => !isNone(window.metadata.errors));
   }).readOnly(),
 
   hasData: computed('windows.[]', function() {
-    return !isEmpty(this.get('windows'));
+    return !isEmpty(this.windows);
   }).readOnly()
 });

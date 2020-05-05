@@ -104,7 +104,7 @@ export default Component.extend({
     }
     fields.push({ name: 'type', value: type, forceSet: true });
     fields.push({ name: 'pointType', value: pointType, forceSet: true });
-    this.get('queryManager').setAggregationAttributes(this.get('query'), fields.map(f => EmberObject.create(f)));
+    this.queryManager.setAggregationAttributes(this.query, fields.map(f => EmberObject.create(f)));
   },
 
   resetOptions(type) {
@@ -119,13 +119,13 @@ export default Component.extend({
 
   replaceAggregation(type) {
     this.resetOptions(type);
-    this.get('queryManager').deleteProjections(this.get('query'));
-    return this.get('queryManager').replaceAggregation(this.get('query'), type);
+    this.queryManager.deleteProjections(this.query);
+    return this.queryManager.replaceAggregation(this.query, type);
   },
 
   replaceAggregationWithField(type, modelName, parentName, parentPath) {
     return this.replaceAggregation(type).then(() => {
-      return this.get('queryManager').addFieldLike(modelName, parentName, this.get(parentPath));
+      return this.queryManager.addFieldLike(modelName, parentName, this.get(parentPath));
     });
   },
 
@@ -162,15 +162,15 @@ export default Component.extend({
     },
 
     addFieldLike(childModelName, modelFieldName, modelPath) {
-      this.get('queryManager').addFieldLike(childModelName, modelFieldName, this.get(modelPath));
+      this.queryManager.addFieldLike(childModelName, modelFieldName, this.get(modelPath));
     },
 
     modifyDistributionType(type) {
-      this.setAttributes(type, this.get('pointType'));
+      this.setAttributes(type, this.pointType);
     },
 
     modifyDistributionPointType(type) {
-      this.setAttributes(this.get('distributionType'), type);
+      this.setAttributes(this.distributionType, type);
     },
 
     modifyFieldLike(fieldLike, field) {
@@ -180,11 +180,11 @@ export default Component.extend({
     },
 
     deleteProjections() {
-      this.get('queryManager').deleteProjections(this.get('query'));
+      this.queryManager.deleteProjections(this.query);
     },
 
     destroyModel(item) {
-      this.get('queryManager').deleteModel(item);
+      this.queryManager.deleteModel(item);
     },
 
     handleMetricChange(metric, value) {

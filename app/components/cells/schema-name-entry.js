@@ -13,7 +13,7 @@ export default Component.extend({
   tagName: 'span',
 
   extractedValue: computed('row', function() {
-    let row = this.get('row');
+    let row = this.row;
     let name = row.get('name');
     return row.get('isSubfield') ? name.substring(name.lastIndexOf(SUBFIELD_SEPARATOR) + 1) : name;
   })

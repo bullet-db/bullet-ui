@@ -33,8 +33,8 @@ export default Mixin.create(Filterizer, {
         'subfield': { },
         'placeholders': { }
       },
-      fieldSuffixForSubfield: this.get('subfieldSuffix'),
-      fieldSubfieldSeparator: this.get('subfieldSeparator'),
+      fieldSuffixForSubfield: this.subfieldSuffix,
+      fieldSubfieldSeparator: this.subfieldSeparator,
       // No need to support since rlike gets all of them:
       // 'ends_with', 'not_ends_with', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains',
       operators: [
@@ -109,7 +109,7 @@ export default Mixin.create(Filterizer, {
     filter = JSON.parse(filter ? filter : this.get('typeMapping.UNDEFINED'));
     filter.id = name;
     if (hasSubfield) {
-      filter.id = `${name}${this.get('subfieldSuffix')}`;
+      filter.id = `${name}${this.subfieldSuffix}`;
       filter.show_subfield = true;
     }
     return filter;
