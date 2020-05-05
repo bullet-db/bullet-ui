@@ -3,7 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { WINDOW_CREATED_KEY, WINDOW_NUMBER_KEY } from 'bullet-ui/components/result-viewer';
+import {
+  WINDOW_CREATED_KEY,
+  WINDOW_NUMBER_KEY
+} from 'bullet-ui/components/result-viewer';
 
 import { A } from '@ember/array';
 import { isEmpty, isEqual, typeOf } from '@ember/utils';

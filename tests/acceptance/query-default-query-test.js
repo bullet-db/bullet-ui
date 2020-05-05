@@ -7,7 +7,10 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import QUERIES from '../fixtures/queries';
-import { setupForAcceptanceTest, setupForMockSettings } from '../helpers/setup-for-acceptance-test';
+import {
+  setupForAcceptanceTest,
+  setupForMockSettings
+} from '../helpers/setup-for-acceptance-test';
 import { visit, find, findAll } from '@ember/test-helpers';
 import { findIn, findAllIn } from '../helpers/find-helpers';
 

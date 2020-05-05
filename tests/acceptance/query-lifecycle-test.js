@@ -7,7 +7,16 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, triggerEvent, currentURL, find, findAll, blur } from '@ember/test-helpers';
+import {
+  visit,
+  click,
+  fillIn,
+  triggerEvent,
+  currentURL,
+  find,
+  findAll,
+  blur
+} from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from '../helpers/find-helpers';
 

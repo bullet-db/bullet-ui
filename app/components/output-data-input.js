@@ -8,7 +8,12 @@ import { isEmpty, isEqual } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import {
+  AGGREGATIONS,
+  RAWS,
+  DISTRIBUTIONS,
+  DISTRIBUTION_POINTS
+} from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 
 export default Component.extend({

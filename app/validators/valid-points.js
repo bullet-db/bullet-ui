@@ -6,7 +6,11 @@
 import $ from 'jquery';
 import { isEmpty, isEqual } from '@ember/utils';
 import BaseValidator from 'ember-cp-validations/validators/base';
-import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import {
+  AGGREGATIONS,
+  DISTRIBUTIONS,
+  DISTRIBUTION_POINTS
+} from 'bullet-ui/models/aggregation';
 
 const Validoints = BaseValidator.extend({
   validateMaximumPoints(size, model) {

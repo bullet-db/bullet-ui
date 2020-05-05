@@ -7,7 +7,12 @@ import EmberObject from '@ember/object';
 import { A } from '@ember/array';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, settled, triggerEvent } from '@ember/test-helpers';
+import {
+  render,
+  click,
+  settled,
+  triggerEvent
+} from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import RESULTS from '../../fixtures/results';
 

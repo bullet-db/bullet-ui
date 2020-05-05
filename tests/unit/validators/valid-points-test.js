@@ -6,7 +6,11 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import {
+  AGGREGATIONS,
+  DISTRIBUTIONS,
+  DISTRIBUTION_POINTS
+} from 'bullet-ui/models/aggregation';
 
 module('Unit | Validator | valid-points', function(hooks) {
   setupTest(hooks);

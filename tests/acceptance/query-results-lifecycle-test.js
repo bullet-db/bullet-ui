@@ -8,7 +8,13 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, click, currentRouteName, find, findAll } from '@ember/test-helpers';
+import {
+  visit,
+  click,
+  currentRouteName,
+  find,
+  findAll
+} from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 
 module('Acceptance | query results lifecycle', function(hooks) {

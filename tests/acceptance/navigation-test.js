@@ -7,7 +7,12 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { click, visit, currentRouteName, currentURL } from '@ember/test-helpers';
+import {
+  click,
+  visit,
+  currentRouteName,
+  currentURL
+} from '@ember/test-helpers';
 import { findContains } from '../helpers/find-helpers';
 
 module('Acceptance | navigation', function(hooks) {

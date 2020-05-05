@@ -7,7 +7,13 @@ import { module, test } from 'qunit';
 import RESULTS from '../fixtures/results';
 import COLUMNS from '../fixtures/columns';
 import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
-import { visit, currentURL, click, currentRouteName, findAll } from '@ember/test-helpers';
+import {
+  visit,
+  currentURL,
+  click,
+  currentRouteName,
+  findAll
+} from '@ember/test-helpers';
 
 module('Acceptance | result error', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);

@@ -3,7 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject, { computed, get, getProperties } from '@ember/object';
+import EmberObject, {
+  computed,
+  get,
+  getProperties
+} from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { isBlank, isEmpty, isEqual } from '@ember/utils';
 import { debounce } from '@ember/runloop';
