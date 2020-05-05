@@ -1,7 +1,7 @@
 ---
 language: node_js
 node_js:
-  - "6"
+  - "8"
 
 sudo: false
 
@@ -19,12 +19,18 @@ addons:
     repo_token:
       secure: "BClNgesKuxhCWgBvd9/C/L+NbKQjwRBYIYDYBNjW096DcvcFRoxduc9F8VzlNEsP5mgUFqXRlc7N0DvrJULDm9VxwBkrla0dTVcXg310oLVG3ooZJ3wsK2UOSapt/fl5OkEv6FVR7dAgRybaeldyD0qMSlcAtdFlxRa2ozfTcUMht/BtPCdcACkOf8AYpEOwCupv7+MiO3/DQ7TADvFe0sVRujnm4DMrH1BZk+Hqdl9ROqHrPy9Rjc2BpEibJoY9+aw8r73eaEFMjWg8C22dNQfUHKBwLAr0sRLVbOxykYVljL3fHy3OucDvIKRielspzzIo2YY3mIin9eGyXr9gg0o/wFB5u/8G6ox1KtOiiZjNp0i2Y3yk59pJAqg4XOhD9rU0OmZ0fhRX+cCNcmuSptkDpCXEtg+rOYjL7EzjXWQrjqZTN3141eBs53+Zp9HMHCB0oeh9GYqzEo9A0q6qhDsYmpGND259YAdJHaK6bszH4mhaPljoNGrjnTdnUN+3O6fi8+SHDWlWlIzWvL6RGXBR1a/QQ6iLg2UcVpWPwqwwdbGIKmsMS6xeVM3sDuDFBZaIeF8nfdAeZJHmOWAsO7WogxBvMOeQz00Be+TVDVr6VA1fA0SsUIZAeo/o2xQaw7xcKF4zAvpy0oAtBVj1xVOI0eZTMZv7CURuuzknjhk="
 
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH=$HOME/.yarn/bin:$PATH
+
 install:
   - yarn global add codeclimate-test-reporter
   - yarn
 
 script:
-  - yarn lint && yarn test
+  - yarn lint:hbs
+  - yarn lint:js
+  - yarn test
 
 after_success:
   - codeclimate-test-reporter < coverage/lcov.info
