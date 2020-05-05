@@ -3,30 +3,30 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr, belongsTo } from '@ember-data/model';
 import { equal, or } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
 import { A } from '@ember/array';
-import DS from 'ember-data';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
-export default DS.Model.extend({
-  created: DS.attr('date', {
+export default Model.extend({
+  created: attr('date', {
     defaultValue() {
       return new Date(Date.now());
     }
   }),
-  query: DS.belongsTo('query', { autoSave: true }),
+  query: belongsTo('query', { autoSave: true }),
 
   // Not using hasMany to handle extremely high volume (rate-limited) results.
-  windows: DS.attr('window-array', {
+  windows: attr('window-array', {
     defaultValue() {
       return A();
     }
   }),
 
-  pivotOptions: DS.attr('string'),
-  querySnapshot: DS.attr(),
+  pivotOptions: attr('string'),
+  querySnapshot: attr(),
 
   isRaw: equal('querySnapshot.type', AGGREGATIONS.get('RAW')).readOnly(),
   isCountDistinct: equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')).readOnly(),

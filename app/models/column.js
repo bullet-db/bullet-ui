@@ -3,19 +3,19 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
-import DS from 'ember-data';
 
 export const SUBFIELD_SEPARATOR = '.';
 
-export default DS.Model.extend({
-  name: DS.attr('string'),
-  type: DS.attr('string'),
-  subtype: DS.attr('string'),
-  description: DS.attr('string'),
-  enumerations: DS.attr(),
+export default Model.extend({
+  name: attr('string'),
+  type: attr('string'),
+  subtype: attr('string'),
+  description: attr('string'),
+  enumerations: attr(),
 
   qualifiedType: computed('type', 'subtype', function() {
     let type = this.get('type');

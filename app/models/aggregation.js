@@ -3,8 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
-import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 
 let AggregationTypes = EmberObject.extend({
@@ -78,11 +78,11 @@ let Validations = buildValidations({
   groupAndOrMetrics: validator('group-metric-presence')
 });
 
-export default DS.Model.extend(Validations, {
-  type: DS.attr('string'),
-  size: DS.attr('number'),
-  groups: DS.hasMany('group', { dependent: 'destroy' }),
-  metrics: DS.hasMany('metric', { dependent: 'destroy' }),
-  attributes: DS.attr({ defaultValue: () => EmberObject.create() }),
-  query: DS.belongsTo('query', { autoSave: true })
+export default Model.extend(Validations, {
+  type: attr('string'),
+  size: attr('number'),
+  groups: hasMany('group', { dependent: 'destroy' }),
+  metrics: hasMany('metric', { dependent: 'destroy' }),
+  attributes: attr({ defaultValue: () => EmberObject.create() }),
+  query: belongsTo('query', { autoSave: true })
 });

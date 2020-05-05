@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import DS from 'ember-data';
+import Model, { attr, belongsTo } from '@ember-data/model';
 import { validator, buildValidations } from 'ember-cp-validations';
 
 let Validations = buildValidations({
@@ -14,8 +14,8 @@ let Validations = buildValidations({
   aggregation: validator('belongs-to')
 });
 
-export default DS.Model.extend(Validations, {
-  field: DS.attr('string'),
-  name: DS.attr('string'),
-  aggregation: DS.belongsTo('aggregation', { autoSave: true })
+export default Model.extend(Validations, {
+  field: attr('string'),
+  name: attr('string'),
+  aggregation: belongsTo('aggregation', { autoSave: true })
 });

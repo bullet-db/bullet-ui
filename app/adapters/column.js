@@ -3,10 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import JSONAPIAdapter from '@ember-data/adapter/json-api';
 import { computed } from '@ember/object';
-import DS from 'ember-data';
 
-export default DS.JSONAPIAdapter.extend({
+export default JSONAPIAdapter.extend({
   host: computed('settings', function() {
     return this.get('settings.schemaHost');
   }),

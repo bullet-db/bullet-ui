@@ -3,10 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
-import DS from 'ember-data';
 import { pluralize } from 'ember-inflector';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
@@ -38,19 +38,19 @@ let Validations = buildValidations({
   }
 });
 
-export default DS.Model.extend(Validations, {
-  name: DS.attr('string'),
-  filter: DS.belongsTo('filter'),
-  projections: DS.hasMany('projection', { dependent: 'destroy' }),
-  aggregation: DS.belongsTo('aggregation'),
-  window: DS.belongsTo('window'),
-  duration: DS.attr('number', { defaultValue: 20 }),
-  created: DS.attr('date', {
+export default Model.extend(Validations, {
+  name: attr('string'),
+  filter: belongsTo('filter'),
+  projections: hasMany('projection', { dependent: 'destroy' }),
+  aggregation: belongsTo('aggregation'),
+  window: belongsTo('window'),
+  duration: attr('number', { defaultValue: 20 }),
+  created: attr('date', {
     defaultValue() {
       return new Date(Date.now());
     }
   }),
-  results: DS.hasMany('result', { async: true, dependent: 'destroy' }),
+  results: hasMany('result', { async: true, dependent: 'destroy' }),
 
   isWindowless: computed('window', function() {
     return isEmpty(this.get('window.id'));

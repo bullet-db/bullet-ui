@@ -3,8 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
-import DS from 'ember-data';
 import { validator, buildValidations } from 'ember-cp-validations';
 import { equal } from '@ember/object/computed';
 
@@ -60,8 +60,8 @@ let Validations = buildValidations({
   query: validator('belongs-to')
 });
 
-export default DS.Model.extend(Validations, {
-  emit: DS.attr({
+export default Model.extend(Validations, {
+  emit: attr({
     defaultValue() {
       return EmberObject.create({
         type: EMIT_TYPES.get('TIME'),
@@ -69,14 +69,14 @@ export default DS.Model.extend(Validations, {
       });
     }
   }),
-  include: DS.attr({
+  include: attr({
     defaultValue() {
       return EmberObject.create({
         type: INCLUDE_TYPES.get('WINDOW')
       });
     }
   }),
-  query: DS.belongsTo('query', { autoSave: true }),
+  query: belongsTo('query', { autoSave: true }),
 
   isTimeBased: equal('emit.type', EMIT_TYPES.get('TIME'))
 });
