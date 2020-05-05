@@ -72,5 +72,20 @@ module.exports = function(defaults) {
   app.import('node_modules/pivottable/dist/c3_renderers.js');
   app.import('node_modules/pivottable/dist/export_renderers.js');
 
+  // SockJS and Stomp
+  const rollupJSON = require('@rollup/plugin-json');
+  app.import('node_modules/@stomp/stompjs/index.js', {
+    using: [{
+      transformation: 'cjs', as: 'stompjs', plugins: [ rollupJSON() ]
+    }]
+  });
+  const rollupBuiltins = require('rollup-plugin-node-builtins');
+  const rollupGlobals = require('rollup-plugin-node-globals');
+  app.import('node_modules/sockjs-client/dist/sockjs.js', {
+    using: [{
+      transformation: 'cjs', as: 'sockjs-client', plugins: [ rollupGlobals(), rollupBuiltins() ]
+    }]
+  });
+
   return app.toTree();
 };
