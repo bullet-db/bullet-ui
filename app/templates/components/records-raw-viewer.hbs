@@ -6,13 +6,13 @@
 
 <div class="collapse-control">
   <span>Collapsible</span>
-  {{mode-toggle isToggled=isToggled onToggled=(action (mut isToggled))}}
-  {{#ember-tooltip side="left"}}Prettify and make your JSON collapsible{{/ember-tooltip}}
+  <ModeToggle @isToggled={{isToggled}} @onToggled={{action (mut isToggled)}} />
+  <EmberTooltip @side="left">Prettify and make your JSON collapsible</EmberTooltip>
 </div>
 
  <div class="raw-display">
    {{#if isToggled}}
-     {{pretty-json data=data defaultLevels=numberOflevels}}
+     <PrettyJson @data={{data}} @defaultLevels={{numberOflevels}} />
    {{else}}
      <pre class="raw-json-display">{{formattedData}}</pre>
    {{/if}}

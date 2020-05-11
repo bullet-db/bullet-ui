@@ -20,32 +20,32 @@
     </div>
 
     <div class="emit-type-options">
-      {{#radio-button radioId="time-based" value=EMIT_TYPES.TIME groupValue=emitType changed=(action "changeEmitType" EMIT_TYPES.TIME) disabled=disabled}}
+      <RadioButton @radioId="time-based" @value={{EMIT_TYPES.TIME}} @groupValue={{emitType}} @changed={{action "changeEmitType" EMIT_TYPES.TIME}} @disabled={{disabled}}>
         {{EMIT_TYPES.TIME}}
-      {{/radio-button}}
-      {{#radio-button radioId="record-based" value=EMIT_TYPES.RECORD groupValue=emitType changed=(action "changeEmitType" EMIT_TYPES.RECORD) disabled=recordBasedWindowDisabled}}
+      </RadioButton>
+      <RadioButton @radioId="record-based" @value={{EMIT_TYPES.RECORD}} @groupValue={{emitType}} @changed={{action "changeEmitType" EMIT_TYPES.RECORD}} @disabled={{recordBasedWindowDisabled}}>
         {{EMIT_TYPES.RECORD}}
-      {{/radio-button}}
+      </RadioButton>
     </div>
 
     <div class="subsection-header">Emit Every</div>
     <div class="row">
-      {{validated-input inputClassNames="col-xs-3 window-emit-every" fieldName=everyFieldName model=query.window valuePath="emit.every" type="number" placeholder="Number" disabled=everyDisabled}}
+      <ValidatedInput @inputClassNames="col-xs-3 window-emit-every" @fieldName={{everyFieldName}} @model={{query.window}} @valuePath="emit.every" @type="number" @placeholder="Number" @disabled={{everyDisabled}} />
     </div>
 
     {{#if isTimeBasedWindow}}
       <div class="subsection-header">Select what is included in each window</div>
       <div class="include-type-options">
-        {{#radio-button radioId="include-window" value=INCLUDE_TYPES.WINDOW groupValue=includeType changed=(action "changeIncludeType" INCLUDE_TYPES.WINDOW) disabled=includeDisabled}}
+        <RadioButton @radioId="include-window" @value={{INCLUDE_TYPES.WINDOW}} @groupValue={{includeType}} @changed={{action "changeIncludeType" INCLUDE_TYPES.WINDOW}} @disabled={{includeDisabled}}>
           {{INCLUDE_TYPES.WINDOW}}
-        {{/radio-button}}
-        {{#radio-button radioId="include-all" value=INCLUDE_TYPES.ALL groupValue=includeType changed=(action "changeIncludeType" INCLUDE_TYPES.ALL) disabled=allIncludeTypeDisabled}}
+        </RadioButton>
+        <RadioButton @radioId="include-all" @value={{INCLUDE_TYPES.ALL}} @groupValue={{includeType}} @changed={{action "changeIncludeType" INCLUDE_TYPES.ALL}} @disabled={{allIncludeTypeDisabled}}>
           {{INCLUDE_TYPES.ALL}}
-        {{/radio-button}}
+        </RadioButton>
       </div>
       {{#if isRawAggregation}}
         <div class="row">
-          {{validated-input inputClassNames="col-xs-3 window-size" model=query.aggregation valuePath="size" fieldName="Maximum Rows in Window" type="number" placeholder="Number" disabled=disabled}}
+          <ValidatedInput @inputClassNames="col-xs-3 window-size" @model={{query.aggregation}} @valuePath="size" @fieldName="Maximum Rows in Window" @type="number" @placeholder="Number" @disabled={{disabled}} />
         </div>
       {{/if}}
     {{/if}}

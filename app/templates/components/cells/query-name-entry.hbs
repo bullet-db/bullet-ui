@@ -16,20 +16,20 @@
   {{#if row.name}}
     <p class="query-real-name"><strong>{{row.name}}</strong></p>
   {{else}}
-    {{query-blurb summary=row}}
+    <QueryBlurb @summary={{row}} />
   {{/if}}
 </div>
 <div class="query-name-actions {{if hasHover 'is-visible'}}">
   <i class="query-name-action-icon edit-icon fa fa-edit" {{action "editClick" bubbles=false}}>
-    {{#ember-tooltip side="bottom"}}Edit this query{{/ember-tooltip}}
+    <EmberTooltip @side="bottom">Edit this query</EmberTooltip>
   </i>
   <i class="query-name-action-icon link-icon fa fa-share-square-o" {{action "linkClick" bubbles=false}}>
-    {{#ember-tooltip side="bottom"}}Create a link to this query that you can share{{/ember-tooltip}}
+    <EmberTooltip @side="bottom">Create a link to this query that you can share</EmberTooltip>
   </i>
   <i class="query-name-action-icon copy-icon fa fa-clone" {{action "copyClick" bubbles=false}}>
-    {{#ember-tooltip side="bottom"}}Make a copy of this query without results{{/ember-tooltip}}
+    <EmberTooltip @side="bottom">Make a copy of this query without results</EmberTooltip>
   </i>
   <i class="query-name-action-icon delete-icon fa fa-trash-o" {{action "deleteClick" bubbles=false}}>
-    {{#ember-tooltip side="bottom"}}Delete this query and all results{{/ember-tooltip}}
+    <EmberTooltip @side="bottom">Delete this query and all results</EmberTooltip>
   </i>
 </div>

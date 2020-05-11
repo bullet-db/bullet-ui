@@ -9,7 +9,7 @@
   </div>
   <div class="column-subfield col-xs-4">
     <label>Subfield</label>
-    {{input type="text" value=subfield placeholder="Optional" classNames="form-control" focus-out=(action "handleFocusOut") disabled=disabled}}
+    <Input @type="text" @value={{subfield}} placeholder="Optional" @classNames="form-control" @focus-out={{action "handleFocusOut"}} @disabled={{disabled}} />
   </div>
 {{else}}
   <div class="column-onlyfield col-xs-12">

@@ -5,8 +5,8 @@
  --}}
 <div class="progress-container">
   {{#if showDone}}
-    {{ember-progress-bar shape=shape useDefaultStep=false setProgress=progress options=options}}
+    <EmberProgressBar @shape={{shape}} @useDefaultStep={{false}} @setProgress={{progress}} @options={{options}} />
   {{else}}
-    {{ember-progress-bar shape=shape useDefaultStep=false progress=progress options=options}}
+    <EmberProgressBar @shape={{shape}} @useDefaultStep={{false}} @progress={{progress}} @options={{options}} />
   {{/if}}
 </div>

@@ -4,12 +4,12 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="link-wrapper">
-  {{input id=queryID value=queryLink type="text" readonly=true maxlength=16384}}
+  <Input @id={{queryID}} @value={{queryLink}} @type="text" @readonly={{true}} @maxlength={{16384}} />
   {{#if (is-clipboard-supported)}}
-    {{#copy-button clipboardTarget=queryIDSelector}}
+    <CopyButton @clipboardTarget={{queryIDSelector}}>
         {{fa-icon "clipboard" class="copy-icon"}}
-        {{#ember-tooltip side="bottom"}}Copy to your clipboard{{/ember-tooltip}}
-    {{/copy-button}}
+        <EmberTooltip @side="bottom">Copy to your clipboard</EmberTooltip>
+    </CopyButton>
   {{/if}}
 </div>
 {{fa-icon "chevron-up" class="collapse-icon" click=(action "collapse")}}

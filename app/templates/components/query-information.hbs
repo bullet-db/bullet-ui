@@ -6,22 +6,22 @@
 <div class="information-wrapper query-blurb-wrapper" {{action "queryClick" query}}>
   <div class="information-text query-text">
     <h4>Query Definition</h4>
-    {{query-blurb query=query summary=querySnapshot}}
+    <QueryBlurb @query={{query}} @summary={{querySnapshot}} />
   </div>
   <div class="query-controls">
     <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" query bubbles=false}}>
       {{fa-icon "pencil"}}
-      {{#ember-tooltip side="bottom"}}Edit your query{{/ember-tooltip}}
+      <EmberTooltip @side="bottom">Edit your query</EmberTooltip>
     </button>
     {{#if isRunningQuery}}
       <button class="btn btn-info btn-secondary query-button cancel-button" {{action "cancelClick" query bubbles=false}}>
         {{fa-icon "stop"}}
-        {{#ember-tooltip}}Cancel your query{{/ember-tooltip}}
+        <EmberTooltip>Cancel your query</EmberTooltip>
       </button>
     {{else}}
       <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" query bubbles=false}}>
         {{fa-icon "repeat"}}
-        {{#ember-tooltip}}Rerun your query{{/ember-tooltip}}
+        <EmberTooltip>Rerun your query</EmberTooltip>
       </button>
     {{/if}}
   </div>

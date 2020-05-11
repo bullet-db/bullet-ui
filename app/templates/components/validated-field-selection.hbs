@@ -11,15 +11,13 @@
 
 {{#unless disableField}}
   <div class="{{fieldClasses}} field-selection">
-    {{column-field columns=columns disabled=disabled initialValue=model.field
-                    subfieldKey="show_subfield" subfieldSeparator=subfieldSeparator subfieldSuffix=subfieldSuffix
-                    onDone=(action "modifyField")}}
+    <ColumnField @columns={{columns}} @disabled={{disabled}} @initialValue={{model.field}} @subfieldKey="show_subfield" @subfieldSeparator={{subfieldSeparator}} @subfieldSuffix={{subfieldSuffix}} @onDone={{action "modifyField"}} />
   </div>
 {{/unless}}
 
 {{#if enableRenaming}}
   <div class="{{nameClasses}} field-name">
-    {{labeled-input fieldName="Display Name" fieldValue=model.name placeholder="Optional" disabled=disabled}}
+    <LabeledInput @fieldName="Display Name" @fieldValue={{model.name}} @placeholder="Optional" @disabled={{disabled}} />
   </div>
 {{/if}}
 {{#if enableDeleting}}

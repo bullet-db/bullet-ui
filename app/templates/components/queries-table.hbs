@@ -3,29 +3,27 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-{{#light-table table height="inherit" tableActions=(hash resultClick=(action "resultClick")
-                                                       deleteResultsClick=(action "deleteResultsClick")
-                                                       copyQueryClick=(action "copyQueryClick")
-                                                       linkQueryClick=(action "linkQueryClick")
-                                                       queryClick=(action "queryClick")
-                                                       deleteQueryClick=(action "deleteQueryClick"))
-  as |t|}}
-  {{t.head onColumnClick=(action "onColumnClick")
-           iconAscending="fa fa-chevron-up" iconDescending="fa fa-chevron-down"
-           fixed=true}}
+<LightTable @table={{this.table}} @height="inherit"
+            @tableActions={{hash resultClick=(action "resultClick")
+                                 deleteResultsClick=(action "deleteResultsClick")
+                                 copyQueryClick=(action "copyQueryClick")
+                                 linkQueryClick=(action "linkQueryClick")
+                                 queryClick=(action "queryClick")
+                                 deleteQueryClick=(action "deleteQueryClick")}}
+  as |t|>
+  <t.head @onColumnClick={{action "onColumnClick"}} @iconAscending="fa fa-chevron-up" @iconDescending="fa fa-chevron-down" @fixed={{true}} />
 
-  {{#t.body canSelect=false canExpand=true expandOnClick=false scrollBuffer=1000
-            onScrolledToBottom=(action "onScrolledToBottom") as |b|}}
+  <t.body @canSelect={{false}} @canExpand={{true}} @expandOnClick={{false}} @scrollBuffer={{1000}} @onScrolledToBottom={{action "onScrolledToBottom"}} as |b|>
 
-    {{#b.expanded-row as |e|}}
-      {{query-shareable-link row=e}}
-    {{/b.expanded-row}}
+    <b.expanded-row as |e|>
+      <QueryShareableLink @row={{e}} />
+    </b.expanded-row>
 
     {{#if table.isEmpty}}
-      {{#b.no-data}}
+      <b.no-data>
         {{partial "components/cells/no-queries"}}
-      {{/b.no-data}}
+      </b.no-data>
     {{/if}}
 
-  {{/t.body}}
-{{/light-table}}
+  </t.body>
+</LightTable>

@@ -7,9 +7,9 @@
 
   <span class="section-header">
     <h3 class="section-title">Records</h3>
-    {{#info-popover title="Visualization"}}
+    <InfoPopover @title="Visualization">
       {{partial "partials/records-help"}}
-    {{/info-popover}}
+    </InfoPopover>
   </span>
 
   <span class="records-header">
@@ -20,21 +20,21 @@
     {{#if enableCharting}}
       <button type="button" class="view-control chart-view {{if showChart "active"}}" {{action "chartMode"}} disabled={{showChart}}>
         {{fa-icon "area-chart"}}
-        {{#ember-tooltip}}Chart, pivot and visualize your data{{/ember-tooltip}}
+        <EmberTooltip>Chart, pivot and visualize your data</EmberTooltip>
       </button>
     {{/if}}
     <button type="button" class="view-control table-view {{if showTable "active"}}" {{action "tableMode"}} disabled={{showTable}}>
       {{fa-icon "table"}}
-      {{#ember-tooltip}}Show as table{{/ember-tooltip}}
+      <EmberTooltip>Show as table</EmberTooltip>
     </button>
     <button type="button" class="view-control raw-view {{if showRawData "active"}}" {{action "rawDataMode"}} disabled={{showRawData}}>
       {{fa-icon "code"}}
-      {{#ember-tooltip}}Show raw data{{/ember-tooltip}}
+      <EmberTooltip>Show raw data</EmberTooltip>
     </button>
     <div class="btn-group download-wrapper">
       <button type="button" class="view-control download dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         {{fa-icon "download"}}
-        {{#ember-tooltip side="left"}}Download your data{{/ember-tooltip}}
+        <EmberTooltip @side="left">Download your data</EmberTooltip>
       </button>
       <ul class="download-options dropdown-menu">
         <div class="triangle">
@@ -51,10 +51,10 @@
 
 <div class="records-display">
   {{#if showRawData}}
-    {{records-raw-viewer data=records}}
+    <RecordsRawViewer @data={{records}} />
   {{else if showTable}}
-    {{records-table appendMode=appendMode timeSeriesMode=timeSeriesMode columnNames=columns rawRows=records}}
+    <RecordsTable @appendMode={{appendMode}} @timeSeriesMode={{timeSeriesMode}} @columnNames={{columns}} @rawRows={{records}} />
   {{else if enableCharting}}
-    {{records-charter timeSeriesMode=timeSeriesMode config=config columns=columns rows=records model=model}}
+    <RecordsCharter @timeSeriesMode={{timeSeriesMode}} @config={{config}} @columns={{columns}} @rows={{records}} @model={{model}} />
   {{/if}}
 </div>

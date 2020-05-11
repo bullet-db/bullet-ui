@@ -4,6 +4,4 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <label for="{{concat elementId "-" fieldName}}">{{fieldName}}</label>
-{{input type=type class="form-control" disabled=disabled 
-        value=fieldValue placeholder=placeholder maxlength=maxlength
-        id=(concat elementId "-" fieldName)}}
+<Input @type={{type}} class="form-control" @disabled={{disabled}} @value={{fieldValue}} placeholder={{placeholder}} @maxlength={{maxlength}} @id={{concat elementId "-" fieldName}} />

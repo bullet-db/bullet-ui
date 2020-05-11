@@ -7,18 +7,18 @@
 
   <div class="validation-container">
     {{#if hasError}}
-      {{#simple-alert type="error"}}
+      <SimpleAlert @type="error">
         <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
         <ul class="error-list">
           {{#each query.validations.messages as |message|}}
             <li>{{message}}</li>
           {{/each}}
         </ul>
-      {{/simple-alert}}
+      </SimpleAlert>
     {{else if hasSaved}}
-      {{#simple-alert type="success"}}
+      <SimpleAlert @type="success">
         <span>SAVED TO BROWSER CACHE!</span>
-      {{/simple-alert}}
+      </SimpleAlert>
     {{/if}}
   </div>
 
@@ -26,16 +26,16 @@
 
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
-        {{labeled-input fieldName="Name" placeholder="Name Your Query" fieldValue=query.name disabled=isListening maxlength=80}}
+        <LabeledInput @fieldName="Name" @placeholder="Name Your Query" @fieldValue={{query.name}} @disabled={{isListening}} @maxlength={{80}} />
       </div>
     </div>
 
     <div class="container-fluid filter-container">
       <div class="section-header">
         <h3 class="section-title">Filters</h3>
-        {{#info-popover title="Filters"}}
+        <InfoPopover @title="Filters">
           {{partial "partials/filter-help"}}
-        {{/info-popover}}
+        </InfoPopover>
       </div>
       <div class="{{queryBuilderClass}}"></div>
     </div>
@@ -44,39 +44,39 @@
     <div class="container-fluid output-container">
       <div class="section-header">
         <h3 class="section-title">Output Data</h3>
-        {{#info-popover title="Output Data"}}
+        <InfoPopover @title="Output Data">
           {{partial "partials/output-data-help"}}
-        {{/info-popover}}
+        </InfoPopover>
       </div>
 
-      {{output-data-input subfieldSuffix=subfieldSuffix subfieldSeparator=subfieldSeparator query=query forceDirty=hasError disabled=isListening columns=columns}}
+      <OutputDataInput @subfieldSuffix={{subfieldSuffix}} @subfieldSeparator={{subfieldSeparator}} @query={{query}} @forceDirty={{hasError}} @disabled={{isListening}} @columns={{columns}} />
     </div>
 
     <div class="container-fluid window-container">
       <div class="section-header">
         <h3 class="section-title">Windowing</h3>
-        {{#info-popover title="Window"}}
+        <InfoPopover @title="Window">
           {{partial "partials/window-help"}}
-        {{/info-popover}}
+        </InfoPopover>
       </div>
 
-      {{window-input query=query disabled=isListening}}
+      <WindowInput @query={{query}} @disabled={{isListening}} />
     </div>
 
 
     <div class="container-fluid options-container">
       <div class="section-header">
         <h3 class="section-title">Query Stop Criteria</h3>
-        {{#info-popover title="Query Stop Criteria"}}
+        <InfoPopover @title="Query Stop Criteria">
           {{partial "partials/options-help"}}
-        {{/info-popover}}
+        </InfoPopover>
       </div>
 
       <div class="row">
         {{#if showAggregationSize}}
-          {{validated-input inputClassNames="col-xs-2 aggregation-size" model=query.aggregation valuePath="size" fieldName="Maximum Result Count" type="number" placeholder="Number" disabled=isListening}}
+          <ValidatedInput @inputClassNames="col-xs-2 aggregation-size" @model={{query.aggregation}} @valuePath="size" @fieldName="Maximum Result Count" @type="number" @placeholder="Number" @disabled={{isListening}} />
         {{/if}}
-        {{validated-input inputClassNames="col-xs-2 query-duration" model=query valuePath="duration" fieldName="Maximum Duration (seconds)" type="number" placeholder="Number" disabled=isListening}}
+        <ValidatedInput @inputClassNames="col-xs-2 query-duration" @model={{query}} @valuePath="duration" @fieldName="Maximum Duration (seconds)" @type="number" @placeholder="Number" @disabled={{isListening}} />
       </div>
     </div>
 

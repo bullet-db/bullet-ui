@@ -1,5 +1,5 @@
 <a tabindex="0" class="fa fa-exclamation-circle error-tooltip-link" role="button">
-  {{#ember-tooltip side=tooltipPosition}}
+  <EmberTooltip @side={{tooltipPosition}}>
     {{v-get model valuePath "message"}}
-  {{/ember-tooltip}}
+  </EmberTooltip>
 </a>

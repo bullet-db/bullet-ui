@@ -6,4 +6,4 @@
 {{#if isInvalid}}
   {{partial "partials/validation-tooltip"}}
 {{/if}}
-{{labeled-input classNames=inputClassNames type=type placeholder=placeholder fieldName=fieldName fieldValue=value disabled=disabled}}
+<LabeledInput @classNames={{inputClassNames}} @type={{type}} @placeholder={{placeholder}} @fieldName={{fieldName}} @fieldValue={{value}} @disabled={{disabled}} />

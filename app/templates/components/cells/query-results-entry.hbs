@@ -14,7 +14,7 @@
       {{fa-icon "close" tagName="span"}}
     </button>
     {{#if renderTable}}
-      {{results-table results=value resultClick=(action "resultClick") deleteResultsClick=(action "deleteResultsClick")}}
+      <ResultsTable @results={{value}} @resultClick={{action "resultClick"}} @deleteResultsClick={{action "deleteResultsClick"}} />
     {{/if}}
   </div>
 {{else}}

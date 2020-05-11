@@ -6,16 +6,16 @@
 <nav class="left-bar nav-primary">
   <ul class="icon-bar">
     <li>
-      {{#link-to "queries" class="left-bar-link"}}
+      <LinkTo @route="queries" class="left-bar-link">
         <img src="/assets/images/query.svg" class="custom-icon">
         <div class="link-name">Queries</div>
-      {{/link-to}}
+      </LinkTo>
     </li>
     <li>
-      {{#link-to "schema" class="left-bar-link" }}
+      <LinkTo @route="schema" class="left-bar-link">
         <img src="/assets/images/schema.svg" class="custom-icon">
         <div class="link-name">Schema</div>
-      {{/link-to}}
+      </LinkTo>
     </li>
   </ul>
 </nav>
