@@ -16,5 +16,11 @@
       New Query
     </LinkTo>
   </div>
-    <QueriesTable @queries={{model.queries}} @queryClick={{route-action "queryClick"}} @copyQueryClick={{route-action "copyQueryClick"}} @linkQueryClick={{route-action "linkQueryClick"}} @deleteQueryClick={{route-action "deleteQueryClick"}} @resultClick={{route-action "resultClick"}} @deleteResultsClick={{route-action "deleteResultsClick"}} />
+    <QueriesTable @queries={{model.queries}}
+                  @queryClick={{route-action "queryClick"}} 
+                  @copyQueryClick={{route-action "copyQueryClick"}}
+                  @linkQueryClick={{route-action "linkQueryClick"}}
+                  @deleteQueryClick={{route-action "deleteQueryClick"}}
+                  @resultClick={{route-action "resultClick"}}
+                  @deleteResultsClick={{route-action "deleteResultsClick"}} />
 </div>

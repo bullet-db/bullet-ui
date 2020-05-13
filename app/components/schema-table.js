@@ -7,30 +7,31 @@ import { A } from '@ember/array';
 import { action, computed } from '@ember/object';
 import { typeOf } from '@ember/utils';
 import { tracked } from '@glimmer/tracking';
-import Component from '@glimmer/component';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/components/paginated-table';
 
 export default class SchemaTableComponent extends PaginatedTable {
+  @tracked fields;
+
   columns = A([
     { label: 'Field', width: '250px', valuePath: 'name', cellComponent: 'cells/schema-name-entry' },
     { label: 'Type', width: '250px', valuePath: 'qualifiedType', cellComponent: 'cells/schema-type-entry' },
     { label: 'Description', valuePath: 'description', cellComponent: 'cells/schema-description-entry' }
   ]);
 
-  @computed('fields.[]')
-  get rows() {
-    let fields = this.args.fields;
-    // This needs to handle arrays (for enumeratedColumns) and the model result collection
-    return typeOf(fields) === 'array' ? fields : fields.toArray();
-  }
-
   constructor() {
     super(...arguments);
+    this.fields = this.args.fields;
     this.pageSize = 10;
     this.table = Table.create({ columns: this.columns });
     this.sortBy('name', 'ascending');
     this.addPages(2);
+  }
+
+  @computed('fields.[]')
+  get rows() {
+    // This needs to handle arrays (for enumeratedColumns) and the model result collection
+    return typeOf(this.fields) === 'array' ? this.fields : this.fields.toArray();
   }
 
   @action

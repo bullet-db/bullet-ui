@@ -10,7 +10,8 @@
       <t.head @onColumnClick={{action "onColumnClick"}} @iconAscending="fa fa-chevron-up" @iconDescending="fa fa-chevron-down" @fixed={{true}} />
      {{/unless}}
 
-    <t.body @canSelect={{false}} @canExpand={{true}} @scrollBuffer={{1000}} @onRowClick={{action "onRowClick"}} @rowComponent={{component "schema-table-row"}} @onScrolledToBottom={{action "onScrolledToBottom"}} as |b|>
+    <t.body @canSelect={{false}} @canExpand={{true}} @scrollBuffer={{1000}} @onRowClick={{fn this.onRowClick}}
+            @rowComponent={{component "schema-table-row"}} @onScrolledToBottom={{fn this.onScrolledToBottom}} as |b|>
 
       {{#unless @isNested}}
         <b.expanded-row as |e|>
