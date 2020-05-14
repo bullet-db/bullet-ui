@@ -3,18 +3,14 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject, {
-  computed,
-  get,
-  getProperties
-} from '@ember/object';
+import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { isBlank, isEqual } from '@ember/utils';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
-import Base64 from 'urlsafe-base64';
+import { Base64 } from 'js-base64';
 import { all, Promise, resolve } from 'rsvp';
 import config from '../config/environment';
 
@@ -92,7 +88,7 @@ export default Service.extend({
     querier.set('apiMode', true);
     let string = JSON.stringify(json);
     return new Promise(resolve => {
-      resolve(Base64.encode(string));
+      resolve(Base64.encodeURI(string));
     });
   },
 

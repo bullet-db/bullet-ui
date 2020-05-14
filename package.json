@@ -108,6 +108,7 @@
     "jQuery-QueryBuilder-Placeholders": "bullet-db/jQuery-QueryBuilder-Placeholders#v1.0.1",
     "jQuery-QueryBuilder-Subfield": "bullet-db/jQuery-QueryBuilder-Subfield#v1.0.2",
     "jquery-ui": "~1.12.1",
+    "js-base64": "^2.5.2",
     "json-formatter-js": "~2.3.4",
     "loader.js": "~4.7.0",
     "pivottable": "~2.23.0",
@@ -115,8 +116,7 @@
     "qunit-dom": "^1.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "sass": "^1.26.3",
-    "sockjs-client": "~1.4.0",
-    "urlsafe-base64": "~1.0.0"
+    "sockjs-client": "~1.4.0"
   },
   "resolutions": {
     "ember-composable-helpers": "^3.1.1"
