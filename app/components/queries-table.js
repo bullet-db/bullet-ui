@@ -4,11 +4,10 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
-import { isEmpty } from '@ember/utils';
 import EmberObject, { action, computed } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/components/paginated-table';
+import isEmpty from 'bullet-ui/utils/is-empty';
 
 const QUERIES_TABLE_EXTRACTOR = EmberObject.create({
   name(row) {
@@ -40,16 +39,15 @@ export default class QueriesTableComponent extends PaginatedTable {
 
   constructor() {
     super(...arguments);
-    this.queries = this.args.queries;
     this.pageSize = 10;
     this.table = Table.create({ columns: this.columns });
     this.sortBy('name', 'ascending');
     this.addPages(1);
   }
 
-  @computed('queries.[]')
+  @computed('args.queries.[]')
   get rows() {
-    return this.queries.toArray();
+    return this.args.queries.toArray();
   }
 
   insertNewRowAfter(currentRow) {
@@ -69,22 +67,22 @@ export default class QueriesTableComponent extends PaginatedTable {
 
   @action
   queryClick(row) {
-    this.sendAction('queryClick', row.get('content'));
+    this.args.queryClick(row.get('content'));
   }
 
   @action
   resultClick(result) {
-    this.sendAction('resultClick', result);
+    this.args.resultClick(result);
   }
 
   @action
   deleteResultsClick(row) {
-    this.sendAction('deleteResultsClick', row.get('content'));
+    this.args.deleteResultsClick(row.get('content'));
   }
 
   @action
   copyQueryClick(row) {
-    this.sendAction('copyQueryClick', row.get('content'), this.insertNewRowAfter(row));
+    this.args.copyQueryClick(row.get('content'), this.insertNewRowAfter(row));
   }
 
   @action
@@ -92,13 +90,13 @@ export default class QueriesTableComponent extends PaginatedTable {
     if (row.get('expanded')) {
       row.set('expanded', false);
     } else {
-      this.sendAction('linkQueryClick', row.get('content'), this.expandRowWithLink(row));
+      this.args.linkQueryClick(row.get('content'), this.expandRowWithLink(row));
     }
   }
 
   @action
   deleteQueryClick(row) {
     this.table.removeRow(row);
-    this.sendAction('deleteQueryClick', row.get('content'));
+    this.args.deleteQueryClick(row.get('content'));
   }
 }

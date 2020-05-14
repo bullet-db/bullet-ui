@@ -16,12 +16,12 @@ module.exports = function(defaults) {
       useLess: false
     },
     autoImport: {
-      /*
-      // TODO: Enable this if jquery is not being bound to by our jquery plugins
       webpack: {
-        externals: { jquery: 'jQuery' }
+        // Needed for global in sockjs dependency
+        node: { global: true }
+        // TODO: Enable this if jquery is not being bound to by our jquery plugins
+        // externals: { jquery: 'jQuery' }
       }
-      */
     }
   });
 
@@ -79,11 +79,10 @@ module.exports = function(defaults) {
       transformation: 'cjs', as: 'stompjs', plugins: [ rollupJSON() ]
     }]
   });
-  const rollupBuiltins = require('rollup-plugin-node-builtins');
-  const rollupGlobals = require('rollup-plugin-node-globals');
+  const rollupBuiltins = require('rollup-plugin-node-polyfills');
   app.import('node_modules/sockjs-client/dist/sockjs.js', {
     using: [{
-      transformation: 'cjs', as: 'sockjs-client', plugins: [ rollupGlobals(), rollupBuiltins() ]
+      transformation: 'cjs', as: 'sockjs-client', plugins: [ rollupBuiltins() ]
     }]
   });
 

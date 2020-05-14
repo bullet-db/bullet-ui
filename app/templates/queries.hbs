@@ -17,10 +17,10 @@
     </LinkTo>
   </div>
     <QueriesTable @queries={{model.queries}}
-                  @queryClick={{route-action "queryClick"}} 
-                  @copyQueryClick={{route-action "copyQueryClick"}}
-                  @linkQueryClick={{route-action "linkQueryClick"}}
-                  @deleteQueryClick={{route-action "deleteQueryClick"}}
-                  @resultClick={{route-action "resultClick"}}
-                  @deleteResultsClick={{route-action "deleteResultsClick"}} />
+                  @queryClick={{fn (route-action "queryClick")}}
+                  @copyQueryClick={{fn (route-action "copyQueryClick")}}
+                  @linkQueryClick={{fn (route-action "linkQueryClick")}}
+                  @deleteQueryClick={{fn (route-action "deleteQueryClick")}}
+                  @resultClick={{fn (route-action "resultClick")}}
+                  @deleteResultsClick={{fn (route-action "deleteResultsClick")}} />
 </div>

@@ -5,7 +5,8 @@
  */
 import { A } from '@ember/array';
 import $ from 'jquery';
-import { isNone, isEmpty, isEqual } from '@ember/utils';
+import { isNone, isEqual } from '@ember/utils';
+import isEmpty from 'bullet-ui/utils/is-empty';
 import EmberObject, { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';

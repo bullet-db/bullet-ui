@@ -9,8 +9,9 @@ import EmberObject, {
   getProperties
 } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
-import { isBlank, isEmpty, isEqual } from '@ember/utils';
 import { debounce } from '@ember/runloop';
+import { isBlank, isEqual } from '@ember/utils';
+import isEmpty from 'bullet-ui/utils/is-empty';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { pluralize } from 'ember-inflector';
 import Base64 from 'urlsafe-base64';
