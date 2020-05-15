@@ -1,4 +1,0 @@
-2020-05-06T17:49:58.957Z [warn] WARNING: {{light-table}} was not converted as it has positional parameters which can't be automatically converted. Source: app/templates/components/records-table.hbs
-2020-05-06T17:49:59.450Z [warn] WARNING: {{light-table}} was not converted as it has positional parameters which can't be automatically converted. Source: app/templates/components/schema-table.hbs
-2020-05-06T17:49:59.496Z [warn] WARNING: {{light-table}} was not converted as it has positional parameters which can't be automatically converted. Source: app/templates/components/results-table.hbs
-2020-05-06T17:50:00.062Z [warn] WARNING: {{light-table}} was not converted as it has positional parameters which can't be automatically converted. Source: app/templates/components/queries-table.hbs

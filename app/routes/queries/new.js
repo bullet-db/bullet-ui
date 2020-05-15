@@ -3,15 +3,17 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty, typeOf } from '@ember/utils';
+import { typeOf } from '@ember/utils';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import Filterizer from 'bullet-ui/mixins/filterizer';
+import isEmpty from 'bullet-ui/utils/is-empty';
+import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 
-export default Route.extend(Filterizer, {
-  corsRequest: service(),
-  querier: service(),
-  queryManager: service(),
+export default class QueriesNewRoute extends Route {
+  @service corsRequest;
+  @service querier;
+  @service queryManager;
+  cachedQuery;
 
   beforeModel() {
     return this.addDefaultQuery().then(query => {
@@ -19,7 +21,7 @@ export default Route.extend(Filterizer, {
         this.transitionTo('query', query.get('id'));
       });
     });
-  },
+  }
 
   addDefaultQuery() {
     let fetchedQuery = this.cachedQuery;
@@ -44,7 +46,7 @@ export default Route.extend(Filterizer, {
       this.set('cachedQuery', query);
       return this.createQuery(query);
     });
-  },
+  }
 
   createQuery(query) {
     if (!query) {
@@ -57,15 +59,15 @@ export default Route.extend(Filterizer, {
     }
     let queryObject = this.querier.recreate(query);
     return this.queryManager.copyQuery(queryObject);
-  },
+  }
 
   createEmptyFilter(query) {
     let empty = this.store.createRecord('filter', {
-      clause: this.emptyClause,
+      clause: EMPTY_CLAUSE,
       query: query
     });
     return empty.save();
-  },
+  }
 
   createEmptyQuery() {
     let aggregation = this.store.createRecord('aggregation', this.get('querier.defaultAggregation'));
@@ -75,4 +77,4 @@ export default Route.extend(Filterizer, {
     });
     return this.createEmptyFilter(query).then(() => query);
   }
-});
+}
