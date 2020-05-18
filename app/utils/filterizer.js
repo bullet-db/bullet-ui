@@ -23,7 +23,7 @@ export default class Filterizer {
 
   /**
    * Creates an instance of the Filterizer.
-   * @param {String} subFieldSuffix The suffix that has been appended to fields that have free form subfields in the
+   * @param {String} subfieldSuffix The suffix that has been appended to fields that have free form subfields in the
    *                                QueryBuilder rule. Only needed to use methods that convert to the API format.
    * @param {String}  subfieldSeparator The separator to append to fields that have free form subfields when creating the
    *                                    API rule. Only needed to use methods that convert to the API format.
@@ -32,8 +32,8 @@ export default class Filterizer {
                               If this is not true, additional metadata (subfield in particular) may be added for helping
                               with some operations.
    */
-  constructor(subFieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode) {
-    this.subFieldSuffix = subFieldSuffix || '';
+  constructor(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode) {
+    this.subfieldSuffix = subfieldSuffix || '';
     this.subfieldSeparator = subfieldSeparator || '';
     this.multipleValueSeparator = multipleValueSeparator || ',';
     this.apiMode = apiMode || true;

@@ -4,6 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { typeOf } from '@ember/utils';
+import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import isEmpty from 'bullet-ui/utils/is-empty';
@@ -13,6 +14,7 @@ export default class QueriesNewRoute extends Route {
   @service corsRequest;
   @service querier;
   @service queryManager;
+  @service store;
   cachedQuery;
 
   beforeModel() {
@@ -30,7 +32,7 @@ export default class QueriesNewRoute extends Route {
       return this.createQuery(fetchedQuery);
     }
 
-    let defaultQuery = this.get('settings.defaultQuery');
+    let defaultQuery = get(this, 'settings.defaultQuery');
     // Create an empty query if we don't have defaults
     if (!defaultQuery) {
       return this.createEmptyQuery();
@@ -55,7 +57,7 @@ export default class QueriesNewRoute extends Route {
     // If query does not have a filter, recreate will create it. No need to call createEmptyFilter
     // If query does not have an aggregation, we must create it.
     if (isEmpty(query.aggregation)) {
-      query.aggregation = this.get('querier.defaultAPIAggregation');
+      query.aggregation = get(this, 'querier.defaultAPIAggregation');
     }
     let queryObject = this.querier.recreate(query);
     return this.queryManager.copyQuery(queryObject);
@@ -70,7 +72,7 @@ export default class QueriesNewRoute extends Route {
   }
 
   createEmptyQuery() {
-    let aggregation = this.store.createRecord('aggregation', this.get('querier.defaultAggregation'));
+    let aggregation = this.store.createRecord('aggregation', get(this, 'querier.defaultAggregation'));
     aggregation.save();
     let query = this.store.createRecord('query', {
       aggregation: aggregation

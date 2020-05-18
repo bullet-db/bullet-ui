@@ -6,20 +6,64 @@
 
 /*eslint camelcase: 0 */
 
-import { isEmpty } from '@ember/utils';
-import Mixin from '@ember/object/mixin';
-import Filterizer from 'bullet-ui/mixins/filterizer';
+import isEmpty from 'bullet-ui/utils/is-empty';
+
+/**
+ * Maps types to their QueryBuilder rule flags.
+ * @private
+ * @type {Object}
+ */
+const TYPE_MAPPING = {
+  // Storing as JSON string to quickly create a deep copy using JSON.parse
+  UNDEFINED: JSON.stringify({
+    type: 'integer',
+    operators: ['is_null', 'is_not_null']
+  }),
+
+  // MAP and LIST will map to UNDEFINED
+  types: {
+    STRING: JSON.stringify({
+      type: 'string',
+      placeholder: 'string', placeholders: { in: 'strings ( _, _, _, ..., _ )', not_in: 'strings ( _, _, _, ..., _ )', rlike: 'strings ( _, _, _, ..., _ )' },
+      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null', 'rlike']
+    }),
+
+    LONG: JSON.stringify({
+      type: 'integer',
+      placeholder: 'integer', placeholders: { in: 'integers ( _, _, _, ..., _ )', not_in: 'integers ( _, _, _, ..., _ )' },
+      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+    }),
+
+    DOUBLE: JSON.stringify({
+      type: 'double',
+      placeholder: 'number', placeholders: { in: 'numbers ( _, _, _, ..., _ )', not_in: 'numbers ( _, _, _, ..., _ )' },
+      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+    }),
+
+    BOOLEAN: JSON.stringify({
+      type: 'boolean', input: 'radio', values: { true: 'true', false: 'false' }
+    })
+  }
+};
 
 /**
  * Provides methods to configure the QueryBuilder plugin with initial filters and options, given
  * an Enumerable of {@link Column}.
  */
-export default Mixin.create(Filterizer, {
+export default class BuilderAdapter {
+  subfieldSuffix;
+  subfieldSeparator;
+
+  constructor(subfieldSuffix, subfieldSeparator) {
+    this.subfieldSuffix = subfieldSuffix;
+    this.subfieldSeparator = subfieldSeparator;
+  }
+
   /**
    * Returns the default options for QueryBuilder. Does not include filters.
    * @return {Object} The Options to configure QueryBuilder
    */
-  builderOptions() {
+  get builderOptions() {
     return {
       allow_empty: true,
       plugins: {
@@ -75,7 +119,7 @@ export default Mixin.create(Filterizer, {
         }
       }
     };
-  },
+  }
 
   /**
    * Creates QueryBuilder version of Filters from an Enumerable of {@link Column}, flattening enumerated Columns.
@@ -93,7 +137,7 @@ export default Mixin.create(Filterizer, {
         return this.rulify(flatColumn.name, flatColumn.type, flatColumn.hasFreeformField);
       }));
     }, filters);
-  },
+  }
 
   /**
    * Creates a QueryBuilder filter from a {@link Column}.
@@ -104,52 +148,14 @@ export default Mixin.create(Filterizer, {
    * @return {Object}              The QueryBuilder filter.
    */
   rulify(name, type, hasSubfield = false) {
-    let filter = this.get(`typeMapping.types.${type}`);
+    let filter = TYPE_MAPPING.types[`${type}`];
     // Native implementation of JSON.parse is faster than jQuery extend to make a copy of the object
-    filter = JSON.parse(filter ? filter : this.get('typeMapping.UNDEFINED'));
+    filter = JSON.parse(filter ? filter : TYPE_MAPPING.UNDEFINED);
     filter.id = name;
     if (hasSubfield) {
       filter.id = `${name}${this.subfieldSuffix}`;
       filter.show_subfield = true;
     }
     return filter;
-  },
-
-  /**
-   * Maps types to their QueryBuilder rule flags.
-   * @private
-   * @type {Object}
-   */
-  typeMapping: {
-    // Storing as JSON string to quickly create a deep copy using JSON.parse
-    UNDEFINED: JSON.stringify({
-      type: 'integer',
-      operators: ['is_null', 'is_not_null']
-    }),
-
-    // MAP and LIST will map to UNDEFINED
-    types: {
-      STRING: JSON.stringify({
-        type: 'string',
-        placeholder: 'string', placeholders: { in: 'strings ( _, _, _, ..., _ )', not_in: 'strings ( _, _, _, ..., _ )', rlike: 'strings ( _, _, _, ..., _ )' },
-        operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null', 'rlike']
-      }),
-
-      LONG: JSON.stringify({
-        type: 'integer',
-        placeholder: 'integer', placeholders: { in: 'integers ( _, _, _, ..., _ )', not_in: 'integers ( _, _, _, ..., _ )' },
-        operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
-      }),
-
-      DOUBLE: JSON.stringify({
-        type: 'double',
-        placeholder: 'number', placeholders: { in: 'numbers ( _, _, _, ..., _ )', not_in: 'numbers ( _, _, _, ..., _ )' },
-        operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
-      }),
-
-      BOOLEAN: JSON.stringify({
-        type: 'boolean', input: 'radio', values: { true: 'true', false: 'false' }
-      })
-    }
   }
-});
+}

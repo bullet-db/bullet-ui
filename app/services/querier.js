@@ -23,8 +23,8 @@ export default class QuerierService extends Service {
 
   constructor() {
     super(...arguments);
-    const [ subFieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode ] = [ '.*', '.', ',', true ];
-    this.filterizer = new Filterizer(subFieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode);
+    const [ subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode ] = [ '.*', '.', ',', true ];
+    this.filterizer = new Filterizer(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode);
   }
 
   @computed('defaultAPIAggregation').readOnly()
