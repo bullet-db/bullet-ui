@@ -6,33 +6,33 @@
 import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEqual } from '@ember/utils';
-import isEmpty from 'bullet-ui/utils/is-empty';
 import EmberObject, { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
-import Filterizer from 'bullet-ui/mixins/filterizer';
+import isEmpty from 'bullet-ui/utils/is-empty';
+import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 
-export default Service.extend(Filterizer, {
-  stompWebsocket: service(),
+export default class QuerierService extends Service {
+  @service stompWebsocket;
+  filterizer;
+  @alias('stompWebsocket.isConnected').readOnly() isRunningQuery;
+  @alias('settings.defaultAggregation').readOnly() defaultAPIAggregation;
 
-  subfieldSuffix: '.*',
-  subfieldSeparator: '.',
-  delimiter: ',',
-  apiMode: true,
-  pendingRequest: null,
+  constructor() {
+    super(...arguments);
+    const [ subFieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode ] = [ '.*', '.', ',', true ];
+    this.filterizer = new Filterizer(subFieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode);
+  }
 
-  isRunningQuery: alias('stompWebsocket.isConnected').readOnly(),
-
-  defaultAPIAggregation: alias('settings.defaultAggregation').readOnly(),
-
-  defaultAggregation: computed('defaultAPIAggregation', function() {
+  @computed('defaultAPIAggregation').readOnly()
+  get defaultAggregation() {
     let aggregation = this.defaultAPIAggregation;
     aggregation.type = AGGREGATIONS.get(aggregation.type);
     return aggregation;
-  }).readOnly(),
+  }
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
@@ -48,7 +48,7 @@ export default Service.extend(Filterizer, {
 
     let filter = EmberObject.create();
     if (!this.isTruthy(clause)) {
-      clause = this.emptyClause;
+      clause = EMPTY_CLAUSE;
     }
     filter.set('clause', clause);
     // One additional non-API key placed into the object for summarizing. Copy the summary as is
@@ -61,7 +61,7 @@ export default Service.extend(Filterizer, {
     this.setIfTruthy(query, 'name', json.name);
     query.set('duration', Number(json.duration) / 1000);
     return query;
-  },
+  }
 
   /**
    * Converts an internal Ember Bullet query to the API query specification.
@@ -91,15 +91,15 @@ export default Service.extend(Filterizer, {
     this.assignIfTruthy(json, 'aggregation', aggregation);
     json.duration = Number(query.get('duration')) * 1000;
     return json;
-  },
+  }
 
   recreateFilter(json) {
     if (isNone(json)) {
       return false;
     }
     let rule = json[0];
-    return this.convertClauseToRule(rule);
-  },
+    return this.filterizer.convertClauseToRule(rule);
+  }
 
   reformatFilter(filter) {
     if (isNone(filter)) {
@@ -109,7 +109,7 @@ export default Service.extend(Filterizer, {
     if (!clause || $.isEmptyObject(clause)) {
       return false;
     }
-    let converted = this.convertRuleToClause(clause);
+    let converted = this.filterizer.convertRuleToClause(clause);
     let innerClauses = converted.clauses;
     if (isEmpty(innerClauses)) {
       return false;
@@ -117,22 +117,22 @@ export default Service.extend(Filterizer, {
     // If we got here, we should have a valid clause.
     let innerClause = converted.clauses[0];
     // Unbox if it's a single simple filter nested inside
-    if (innerClauses.length === 1 && !this.isLogical(innerClause.operation)) {
+    if (innerClauses.length === 1 && !this.filterizer.isLogical(innerClause.operation)) {
       return innerClause;
     }
     return converted;
-  },
+  }
 
   recreateProjections(json) {
     if (isEmpty(json)) {
       return false;
     }
     return this.makeFields(json.fields);
-  },
+  }
 
   reformatProjections(projections) {
     return this.getFields(projections);
-  },
+  }
 
   recreateAggregation(json) {
     if (isEmpty(json)) {
@@ -150,7 +150,7 @@ export default Service.extend(Filterizer, {
     aggregation.set('size', Number(json.size));
 
     return aggregation;
-  },
+  }
 
   recreateWindow(json) {
     if (isEmpty(json)) {
@@ -172,7 +172,7 @@ export default Service.extend(Filterizer, {
       emit: emit,
       include: include
     });
-  },
+  }
 
   reformatAggregation(aggregation) {
     if (isEmpty(aggregation)) {
@@ -188,7 +188,7 @@ export default Service.extend(Filterizer, {
     this.assignIfTruthy(json, 'attributes', attributes);
 
     return json;
-  },
+  }
 
   reformatWindow(window) {
     let emitType = window.get('emit.type');
@@ -205,7 +205,7 @@ export default Service.extend(Filterizer, {
       json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
     }
     return json;
-  },
+  }
 
   makeFields(json, fieldName = 'field', valueName = 'name') {
     if (isEmpty(json)) {
@@ -219,7 +219,7 @@ export default Service.extend(Filterizer, {
       fields.pushObject(field);
     }
     return fields;
-  },
+  }
 
   getFields(enumerable, sourceName = 'field', targetName = 'name') {
     if (isEmpty(enumerable)) {
@@ -230,7 +230,7 @@ export default Service.extend(Filterizer, {
       json[item.get(sourceName)] = item.get(targetName);
     });
     return json;
-  },
+  }
 
   makeAttributes(json) {
     if (isEmpty(json)) {
@@ -256,7 +256,7 @@ export default Service.extend(Filterizer, {
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
     return EmberObject.create(attributes);
-  },
+  }
 
   getAttributes(aggregation) {
     let json = { };
@@ -283,14 +283,14 @@ export default Service.extend(Filterizer, {
     this.assignIfTruthy(json, 'operations', operations);
 
     return $.isEmptyObject(json) ? false : json;
-  },
+  }
 
   makeMetrics(attributes) {
     if (isEmpty(attributes)) {
       return false;
     }
     return this.makeGroupOperations(attributes.operations);
-  },
+  }
 
   makeGroupOperations(json) {
     if (isEmpty(json)) {
@@ -305,7 +305,7 @@ export default Service.extend(Filterizer, {
       groupOperations.pushObject(operation);
     });
     return groupOperations;
-  },
+  }
 
   getGroupOperations(metrics) {
     if (isEmpty(metrics)) {
@@ -320,14 +320,14 @@ export default Service.extend(Filterizer, {
       json.push(metric);
     });
     return json;
-  },
+  }
 
   makePoints(points) {
     if (isEmpty(points)) {
       return false;
     }
     return points.join(',');
-  },
+  }
 
   getPoints(points) {
     let json = [];
@@ -335,43 +335,43 @@ export default Service.extend(Filterizer, {
       points.split(',').map(s => s.trim()).forEach(n => json.push(parseFloat(n)));
     }
     return json;
-  },
+  }
 
   snakeCase(string) {
     return string.replace(/ /g, '_');
-  },
+  }
 
   assignIfTruthyNumeric(json, key, value) {
     if (!isEmpty(value)) {
       json[key] = parseFloat(value);
     }
     return json;
-  },
+  }
 
   isTruthy(value) {
     // Also works for boolean false -> Object.keys(false) = []
     return !isEmpty(value) && Object.keys(value).length !== 0;
-  },
+  }
 
   assignIfTruthy(json, key, value) {
     if (this.isTruthy(value)) {
       json[key] = value;
     }
     return json;
-  },
+  }
 
   setIfTruthy(object, key, value) {
     if (this.isTruthy(value)) {
       object.set(key, value);
     }
     return object;
-  },
+  }
 
   send(data, handlers, context) {
     this.stompWebsocket.startStompClient(this.reformat(data), handlers, context);
-  },
+  }
 
   cancel() {
     this.stompWebsocket.disconnect();
   }
-});
+}
