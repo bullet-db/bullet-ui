@@ -38,7 +38,7 @@ export default class QueriesNewRoute extends Route {
       return this.createEmptyQuery();
     }
 
-    // If we have a default filter in settings, use that.
+    // If we have a default query in settings, use that.
     if (typeOf(defaultQuery) === 'object') {
       return this.createQuery(defaultQuery);
     }

@@ -4,5 +4,5 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="query-panel-container">
-  <QueryInput @query={{model.query}} @schema={{model.schema}} @fireQuery={{route-action "fireQuery"}} />
+  <QueryInput @query={{@model.query}} @schema={{@model.schema}} @fireQuery={{fn (route-action "fireQuery")}} />
 </div>

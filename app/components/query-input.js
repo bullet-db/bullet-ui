@@ -11,9 +11,9 @@ import Component from '@ember/component';
 import { isEqual } from '@ember/utils';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import BuilderAdapter from 'bullet-ui/mixins/builder-adapter';
+import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
 
-export default Component.extend(BuilderAdapter, {
+export default Component.extend({
   queryBuilderClass: 'builder',
   queryBuilderElement: computed('queryBuilderClass', function() {
     return `.${this.queryBuilderClass}`;
@@ -24,17 +24,18 @@ export default Component.extend(BuilderAdapter, {
   }),
   subfieldSeparator: SUBFIELD_SEPARATOR,
   subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
-  query: null,
   queryManager: service(),
-  scroller: service(),
+  // scroller: service(),
+  query: null,
   schema: null,
+  builderAdapter: null,
   isListening: false,
   hasError: false,
   hasSaved: false,
 
   columns: computed('schema', function() {
     let schema = this.schema;
-    return this.builderFilters(schema);
+    return this.get('builderAdapter').builderFilters(schema);
   }).readOnly(),
 
   showAggregationSize: computed('query.{aggregation.type,isWindowless}', function() {
@@ -43,8 +44,9 @@ export default Component.extend(BuilderAdapter, {
 
   didInsertElement() {
     this._super(...arguments);
+    this.set('builderAdapter', new BuilderAdapter(this.get('subfieldSuffix', this.get('subfieldSeparator'))));
     let element = this.queryBuilderElement;
-    let options = this.builderOptions();
+    let options = this.get('builderAdapter').builderOptions();
     options.filters = this.columns;
 
     this.$(element).queryBuilder(options);
@@ -98,7 +100,7 @@ export default Component.extend(BuilderAdapter, {
       return this.queryManager.save(this.query, this.currentFilterClause(), this.currentFilterSummary());
     }, () => {
       this.set('hasError', true);
-      this.scroller.scrollVertical('.validation-container');
+      // this.scroller.scrollVertical('.validation-container');
       return reject();
     });
   },
@@ -107,7 +109,7 @@ export default Component.extend(BuilderAdapter, {
     save() {
       this.save().then(() => {
         this.set('hasSaved', true);
-        this.scroller.scrollVertical('.validation-container');
+        // this.scroller.scrollVertical('.validation-container');
       });
     },
 

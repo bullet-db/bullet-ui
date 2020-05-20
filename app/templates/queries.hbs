@@ -16,7 +16,7 @@
       New Query
     </LinkTo>
   </div>
-    <QueriesTable @queries={{model.queries}}
+    <QueriesTable @queries={{@model.queries}}
                   @queryClick={{fn (route-action "queryClick")}}
                   @copyQueryClick={{fn (route-action "copyQueryClick")}}
                   @linkQueryClick={{fn (route-action "linkQueryClick")}}

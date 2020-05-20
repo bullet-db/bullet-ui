@@ -18,7 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": null,
+    "defaultQuery": "https://bullet-api.data.yahoo.com:4443/bullet/api/custom-query",
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,

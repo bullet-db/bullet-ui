@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { helper as buildHelper } from '@ember/component/helper';
+import { helper } from '@ember/component/helper';
 import EmberObject from '@ember/object';
 import { typeOf } from '@ember/utils';
 
@@ -14,4 +14,4 @@ export function liftString([key, value]) {
   return EmberObject.create({ [key]: value });
 }
 
-export default buildHelper(liftString);
+export default helper(liftString);
