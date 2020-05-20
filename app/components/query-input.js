@@ -43,23 +43,29 @@ export default Component.extend({
     return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) && this.get('query.isWindowless');
   }),
 
+  filterClause: computed('query.filter.clause', function() {
+    let rules = this.get('query.filter.clause');
+    if (rules && !$.isEmptyObject(rules)) {
+      return rules;
+    }
+    return EMPTY_CLAUSE;
+  }),
+
+  queryBuilderOptions: computed('builderAdapter', 'columns', 'filterClause', function() {
+    let options = this.get('builderAdapter').builderOptions;
+    options.filters = this.get('columns');
+    options.rules = this.get('filterClause');
+    return options;
+  }),
+
   init() {
     this._super(...arguments);
     this.set('builderAdapter', new BuilderAdapter(this.get('subfieldSuffix'), this.get('subfieldSeparator')));
   },
 
-  addQueryBuilder(element, [builderAdapter, columns, rules]) {
-    let options = builderAdapter.builderOptions;
-    options.filters = columns;
-    console.log(options);
-
+  // Render modifier on did-insert for adding the QueryBuilder
+  addQueryBuilder(element, [options]) {
     $(element).queryBuilder(options);
-
-    if (rules && !$.isEmptyObject(rules)) {
-      $(element).queryBuilder('setRules', rules);
-    } else {
-      $(element).queryBuilder('setRules', EMPTY_CLAUSE);
-    }
   },
 
   isCurrentFilterValid() {
