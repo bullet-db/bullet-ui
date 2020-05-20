@@ -9,6 +9,7 @@ import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 import { isEqual } from '@ember/utils';
+import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
@@ -42,31 +43,33 @@ export default Component.extend({
     return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) && this.get('query.isWindowless');
   }),
 
-  didInsertElement() {
+  init() {
     this._super(...arguments);
-    this.set('builderAdapter', new BuilderAdapter(this.get('subfieldSuffix', this.get('subfieldSeparator'))));
-    let element = this.queryBuilderElement;
-    let options = this.get('builderAdapter').builderOptions();
-    options.filters = this.columns;
+    this.set('builderAdapter', new BuilderAdapter(this.get('subfieldSuffix'), this.get('subfieldSeparator')));
+  },
 
-    this.$(element).queryBuilder(options);
+  addQueryBuilder(element, [builderAdapter, columns, rules]) {
+    let options = builderAdapter.builderOptions;
+    options.filters = columns;
+    console.log(options);
 
-    let rules = this.get('query.filter.clause');
+    $(element).queryBuilder(options);
+
     if (rules && !$.isEmptyObject(rules)) {
-      this.$(element).queryBuilder('setRules', rules);
+      $(element).queryBuilder('setRules', rules);
     } else {
-      this.$(element).queryBuilder('setRules', this.emptyClause);
+      $(element).queryBuilder('setRules', EMPTY_CLAUSE);
     }
   },
 
   isCurrentFilterValid() {
     let element = this.queryBuilderElement;
-    return this.$(element).queryBuilder('validate');
+    return $(element).queryBuilder('validate');
   },
 
   currentFilterClause() {
     let element = this.queryBuilderElement;
-    return this.$(element).queryBuilder('getRules');
+    return $(element).queryBuilder('getRules');
   },
 
   currentFilterSummary() {
@@ -81,7 +84,7 @@ export default Component.extend({
       hasError: false,
       hasSaved: false
     });
-    this.$(this.queryBuilderInputs).removeAttr('disabled');
+    $(this.queryBuilderInputs).removeAttr('disabled');
   },
 
   validate() {
@@ -119,7 +122,7 @@ export default Component.extend({
           isListening: true,
           hasSaved: true
         });
-        this.$(this.queryBuilderInputs).attr('disabled', true);
+        $(this.queryBuilderInputs).attr('disabled', true);
         this.sendAction('fireQuery');
       });
     }

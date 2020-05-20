@@ -37,7 +37,7 @@
           {{partial "partials/filter-help"}}
         </InfoPopover>
       </div>
-      <div class="{{queryBuilderClass}}"></div>
+      <div class="{{queryBuilderClass}}" {{did-insert this.addQueryBuilder this.builderAdapter this.columns (get this.query "filter.clause")}}/>
     </div>
 
 
