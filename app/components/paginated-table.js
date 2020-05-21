@@ -16,7 +16,6 @@ export default class PaginatedTable extends Component {
   useDefaultStringExtractor = true;
   appendMode = false;
 
-  @computed('rows.[]')
   get numberOfRows() {
     return this.rows.length;
   }

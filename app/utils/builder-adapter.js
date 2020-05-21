@@ -63,7 +63,7 @@ export default class BuilderAdapter {
    * Returns the default options for QueryBuilder. Does not include filters.
    * @return {Object} The Options to configure QueryBuilder
    */
-  get builderOptions() {
+  builderOptions() {
     return {
       allow_empty: true,
       plugins: {

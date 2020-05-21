@@ -5,132 +5,136 @@
  */
 import { resolve, reject } from 'rsvp';
 import $ from 'jquery';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import { action, computed, get } from '@ember/object';
 import { isEqual } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
 
-export default Component.extend({
-  queryBuilderClass: 'builder',
-  queryBuilderElement: computed('queryBuilderClass', function() {
+export default class QueryInputComponent extends Component {
+  queryBuilderClass = 'builder';
+  subfieldSeparator = SUBFIELD_SEPARATOR;
+  subfieldSuffix = `${SUBFIELD_SEPARATOR}*`;
+
+  @service queryManager;
+  @tracked query;
+  @tracked builderAdapter;
+  @tracked isListening = false;
+  @tracked hasError = false;
+  @tracked hasSaved = false;
+  // scroller: service(),
+
+  constructor() {
+    super(...arguments);
+    this.query = this.args.query;
+    this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
+  }
+
+  get queryBuilderElement() {
     return `.${this.queryBuilderClass}`;
-  }),
-  queryBuilderInputs: computed('queryBuilderElement', function() {
+  }
+
+  get queryBuilderInputs() {
     let element = this.queryBuilderElement;
     return `${element} input, ${element} select, ${element} button`;
-  }),
-  subfieldSeparator: SUBFIELD_SEPARATOR,
-  subfieldSuffix: `${SUBFIELD_SEPARATOR}*`,
-  queryManager: service(),
-  // scroller: service(),
-  query: null,
-  schema: null,
-  builderAdapter: null,
-  isListening: false,
-  hasError: false,
-  hasSaved: false,
+  }
 
-  columns: computed('schema', function() {
-    let schema = this.schema;
-    return this.get('builderAdapter').builderFilters(schema);
-  }).readOnly(),
+  get isCurrentFilterValid() {
+    let element = this.queryBuilderElement;
+    return $(element).queryBuilder('validate');
+  }
 
-  showAggregationSize: computed('query.{aggregation.type,isWindowless}', function() {
-    return isEqual(this.get('query.aggregation.type'), AGGREGATIONS.get('RAW')) && this.get('query.isWindowless');
-  }),
+  get currentFilterClause() {
+    let element = this.queryBuilderElement;
+    return $(element).queryBuilder('getRules');
+  }
 
-  filterClause: computed('query.filter.clause', function() {
-    let rules = this.get('query.filter.clause');
+  get currentFilterSummary() {
+    let element = this.queryBuilderElement;
+    let sql = $(element).queryBuilder('getSQL', false);
+    return sql.sql;
+  }
+
+  @computed('args.schema')
+  get columns() {
+    let schema = this.args.schema;
+    return this.builderAdapter.builderFilters(schema);
+  }
+
+  @computed('query.{aggregation.type,isWindowless}')
+  get showAggregationSize() {
+    let query = this.query;
+    return isEqual(get(query, 'aggregation.type'), AGGREGATIONS.get('RAW')) && query.isWindowless;
+  }
+
+  @computed('query.filter.clause')
+  get filterClause() {
+    let rules = get(this.query, 'filter.clause');
     if (rules && !$.isEmptyObject(rules)) {
       return rules;
     }
     return EMPTY_CLAUSE;
-  }),
+  }
 
-  queryBuilderOptions: computed('builderAdapter', 'columns', 'filterClause', function() {
-    let options = this.get('builderAdapter').builderOptions;
-    options.filters = this.get('columns');
-    options.rules = this.get('filterClause');
+  get queryBuilderOptions() {
+    let options = this.builderAdapter.builderOptions();
+    options.filters = this.columns;
+    options.rules = this.filterClause;
     return options;
-  }),
-
-  init() {
-    this._super(...arguments);
-    this.set('builderAdapter', new BuilderAdapter(this.get('subfieldSuffix'), this.get('subfieldSeparator')));
-  },
+  }
 
   // Render modifier on did-insert for adding the QueryBuilder
   addQueryBuilder(element, [options]) {
     $(element).queryBuilder(options);
-  },
-
-  isCurrentFilterValid() {
-    let element = this.queryBuilderElement;
-    return $(element).queryBuilder('validate');
-  },
-
-  currentFilterClause() {
-    let element = this.queryBuilderElement;
-    return $(element).queryBuilder('getRules');
-  },
-
-  currentFilterSummary() {
-    let element = this.queryBuilderElement;
-    let sql = this.$(element).queryBuilder('getSQL', false);
-    return sql.sql;
-  },
+  }
 
   reset() {
-    this.setProperties({
-      isListening: false,
-      hasError: false,
-      hasSaved: false
-    });
+    this.isListening = false;
+    this.hasError = false;
+    this.hasSaved = false;
     $(this.queryBuilderInputs).removeAttr('disabled');
-  },
+  }
 
   validate() {
     this.reset();
     let query = this.query;
     return this.queryManager.cleanup(query).then(() => {
       return query.validate().then(hash => {
-        let isValid = this.isCurrentFilterValid() && hash.validations.get('isValid');
+        let isValid = this.isCurrentFilterValid && hash.validations.get('isValid');
         return isValid ? resolve() : reject();
       });
     });
-  },
+  }
 
-  save() {
+  doSave() {
     return this.validate().then(() => {
-      return this.queryManager.save(this.query, this.currentFilterClause(), this.currentFilterSummary());
+      return this.queryManager.save(this.query, this.currentFilterClause, this.currentFilterSummary);
     }, () => {
-      this.set('hasError', true);
+      this.hasError = true;
       // this.scroller.scrollVertical('.validation-container');
       return reject();
     });
-  },
-
-  actions: {
-    save() {
-      this.save().then(() => {
-        this.set('hasSaved', true);
-        // this.scroller.scrollVertical('.validation-container');
-      });
-    },
-
-    listen() {
-      this.save().then(() => {
-        this.setProperties({
-          isListening: true,
-          hasSaved: true
-        });
-        $(this.queryBuilderInputs).attr('disabled', true);
-        this.sendAction('fireQuery');
-      });
-    }
   }
-});
+
+  @action
+  save() {
+    this.doSave().then(() => {
+      this.hasSaved = true;
+      // this.scroller.scrollVertical('.validation-container');
+    });
+  }
+
+  @action
+  listen() {
+    this.doSave().then(() => {
+      this.isListening = true;
+      this.hasSaved = true;
+      $(this.queryBuilderInputs).attr('disabled', true);
+      this.args.fireQuery();
+    });
+  }
+}
