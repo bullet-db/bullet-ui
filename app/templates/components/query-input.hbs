@@ -7,6 +7,7 @@
 
   <div class="validation-container">
     {{#if this.hasError}}
+      <div {{did-insert this.scrollIntoView}} />
       <SimpleAlert @type="error">
         <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
         <ul class="error-list">
@@ -16,6 +17,7 @@
         </ul>
       </SimpleAlert>
     {{else if this.hasSaved}}
+      <div {{did-insert this.scrollIntoView}} />
       <SimpleAlert @type="success">
         <span>SAVED TO BROWSER CACHE!</span>
       </SimpleAlert>

@@ -26,7 +26,6 @@ export default class QueryInputComponent extends Component {
   @tracked isListening = false;
   @tracked hasError = false;
   @tracked hasSaved = false;
-  // scroller: service(),
 
   constructor() {
     super(...arguments);
@@ -92,6 +91,11 @@ export default class QueryInputComponent extends Component {
     $(element).queryBuilder(options);
   }
 
+  // Render modifier on did-insert for scrolling into the validation container
+  scrollIntoView(element) {
+    element.scrollIntoView(false);
+  }
+
   reset() {
     this.isListening = false;
     this.hasError = false;
@@ -115,7 +119,6 @@ export default class QueryInputComponent extends Component {
       return this.queryManager.save(this.query, this.currentFilterClause, this.currentFilterSummary);
     }, () => {
       this.hasError = true;
-      // this.scroller.scrollVertical('.validation-container');
       return reject();
     });
   }
@@ -124,7 +127,6 @@ export default class QueryInputComponent extends Component {
   save() {
     this.doSave().then(() => {
       this.hasSaved = true;
-      // this.scroller.scrollVertical('.validation-container');
     });
   }
 
