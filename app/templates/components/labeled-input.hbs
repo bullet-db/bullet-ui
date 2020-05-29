@@ -3,5 +3,7 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<label for="{{concat elementId "-" fieldName}}">{{fieldName}}</label>
-<Input @type={{type}} class="form-control" @disabled={{disabled}} @value={{fieldValue}} placeholder={{placeholder}} @maxlength={{maxlength}} @id={{concat elementId "-" fieldName}} />
+ <div class="labeled-input" ...attributes>
+  <label for="{{this.id}}">{{@fieldName}}</label>
+  <Input @type={{@type}} @disabled={{@disabled}} @value={{@fieldValue}} placeholder={{@placeholder}} @maxlength={{@maxlength}} @id={{this.id}} class="form-control" />
+</div>

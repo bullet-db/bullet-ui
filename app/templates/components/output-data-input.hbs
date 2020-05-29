@@ -100,7 +100,7 @@
 
       <div class="subsection-header">Rename Count Field</div>
       <div class="row narrow-row count-distinct-display-name">
-        <LabeledInput @classNames="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{disabled}} />
+        <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{disabled}} />
       </div>
     </div>
   {{/if}}
@@ -142,17 +142,17 @@
 
       {{#if isNumberOfPoints}}
         <div class="row narrow-row distribution-type-number-of-points">
-          <LabeledInput @classNames="col-xs-2" @type="number" @fieldName="Number of Points" @fieldValue={{query.aggregation.attributes.numberOfPoints}} @placeholder="Number" @disabled={{disabled}} />
+          <LabeledInput class="col-xs-2" @type="number" @fieldName="Number of Points" @fieldValue={{query.aggregation.attributes.numberOfPoints}} @placeholder="Number" @disabled={{disabled}} />
         </div>
       {{else if isPoints}}
         <div class="row narrow-row distribution-type-points">
-          <LabeledInput @classNames="col-xs-4" @fieldName="Points" @fieldValue={{query.aggregation.attributes.points}} @maxlength={{131072}} @placeholder="Comma separated numbers" @disabled={{disabled}} />
+          <LabeledInput class="col-xs-4" @fieldName="Points" @fieldValue={{query.aggregation.attributes.points}} @maxlength={{131072}} @placeholder="Comma separated numbers" @disabled={{disabled}} />
         </div>
       {{else if isGeneratedPoints}}
         <div class="row narrow-row distribution-type-point-range">
-          <LabeledInput @classNames="col-xs-2" @type="number" @fieldName="Start" @fieldValue={{query.aggregation.attributes.start}} @placeholder="Number" @disabled={{disabled}} />
-          <LabeledInput @classNames="col-xs-2" @type="number" @fieldName="End" @fieldValue={{query.aggregation.attributes.end}} @placeholder="Number" @disabled={{disabled}} />
-          <LabeledInput @classNames="col-xs-2" @type="number" @fieldName="Increment" @fieldValue={{query.aggregation.attributes.increment}} @placeholder="Number" @disabled={{disabled}} />
+          <LabeledInput class="col-xs-2" @type="number" @fieldName="Start" @fieldValue={{query.aggregation.attributes.start}} @placeholder="Number" @disabled={{disabled}} />
+          <LabeledInput class="col-xs-2" @type="number" @fieldName="End" @fieldValue={{query.aggregation.attributes.end}} @placeholder="Number" @disabled={{disabled}} />
+          <LabeledInput class="col-xs-2" @type="number" @fieldName="Increment" @fieldValue={{query.aggregation.attributes.increment}} @placeholder="Number" @disabled={{disabled}} />
         </div>
       {{/if}}
     </div>
@@ -176,11 +176,11 @@
       </div>
       <div class="subsection-header">Having Minimum Count</div>
       <div class="row narrow-row top-k-min-count">
-        <LabeledInput @classNames="col-xs-2" @type="number" @fieldName="Minimum Count" @fieldValue={{query.aggregation.attributes.threshold}} @placeholder="Optional" @disabled={{disabled}} />
+        <LabeledInput class="col-xs-2" @type="number" @fieldName="Minimum Count" @fieldValue={{query.aggregation.attributes.threshold}} @placeholder="Optional" @disabled={{disabled}} />
       </div>
       <div class="subsection-header">Rename Count Field</div>
       <div class="row narrow-row top-k-display-name">
-        <LabeledInput @classNames="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{disabled}} />
+        <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{disabled}} />
       </div>
     </div>
   {{/if}}
