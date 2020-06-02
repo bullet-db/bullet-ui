@@ -3,7 +3,10 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-{{#if isInvalid}}
-  {{partial "partials/validation-tooltip"}}
-{{/if}}
-<LabeledInput class={{inputClassNames}} @type={{type}} @placeholder={{placeholder}} @fieldName={{fieldName}} @fieldValue={{value}} @disabled={{disabled}} />
+ <div class="validated-input {{if this.isInvalid "has-error"}}">
+  {{#if this.isInvalid}}
+    {{partial "partials/validation-tooltip"}}
+  {{/if}}
+  <LabeledInput @type={{this.type}} @placeholder={{this.placeholder}} @fieldName={{this.fieldName}}
+                @fieldValue={{this.value}} @disabled={{this.disabled}} ...attributes/>
+</div>

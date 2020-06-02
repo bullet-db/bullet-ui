@@ -7,19 +7,17 @@
 
   <div class="validation-container">
     {{#if this.hasError}}
-      <div {{did-insert this.scrollIntoView}} />
       <SimpleAlert @type="error">
-        <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
+        <span {{did-insert this.scrollIntoView}}>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
         <ul class="error-list">
-          {{#each (get this.query 'validations.messages') as |message|}}
+          {{#each (get this.query "validations.messages") as |message|}}
             <li>{{message}}</li>
           {{/each}}
         </ul>
       </SimpleAlert>
     {{else if this.hasSaved}}
-      <div {{did-insert this.scrollIntoView}} />
       <SimpleAlert @type="success">
-        <span>SAVED TO BROWSER CACHE!</span>
+        <span {{did-insert this.scrollIntoView}}>SAVED TO BROWSER CACHE!</span>
       </SimpleAlert>
     {{/if}}
   </div>
@@ -78,10 +76,10 @@
 
       <div class="row">
         {{#if this.showAggregationSize}}
-          <ValidatedInput @inputClassNames="col-xs-2 aggregation-size" @model={{this.query.aggregation}} @valuePath="size"
+          <ValidatedInput class="col-xs-2 aggregation-size" @model={{this.query.aggregation}} @valuePath="size"
                           @fieldName="Maximum Result Count" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
         {{/if}}
-        <ValidatedInput @inputClassNames="col-xs-2 query-duration" @model={{this.query}} @valuePath="duration"
+        <ValidatedInput class="col-xs-2 query-duration" @model={{this.query}} @valuePath="duration"
                         @fieldName="Maximum Duration (seconds)" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
       </div>
     </div>

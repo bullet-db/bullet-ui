@@ -58,7 +58,6 @@ export default class QueryInputComponent extends Component {
     return sql.sql;
   }
 
-  @computed('args.schema')
   get columns() {
     let schema = this.args.schema;
     return this.builderAdapter.builderFilters(schema);

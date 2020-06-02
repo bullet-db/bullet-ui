@@ -30,7 +30,7 @@
 
     <div class="subsection-header">Emit Every</div>
     <div class="row">
-      <ValidatedInput @inputClassNames="col-xs-3 window-emit-every" @fieldName={{everyFieldName}} @model={{query.window}} @valuePath="emit.every" @type="number" @placeholder="Number" @disabled={{everyDisabled}} />
+      <ValidatedInput class="col-xs-3 window-emit-every" @fieldName={{everyFieldName}} @model={{query.window}} @valuePath="emit.every" @type="number" @placeholder="Number" @disabled={{everyDisabled}} />
     </div>
 
     {{#if isTimeBasedWindow}}
@@ -45,7 +45,7 @@
       </div>
       {{#if isRawAggregation}}
         <div class="row">
-          <ValidatedInput @inputClassNames="col-xs-3 window-size" @model={{query.aggregation}} @valuePath="size" @fieldName="Maximum Rows in Window" @type="number" @placeholder="Number" @disabled={{disabled}} />
+          <ValidatedInput class="col-xs-3 window-size" @model={{query.aggregation}} @valuePath="size" @fieldName="Maximum Rows in Window" @type="number" @placeholder="Number" @disabled={{disabled}} />
         </div>
       {{/if}}
     {{/if}}

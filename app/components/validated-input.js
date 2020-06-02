@@ -3,36 +3,53 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { defineProperty } from '@ember/object';
-import { not, or, and, alias } from '@ember/object/computed';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { get } from '@ember/object';
 
-// Adapted from the dummy app validated-input in
-// https://github.com/offirgolan/ember-cp-validations
-export default Component.extend({
-  classNames: ['validated-input'],
-  classNameBindings: ['isInvalid:has-error'],
-  inputClassNames: '',
-  model: null,
-  fieldName: '',
-  valuePath: '',
-  type: 'text',
-  placeHolder: '',
-  tooltipPosition: 'right',
-  forceDirty: false,
-  disabled: false,
-  // Defined properties in init
-  value: null,
-  validation: null,
-
-  notValidating: not('validation.isValidating'),
-  isDirty: or('validation.isDirty', 'forceDirty'),
-  isInvalid: and('notValidating', 'isDirty', 'validation.isInvalid'),
-
-  init() {
-    this._super(...arguments);
-    let valuePath = this.valuePath;
-    defineProperty(this, 'validation', alias(`model.validations.attrs.${valuePath}`));
-    defineProperty(this, 'value', alias(`model.${valuePath}`));
+export default class ValidatedInputComponent extends Component {
+  get type() {
+    return this.args.type || 'text';
   }
-});
+
+  get forceDirty() {
+    return this.args.forceDirty || false;
+  }
+
+  get disabled() {
+    return this.args.disabled || false;
+  }
+
+  get tooltipPosition() {
+    return this.args.tooltipPosition || 'right';
+  }
+
+  get placeholder() {
+    return this.args.placeholder || '';
+  }
+
+  get fieldName() {
+    return this.args.fieldName || '';
+  }
+
+  get valuePath() {
+    return this.args.valuePath || '';
+  }
+
+  get value() {
+    return get(this.args.model, this.valuePath);
+  }
+
+  get isInvalid() {
+    let validations = get(this.args.model, 'validation.attrs');
+    console.log(validations);
+    return false;
+  //   let isValidating = get(validations, `${this.valuePath}.isValidating`) || false;
+  //   console.log(isValidating);
+  //   let isDirty = get(validations, 'isDirty') || this.args.forceDirty;
+  //   console.log(isDirty);
+  //   let isInvalid = get(validations, 'isInvalid') || false;
+  //   console.log(isInvalid);
+  //   console.log(!isValidating && isDirty && isInvalid);
+  //   return !isValidating && isDirty && isInvalid;
+  }
+}

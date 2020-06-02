@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/components/paginated-table';
 
@@ -31,7 +31,6 @@ export default class ResultsTableComponent extends PaginatedTable {
     this.addPages(1);
   }
 
-  @computed('args.results.[]')
   get rows() {
     return this.args.results.toArray();
   }
