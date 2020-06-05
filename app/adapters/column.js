@@ -18,7 +18,7 @@ export default class ColumnAdapter extends JSONAPIAdapter {
   }
 
   ajaxOptions() {
-    let hash = this._super(...arguments);
+    let hash = super.ajaxOptions(...arguments);
     hash.crossDomain = true;
     hash.xhrFields = { withCredentials: true };
     return hash;
