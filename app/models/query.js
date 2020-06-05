@@ -19,11 +19,7 @@ export default class QueryModel extends Model {
   @belongsTo('aggregation') aggregation;
   @belongsTo('window') window;
   @attr('number', { defaultValue: 20 }) duration;
-  @attr('date', {
-    defaultValue() {
-      return new Date(Date.now());
-    }
-  }) created;
+  @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
   @computed('window').readOnly()

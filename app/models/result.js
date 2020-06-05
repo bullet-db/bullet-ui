@@ -11,11 +11,7 @@ import { A } from '@ember/array';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
 export default class ResultModel extends Model{
-  @attr('date', {
-    defaultValue() {
-      return new Date(Date.now());
-    }
-  }) created;
+  @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @belongsTo('query', { autoSave: true }) query;
   // Not using hasMany to handle extremely high volume (rate-limited) results.
   @attr('window-array', { defaultValue: () => A() }) windows;
