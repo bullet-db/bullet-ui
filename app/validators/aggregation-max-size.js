@@ -4,28 +4,20 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual } from '@ember/utils';
-import BaseValidator from 'ember-cp-validations/validators/base';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import currentValue from 'bullet-ui/utils/current-value';
 
-const AggregationMaxSize = BaseValidator.extend({
-  validate(value, options, model) {
+export default function validateAggregationMaxSize() {
+  return (key, newSize, oldSize, changes, content) => {
     const RAW = AGGREGATIONS.get('RAW');
-    let type = model.get('type');
-    let maxRawSize = model.get('settings.defaultValues.rawMaxSize');
-    let maxSize = model.get('settings.defaultValues.aggregationMaxSize');
-    if (isEqual(type, RAW) && value > maxRawSize) {
+    let { 'aggregation.type' : type } = currentValue(changes, content, ['aggregation.type']);
+    let maxRawSize = content.get('settings.defaultValues.rawMaxSize');
+    let maxSize = content.get('settings.defaultValues.aggregationMaxSize');
+    if (isEqual(type, RAW) && newSize > maxRawSize) {
       return `The maintainer has set the ${RAW} type to support a maximum of ${maxRawSize} for result count`;
-    } else if (value > maxSize) {
+    } else if (newSize > maxSize) {
       return `The maintainer has configured Bullet to support a maximum of ${maxSize} for result count`;
     }
     return true;
   }
-});
-
-AggregationMaxSize.reopenClass({
-  getDependentsFor() {
-    return ['model.type'];
-  }
-});
-
-export default AggregationMaxSize;
+}

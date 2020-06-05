@@ -5,9 +5,9 @@
  */
 import Model, { attr, belongsTo } from '@ember-data/model';
 
-export default Model.extend({
+export default class FilterModel extends Model {
   // Stores the AST of the filter clauses.
-  clause: attr(),
-  summary: attr('string'),
-  query: belongsTo('query', { autoSave: true })
-});
+  @attr() clause;
+  @attr('string') summary;
+  @belongsTo('query', { autoSave: true }) query;
+}

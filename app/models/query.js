@@ -8,74 +8,54 @@ import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { pluralize } from 'ember-inflector';
-import { validator, buildValidations } from 'ember-cp-validations';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 import { METRICS } from 'bullet-ui/models/metric';
 
-let Validations = buildValidations({
-  duration: {
-    description: 'Duration',
-    validators: [
-      validator('presence', true),
-      validator('number', {
-        integer: true,
-        allowString: true,
-        gte: 1,
-        message: 'Duration must be a positive integer'
-      }),
-      validator('query-max-duration')
-    ]
-  },
-  projections: validator('has-many'),
-  aggregation: validator('belongs-to'),
-  window: {
-    description: 'window',
-    validators: [
-      validator('valid-window'),
-      validator('belongs-to')
-    ]
-  }
-});
-
-export default Model.extend(Validations, {
-  name: attr('string'),
-  filter: belongsTo('filter'),
-  projections: hasMany('projection', { dependent: 'destroy' }),
-  aggregation: belongsTo('aggregation'),
-  window: belongsTo('window'),
-  duration: attr('number', { defaultValue: 20 }),
-  created: attr('date', {
+export default class QueryModel extends Model {
+  @attr('string') name;
+  @belongsTo('filter') filter;
+  @hasMany('projection', { dependent: 'destroy' }) projections;
+  @belongsTo('aggregation') aggregation;
+  @belongsTo('window') window;
+  @attr('number', { defaultValue: 20 }) duration;
+  @attr('date', {
     defaultValue() {
       return new Date(Date.now());
     }
-  }),
-  results: hasMany('result', { async: true, dependent: 'destroy' }),
+  }) created;
+  @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
-  isWindowless: computed('window', function() {
+  @computed('window').readOnly()
+  get isWindowless() {
     return isEmpty(this.get('window.id'));
-  }).readOnly(),
+  }
 
-  hasUnsavedFields: computed('projections.@each.name', 'aggregation.groups.@each.name', function() {
+  @computed('projections.@each.name', 'aggregation.groups.@each.name').readOnly()
+  get hasUnsavedFields() {
     let projections = this.getWithDefault('projections', A());
     let groups = this.getWithDefault('aggregation.groups', A());
     return this.hasNoName(projections) || this.hasNoName(groups);
-  }).readOnly(),
+  }
 
-  filterSummary: computed('filter.summary', function() {
+  @computed('filter.summary').readOnly()
+  get filterSummary() {
     let summary = this.get('filter.summary');
     return isEmpty(summary) ? 'None' : summary;
-  }).readOnly(),
+  }
 
-  projectionsSummary: computed('projections.@each.name', function() {
+  @computed('projections.@each.name').readOnly()
+  get projectionsSummary() {
     return this.summarizeFieldLike(this.projections);
-  }).readOnly(),
+  }
 
-  groupsSummary: computed('aggregation.groups.@each.name', function() {
+  @computed('aggregation.groups.@each.name').readOnly()
+  get groupsSummary() {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
-  }).readOnly(),
+  }
 
-  metricsSummary: computed('aggregation.metrics.@each.{type,name}', function() {
+  @computed('aggregation.metrics.@each.{type,name}').readOnly()
+  get metricsSummary() {
     let metrics = this.getWithDefault('aggregation.metrics', A());
     return metrics.map(m => {
       let type = m.get('type');
@@ -86,9 +66,10 @@ export default Model.extend(Validations, {
       }
       return isEmpty(name) ? `${type}(${field})` : name;
     }).join(', ');
-  }).readOnly(),
+  }
 
-  aggregationSummary: computed('aggregation.{type,size}', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary', function() {
+  @computed('aggregation.{type,size}', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary').readOnly()
+  get aggregationSummary() {
     let type = this.get('aggregation.type');
     if (type === AGGREGATIONS.get('RAW')) {
       return '';
@@ -117,9 +98,11 @@ export default Model.extend(Validations, {
       return metricsSummary;
     }
     return `${groupsSummary}, ${metricsSummary}`;
-  }).readOnly(),
+  }
 
-  fieldsSummary: computed('projectionsSummary', 'aggregationSummary', function() {
+
+  @computed('projectionsSummary', 'aggregationSummary').readOnly()
+  get fieldsSummary() {
     let projectionsSummary = this.projectionsSummary;
     let aggregationSummary = this.aggregationSummary;
     if (isEmpty(aggregationSummary)) {
@@ -127,19 +110,21 @@ export default Model.extend(Validations, {
       return isEmpty(projectionsSummary) ? 'All' : projectionsSummary;
     }
     return this.aggregationSummary;
-  }).readOnly(),
+  }
 
-  windowSummary: computed('isWindowless', 'window.{emit.type,emit.every,include.type}', function() {
+  @computed('isWindowless', 'window.{emitType,emitEvery,includeType}').readOnly()
+  get windowSummary() {
     if (this.isWindowless) {
       return 'None';
     }
-    let emitType = this.get('window.emit.type');
-    let emitEvery = this.get('window.emit.every');
-    let includeType = this.get('window.include.type');
+    let emitType = this.get('window.emitType');
+    let emitEvery = this.get('window.emitEvery');
+    let includeType = this.get('window.includeType');
     return `Every ${emitEvery} ${this.getEmitUnit(emitType, emitEvery)}${this.getIncludeType(includeType)}`;
-  }).readOnly(),
+  }
 
-  latestResult: computed('results.[]', function() {
+  @computed('results.[]').readOnly()
+  get latestResult() {
     let results = this.results;
     if (isEmpty(results)) {
       return null;
@@ -155,22 +140,22 @@ export default Model.extend(Validations, {
       }
     });
     return max;
-  }).readOnly(),
+  }
 
   summarizeFieldLike(fieldLike) {
     return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject(n => isEmpty(n)).join(', ');
-  },
+  }
 
   hasNoName(fieldLike) {
     return isEmpty(fieldLike) ? false : fieldLike.any(f => !isEmpty(f.get('field')) && isEmpty(f.get('name')));
-  },
+  }
 
   getEmitUnit(emitType, emitEvery) {
     let unit = isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'second' : 'record';
     return Number(emitEvery) === 1 ? unit : pluralize(unit);
-  },
+  }
 
   getIncludeType(includeType) {
     return isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : '';
   }
-});
+}

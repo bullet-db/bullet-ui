@@ -5,7 +5,6 @@
  */
 import Model, { attr, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
-import { validator, buildValidations } from 'ember-cp-validations';
 import { equal } from '@ember/object/computed';
 
 let EmitTypes = EmberObject.extend({
@@ -44,39 +43,11 @@ let IncludeTypes = EmberObject.extend({
 export const EMIT_TYPES = EmitTypes.create();
 export const INCLUDE_TYPES = IncludeTypes.create();
 
-let Validations = buildValidations({
-  'emit.every': {
-    description: 'Emit frequency', validators: [
-      validator('presence', true),
-      validator('number', {
-        integer: true,
-        allowString: true,
-        gte: 1,
-        message: 'Emit frequency must be a positive integer'
-      }),
-      validator('window-emit-frequency')
-    ]
-  },
-  query: validator('belongs-to')
-});
+export default class WindowModel extends Model {
+  @attr('string', { defaultValue: EMIT_TYPES.get('TIME') }) emitType;
+  @attr('number', { defaultValue: 2 }) emitEvery;
+  @attr('string', { defaultValue: INCLUDE_TYPES.get('WINDOW') }) includeType;
+  @belongsTo('query', { autoSave: true }) query;
 
-export default Model.extend(Validations, {
-  emit: attr({
-    defaultValue() {
-      return EmberObject.create({
-        type: EMIT_TYPES.get('TIME'),
-        every: 2
-      });
-    }
-  }),
-  include: attr({
-    defaultValue() {
-      return EmberObject.create({
-        type: INCLUDE_TYPES.get('WINDOW')
-      });
-    }
-  }),
-  query: belongsTo('query', { autoSave: true }),
-
-  isTimeBased: equal('emit.type', EMIT_TYPES.get('TIME'))
-});
+  @equal('emitType', EMIT_TYPES.get('TIME')).readOnly() isTimeBased;
+}

@@ -5,7 +5,6 @@
  */
 import Model, { attr, belongsTo } from '@ember-data/model';
 import EmberObject, { computed } from '@ember/object';
-import { validator, buildValidations } from 'ember-cp-validations';
 
 let Metric = EmberObject.extend({
   SUM: 'Sum',
@@ -40,19 +39,15 @@ let Metric = EmberObject.extend({
 
 export const METRICS = Metric.create();
 
-let Validations = buildValidations({
-  field: validator('metric-field'),
-  aggregation: validator('belongs-to')
-});
+export default class MetricModel extends Model {
+  @attr('string', { defaultValue: METRICS.get('SUM') }) type;
+  @attr('string') field;
+  @attr('string') name;
+  @belongsTo('aggregation', { autoSave: true }) aggregation;
 
-export default Model.extend(Validations, {
-  type: attr('string', { defaultValue: METRICS.get('SUM') }),
-  field: attr('string'),
-  name: attr('string'),
-  aggregation: belongsTo('aggregation', { autoSave: true }),
-
-  hasNoField: computed('type', function() {
+  @computed('type')
+  get hasNoField() {
     let type = this.type;
     return type === 'Count';
-  })
-});
+  }
+}

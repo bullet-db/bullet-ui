@@ -22,12 +22,12 @@ export default Component.extend({
 
   // These *Type computed properties exist because ember-radio-button will set their value locally. Once set,
   // they are independent of the original property. This means they are only used on initial component render.
-  emitType: computed('query.window.emit.type', function() {
-    return this.get('query.window.emit.type');
+  emitType: computed('query.window.emitType', function() {
+    return this.get('query.window.emitType');
   }),
 
-  includeType: computed('query.window.include.type', function() {
-    return this.get('query.window.include.type');
+  includeType: computed('query.window.includeType', function() {
+    return this.get('query.window.includeType');
   }),
 
   // Helper equalities for template

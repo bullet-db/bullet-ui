@@ -4,15 +4,14 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual } from '@ember/utils';
-import BaseValidator from 'ember-cp-validations/validators/base';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import currentValue from 'bullet-ui/utils/current-value';
 
-const ValidWindow = BaseValidator.extend({
-  validate(value, options, model) {
-    let aggregationType = model.get('aggregation.type');
-    let emitType = model.get('window.emit.type');
-    let includeType = model.get('window.include.type');
+export default function validateWindow() {
+  return (key, newValue, oldValue, changes, content) => {
+    let { 'aggregation.type': aggregationType, 'window.emitType': emitType, 'window.includeType': includeType } =
+        currentValue(changes, content, ['aggregation.type', 'window.emitType', 'window.includeType']);
     if (isEqual(aggregationType, AGGREGATIONS.get('RAW')) && isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
       return 'The window should not include all from start when aggregation type is Raw';
     }
@@ -21,12 +20,4 @@ const ValidWindow = BaseValidator.extend({
     }
     return true;
   }
-});
-
-ValidWindow.reopenClass({
-  getDependentsFor() {
-    return ['model.aggregation.type', 'model.window.emit.type', 'model.window.include.type'];
-  }
-});
-
-export default ValidWindow;
+}

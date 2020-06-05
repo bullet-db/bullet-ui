@@ -67,7 +67,7 @@ export default Service.extend({
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
       query.get('isWindowless') ? resolve() :
-        this.copySingle(query, copied, 'window', 'query', ['emit', 'include']),
+        this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
@@ -174,8 +174,9 @@ export default Service.extend({
 
   replaceWindow(query, emitType, emitEvery, includeType) {
     return query.get('window').then(window => {
-      window.set('emit', { type: emitType, every: emitEvery });
-      window.set('include', { type: includeType });
+      window.set('emitType', emitType);
+      window.set('emitEvery', emitEvery);
+      window.set('includeType', includeType);
       return window.save();
     });
   },

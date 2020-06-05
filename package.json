@@ -125,7 +125,7 @@
     "jquery": "^3.5.1"
   },
   "engines": {
-    "node": "8.* || >= 10.*"
+    "node": ">= 10.*"
   },
   "ember": {
     "edition": "octane"

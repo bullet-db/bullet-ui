@@ -4,30 +4,20 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual } from '@ember/utils';
-import BaseValidator from 'ember-cp-validations/validators/base';
 import { EMIT_TYPES } from 'bullet-ui/models/window';
+import currentValue from 'bullet-ui/utils/current-value';
 
-const WindowEmitFrequency = BaseValidator.extend({
-  validate(value, options, model) {
-    let emitType = model.get('emit.type');
-    let windowEmitFrequencyMinSecs = model.get('settings.defaultValues.windowEmitFrequencyMinSecs');
-    let emitEvery = Number(value);
+export default function validateWindowEmitFrequency() {
+  return (key, newEmitEvery, oldEmitEvery, changes, content) => {
+    let { 'window.emitType' : emitType, duration } = currentValue(changes, content, ['window.emitType', 'duration']);
     if (isEqual(emitType, EMIT_TYPES.get('TIME'))) {
-      let duration = model.get('query.duration');
-      if (emitEvery > duration) {
+      let windowEmitFrequencyMinSecs = content.get('settings.defaultValues.windowEmitFrequencyMinSecs');
+      if (newEmitEvery > duration) {
         return `The window emit frequency should not be longer than the query duration (${duration} seconds)`;
-      } else if (emitEvery < windowEmitFrequencyMinSecs) {
+      } else if (newEmitEvery < windowEmitFrequencyMinSecs) {
         return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinSecs}s for emit frequency`;
       }
     }
     return true;
   }
-});
-
-WindowEmitFrequency.reopenClass({
-  getDependentsFor() {
-    return ['model.query.duration', 'model.emit.type'];
-  }
-});
-
-export default WindowEmitFrequency;
+}

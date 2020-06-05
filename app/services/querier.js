@@ -157,20 +157,19 @@ export default class QuerierService extends Service {
       return false;
     }
 
-    let emit = EmberObject.create({
-      type: EMIT_TYPES.get(json.emit.type),
-      every: isEqual(json.emit.type, 'TIME') ? Number(json.emit.every) / 1000 : Number(json.emit.every)
-    });
+    let emitType = EMIT_TYPES.get(json.emit.type);
+    let emitEvery = isEqual(json.emit.type, 'TIME') ? Number(json.emit.every) / 1000 : Number(json.emit.every);
 
-    let include = EmberObject.create();
+    let includeType;
     if (!isEmpty(json.include) && isEqual(json.include.type, 'ALL')) {
-      include.set('type', INCLUDE_TYPES.get('ALL'));
+      includeType = INCLUDE_TYPES.get('ALL');
     } else {
-      include.set('type', INCLUDE_TYPES.get('WINDOW'));
+      includeType = INCLUDE_TYPES.get('WINDOW');
     }
     return EmberObject.create({
-      emit: emit,
-      include: include
+      emitType: emitType,
+      emitEvery: emitEvery,
+      includeType: includeType
     });
   }
 
@@ -191,8 +190,8 @@ export default class QuerierService extends Service {
   }
 
   reformatWindow(window) {
-    let emitType = window.get('emit.type');
-    let emitEvery = window.get('emit.every');
+    let emitType = window.get('emitType');
+    let emitEvery = window.get('emitEvery');
     let json = {
       emit: {
         type: EMIT_TYPES.apiKey(emitType),
@@ -200,7 +199,7 @@ export default class QuerierService extends Service {
       }
     };
 
-    let includeType = window.get('include.type');
+    let includeType = window.get('includeType');
     if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
       json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
     }
