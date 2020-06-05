@@ -3,29 +3,30 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import { pluralize } from 'ember-inflector';
+import { Base64 } from 'js-base64';
+import { all, Promise, resolve } from 'rsvp';
 import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { isBlank, isEqual } from '@ember/utils';
+import config from '../config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import { pluralize } from 'ember-inflector';
-import { Base64 } from 'js-base64';
-import { all, Promise, resolve } from 'rsvp';
-import config from '../config/environment';
+import QueryValidation from 'bullet-ui/validations/query';
 
-export default Service.extend({
-  store: service(),
-  querier: service(),
-  saveSegmentDebounceInterval: 100,
-  debounceSegmentSaves: config.APP.SETTINGS.debounceSegmentSaves,
+export default class QueryManagerService extends Service {
+  @service store;
+  @service querier;
+  saveSegmentDebounceInterval = 100;
+  debounceSegmentSaves = config.APP.SETTINGS.debounceSegmentSaves;
 
-  windowNumberProperty: computed('settings', function() {
-    let mapping = this.get('settings.defaultValues.metadataKeyMapping');
+  @computed('settings').readOnly()
+  get windowNumberProperty() {
+    let mapping = get(this.settings, 'defaultValues.metadataKeyMapping');
     let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
     return `${windowSection}.${windowNumber}`;
-  }).readOnly(),
-
+  }
 
   copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     fields.forEach(field => {
@@ -33,7 +34,7 @@ export default Service.extend({
     });
     to.set(inverseName, inverseValue);
     return to.save();
-  },
+  }
 
   copySingle(source, target, name, inverseName, fields) {
     let original = source.get(name);
@@ -42,7 +43,7 @@ export default Service.extend({
     }
     let copy = this.store.createRecord(name);
     return this.copyModelRelationship(original, copy, fields, inverseName, target);
-  },
+  }
 
   copyMultiple(source, target, name, inverseName, fields) {
     let originals = source.get(pluralize(name));
@@ -55,7 +56,7 @@ export default Service.extend({
       promises.push(this.copyModelRelationship(original, copy, fields, inverseName, target));
     });
     return all(promises);
-  },
+  }
 
   copyQuery(query) {
     let copied = this.store.createRecord('query', {
@@ -79,7 +80,7 @@ export default Service.extend({
         this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
       ]);
     }).then(() => copied.save()).then(() => copied);
-  },
+  }
 
   encodeQuery(query) {
     let querier = this.querier;
@@ -90,7 +91,7 @@ export default Service.extend({
     return new Promise(resolve => {
       resolve(Base64.encodeURI(string));
     });
-  },
+  }
 
   decodeQuery(hash) {
     let querier = this.querier;
@@ -99,7 +100,7 @@ export default Service.extend({
       let json = JSON.parse(buffer.toString());
       resolve(querier.recreate(json));
     });
-  },
+  }
 
   addFieldLike(childModelName, modelFieldName, model) {
     // Autosave takes care of updating parent model
@@ -107,7 +108,7 @@ export default Service.extend({
     opts[modelFieldName] = model;
     let childModel = this.store.createRecord(childModelName, opts);
     return childModel.save();
-  },
+  }
 
   addResult(id) {
     return this.store.findRecord('query', id).then(query => {
@@ -128,7 +129,7 @@ export default Service.extend({
         return result.save();
       });
     });
-  },
+  }
 
   addSegment(result, data) {
     let position = result.get('windows.length');
@@ -141,7 +142,7 @@ export default Service.extend({
     });
     let shouldDebounce = this.debounceSegmentSaves;
     return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
-  },
+  }
 
   setAggregationAttributes(query, fields) {
     return query.get('aggregation').then(aggregation => {
@@ -156,7 +157,7 @@ export default Service.extend({
       });
       return aggregation.save();
     });
-  },
+  }
 
   replaceAggregation(query, type, size = 1) {
     return query.get('aggregation').then(aggregation => {
@@ -170,7 +171,7 @@ export default Service.extend({
         return aggregation.save();
       });
     });
-  },
+  }
 
   replaceWindow(query, emitType, emitEvery, includeType) {
     return query.get('window').then(window => {
@@ -179,7 +180,7 @@ export default Service.extend({
       window.set('includeType', includeType);
       return window.save();
     });
-  },
+  }
 
   addWindow(query) {
     let window = this.store.createRecord('window', {
@@ -189,7 +190,7 @@ export default Service.extend({
     return query.save().then(() => {
       return window.save();
     });
-  },
+  }
 
   fixFieldLikes(query, fieldLikesPath) {
     return query.get(fieldLikesPath).then(e => {
@@ -200,13 +201,13 @@ export default Service.extend({
       });
       return resolve();
     });
-  },
+  }
 
   removeAttributes(aggregation, ...fields) {
     fields.forEach(field => {
       aggregation.set(`attributes.${field}`, undefined);
     });
-  },
+  }
 
   fixAggregationSize(query) {
     return query.get('aggregation').then(a => {
@@ -216,14 +217,14 @@ export default Service.extend({
       }
       return resolve();
     });
-  },
+  }
 
   autoFill(query) {
     return all([
       this.fixFieldLikes(query, 'projections'),
       this.fixFieldLikes(query, 'aggregation.groups')
     ]);
-  },
+  }
 
   fixDistributionPointType(query) {
     return query.get('aggregation').then(aggregation => {
@@ -237,7 +238,7 @@ export default Service.extend({
       }
       return resolve();
     });
-  },
+  }
 
   cleanup(query) {
     return all([
@@ -245,7 +246,7 @@ export default Service.extend({
       this.fixAggregationSize(query),
       this.fixDistributionPointType(query)
     ]);
-  },
+  }
 
   save(query, clause, summary) {
     // The underlying relationship saving need not block query saving
@@ -268,19 +269,19 @@ export default Service.extend({
       query.save()
     ];
     return all(promises);
-  },
+  }
 
   deleteModel(model) {
     // Autosave takes care of updating parent
     model.destroyRecord();
-  },
+  }
 
   deleteSingle(name, model, inverseName) {
     return model.get(name).then(item => {
       item.set(inverseName, null);
       item.destroyRecord();
     });
-  },
+  }
 
   deleteMultiple(name, model, inverseName) {
     return model.get(name).then(items => {
@@ -291,7 +292,7 @@ export default Service.extend({
       });
       return all(promises);
     });
-  },
+  }
 
   deleteProjections(query) {
     return query.get('projections').then(p => {
@@ -300,7 +301,7 @@ export default Service.extend({
       });
       return all(promises);
     });
-  },
+  }
 
   deleteAggregation(query) {
     return query.get('aggregation').then(aggregation => {
@@ -309,7 +310,7 @@ export default Service.extend({
       aggregation.set('query', null);
       return aggregation.destroyRecord();
     });
-  },
+  }
 
   deleteWindow(query) {
     return query.get('window').then(window => {
@@ -321,7 +322,7 @@ export default Service.extend({
         return window.destroyRecord();
       });
     });
-  },
+  }
 
   deleteResults(query) {
     return query.get('results').then(() => {
@@ -329,7 +330,7 @@ export default Service.extend({
         return query.save();
       });
     });
-  },
+  }
 
   deleteQuery(query) {
     return all([
@@ -341,11 +342,14 @@ export default Service.extend({
     ]).then(() => {
       return query.destroyRecord();
     });
-  },
+  }
 
   deleteAllResults() {
     return this.store.findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
   }
-});
+
+  validate(query) {
+  }
+}
