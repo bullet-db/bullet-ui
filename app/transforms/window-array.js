@@ -6,14 +6,14 @@
 import Transform from '@ember-data/serializer/transform';
 import { A } from '@ember/array';
 
-export default Transform.extend({
+export default class WindowArrayTransform extends Transform {
   deserialize(serialized) {
     return A(serialized);
-  },
+  }
 
   serialize(deserialized) {
     let array = [];
     deserialized.forEach(item => array.push(item));
     return array;
   }
-});
+}
