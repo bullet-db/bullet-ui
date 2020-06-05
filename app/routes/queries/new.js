@@ -11,7 +11,7 @@ import isEmpty from 'bullet-ui/utils/is-empty';
 import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 
 export default class QueriesNewRoute extends Route {
-  @service corsRequest;
+  @service('cors-request') corsRequest;
   @service querier;
   @service queryManager;
   @service store;
@@ -44,7 +44,7 @@ export default class QueriesNewRoute extends Route {
     }
 
     // Otherwise, assume defaultQuery is an url to get the default query from.
-    return this.corsRequest.request(defaultQuery).then(query => {
+    return this.corsRequest.get(defaultQuery).then(query => {
       this.set('cachedQuery', query);
       return this.createQuery(query);
     });

@@ -13,7 +13,7 @@ import { isBlank, isEqual } from '@ember/utils';
 import config from '../config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import QueryValidation from 'bullet-ui/validations/query';
+import QueryValidation from 'bullet-ui/validators/query';
 
 export default class QueryManagerService extends Service {
   @service store;

@@ -6,10 +6,10 @@
 import { validatePresence, validateNumber } from 'ember-changeset-validations/validators';
 import validateAggregationMaxSize from 'bullet-ui/validators/aggregation-max-size';
 import validatePoints from 'bullet-ui/validators/valid-points';
-import validateGroup from 'bullet-ui/validators/group';
-import validateMetric from 'bullet-ui/validators/metric';
 import validateWindow from 'bullet-ui/validators/valid-window';
 import validateGroupMetricPresence from 'bullet-ui/validators/group-metric-presence';
+import GroupValidation from 'bullet-ui/validators/group';
+import MetricValidation from 'bullet-ui/validators/metric';
 
 export default {
   size: [
@@ -22,6 +22,6 @@ export default {
     validatePoints(),
     validateWindow()
   ],
-  groups: validateGroup(),
-  metrics: validateMetric()
+  groups: GroupValidation,
+  metrics: MetricValidation
 }

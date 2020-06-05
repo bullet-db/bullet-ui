@@ -5,9 +5,9 @@
  */
 import { validatePresence, validateNumber } from 'ember-changeset-validations/validators';
 import validateQueryMaxDuration from 'bullet-ui/validators/query-max-duration';
-import validateProjection from 'bullet-ui/validators/projection';
-import validateAggregation from 'bullet-ui/validators/aggregation';
-import validateWindow from 'bullet-ui/validators/window';
+import ProjectionValidation from 'bullet-ui/validators/projection';
+import AggregationValidation from 'bullet-ui/validators/aggregation';
+import WindowValidation from 'bullet-ui/validators/window';
 
 export default {
   duration: [
@@ -15,7 +15,7 @@ export default {
     validateNumber({ gte: 1, message: '{description} must be a positive integer' }),
     validateQueryMaxDuration()
   ],
-  projections: validateProjection(),
-  window: validateWindow(),
-  aggregation: validateAggregation()
+  projections: ProjectionValidation,
+  window: WindowValidation,
+  aggregation: AggregationValidation
 }

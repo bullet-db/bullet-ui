@@ -4,26 +4,28 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import JSONAPIAdapter from '@ember-data/adapter/json-api';
-import { computed } from '@ember/object';
+import { computed, get } from '@ember/object';
 
-export default JSONAPIAdapter.extend({
-  host: computed('settings', function() {
-    return this.get('settings.schemaHost');
-  }),
+export default class ColumnAdapter extends JSONAPIAdapter {
+  @computed('settings')
+  get host() {
+    return get(this.settings, 'schemaHost');
+  }
 
-  namespace: computed('settings', function() {
-    return this.get('settings.schemaNamespace');
-  }),
+  @computed('settings')
+  get namespace() {
+    return get(this.settings, 'schemaNamespace');
+  }
 
   ajaxOptions() {
     let hash = this._super(...arguments);
     hash.crossDomain = true;
     hash.xhrFields = { withCredentials: true };
     return hash;
-  },
+  }
 
   shouldBackgroundReloadAll() {
     // Force the columns to be fetched only once per "session"
     return false;
   }
-});
+}
