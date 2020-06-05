@@ -5,18 +5,20 @@
  */
 import { hash } from 'rsvp';
 import Route from '@ember/routing/route';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import Queryable from 'bullet-ui/mixins/queryable';
+import QueryableRoute from 'bullet-ui/routes/queryable-route';
 
-export default Route.extend(Queryable, {
-  querier: service(),
-  queryManager: service(),
+export default class ResultRoute extends QueryableRoute {
+  @service querier;
+  @service queryManager;
+  @service store;
 
   model(params) {
     return this.store.findRecord('result', params.result_id).catch(() => {
       this.transitionTo('missing', 'not-found');
     });
-  },
+  }
 
   afterModel(model) {
     // Fetch all the things
@@ -30,40 +32,43 @@ export default Route.extend(Queryable, {
         window: query.get('window')
       });
     });
-  },
-
-  actions: {
-    queryClick(query) {
-      this.transitionTo('query', query.get('id'));
-    },
-
-    reRunClick(query) {
-      this.queryManager.addResult(query.get('id')).then(result => {
-        this.set('hasPendingSubmit', true);
-        this.set('pendingQuery', query);
-        this.set('savedResult', result);
-        // Sends us to a new result page but don't want to start the new query till we finish transitioning.
-        this.resultHandler(this);
-      });
-    },
-
-    cancelClick() {
-      this.querier.cancel();
-    },
-
-    willTransition() {
-      this.querier.cancel();
-      return true;
-    },
-
-    didTransition() {
-      if (this.hasPendingSubmit) {
-        let pendingQuery = this.pendingQuery;
-        this.lateSubmitQuery(pendingQuery, this);
-        this.set('hasPendingSubmit', false);
-        this.set('pendingQuery', null);
-      }
-      return true;
-    }
   }
-});
+
+  @action
+  queryClick(query) {
+    this.transitionTo('query', query.get('id'));
+  }
+
+  @action
+  reRunClick(query) {
+    this.queryManager.addResult(query.get('id')).then(result => {
+      this.hasPendingSubmit = true;
+      this.pendingQuery = query;
+      this.savedResult = result;
+      // Sends us to a new result page but don't want to start the new query till we finish transitioning.
+      this.resultHandler(this);
+    });
+  }
+
+  @action
+  cancelClick() {
+    this.querier.cancel();
+  }
+
+  @action
+  willTransition() {
+    this.querier.cancel();
+    return true;
+  }
+
+  @action
+  didTransition() {
+    if (this.hasPendingSubmit) {
+      let pendingQuery = this.pendingQuery;
+      this.lateSubmitQuery(pendingQuery, this);
+      this.hasPendingSubmit =  false;
+      this.pendingQuery = null;
+    }
+    return true;
+  }
+}

@@ -3,43 +3,43 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-
 import Route from '@ember/routing/route';
+import { get } from '@ember/object';
 
 /**
  * This class just stores some shared handler logic for routes that need to interact with queries and results.
  */
 export default class QueryableRoute extends Route {
-  resultHandler(routeContext) {
-    routeContext.transitionTo('result', routeContext.get('savedResult.id'));
+  resultHandler(route) {
+    route.transitionTo('result', get(route.savedResult, 'id'));
   }
 
-  errorHandler(error, routeContext) {
+  errorHandler(error, route) {
     console.error(error); // eslint-disable-line no-console
-    routeContext.transitionTo('errored');
+    route.transitionTo('errored');
   }
 
-  windowHandler(message, routeContext) {
-    routeContext.get('queryManager').addSegment(routeContext.get('savedResult'), message);
+  windowHandler(message, route) {
+    route.queryManager.addSegment(route.savedResult, message);
   }
 
-  submitQuery(query, result, routeContext) {
+  submitQuery(query, result, route) {
     let handlers = {
       success: this.resultHandler,
       error: this.errorHandler,
       message: this.windowHandler
     };
-    routeContext.set('savedResult', result);
-    routeContext.get('querier').send(query, handlers, routeContext);
+    route.savedResult = result;
+    route.querier.send(query, handlers, route);
   }
 
-  lateSubmitQuery(query, routeContext) {
+  lateSubmitQuery(query, route) {
     let handlers = {
       success: () => { },
       error: this.errorHandler,
       message: this.windowHandler
     };
     // savedResult already exists and points to result
-    routeContext.get('querier').send(query, handlers, routeContext);
+    route.querier.send(query, handlers, route);
   }
 }
