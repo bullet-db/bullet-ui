@@ -10,8 +10,7 @@ import currentValue from 'bullet-ui/utils/current-value';
 export default function validateMetricField() {
   return (key, newFieldValue, oldFieldValue, changes, content) => {
     const COUNT = METRICS.get('COUNT');
-    // TODO: Need to find this metric's type
-    let type = 'FOO';
+    let { type } = currentValue(changes, content, ['type']);
     if (!isEmpty(newValue) || isEqual(type, COUNT)) {
       return true;
     }

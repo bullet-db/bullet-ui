@@ -10,8 +10,8 @@ import currentValue from 'bullet-ui/utils/current-value';
 
 export default function validateWindow() {
   return (key, newValue, oldValue, changes, content) => {
-    let { 'aggregation.type': aggregationType, 'window.emitType': emitType, 'window.includeType': includeType } =
-        currentValue(changes, content, ['aggregation.type', 'window.emitType', 'window.includeType']);
+    let { 'type': aggregationType, 'query.window.emitType': emitType, 'query.window.includeType': includeType } =
+        currentValue(changes, content, ['type', 'query.window.emitType', 'query.window.includeType']);
     if (isEqual(aggregationType, AGGREGATIONS.get('RAW')) && isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
       return 'The window should not include all from start when aggregation type is Raw';
     }

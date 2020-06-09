@@ -8,8 +8,6 @@ import validateAggregationMaxSize from 'bullet-ui/validators/aggregation-max-siz
 import validatePoints from 'bullet-ui/validators/valid-points';
 import validateWindow from 'bullet-ui/validators/valid-window';
 import validateGroupMetricPresence from 'bullet-ui/validators/group-metric-presence';
-import GroupValidation from 'bullet-ui/validators/group';
-import MetricValidation from 'bullet-ui/validators/metric';
 
 export default {
   size: [
@@ -21,7 +19,5 @@ export default {
     validateGroupMetricPresence(),
     validatePoints(),
     validateWindow()
-  ],
-  groups: GroupValidation,
-  metrics: MetricValidation
+  ]
 }

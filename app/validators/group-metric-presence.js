@@ -7,12 +7,9 @@ import { isEqual, isEmpty } from '@ember/utils';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import currentValue from 'bullet-ui/utils/current-value';
 
-export default function validatePoints() {
+export default function validateGroupMetricPresence() {
   return (key, newType, oldType, changes, content) => {
-    let {
-      'aggregation.groups' : groups,
-      'aggregation.metrics' : metrics
-  } = currentValue(changes, content, ['aggregation.groups', 'aggregation.metrics']);
+    let { groups, metrics } = currentValue(changes, content, ['groups', 'metrics']);
 
     if (isEqual(newType, AGGREGATIONS.get('GROUP')) && isEmpty(groups) && isEmpty(metrics)) {
       return 'If you are grouping data, you must add at least one Group Field and/or Metric Field';

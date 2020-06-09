@@ -10,7 +10,7 @@ import currentValue from 'bullet-ui/utils/current-value';
 export default function validateAggregationMaxSize() {
   return (key, newSize, oldSize, changes, content) => {
     const RAW = AGGREGATIONS.get('RAW');
-    let { 'aggregation.type' : type } = currentValue(changes, content, ['aggregation.type']);
+    let { type } = currentValue(changes, content, ['type']);
     let maxRawSize = content.get('settings.defaultValues.rawMaxSize');
     let maxSize = content.get('settings.defaultValues.aggregationMaxSize');
     if (isEqual(type, RAW) && newSize > maxRawSize) {

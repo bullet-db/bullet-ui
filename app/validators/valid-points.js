@@ -13,8 +13,8 @@ export default function validatePoints() {
       return true;
     }
     let {
-      'aggregation.attributes.pointType' : pointType
-    } = currentValue(changes, content, ['aggregation.attributes.type']);
+      'attributes.pointType' : pointType
+    } = currentValue(changes, content, ['attributes.type']);
 
     if (isEqual(pointType, DISTRIBUTION_POINTS.get('POINTS'))) {
       return validateFreeFormPoints(newType, changes, content);
@@ -36,8 +36,8 @@ function validateMaximumPoints(size, content) {
 
 function validateFreeFormPoints(type, changes, content) {
   let {
-    'aggregation.attributes.points' : points
-  } = currentValue(changes, content, ['aggregation.attributes.points']);
+    'attributes.points' : points
+  } = currentValue(changes, content, ['attributes.points']);
 
   if (isEmpty(points)) {
     return `You must specify a comma separated list of points for this option`;
@@ -58,8 +58,8 @@ function validateFreeFormPoints(type, changes, content) {
 
 function validateNumberOfPoints(changes, content) {
   let {
-    'aggregation.attributes.numberOfPoints' : numberOfPoints
-  } = currentValue(changes, content, ['aggregation.attributes.numberOfPoints']);
+    'attributes.numberOfPoints' : numberOfPoints
+  } = currentValue(changes, content, ['attributes.numberOfPoints']);
 
   if (isEmpty(numberOfPoints)) {
     return `You must specify the Number of Points you want to generate`;
@@ -73,10 +73,10 @@ function validateNumberOfPoints(changes, content) {
 
 function validateGeneratedPoints(type, changes, content) {
   let {
-    'aggregation.attributes.start' : start,
-    'aggregation.attributes.end' : end,
-    'aggregation.attributes.increment' : increment
-  } = currentValue(changes, content, ['aggregation.attributes.start', 'aggregation.attributes.end', 'aggregation.attributes.increment']);
+    'attributes.start' : start,
+    'attributes.end' : end,
+    'attributes.increment' : increment
+  } = currentValue(changes, content, ['attributes.start', 'attributes.end', 'attributes.increment']);
 
   if (isEmpty(start) || isEmpty(end) || isEmpty(increment)) {
     return `You must specify the Start, End and Increment for the points you want to generate`;

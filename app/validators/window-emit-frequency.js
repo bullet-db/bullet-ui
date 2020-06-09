@@ -9,7 +9,7 @@ import currentValue from 'bullet-ui/utils/current-value';
 
 export default function validateWindowEmitFrequency() {
   return (key, newEmitEvery, oldEmitEvery, changes, content) => {
-    let { 'window.emitType' : emitType, duration } = currentValue(changes, content, ['window.emitType', 'duration']);
+    let { emitType, 'query.duration': duration } = currentValue(changes, content, ['emitType', 'query.duration']);
     if (isEqual(emitType, EMIT_TYPES.get('TIME'))) {
       let windowEmitFrequencyMinSecs = content.get('settings.defaultValues.windowEmitFrequencyMinSecs');
       if (newEmitEvery > duration) {
