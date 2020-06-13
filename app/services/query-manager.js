@@ -271,6 +271,9 @@ export default class QueryManagerService extends Service {
     return all(promises);
   }
 
+  validate(query) {
+  }
+  
   deleteModel(model) {
     // Autosave takes care of updating parent
     model.destroyRecord();
@@ -348,8 +351,5 @@ export default class QueryManagerService extends Service {
     return this.store.findAll('query').then(queries => {
       queries.forEach(q => this.deleteResults(q));
     });
-  }
-
-  validate(query) {
   }
 }

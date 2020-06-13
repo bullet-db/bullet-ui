@@ -5548,7 +5548,17 @@ ember-changeset-validations@^3.4.0:
     ember-get-config "^0.2.4"
     ember-validators "^2.0.0"
 
-ember-changeset@^3.4.1, ember-changeset@^3.5.0:
+ember-changeset@3.5.5:
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.5.5.tgz#f9a0c4bca80fd0a457710dce64d7bf6f7f6db569"
+  integrity sha512-tEi1eVu0k8Pq1Z581XxinYE9LsdsGVC8uwszea+xips6ko0mnAIKLfAyNZTgaxAB8Dl9YvzipjgD+xZU/4o+yg==
+  dependencies:
+    "@glimmer/tracking" "^1.0.0"
+    ember-auto-import "^1.5.2"
+    ember-cli-babel "^7.19.0"
+    validated-changeset "~0.6.7"
+
+ember-changeset@^3.4.1:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.5.0.tgz#18b6504e7a87850a760d210dc497c551ce535602"
   integrity sha512-JkMl4KedgAIliqivAfi2iDnGpbYS7hlsqJF6ciOdJdj2B2LgCTlPZYdnQYldY30yFmGpP3cUo2LLjmohNdIMAg==
@@ -13042,6 +13052,11 @@ validated-changeset@~0.5.11:
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.5.11.tgz#f6fe33af8320125d82f1b2f9599fad9188097c3f"
   integrity sha512-ZGaaIHjGfb5yn4DbIxF0gTzGDyq0+hDJgAaQBSx8gLTUXnKlcN/wDlEhBcmRQMiNOS/oHQlN5At+0TNXIpcuWQ==
+
+validated-changeset@~0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.6.7.tgz#edf2a574d1e0d27179c5b17acfa3d89736f98250"
+  integrity sha512-PmvMuwIdUyCB4hU0W0M7jnJ66SaXUO0DU/WsqchG9AAD0XNC59f5iBa0hvWyaCIGdF9vpk/N6BjtO0ELiR1G/A==
 
 vary@~1.1.2:
   version "1.1.2"

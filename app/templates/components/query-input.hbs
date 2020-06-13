@@ -5,13 +5,14 @@
  --}}
 <div class="query-panel {{if this.isListening "query-running"}}">
 
+  <!-- Start Validation Section -->
   <div class="validation-container">
     {{#if this.hasError}}
       <SimpleAlert @type="error">
         <span {{did-insert this.scrollIntoView}}>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
         <ul class="error-list">
-          {{#each (get this.query "validations.messages") as |message|}}
-            <li>{{message}}</li>
+          {{#each this.query.errors as |error|}}
+            <li>{{error.validation}}</li>
           {{/each}}
         </ul>
       </SimpleAlert>
@@ -21,9 +22,10 @@
       </SimpleAlert>
     {{/if}}
   </div>
+  <!-- End Validation Section -->
 
+  <!-- Start Form -->
   <div class="scrollable-panel">
-
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
         <LabeledInput @fieldName="Name" @placeholder="Name Your Query" @fieldValue={{this.query.name}}
@@ -31,6 +33,7 @@
       </div>
     </div>
 
+    <!-- Start Filter Section -->
     <div class="container-fluid filter-container">
       <div class="section-header">
         <h3 class="section-title">Filters</h3>
@@ -40,8 +43,10 @@
       </div>
       <div class="{{this.queryBuilderClass}}" {{did-insert this.addQueryBuilder this.queryBuilderOptions}}/>
     </div>
+    <!-- End Filter Section -->
 
 
+    <!-- Start Aggregation Section -->
     <div class="container-fluid output-container">
       <div class="section-header">
         <h3 class="section-title">Output Data</h3>
@@ -50,10 +55,217 @@
         </InfoPopover>
       </div>
 
-      <OutputDataInput @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @query={{this.query}}
-                       @forceDirty={{this.hasError}} @disabled={{this.isListening}} @columns={{this.columns}} />
-    </div>
+      <div class="output-data-input">
 
+        <div class="subsection-header">Select your Output Type</div>
+        <div class="output-options">
+          <RadioButton @radioId="raw" @value={{this.AGGREGATIONS.RAW}} @groupValue={{this.outputDataType}} @changed={{fn this.addRawAggregation false}} @disabled={{this.isListening}}>
+            Raw Data
+          </RadioButton>
+          <RadioButton @radioId="grouped-data" @value={{this.AGGREGATIONS.GROUP}} @groupValue={{this.outputDataType}} @changed={{fn this.addGroupAggregation}} @disabled={{this.isListening}}>
+            Group Data
+          </RadioButton>
+          <RadioButton @radioId="count-distinct" @value={{this.AGGREGATIONS.COUNT_DISTINCT}} @groupValue={{this.outputDataType}} @changed={{fn this.addCountDistinctAggregation}} @disabled={{this.isListening}}>
+            Count Distinct
+          </RadioButton>
+          <RadioButton @radioId="distribution" @value={{this.AGGREGATIONS.DISTRIBUTION}} @groupValue={{this.outputDataType}} @changed={{fn this.addDistributionAggregation}} @disabled={{this.isListening}}>
+            Distribution
+          </RadioButton>
+          <RadioButton @radioId="top-k" @value={{this.AGGREGATIONS.TOP_K}} @groupValue={{this.outputDataType}} @changed={{fn this.addTopKAggregation}} @disabled={{this.isListening}}>
+            Top K
+          </RadioButton>
+        </div>
+
+        <div class="output-container">
+          {{#if this.isRawAggregation}}
+            <div class="subsection-header">Select your Fields</div>
+            <div class="raw-sub-options inline-radio-buttons">
+              <RadioButton @radioId="all" @value={{this.RAWS.ALL}} @groupValue={{this.rawType}} @changed={{fn this.deleteProjections}} @disabled={{this.isListening}}>
+                Show All Fields
+              </RadioButton>
+              <RadioButton @radioId="select" @value={{this.RAWS.SELECT}} @groupValue={{this.rawType}} @changed={{fn this.addRawAggregation true}} @disabled={{this.isListening}}>
+                Select Fields
+              </RadioButton>
+            </div>
+            <div class="output-nested-container">
+              {{#if this.showRawSelections}}
+                <div class="fields-selection-container projections-container">
+                  {{#each this.query.projections as |projection|}}
+                    <ValidatedFieldSelection @model={{projection}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @enableDeleting={{this.canDeleteProjections}} @fieldModified={{fn this.modifyFieldLike projection}} @deleteModel={{fn this.destroyModel projection}} />
+                  {{/each}}
+                  <button {{fn this.addFieldLike "projection" "query" "query"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
+                    {{fa-icon "plus"}}
+                    Field
+                  </button>
+                </div>
+              {{/if}}
+            </div>
+          {{/if}}
+
+          {{#if this.isGroupAggregation}}
+            <div class="output-nested-container">
+              <div class="fields-selection-container groups-container">
+                <div class="subsection-header">Select Group Fields</div>
+                {{#each this.query.aggregation.groups as |group|}}
+                  <ValidatedFieldSelection @model={{group}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @fieldModified={{fn this.modifyFieldLike group}} @deleteModel={{fn this.destroyModel group}} />
+                {{/each}}
+                <button {{fn this.addFieldLike "group" "aggregation" "query.aggregation"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
+                  {{fa-icon "plus"}}
+                  Group Field
+                </button>
+              </div>
+
+              <br />
+
+              <div class="fields-selection-container metrics-container">
+                <div class="subsection-header">Select Metric Fields</div>
+                {{#each this.query.aggregation.metrics as |metric|}}
+                  <ValidatedFieldSelection @model={{metric}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disableField={{metric.hasNoField}} @fieldModified={{fn this.modifyFieldLike metric}} @deleteModel={{fn this.destroyModel metric}}>
+                    <div class="col-xs-3 metrics-selection">
+                      <label class="power-select-label">Metric</label>
+                      <PowerSelect @disabled={{this.isListening}} @selected={{lift-string "name" metric.type}} @options={{{{this.METRICS_LIST}}}} @onchange={{fn this.handleMetricChange metric}} as |metricItem|>
+                        {{metricItem.name}}
+                      </PowerSelect>
+                    </div>
+                  </ValidatedFieldSelection>
+                {{/each}}
+                <button {{fn this.addFieldLike "metric" "aggregation" "query.aggregation"}} disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
+                  {{fa-icon "plus"}}
+                  Metric Field
+                </button>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if this.isCountDistinctAggregation}}
+            <div class="output-nested-container">
+              <div class="subsection-header">Select your Fields</div>
+              <div class="fields-selection-container fields-container">
+                {{#each this.query.aggregation.groups as |field|}}
+                  <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}} @fieldClasses="col-xs-10" @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
+                {{/each}}
+                <button {{fn this.addFieldLike "group" "aggregation" "query.aggregation"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                  {{fa-icon "plus"}}
+                  Field
+                </button>
+              </div>
+
+              <div class="subsection-header">Rename Count Field</div>
+              <div class="row narrow-row count-distinct-display-name">
+                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{this.isListening}} />
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if this.isDistributionAggregation}}
+            <div class="output-nested-container">
+              <div class="subsection-header">Select Distribution</div>
+              <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
+                <RadioButton @radioId="quantile" @value={{this.DISTRIBUTIONS.QUANTILE}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.QUANTILE}} @disabled={{this.isListening}}>
+                  Quantiles
+                </RadioButton>
+                <RadioButton @radioId="frequency" @value={{DISTRIBUTIONS.PMF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.PMF}} @disabled={{this.isListening}}>
+                  Frequencies
+                </RadioButton>
+                <RadioButton @radioId="cumulative" @value={{DISTRIBUTIONS.CDF}} @groupValue={{distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.CDF}} @disabled={{this.isListening}}>
+                  Cumulative Frequencies
+                </RadioButton>
+              </div>
+
+              <div class="subsection-header">Select a Field</div>
+              <div class="fields-selection-container fields-container">
+                {{#each this.query.aggregation.groups as |field|}}
+                  <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @enableRenaming={{false}} @enableDeleting={{false}} @fieldClasses="col-xs-10" @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
+                {{/each}}
+              </div>
+
+              <div class="subsection-header">Select how your Points are created</div>
+              <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
+                <RadioButton @radioId="number-points" @value={{this.DISTRIBUTION_POINTS.NUMBER}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.NUMBER}} @disabled={{this.isListening}}>
+                  Evenly spaced points
+                </RadioButton>
+                <RadioButton @radioId="generate-points" @value={{this.DISTRIBUTION_POINTS.GENERATED}} @groupValue={{pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.GENERATED}} @disabled={{this.isListening}}>
+                  Evenly spaced points in a region
+                </RadioButton>
+                <RadioButton @radioId="points" @value={{this.DISTRIBUTION_POINTS.POINTS}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.POINTS}} @disabled={{this.isListening}}>
+                  Define points
+                </RadioButton>
+              </div>
+
+              {{#if this.isNumberOfPoints}}
+                <div class="row narrow-row distribution-type-number-of-points">
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Number of Points" @fieldValue={{query.aggregation.attributes.numberOfPoints}} @placeholder="Number" @disabled={{this.isListening}} />
+                </div>
+              {{else if this.isPoints}}
+                <div class="row narrow-row distribution-type-points">
+                  <LabeledInput class="col-xs-4" @fieldName="Points" @fieldValue={{query.aggregation.attributes.points}} @maxlength={{131072}} @placeholder="Comma separated numbers" @disabled={{this.isListening}} />
+                </div>
+              {{else if this.isGeneratedPoints}}
+                <div class="row narrow-row distribution-type-point-range">
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Start" @fieldValue={{query.aggregation.attributes.start}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="End" @fieldValue={{query.aggregation.attributes.end}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Increment" @fieldValue={{query.aggregation.attributes.increment}} @placeholder="Number" @disabled={{this.isListening}} />
+                </div>
+              {{/if}}
+            </div>
+          {{/if}}
+
+          {{#if this.isTopKAggregation}}
+            <div class="output-nested-container">
+              <div class="subsection-header">Select Fields</div>
+              <div class="fields-selection-container fields-container">
+                {{#each this.query.aggregation.groups as |field|}}
+                  <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @enableDeleting={{this.canDeleteField}} @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
+                {{/each}}
+                <button {{fn this.addFieldLike "group" "aggregation" "query.aggregation"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                  {{fa-icon "plus"}}
+                  Field
+                </button>
+              </div>
+              <div class="subsection-header">Select the maximum number of results</div>
+              <div class="row narrow-row top-k-size">
+                <ValidatedInput class="col-xs-2" @model={{query.aggregation}} @valuePath="size" @fieldName="K" @disabled={{this.isListening}} />
+              </div>
+              <div class="subsection-header">Having Minimum Count</div>
+              <div class="row narrow-row top-k-min-count">
+                <LabeledInput class="col-xs-2" @type="number" @fieldName="Minimum Count" @fieldValue={{query.aggregation.attributes.threshold}} @placeholder="Optional" @disabled={{this.isListening}} />
+              </div>
+              <div class="subsection-header">Rename Count Field</div>
+              <div class="row narrow-row top-k-display-name">
+                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{this.isListening}} />
+              </div>
+            </div>
+          {{/if}}
+
+          <div class="help">
+            {{#if this.isRawAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Raw Data">
+                {{partial "partials/raw-data-help"}}
+              </InfoPopover>
+            {{else if this.isGroupAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Group Data">
+                {{partial "partials/group-data-help"}}
+              </InfoPopover>
+            {{else if this.isCountDistinctAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Count Distinct">
+                {{partial "partials/count-distinct-help"}}
+              </InfoPopover>
+            {{else if this.isDistributionAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Distribution">
+                {{partial "partials/distribution-help"}}
+              </InfoPopover>
+            {{else if this.isTopKAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Top K">
+                {{partial "partials/top-k-help"}}
+              </InfoPopover>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Aggregation Section -->
+
+    <!-- Start Window Section -->
     <div class="container-fluid window-container">
       <div class="section-header">
         <h3 class="section-title">Windowing</h3>
@@ -62,10 +274,64 @@
         </InfoPopover>
       </div>
 
-      <WindowInput @query={{this.query}} @disabled={{this.isListening}} />
+      <div class="window-input">
+
+        {{#if this.isWindowless}}
+          <div class="no-window-section">
+            <button {{on "click" this.addWindow}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button">
+              {{fa-icon "plus"}}
+              Window
+            </button>
+          </div>
+        {{else}}
+          <div class="window-section">
+            <div class="subsection-header">
+              <span>Select how your window emits</span>
+              <button {{on "click" this.deleteWindow}} disabled={{this.isListening}} class="btn btn-xs btn-danger pull-right delete-button">
+                {{fa-icon "close"}}
+              </button>
+            </div>
+
+            <div class="emit-type-options">
+              <RadioButton @radioId="time-based" @value={{this.EMIT_TYPES.TIME}} @groupValue={{this.emitType}} @changed={{fn this.changeEmitType this.EMIT_TYPES.TIME}} @disabled={{this.isListening}}>
+                {{this.EMIT_TYPES.TIME}}
+              </RadioButton>
+              <RadioButton @radioId="record-based" @value={{this.EMIT_TYPES.RECORD}} @groupValue={{this.emitType}} @changed={{fn this.changeEmitType this.EMIT_TYPES.RECORD}} @disabled={{this.recordBasedWindowDisabled}}>
+                {{this.EMIT_TYPES.RECORD}}
+              </RadioButton>
+            </div>
+
+            <div class="subsection-header">Emit Every</div>
+            <div class="row">
+              <ValidatedInput class="col-xs-3 window-emit-every" @fieldName={{this.everyFieldName}} @model={{this.query.window}} @valuePath="emit.every" @type="number" @placeholder="Number" @disabled={{everyDisabled}} />
+            </div>
+
+            {{#if this.isTimeBasedWindow}}
+              <div class="subsection-header">Select what is included in each window</div>
+              <div class="include-type-options">
+                <RadioButton @radioId="include-window" @value={{this.INCLUDE_TYPES.WINDOW}} @groupValue={{includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
+                  {{this.INCLUDE_TYPES.WINDOW}}
+                </RadioButton>
+                <RadioButton @radioId="include-all" @value={{this.INCLUDE_TYPES.ALL}} @groupValue={{this.includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>
+                  {{this.INCLUDE_TYPES.ALL}}
+                </RadioButton>
+              </div>
+              {{#if this.isRawAggregation}}
+                <div class="row">
+                  <ValidatedInput class="col-xs-3 window-size" @model={{this.query.aggregation}} @valuePath="size" @fieldName="Maximum Rows in Window" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
+                </div>
+              {{/if}}
+            {{/if}}
+
+          </div>
+        {{/if}}
+
+      </div>
     </div>
+    <!-- End Window Section -->
 
 
+    <!-- Start Options Section -->
     <div class="container-fluid options-container">
       <div class="section-header">
         <h3 class="section-title">Query Stop Criteria</h3>
@@ -83,8 +349,10 @@
                         @fieldName="Maximum Duration (seconds)" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
       </div>
     </div>
+    <!-- End Options Section -->
 
   </div>
+  <!-- End Form -->
 
   <div class="container-fluid control-container">
     <hr />
