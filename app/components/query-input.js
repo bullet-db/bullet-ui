@@ -38,7 +38,7 @@ export default class QueryInputComponent extends Component {
   DISTRIBUTION_POINTS;
   EMIT_TYPES;
   INCLUDE_TYPES;
-  METRICS_LIST = METRICS.asList(),
+  METRICS_LIST = METRICS.asList();
 
   // Export validations for use from template
   ProjectionValidations;
@@ -105,13 +105,13 @@ export default class QueryInputComponent extends Component {
     this.emitType = this.query.get('window.emitType');
     this.includeType = this.query.get('window.includeType');
 
-    this.hasRaw = isEqual(outputDataType, AGGREGATIONS.get('RAW'));
+    this.hasRaw = isEqual(this.outputDataType, AGGREGATIONS.get('RAW'));
     this.hasWindow = !isEmpty(this.query.get('window.id'));
 
-    this.queryChangeset = Changeset(this.query, lookupValidator(QueryValidations), QueryValidations);
-    this.aggregationChangeset = Changeset(this.query.aggregation, lookupValidator(AggregationValidations), AggregationValidations);
+    this.queryChangeset = new Changeset(this.query, lookupValidator(QueryValidations), QueryValidations);
+    this.aggregationChangeset = new Changeset(this.query.aggregation, lookupValidator(AggregationValidations), AggregationValidations);
     if (this.hasWindow) {
-      this.windowChangeset = Changeset(this.query.window, lookupValidator(WindowValidations), WindowValidations);
+      this.windowChangeset = new Changeset(this.query.window, lookupValidator(WindowValidations), WindowValidations);
     }
   }
 
@@ -142,7 +142,7 @@ export default class QueryInputComponent extends Component {
   }
 
   @computed('isRecordBasedWindow')
-  get everyFieldName() {}
+  get everyFieldName() {
     return `Frequency (${this.isRecordBasedWindow ? 'records' : 'seconds'})`;
   }
 
@@ -244,7 +244,7 @@ export default class QueryInputComponent extends Component {
     return this.replaceAggregation(type).then(() => {
       return this.queryManager.addFieldLike(modelName, parentName, this.get(parentPath));
     });
-  },
+  }
 
   replaceAggregationWithGroup(type) {
     return this.replaceAggregationWithField(type, 'group', 'aggregation', 'query.aggregation');
@@ -364,7 +364,7 @@ export default class QueryInputComponent extends Component {
   @action
   changeEmitType(emitType) {
     if (isEqual(emitType, EMIT_TYPES.get('RECORD'))) {
-      this.set('includeType', INCLUDE_TYPES.get('WINDOW'));
+      this.includeType = INCLUDE_TYPES.get('WINDOW');
       this.replaceWindow(emitType, this.defaultEveryForRecordWindow, INCLUDE_TYPES.get('WINDOW'));
     } else {
       this.replaceWindow(emitType, this.defaultEveryForTimeWindow, this.includeType);

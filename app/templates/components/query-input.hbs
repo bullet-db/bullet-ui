@@ -123,7 +123,7 @@
                   <ValidatedFieldSelection @model={{metric}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disableField={{metric.hasNoField}} @fieldModified={{fn this.modifyFieldLike metric}} @deleteModel={{fn this.destroyModel metric}}>
                     <div class="col-xs-3 metrics-selection">
                       <label class="power-select-label">Metric</label>
-                      <PowerSelect @disabled={{this.isListening}} @selected={{lift-string "name" metric.type}} @options={{{{this.METRICS_LIST}}}} @onchange={{fn this.handleMetricChange metric}} as |metricItem|>
+                      <PowerSelect @disabled={{this.isListening}} @selected={{lift-string "name" metric.type}} @options={{this.METRICS_LIST}} @onchange={{fn this.handleMetricChange metric}} as |metricItem|>
                         {{metricItem.name}}
                       </PowerSelect>
                     </div>
@@ -152,7 +152,7 @@
 
               <div class="subsection-header">Rename Count Field</div>
               <div class="row narrow-row count-distinct-display-name">
-                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{this.isListening}} />
+                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{this.query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{this.isListening}} />
               </div>
             </div>
           {{/if}}
@@ -164,10 +164,10 @@
                 <RadioButton @radioId="quantile" @value={{this.DISTRIBUTIONS.QUANTILE}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.QUANTILE}} @disabled={{this.isListening}}>
                   Quantiles
                 </RadioButton>
-                <RadioButton @radioId="frequency" @value={{DISTRIBUTIONS.PMF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.PMF}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="frequency" @value={{this.DISTRIBUTIONS.PMF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.PMF}} @disabled={{this.isListening}}>
                   Frequencies
                 </RadioButton>
-                <RadioButton @radioId="cumulative" @value={{DISTRIBUTIONS.CDF}} @groupValue={{distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.CDF}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="cumulative" @value={{this.DISTRIBUTIONS.CDF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.CDF}} @disabled={{this.isListening}}>ZZ
                   Cumulative Frequencies
                 </RadioButton>
               </div>
@@ -184,7 +184,7 @@
                 <RadioButton @radioId="number-points" @value={{this.DISTRIBUTION_POINTS.NUMBER}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.NUMBER}} @disabled={{this.isListening}}>
                   Evenly spaced points
                 </RadioButton>
-                <RadioButton @radioId="generate-points" @value={{this.DISTRIBUTION_POINTS.GENERATED}} @groupValue={{pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.GENERATED}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="generate-points" @value={{this.DISTRIBUTION_POINTS.GENERATED}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.GENERATED}} @disabled={{this.isListening}}>
                   Evenly spaced points in a region
                 </RadioButton>
                 <RadioButton @radioId="points" @value={{this.DISTRIBUTION_POINTS.POINTS}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.POINTS}} @disabled={{this.isListening}}>
@@ -194,17 +194,17 @@
 
               {{#if this.isNumberOfPoints}}
                 <div class="row narrow-row distribution-type-number-of-points">
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Number of Points" @fieldValue={{query.aggregation.attributes.numberOfPoints}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Number of Points" @fieldValue={{this.query.aggregation.attributes.numberOfPoints}} @placeholder="Number" @disabled={{this.isListening}} />
                 </div>
               {{else if this.isPoints}}
                 <div class="row narrow-row distribution-type-points">
-                  <LabeledInput class="col-xs-4" @fieldName="Points" @fieldValue={{query.aggregation.attributes.points}} @maxlength={{131072}} @placeholder="Comma separated numbers" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-4" @fieldName="Points" @fieldValue={{this.query.aggregation.attributes.points}} @maxlength={{131072}} @placeholder="Comma separated numbers" @disabled={{this.isListening}} />
                 </div>
               {{else if this.isGeneratedPoints}}
                 <div class="row narrow-row distribution-type-point-range">
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Start" @fieldValue={{query.aggregation.attributes.start}} @placeholder="Number" @disabled={{this.isListening}} />
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="End" @fieldValue={{query.aggregation.attributes.end}} @placeholder="Number" @disabled={{this.isListening}} />
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Increment" @fieldValue={{query.aggregation.attributes.increment}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Start" @fieldValue={{this.query.aggregation.attributes.start}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="End" @fieldValue={{this.query.aggregation.attributes.end}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Increment" @fieldValue={{this.query.aggregation.attributes.increment}} @placeholder="Number" @disabled={{this.isListening}} />
                 </div>
               {{/if}}
             </div>
@@ -224,15 +224,15 @@
               </div>
               <div class="subsection-header">Select the maximum number of results</div>
               <div class="row narrow-row top-k-size">
-                <ValidatedInput class="col-xs-2" @model={{query.aggregation}} @valuePath="size" @fieldName="K" @disabled={{this.isListening}} />
+                <ValidatedInput class="col-xs-2" @model={{this.query.aggregation}} @valuePath="size" @fieldName="K" @disabled={{this.isListening}} />
               </div>
               <div class="subsection-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
-                <LabeledInput class="col-xs-2" @type="number" @fieldName="Minimum Count" @fieldValue={{query.aggregation.attributes.threshold}} @placeholder="Optional" @disabled={{this.isListening}} />
+                <LabeledInput class="col-xs-2" @type="number" @fieldName="Minimum Count" @fieldValue={{this.query.aggregation.attributes.threshold}} @placeholder="Optional" @disabled={{this.isListening}} />
               </div>
               <div class="subsection-header">Rename Count Field</div>
               <div class="row narrow-row top-k-display-name">
-                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{this.isListening}} />
+                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{this.query.aggregation.attributes.newName}} @placeholder="Optional" @disabled={{this.isListening}} />
               </div>
             </div>
           {{/if}}
@@ -303,13 +303,13 @@
 
             <div class="subsection-header">Emit Every</div>
             <div class="row">
-              <ValidatedInput class="col-xs-3 window-emit-every" @fieldName={{this.everyFieldName}} @model={{this.query.window}} @valuePath="emit.every" @type="number" @placeholder="Number" @disabled={{everyDisabled}} />
+              <ValidatedInput class="col-xs-3 window-emit-every" @fieldName={{this.everyFieldName}} @model={{this.query.window}} @valuePath="emit.every" @type="number" @placeholder="Number" @disabled={{this.everyDisabled}} />
             </div>
 
             {{#if this.isTimeBasedWindow}}
               <div class="subsection-header">Select what is included in each window</div>
               <div class="include-type-options">
-                <RadioButton @radioId="include-window" @value={{this.INCLUDE_TYPES.WINDOW}} @groupValue={{includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
+                <RadioButton @radioId="include-window" @value={{this.INCLUDE_TYPES.WINDOW}} @groupValue={{this.includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
                   {{this.INCLUDE_TYPES.WINDOW}}
                 </RadioButton>
                 <RadioButton @radioId="include-all" @value={{this.INCLUDE_TYPES.ALL}} @groupValue={{this.includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>

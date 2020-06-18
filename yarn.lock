@@ -5537,36 +5537,26 @@ ember-basic-dropdown@^3.0.1:
     ember-maybe-in-element "^0.4.0"
     ember-truth-helpers "2.1.0"
 
-ember-changeset-validations@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/ember-changeset-validations/-/ember-changeset-validations-3.4.0.tgz#d08d5a56ae4a1b7f2555bdfd0f009643119fae8e"
-  integrity sha512-bMmImbMw4gspdEpyUBNhZGZd+/wpI4nzhFcXb3qa1g3O8erJ97yMeZGGAnfDtATSGbj0ep0IESQM4Nk3Xpqf2A==
+ember-changeset-validations@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/ember-changeset-validations/-/ember-changeset-validations-3.6.1.tgz#812c33079d631d3d08da750b0370e803719f0fe9"
+  integrity sha512-v3uQIhM/zegZCkv4ncHtRNxMIX/h+48X/kX0iqCsX3pwRiYu6d8AHw0PtySU7zy1fonjI4LGc3QL7BfiPlLAcQ==
   dependencies:
-    ember-changeset "^3.4.1"
+    ember-changeset "^3.6.1"
     ember-cli-babel "^7.8.0"
     ember-cli-htmlbars "^4.0.5"
     ember-get-config "^0.2.4"
     ember-validators "^2.0.0"
 
-ember-changeset@3.5.5:
-  version "3.5.5"
-  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.5.5.tgz#f9a0c4bca80fd0a457710dce64d7bf6f7f6db569"
-  integrity sha512-tEi1eVu0k8Pq1Z581XxinYE9LsdsGVC8uwszea+xips6ko0mnAIKLfAyNZTgaxAB8Dl9YvzipjgD+xZU/4o+yg==
+ember-changeset@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.6.1.tgz#06149307b2e1a104919d7b42d4e0f53eb6204cc3"
+  integrity sha512-Ncj54NAjGZji6A0tTdRznvdry/92LcG5SDHEGzZb20MTYMRM+padLtgByRd+N8hyUvWcSpEeVwNn6j/F4sDqfA==
   dependencies:
     "@glimmer/tracking" "^1.0.0"
     ember-auto-import "^1.5.2"
     ember-cli-babel "^7.19.0"
-    validated-changeset "~0.6.7"
-
-ember-changeset@^3.4.1:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.5.0.tgz#18b6504e7a87850a760d210dc497c551ce535602"
-  integrity sha512-JkMl4KedgAIliqivAfi2iDnGpbYS7hlsqJF6ciOdJdj2B2LgCTlPZYdnQYldY30yFmGpP3cUo2LLjmohNdIMAg==
-  dependencies:
-    "@glimmer/tracking" "^1.0.0"
-    ember-auto-import "^1.5.2"
-    ember-cli-babel "^7.19.0"
-    validated-changeset "~0.5.11"
+    validated-changeset "~0.7.1"
 
 ember-cli-app-version@~3.2.0:
   version "3.2.0"
@@ -13048,15 +13038,10 @@ validate-npm-package-name@^3.0.0:
   dependencies:
     builtins "^1.0.3"
 
-validated-changeset@~0.5.11:
-  version "0.5.11"
-  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.5.11.tgz#f6fe33af8320125d82f1b2f9599fad9188097c3f"
-  integrity sha512-ZGaaIHjGfb5yn4DbIxF0gTzGDyq0+hDJgAaQBSx8gLTUXnKlcN/wDlEhBcmRQMiNOS/oHQlN5At+0TNXIpcuWQ==
-
-validated-changeset@~0.6.7:
-  version "0.6.7"
-  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.6.7.tgz#edf2a574d1e0d27179c5b17acfa3d89736f98250"
-  integrity sha512-PmvMuwIdUyCB4hU0W0M7jnJ66SaXUO0DU/WsqchG9AAD0XNC59f5iBa0hvWyaCIGdF9vpk/N6BjtO0ELiR1G/A==
+validated-changeset@~0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.7.1.tgz#cb2c11c93d5acfb2286e5bfca07f4a516f83c844"
+  integrity sha512-BbFK98Cp7WunEwLOW/oAi6qDZZFBOLkae0q5RZ3ne8ZkwB1sskOYfF5IqQhqubwxRb4emMhA2UgN5rdfOaZxXQ==
 
 vary@~1.1.2:
   version "1.1.2"
