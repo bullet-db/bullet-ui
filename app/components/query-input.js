@@ -32,12 +32,12 @@ export default class QueryInputComponent extends Component {
   queryBuilderClass = 'builder';
   subfieldSeparator = SUBFIELD_SEPARATOR;
   subfieldSuffix = `${SUBFIELD_SEPARATOR}*`;
-  AGGREGATIONS;
-  RAWS;
-  DISTRIBUTIONS;
-  DISTRIBUTION_POINTS;
-  EMIT_TYPES;
-  INCLUDE_TYPES;
+  AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
+  RAWS_TYPES = RAWS.get('NAMES');
+  DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
+  DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
+  EMIT_TYPES = EMIT_TYPES.get('NAMES');
+  INCLUDE_TYPES = INCLUDE_TYPES.get('NAMES');
   METRICS_LIST = METRICS.asList();
 
   // Export validations for use from template

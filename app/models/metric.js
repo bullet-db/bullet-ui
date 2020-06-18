@@ -7,14 +7,17 @@ import Model, { attr, belongsTo } from '@ember-data/model';
 import EmberObject, { computed } from '@ember/object';
 
 let Metric = EmberObject.extend({
-  SUM: 'Sum',
-  COUNT: 'Count',
-  MIN: 'Minimum',
-  MAX: 'Maximum',
-  AVG: 'Average',
+  NAMES: {
+    SUM: 'Sum',
+    COUNT: 'Count',
+    MIN: 'Minimum',
+    MAX: 'Maximum',
+    AVG: 'Average'
+  },
 
   init() {
     this._super(...arguments);
+    this.setProperties(this.get('NAMES'));
     this.set('INVERSE', {
       'Sum': 'SUM',
       'Count': 'COUNT',

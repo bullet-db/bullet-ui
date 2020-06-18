@@ -59,19 +59,19 @@
 
         <div class="subsection-header">Select your Output Type</div>
         <div class="output-options">
-          <RadioButton @radioId="raw" @value={{this.AGGREGATIONS.RAW}} @groupValue={{this.outputDataType}} @changed={{fn this.addRawAggregation false}} @disabled={{this.isListening}}>
+          <RadioButton @radioId="raw" @value={{this.AGGREGATION_TYPES.RAW}} @groupValue={{this.outputDataType}} @changed={{fn this.addRawAggregation false}} @disabled={{this.isListening}}>
             Raw Data
           </RadioButton>
-          <RadioButton @radioId="grouped-data" @value={{this.AGGREGATIONS.GROUP}} @groupValue={{this.outputDataType}} @changed={{fn this.addGroupAggregation}} @disabled={{this.isListening}}>
+          <RadioButton @radioId="grouped-data" @value={{this.AGGREGATION_TYPES.GROUP}} @groupValue={{this.outputDataType}} @changed={{fn this.addGroupAggregation}} @disabled={{this.isListening}}>
             Group Data
           </RadioButton>
-          <RadioButton @radioId="count-distinct" @value={{this.AGGREGATIONS.COUNT_DISTINCT}} @groupValue={{this.outputDataType}} @changed={{fn this.addCountDistinctAggregation}} @disabled={{this.isListening}}>
+          <RadioButton @radioId="count-distinct" @value={{this.AGGREGATION_TYPES.COUNT_DISTINCT}} @groupValue={{this.outputDataType}} @changed={{fn this.addCountDistinctAggregation}} @disabled={{this.isListening}}>
             Count Distinct
           </RadioButton>
-          <RadioButton @radioId="distribution" @value={{this.AGGREGATIONS.DISTRIBUTION}} @groupValue={{this.outputDataType}} @changed={{fn this.addDistributionAggregation}} @disabled={{this.isListening}}>
+          <RadioButton @radioId="distribution" @value={{this.AGGREGATION_TYPES.DISTRIBUTION}} @groupValue={{this.outputDataType}} @changed={{fn this.addDistributionAggregation}} @disabled={{this.isListening}}>
             Distribution
           </RadioButton>
-          <RadioButton @radioId="top-k" @value={{this.AGGREGATIONS.TOP_K}} @groupValue={{this.outputDataType}} @changed={{fn this.addTopKAggregation}} @disabled={{this.isListening}}>
+          <RadioButton @radioId="top-k" @value={{this.AGGREGATION_TYPES.TOP_K}} @groupValue={{this.outputDataType}} @changed={{fn this.addTopKAggregation}} @disabled={{this.isListening}}>
             Top K
           </RadioButton>
         </div>
@@ -80,10 +80,10 @@
           {{#if this.isRawAggregation}}
             <div class="subsection-header">Select your Fields</div>
             <div class="raw-sub-options inline-radio-buttons">
-              <RadioButton @radioId="all" @value={{this.RAWS.ALL}} @groupValue={{this.rawType}} @changed={{fn this.deleteProjections}} @disabled={{this.isListening}}>
+              <RadioButton @radioId="all" @value={{this.RAW_TYPES.ALL}} @groupValue={{this.rawType}} @changed={{fn this.deleteProjections}} @disabled={{this.isListening}}>
                 Show All Fields
               </RadioButton>
-              <RadioButton @radioId="select" @value={{this.RAWS.SELECT}} @groupValue={{this.rawType}} @changed={{fn this.addRawAggregation true}} @disabled={{this.isListening}}>
+              <RadioButton @radioId="select" @value={{this.RAW_TYPES.SELECT}} @groupValue={{this.rawType}} @changed={{fn this.addRawAggregation true}} @disabled={{this.isListening}}>
                 Select Fields
               </RadioButton>
             </div>
@@ -161,13 +161,13 @@
             <div class="output-nested-container">
               <div class="subsection-header">Select Distribution</div>
               <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
-                <RadioButton @radioId="quantile" @value={{this.DISTRIBUTIONS.QUANTILE}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.QUANTILE}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="quantile" @value={{this.DISTRIBUTION_TYPES.QUANTILE}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.QUANTILE}} @disabled={{this.isListening}}>
                   Quantiles
                 </RadioButton>
-                <RadioButton @radioId="frequency" @value={{this.DISTRIBUTIONS.PMF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.PMF}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="frequency" @value={{this.DISTRIBUTION_TYPES.PMF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.PMF}} @disabled={{this.isListening}}>
                   Frequencies
                 </RadioButton>
-                <RadioButton @radioId="cumulative" @value={{this.DISTRIBUTIONS.CDF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTIONS.CDF}} @disabled={{this.isListening}}>ZZ
+                <RadioButton @radioId="cumulative" @value={{this.DISTRIBUTION_TYPES.CDF}} @groupValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.CDF}} @disabled={{this.isListening}}>ZZ
                   Cumulative Frequencies
                 </RadioButton>
               </div>
@@ -181,13 +181,13 @@
 
               <div class="subsection-header">Select how your Points are created</div>
               <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
-                <RadioButton @radioId="number-points" @value={{this.DISTRIBUTION_POINTS.NUMBER}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.NUMBER}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="number-points" @value={{this.DISTRIBUTION_POINT_TYPES.NUMBER}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}} @disabled={{this.isListening}}>
                   Evenly spaced points
                 </RadioButton>
-                <RadioButton @radioId="generate-points" @value={{this.DISTRIBUTION_POINTS.GENERATED}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.GENERATED}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="generate-points" @value={{this.DISTRIBUTION_POINT_TYPES.GENERATED}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.GENERATED}} @disabled={{this.isListening}}>
                   Evenly spaced points in a region
                 </RadioButton>
-                <RadioButton @radioId="points" @value={{this.DISTRIBUTION_POINTS.POINTS}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINTS.POINTS}} @disabled={{this.isListening}}>
+                <RadioButton @radioId="points" @value={{this.DISTRIBUTION_POINT_TYPES.POINTS}} @groupValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.POINTS}} @disabled={{this.isListening}}>
                   Define points
                 </RadioButton>
               </div>
