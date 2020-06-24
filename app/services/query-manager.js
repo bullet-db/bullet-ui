@@ -271,9 +271,11 @@ export default class QueryManagerService extends Service {
     return all(promises);
   }
 
-  validate(query) {
+  createModel(modelName, opts = {}) {
+    let model = this.store.createRecord(modelName, opts);
+    return model.save();
   }
-  
+
   deleteModel(model) {
     // Autosave takes care of updating parent
     model.destroyRecord();
@@ -286,24 +288,23 @@ export default class QueryManagerService extends Service {
     });
   }
 
+  deleteMultipleCollection(collection, inverseName) {
+    let promises = collection.toArray().map(item => {
+      collection.removeObject(item);
+      item.set(inverseName, null);
+      item.destroyRecord();
+    });
+    return all(promises);
+  }
+
   deleteMultiple(name, model, inverseName) {
     return model.get(name).then(items => {
-      let promises = items.toArray().map(item => {
-        items.removeObject(item);
-        item.set(inverseName, null);
-        item.destroyRecord();
-      });
-      return all(promises);
+      return this.deleteMultipleCollection(items, inverseName);
     });
   }
 
   deleteProjections(query) {
-    return query.get('projections').then(p => {
-      let promises = p.toArray().map(item => {
-        item.destroyRecord();
-      });
-      return all(promises);
-    });
+    return this.deleteMultiple('projections', query, 'query');
   }
 
   deleteAggregation(query) {

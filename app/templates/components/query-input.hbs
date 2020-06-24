@@ -5,13 +5,13 @@
  --}}
 <div class="query-panel {{if this.isListening "query-running"}}">
 
-  <!-- Start Validation Section -->
+  {{!-- Start Validation Section --}}
   <div class="validation-container">
     {{#if this.hasError}}
       <SimpleAlert @type="error">
         <span {{did-insert this.scrollIntoView}}>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
         <ul class="error-list">
-          {{#each this.query.errors as |error|}}
+          {{#each this.queryChangeset.errors as |error|}}
             <li>{{error.validation}}</li>
           {{/each}}
         </ul>
@@ -22,18 +22,18 @@
       </SimpleAlert>
     {{/if}}
   </div>
-  <!-- End Validation Section -->
+  {{!-- End Validation Section --}}
 
-  <!-- Start Form -->
+  {{!-- Start Form --}}
   <div class="scrollable-panel">
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
-        <LabeledInput @fieldName="Name" @placeholder="Name Your Query" @fieldValue={{this.query.name}}
+        <LabeledInput @fieldName="Name" @placeholder="Name Your Query" @fieldValue={{this.queryChangeset.name}}
                       @disabled={{this.isListening}} @maxlength={{80}} />
       </div>
     </div>
 
-    <!-- Start Filter Section -->
+    {{!-- Start Filter Section --}}
     <div class="container-fluid filter-container">
       <div class="section-header">
         <h3 class="section-title">Filters</h3>
@@ -43,10 +43,10 @@
       </div>
       <div class="{{this.queryBuilderClass}}" {{did-insert this.addQueryBuilder this.queryBuilderOptions}}/>
     </div>
-    <!-- End Filter Section -->
+    {{!-- End Filter Section --}}
 
 
-    <!-- Start Aggregation Section -->
+    {{!-- Start Aggregation Section --}}
     <div class="container-fluid output-container">
       <div class="section-header">
         <h3 class="section-title">Output Data</h3>
@@ -90,10 +90,10 @@
             <div class="output-nested-container">
               {{#if this.showRawSelections}}
                 <div class="fields-selection-container projections-container">
-                  {{#each this.query.projections as |projection|}}
+                  {{#each this.projections as |projection|}}
                     <ValidatedFieldSelection @model={{projection}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @enableDeleting={{this.canDeleteProjections}} @fieldModified={{fn this.modifyFieldLike projection}} @deleteModel={{fn this.destroyModel projection}} />
                   {{/each}}
-                  <button {{fn this.addFieldLike "projection" "query" "query"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
+                  <button type="button" {{on "click" (fn this.addFieldLike "projection" "query" "query")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
                     {{fa-icon "plus"}}
                     Field
                   </button>
@@ -109,7 +109,7 @@
                 {{#each this.query.aggregation.groups as |group|}}
                   <ValidatedFieldSelection @model={{group}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @fieldModified={{fn this.modifyFieldLike group}} @deleteModel={{fn this.destroyModel group}} />
                 {{/each}}
-                <button {{fn this.addFieldLike "group" "aggregation" "query.aggregation"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
+                <button type="button" {{on "click" (fn this.addFieldLike "group" "aggregation" "query.aggregation")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
                   {{fa-icon "plus"}}
                   Group Field
                 </button>
@@ -129,7 +129,7 @@
                     </div>
                   </ValidatedFieldSelection>
                 {{/each}}
-                <button {{fn this.addFieldLike "metric" "aggregation" "query.aggregation"}} disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
+                <button type="button" {{on "click" (fn this.addFieldLike "metric" "aggregation" "query.aggregation")}} disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
                   {{fa-icon "plus"}}
                   Metric Field
                 </button>
@@ -144,7 +144,7 @@
                 {{#each this.query.aggregation.groups as |field|}}
                   <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}} @fieldClasses="col-xs-10" @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
                 {{/each}}
-                <button {{fn this.addFieldLike "group" "aggregation" "query.aggregation"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                <button type="button" {{on "click" (fn this.addFieldLike "group" "aggregation" "query.aggregation")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
                   {{fa-icon "plus"}}
                   Field
                 </button>
@@ -217,7 +217,7 @@
                 {{#each this.query.aggregation.groups as |field|}}
                   <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @enableDeleting={{this.canDeleteField}} @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
                 {{/each}}
-                <button {{fn this.addFieldLike "group" "aggregation" "query.aggregation"}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                <button type="button" {{on "click" (fn this.addFieldLike "group" "aggregation" "query.aggregation")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
                   {{fa-icon "plus"}}
                   Field
                 </button>
@@ -263,9 +263,9 @@
         </div>
       </div>
     </div>
-    <!-- End Aggregation Section -->
+    {{!-- End Aggregation Section --}}
 
-    <!-- Start Window Section -->
+    {{!-- Start Window Section --}}
     <div class="container-fluid window-container">
       <div class="section-header">
         <h3 class="section-title">Windowing</h3>
@@ -276,9 +276,9 @@
 
       <div class="window-input">
 
-        {{#if this.isWindowless}}
+        {{#unless this.hasWindow}}
           <div class="no-window-section">
-            <button {{on "click" this.addWindow}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button">
+            <button type="button" {{on "click" this.addWindow}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button">
               {{fa-icon "plus"}}
               Window
             </button>
@@ -287,7 +287,7 @@
           <div class="window-section">
             <div class="subsection-header">
               <span>Select how your window emits</span>
-              <button {{on "click" this.deleteWindow}} disabled={{this.isListening}} class="btn btn-xs btn-danger pull-right delete-button">
+              <button type="button" {{on "click" this.deleteWindow}} disabled={{this.isListening}} class="btn btn-xs btn-danger pull-right delete-button">
                 {{fa-icon "close"}}
               </button>
             </div>
@@ -328,10 +328,10 @@
 
       </div>
     </div>
-    <!-- End Window Section -->
+    {{!-- End Window Section --}}
 
 
-    <!-- Start Options Section -->
+    {{!-- Start Options Section --}}
     <div class="container-fluid options-container">
       <div class="section-header">
         <h3 class="section-title">Query Stop Criteria</h3>
@@ -349,14 +349,14 @@
                         @fieldName="Maximum Duration (seconds)" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
       </div>
     </div>
-    <!-- End Options Section -->
+    {{!-- End Options Section --}}
 
   </div>
-  <!-- End Form -->
+  {{!-- End Form --}}
 
   <div class="container-fluid control-container">
     <hr />
-    <button type="button" class="btn btn-primary btn-md submit-button" {{on "click" this.listen}}>Run Query</button>
+    <button type="submit" class="btn btn-primary btn-md submit-button" {{on "click" this.listen}}>Run Query</button>
     <button type="button" class="btn btn-default btn-md save-button" {{on "click" this.save}}>Save Query</button>
   </div>
 
