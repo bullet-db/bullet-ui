@@ -102,6 +102,7 @@ export default class QueryManagerService extends Service {
     });
   }
 
+  /* TO REMOVE
   addFieldLike(childModelName, modelFieldName, model) {
     // Autosave takes care of updating parent model
     let opts = {};
@@ -109,6 +110,7 @@ export default class QueryManagerService extends Service {
     let childModel = this.store.createRecord(childModelName, opts);
     return childModel.save();
   }
+  */
 
   addResult(id) {
     return this.store.findRecord('query', id).then(query => {
@@ -144,35 +146,39 @@ export default class QueryManagerService extends Service {
     return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
   }
 
-  setAggregationAttributes(query, fields) {
-    return query.get('aggregation').then(aggregation => {
-      fields.forEach(field => {
-        let name = field.get('name');
-        let value = field.get('value');
-        let fieldPath = `attributes.${name}`;
-        let forceSet = field.getWithDefault('forceSet', false);
-        if (forceSet || isEmpty(aggregation.get(fieldPath))) {
-          aggregation.set(fieldPath, value);
-        }
-      });
-      return aggregation.save();
+  setAggregationAttributes(aggregation, fields) {
+    fields.forEach(field => {
+      let name = field.get('name');
+      let value = field.get('value');
+      let fieldPath = `attributes.${name}`;
+      let forceSet = field.getWithDefault('forceSet', false);
+      if (forceSet || isEmpty(aggregation.get(fieldPath))) {
+        aggregation.set(fieldPath, value);
+      }
     });
   }
 
+  resetAggregation(aggregation, type, size = 1) {
+    aggregation.set('type', type);
+    aggregation.set('size', size);
+    aggregation.set('attributes', EmberObject.create());
+  }
+
+  /* TO REMOVE
   replaceAggregation(query, type, size = 1) {
     return query.get('aggregation').then(aggregation => {
       return all([
         this.deleteMultiple('groups', aggregation, 'aggregation'),
         this.deleteMultiple('metrics', aggregation, 'aggregation')
       ]).then(() => {
-        aggregation.set('type', type);
-        aggregation.set('size', size);
-        aggregation.set('attributes', EmberObject.create());
+        this.resetAggregation(type, size);
         return aggregation.save();
       });
     });
   }
+  */
 
+  /* TO REMOVE
   replaceWindow(query, emitType, emitEvery, includeType) {
     return query.get('window').then(window => {
       window.set('emitType', emitType);
@@ -181,7 +187,9 @@ export default class QueryManagerService extends Service {
       return window.save();
     });
   }
+  */
 
+  /* TO REMOVE
   addWindow(query) {
     let window = this.store.createRecord('window', {
       query: query
@@ -191,15 +199,13 @@ export default class QueryManagerService extends Service {
       return window.save();
     });
   }
+  */
 
-  fixFieldLikes(query, fieldLikesPath) {
-    return query.get(fieldLikesPath).then(e => {
-      e.forEach(i => {
-        if (isBlank(i.get('name'))) {
-          i.set('name', i.get('field'));
-        }
-      });
-      return resolve();
+  fixFieldLikes(fieldLikes) {
+    fieldLikes.forEach(i => {
+      if (isBlank(i.get('name'))) {
+        i.set('name', i.get('field'));
+      }
     });
   }
 
@@ -209,46 +215,36 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  fixAggregationSize(query) {
-    return query.get('aggregation').then(a => {
-      let type = a.get('type');
-      if (!(isEqual(type, AGGREGATIONS.get('RAW')) || isEqual(type, AGGREGATIONS.get('TOP_K')))) {
-        query.set('aggregation.size', this.get('settings.defaultValues.aggregationMaxSize'));
-      }
-      return resolve();
-    });
+  fixAggregationSize(aggregation) {
+    let type = aggregation.get('type');
+    if (!(isEqual(type, AGGREGATIONS.get('RAW')) || isEqual(type, AGGREGATIONS.get('TOP_K')))) {
+      aggregation.set('size', this.get('settings.defaultValues.aggregationMaxSize'));
+    }
   }
 
-  autoFill(query) {
-    return all([
-      this.fixFieldLikes(query, 'projections'),
-      this.fixFieldLikes(query, 'aggregation.groups')
-    ]);
+  autoFill(projections, groups) {
+    this.fixFieldLikes(projections);
+    this.fixFieldLikes(groups);
   }
 
-  fixDistributionPointType(query) {
-    return query.get('aggregation').then(aggregation => {
-      let pointType = aggregation.get('attributes.pointType');
-      if (isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
-        this.removeAttributes(aggregation, 'numberOfPoints', 'points');
-      } else if (isEqual(pointType, DISTRIBUTION_POINTS.NUMBER)) {
-        this.removeAttributes(aggregation, 'start', 'end', 'increment', 'points');
-      } else {
-        this.removeAttributes(aggregation, 'start', 'end', 'increment', 'numberOfPoints');
-      }
-      return resolve();
-    });
+  fixDistributionPointType(aggregation) {
+    let pointType = aggregation.get('attributes.pointType');
+    if (isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
+      this.removeAttributes(aggregation, 'numberOfPoints', 'points');
+    } else if (isEqual(pointType, DISTRIBUTION_POINTS.NUMBER)) {
+      this.removeAttributes(aggregation, 'start', 'end', 'increment', 'points');
+    } else {
+      this.removeAttributes(aggregation, 'start', 'end', 'increment', 'numberOfPoints');
+    }
   }
 
-  cleanup(query) {
-    return all([
-      this.autoFill(query),
-      this.fixAggregationSize(query),
-      this.fixDistributionPointType(query)
-    ]);
+  cleanup(aggregation, projections, groups) {
+    this.autoFill(projections, groups),
+    this.fixAggregationSize(aggregation),
+    this.fixDistributionPointType(aggregation)
   }
 
-  save(query, clause, summary) {
+  save(query, queryChanges, aggregationChanges, projectionsChanges, groupsChanges, metricsChanges, clause, summary) {
     // The underlying relationship saving need not block query saving
     let promises = [
       query.get('filter').then(i => {

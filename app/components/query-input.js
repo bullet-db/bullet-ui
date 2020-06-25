@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { resolve, reject } from 'rsvp';
+import { all, resolve, reject } from 'rsvp';
 import $ from 'jquery';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
@@ -63,8 +63,8 @@ export default class QueryInputComponent extends Component {
 
   @tracked isListening = false;
   @tracked hasError = false;
+  @tracked errors;
   @tracked hasSaved = false;
-
   @tracked hasWindow;
 
   // Radio button properties
@@ -113,6 +113,7 @@ export default class QueryInputComponent extends Component {
     this.includeType = this.query.get('window.includeType');
 
     this.hasWindow = !isEmpty(this.query.get('window.id'));
+    this.errors = A();
 
     this.createQueryChangeset(this.query);
     this.createAggregationChangeset(this.query.get('aggregation'));
@@ -124,22 +125,20 @@ export default class QueryInputComponent extends Component {
 
   // Getters
 
+  // This is computed since it shouldn't change and we want to cache it for large schemas
   @computed('schema')
   get columns() {
     return this.builderAdapter.builderFilters(this.schema);
   }
 
-  @computed('isRawAggregation', 'isListening')
   get recordBasedWindowDisabled() {
     return this.isListening || !this.isRawAggregation;
   }
 
-  @computed('isRawAggregation', 'includeDisabled')
   get allIncludeTypeDisabled() {
     return this.includeDisabled || this.isRawAggregation;
   }
 
-  @computed('isRecordBasedWindow')
   get everyFieldName() {
     return `Frequency (${this.isRecordBasedWindow ? 'records' : 'seconds'})`;
   }
@@ -150,6 +149,10 @@ export default class QueryInputComponent extends Component {
 
   get canDeleteField() {
     return this.aggregationChangeset.get('groups.length') > 1;
+  }
+
+  get showAggregationSize() {
+    return this.isRawAggregation && this.hasWindow;
   }
 
   get queryBuilderElement() {
@@ -175,10 +178,6 @@ export default class QueryInputComponent extends Component {
     let element = this.queryBuilderElement;
     let sql = $(element).queryBuilder('getSQL', false);
     return sql.sql;
-  }
-
-  get showAggregationSize() {
-    return this.isRawAggregation && this.hasWindow;
   }
 
   // Render Modifiers and Modifier Helpers
@@ -230,9 +229,8 @@ export default class QueryInputComponent extends Component {
       this.distributionType = DISTRIBUTIONS.get('QUANTILE');
       this.distributionPointType = DISTRIBUTION_POINTS.get('NUMBER');
     }
-    // Change the aggregation changeset and wipe projections, groups and metrics
-    this.aggregationChangeset.set('type', type);
-    this.aggregationChangeset.set('size', 1);
+    // Reset the aggregation changeset and wipe projections, groups and metrics
+    this.queryManager.resetAggregation(this.aggregationChangeset, type);
     let promises = [
       this.queryManager.deleteMultipleCollection(this.projections, 'query'),
       this.queryManager.deleteMultipleCollection(this.groups, 'aggregation'),
@@ -241,33 +239,27 @@ export default class QueryInputComponent extends Component {
     return all(promises);
   }
 
-  replaceAggregationWithField(type, modelName, collection) {
-    this.replaceAggregation(type);
-    return this.queryManager.createModel(modelName).then((model) => {
-      collection.add(model);
-      resolve();
+  replaceAggregationWithFieldLike(type, modelName, collection) {
+    return this.replaceAggregation(type).then(() => {
+      return this.queryManager.createModel(modelName);
+    }).then((model) => {
+      collection.pushObject(model);
+      return resolve();
     });
   }
 
+  replaceAggregationWithProjection(type) {
+    return this.replaceAggregationWithFieldLike(type, 'projection', this.projections);
+  }
+
   replaceAggregationWithGroup(type) {
-    return this.replaceAggregationWithField(type, 'group', this.groups);
+    return this.replaceAggregationWithFieldLike(type, 'group', this.groups);
   }
 
   replaceWindow(emitType, emitEvery, includeType) {
     this.windowChangeset.set('emitType', emitType);
     this.windowChangeset.set('emitEvery', emitEvery);
     this.windowChangeset.set('includeType', includeType);
-  }
-
-  addWindow() {
-    this.emitType = EMIT_TYPES.get('TIME');
-    this.includeType = INCLUDE_TYPES.get('WINDOW');
-    this.hasWindow = true;
-    this.createWindowChangeset();
-  }
-
-  deleteWindow() {
-    this.hasWindow = false;
   }
 
   setAttributes(type, pointType) {
@@ -280,7 +272,7 @@ export default class QueryInputComponent extends Component {
     }
     defaults.numberOfPoints = get(this.settings, 'defaultValues.distributionNumberOfPoints');
 
-    let lastQuantile = isEqual(this.query.get('aggregation.attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
+    let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
     let isQuantile = isEqual(type, DISTRIBUTIONS.get('QUANTILE'));
     let fields = [];
     for (let field in defaults) {
@@ -291,30 +283,60 @@ export default class QueryInputComponent extends Component {
     }
     fields.push({ name: 'type', value: type, forceSet: true });
     fields.push({ name: 'pointType', value: pointType, forceSet: true });
-    this.queryManager.setAggregationAttributes(this.query, fields.map(f => EmberObject.create(f)));
+    this.queryManager.setAggregationAttributes(this.aggregationChangeset, fields.map(f => EmberObject.create(f)));
   }
 
   reset() {
     this.isListening = false;
     this.hasError = false;
     this.hasSaved = false;
+    this.errors.clear();
     $(this.queryBuilderInputs).removeAttr('disabled');
+  }
+
+  validateChangeset(changeset) {
+    return changeset.validate().then(() => {
+      return resolve(A(changeset.get('isInvalid') ? changeset.errors : []));
+    });
+  }
+
+  collectValidations(promises, accumulator = A()) {
+    return promises.then((results) => {
+      results.forEach((result) => {
+        accumulator.pushObjects(result);
+      });
+      return resolve(accumulator);
+    });
+  }
+
+  validateCollection(collection, onErrorMessage) {
+    let validations = collection.map(item => this.validateChangeset(item));
+    return this.collectValidations(all(validations)).then(result => {
+      return resolve(A(isEmpty(result) ? [] : [onErrorMessage]));
+    });
   }
 
   validate() {
     this.reset();
-    let query = this.queryChangeset;
-    return this.queryManager.cleanup(query).then(() => {
-      return query.validate().then(hash => {
-        let isValid = this.isCurrentFilterValid && hash.validations.get('isValid');
-        return isValid ? resolve() : reject();
-      });
+    this.queryManager.cleanup(this.aggregationChangeset, this.projections, this.groups);
+    let changesetValidations = [
+      this.validateChangeset(this.queryChangeset),
+      this.validateChangeset(this.aggregationChangeset),
+      this.hasWindow ? this.validateChangeset(this.windowChangeset) : resolve(A()),
+      this.validateCollection(this.projections, 'There is an issue with Raw projected fields'),
+      this.validateCollection(this.groups, 'There is an issue with aggregation fields'),
+      this.validateCollection(this.metrics, 'There is an issue with metrics')
+    ];
+    return this.collectValidations(all(changesetValidations), this.errors).then((errors) => {
+      return isEmpty(errors) ? resolve() : reject();
     });
   }
 
   doSave() {
     return this.validate().then(() => {
-      return this.queryManager.save(this.query, this.currentFilterClause, this.currentFilterSummary);
+      return this.queryManager.save(this.query, this.queryChangeset, this.aggregationChangeset,
+                                    this.projections, this.groups, this.metrics,
+                                    this.currentFilterClause, this.currentFilterSummary);
     }, () => {
       this.hasError = true;
       return reject();
@@ -326,7 +348,7 @@ export default class QueryInputComponent extends Component {
   @action
   addRawAggregation(selectType = false) {
     if (selectType) {
-      this.replaceAggregationWithField(AGGREGATIONS.get('RAW'), 'projection', this.projections);
+      this.replaceAggregationWithProjection(AGGREGATIONS.get('RAW'), 'projection', this.projections);
     } else {
       this.replaceAggregation(AGGREGATIONS.get('RAW'));
     }
@@ -356,8 +378,10 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  addFieldLike(childModelName, modelFieldName, modelPath) {
-    this.queryManager.addFieldLike(childModelName, modelFieldName, this.get(modelPath));
+  addFieldLike(childModelName, collection) {
+    this.queryManager.createModel(childModelName).then((model) => {
+      collection.pushObject(model);
+    });
   }
 
   @action
@@ -374,12 +398,11 @@ export default class QueryInputComponent extends Component {
   modifyFieldLike(fieldLike, field) {
     fieldLike.set('field', field);
     fieldLike.set('name', '');
-    fieldLike.save();
   }
 
   @action
   deleteProjections() {
-    this.projections.clear();
+    this.queryManager.deleteMultipleCollection(this.projections, 'query');
   }
 
   @action
@@ -390,7 +413,6 @@ export default class QueryInputComponent extends Component {
   @action
   handleMetricChange(metric, value) {
     metric.set('type', value.get('name'));
-    metric.save();
   }
 
   @action
@@ -405,17 +427,20 @@ export default class QueryInputComponent extends Component {
 
   @action
   changeIncludeType(includeType) {
-    this.replaceWindow(this.emitType, this.query.get('window.emit.every'), includeType);
+    this.replaceWindow(this.emitType, this.windowChangeset.get('emitEvery'), includeType);
   }
 
   @action
   addWindow() {
-    this.addWindow();
+    this.emitType = EMIT_TYPES.get('TIME');
+    this.includeType = INCLUDE_TYPES.get('WINDOW');
+    this.createWindowChangeset();
+    this.hasWindow = true;
   }
 
   @action
   deleteWindow() {
-    this.deleteWindow();
+    this.hasWindow = false;
   }
 
   @action

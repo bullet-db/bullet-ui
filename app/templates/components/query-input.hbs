@@ -93,7 +93,7 @@
                   {{#each this.projections as |projection|}}
                     <ValidatedFieldSelection @model={{projection}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @enableDeleting={{this.canDeleteProjections}} @fieldModified={{fn this.modifyFieldLike projection}} @deleteModel={{fn this.destroyModel projection}} />
                   {{/each}}
-                  <button type="button" {{on "click" (fn this.addFieldLike "projection" "query" "query")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
+                  <button type="button" {{on "click" (fn this.addFieldLike "projection" this.projections)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
                     {{fa-icon "plus"}}
                     Field
                   </button>
@@ -109,7 +109,7 @@
                 {{#each this.query.aggregation.groups as |group|}}
                   <ValidatedFieldSelection @model={{group}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @fieldModified={{fn this.modifyFieldLike group}} @deleteModel={{fn this.destroyModel group}} />
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "group" "aggregation" "query.aggregation")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
                   {{fa-icon "plus"}}
                   Group Field
                 </button>
@@ -129,7 +129,7 @@
                     </div>
                   </ValidatedFieldSelection>
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "metric" "aggregation" "query.aggregation")}} disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
+                <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}} disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
                   {{fa-icon "plus"}}
                   Metric Field
                 </button>
@@ -144,7 +144,7 @@
                 {{#each this.query.aggregation.groups as |field|}}
                   <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}} @fieldClasses="col-xs-10" @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "group" "aggregation" "query.aggregation")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
                   {{fa-icon "plus"}}
                   Field
                 </button>
@@ -217,7 +217,7 @@
                 {{#each this.query.aggregation.groups as |field|}}
                   <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @enableDeleting={{this.canDeleteField}} @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field}} />
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "group" "aggregation" "query.aggregation")}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
                   {{fa-icon "plus"}}
                   Field
                 </button>
@@ -324,7 +324,7 @@
             {{/if}}
 
           </div>
-        {{/if}}
+        {{/unless}}
 
       </div>
     </div>
