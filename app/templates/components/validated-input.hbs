@@ -8,5 +8,5 @@
     {{partial "partials/validation-tooltip"}}
   {{/if}}
   <LabeledInput @type={{this.type}} @placeholder={{this.placeholder}} @fieldName={{this.fieldName}}
-                @fieldValue={{this.value}} @disabled={{this.disabled}} ...attributes/>
+                @fieldValue={{mut (changeset-get @changeset @valuePath)}} @disabled={{this.disabled}} ...attributes/>
 </div>

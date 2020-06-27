@@ -10,7 +10,7 @@ import { tracked } from '@glimmer/tracking';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import { action, computed, get } from '@ember/object';
-import { alias, and, equal, or } from '@ember/object/computed';
+import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
@@ -34,7 +34,7 @@ export default class QueryInputComponent extends Component {
   subfieldSeparator = SUBFIELD_SEPARATOR;
   subfieldSuffix = `${SUBFIELD_SEPARATOR}*`;
   AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
-  RAWS_TYPES = RAWS.get('NAMES');
+  RAW_TYPES = RAWS.get('NAMES');
   DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
   DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
   EMIT_TYPES = EMIT_TYPES.get('NAMES');
@@ -70,8 +70,8 @@ export default class QueryInputComponent extends Component {
   // Radio button properties
   @tracked outputDataType;
   @tracked rawType;
-  @tracked pointType;
   @tracked distributionType;
+  @tracked pointType;
   @tracked emitType;
   @tracked includeType;
 
@@ -90,6 +90,7 @@ export default class QueryInputComponent extends Component {
   @equal('emitType', EMIT_TYPES.get('RECORD')) isRecordBasedWindow;
   @or('isRecordBasedWindow', 'isListening') everyDisabled;
   @or('isRecordBasedWindow', 'isListening') includeDisabled;
+  @not('hasWindow') noWindow;
 
   @alias('settings.defaultValues.everyForRecordBasedWindow') defaultEveryForRecordWindow;
   @alias('settings.defaultValues.everyForTimeBasedWindow') defaultEveryForTimeWindow;
@@ -103,8 +104,6 @@ export default class QueryInputComponent extends Component {
     this.groups = A(this.query.get('aggregation.groups'));
     this.metrics = A(this.query.get('aggregation.metrics'));
 
-    // These *Type variables exist because ember-radio-button will set their value locally. Once set,
-    // they are independent of the original property. This means they are only used on initial component render.
     this.outputDataType = this.query.get('aggregation.type') || AGGREGATIONS.get('RAW');
     this.rawType = isEmpty(this.query.get('projections')) ? RAWS.get('ALL') : RAWS.get('SELECT');
     this.distributionType = this.query.get('aggregation.attributes.type') || DISTRIBUTIONS.get('QUANTILE');
@@ -144,11 +143,11 @@ export default class QueryInputComponent extends Component {
   }
 
   get canDeleteProjections() {
-    return this.queryChangeset.get('projections.length') > 1;
+    return this.projections.get('length') > 1;
   }
 
   get canDeleteField() {
-    return this.aggregationChangeset.get('groups.length') > 1;
+    return this.groups.get('length') > 1;
   }
 
   get showAggregationSize() {
@@ -406,7 +405,8 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  destroyModel(item) {
+  destroyModel(item, collection) {
+    collection.removeObject(item);
     this.queryManager.deleteModel(item);
   }
 

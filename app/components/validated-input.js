@@ -4,15 +4,10 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
-import { get } from '@ember/object';
 
 export default class ValidatedInputComponent extends Component {
   get type() {
     return this.args.type || 'text';
-  }
-
-  get forceDirty() {
-    return this.args.forceDirty || false;
   }
 
   get disabled() {
@@ -31,17 +26,7 @@ export default class ValidatedInputComponent extends Component {
     return this.args.fieldName || '';
   }
 
-  get valuePath() {
-    return this.args.valuePath || '';
-  }
-
-  get value() {
-    return get(this.args.model, this.valuePath);
-  }
-
   get isInvalid() {
-    let validations = get(this.args.model, 'validation.attrs');
-    console.log(validations);
     return false;
   //   let isValidating = get(validations, `${this.valuePath}.isValidating`) || false;
   //   console.log(isValidating);

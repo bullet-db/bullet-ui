@@ -38,7 +38,7 @@ module('Integration | Component | window-input', function(hooks) {
     });
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
-    assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
+    assert.equal(this.element.querySelectorAll('.radio-button').length, 4);
     assert.dom(this.element.querySelector('#time-based').parentElement).hasClass('checked');
     assert.dom(this.element.querySelector('#record-based').parentElement).hasNoClass('checked');
     assert.dom(this.element.querySelector('#include-window').parentElement).hasClass('checked');
@@ -47,14 +47,14 @@ module('Integration | Component | window-input', function(hooks) {
     assert.equal(this.element.querySelector('.validated-input input').value, 2);
 
     await click('#record-based');
-    assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 2);
+    assert.equal(this.element.querySelectorAll('.radio-button').length, 2);
     assert.dom(this.element.querySelector('#time-based').parentElement).hasNoClass('checked');
     assert.dom(this.element.querySelector('#record-based').parentElement).hasClass('checked');
     assert.equal(this.element.querySelector('.validated-input input').disabled, true);
     assert.equal(this.element.querySelector('.validated-input input').value, 1);
 
     await click('#time-based');
-    assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
+    assert.equal(this.element.querySelectorAll('.radio-button').length, 4);
     assert.dom(this.element.querySelector('#time-based').parentElement).hasClass('checked');
     assert.dom(this.element.querySelector('#record-based').parentElement).hasNoClass('checked');
   });
@@ -73,7 +73,7 @@ module('Integration | Component | window-input', function(hooks) {
     });
 
     await render(hbs `{{window-input replaceWindow=mockReplaceWindow query=mockQuery}}`);
-    assert.equal(this.element.querySelectorAll('.ember-radio-button').length, 4);
+    assert.equal(this.element.querySelectorAll('.radio-button').length, 4);
     assert.dom(this.element.querySelector('#time-based').parentElement).hasClass('checked');
     assert.dom(this.element.querySelector('#record-based').parentElement).hasNoClass('checked');
     assert.dom(this.element.querySelector('#include-window').parentElement).hasClass('checked');

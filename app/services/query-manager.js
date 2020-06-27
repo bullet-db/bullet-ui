@@ -246,6 +246,7 @@ export default class QueryManagerService extends Service {
 
   save(query, queryChanges, aggregationChanges, projectionsChanges, groupsChanges, metricsChanges, clause, summary) {
     // The underlying relationship saving need not block query saving
+    /*
     let promises = [
       query.get('filter').then(i => {
         i.set('clause', clause);
@@ -265,6 +266,7 @@ export default class QueryManagerService extends Service {
       query.save()
     ];
     return all(promises);
+    */
   }
 
   createModel(modelName, opts = {}) {

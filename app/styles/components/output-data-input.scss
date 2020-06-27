@@ -7,12 +7,12 @@
   background-color: $box-rectangle-color;
   position: relative;
 
-  .ember-radio-button {
-    @extend %ember-radio-button;
+  .radio-button {
+    @extend %radio-button;
   }
 
   .inline-radio-buttons {
-    .ember-radio-button {
+    .radio-button {
       display: inline-block;
       margin-right: 30px;
     }

@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { get } from '@ember/object';
-import isEmpty from 'bullet-ui/helpers/is-empty';
+import isEmpty from 'bullet-ui/utils/is-empty';
 
 export default function currentValue(changes, content, keys = []) {
   let result = { };

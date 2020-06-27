@@ -313,15 +313,15 @@ module('Acceptance | query firing', function(hooks) {
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
-    assert.dom('.window-input .ember-radio-button').exists({ count: 4 });
+    assert.dom('.window-input .radio-button').exists({ count: 4 });
     assert.dom(find('.window-input #time-based').parentElement).hasClass('checked');
 
     await click('.window-input #record-based');
-    assert.dom('.window-input .ember-radio-button').exists({ count: 2 });
+    assert.dom('.window-input .radio-button').exists({ count: 2 });
     assert.dom(find('.window-input #record-based').parentElement).hasClass('checked');
 
     await click('.window-input #time-based');
-    assert.dom('.window-input .ember-radio-button').exists({ count: 4 });
+    assert.dom('.window-input .radio-button').exists({ count: 4 });
     assert.dom(find('.window-input #time-based').parentElement).hasClass('checked');
 
     await click('.window-input .delete-button');
