@@ -7,6 +7,7 @@ import { all, resolve, reject } from 'rsvp';
 import $ from 'jquery';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import { action, computed, get } from '@ember/object';
@@ -60,6 +61,7 @@ export default class QueryInputComponent extends Component {
   query;
   schema;
   builderAdapter;
+  settings;
 
   @tracked isListening = false;
   @tracked hasError = false;
@@ -120,6 +122,7 @@ export default class QueryInputComponent extends Component {
     if (this.hasWindow) {
       this.createWindowChangeset(this.query.get('window'));
     }
+    this.settings = getOwner(this).lookup('settings:main');
   }
 
   // Getters
@@ -445,9 +448,11 @@ export default class QueryInputComponent extends Component {
 
   @action
   save() {
-    console.log(this.queryChangeset.get('name'));
+    console.log(this);
+    console.log(this.settings);
     console.log(this.queryChangeset.get('changes'));
     console.log(this.aggregationChangeset.get('changes'));
+    console.log(this.windowChangeset.get('changes'));
     // this.doSave().then(() => {
     //   this.hasSaved = true;
     // });
