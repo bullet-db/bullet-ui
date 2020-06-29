@@ -8,5 +8,7 @@
     <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @changeset={{@changeset}} valuePath={{@valuePath}}/>
   {{/if}}
   <LabeledInput @label={{@label}} @value={{changeset-get @changeset @valuePath}}
-                @onChange={{fn this.onChange}} ...attributes/>
+                @onChange={{fn this.onChange}}
+                @maxlength={{@maxlength}} @disabled={{@disabled}} @type={{@type}} @placeholder={{@placeholder}}
+                ...attributes/>
 </div>
