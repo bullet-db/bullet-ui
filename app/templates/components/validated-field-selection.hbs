@@ -3,25 +3,34 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-{{#if isInvalid}}
-  {{partial "partials/validation-tooltip"}}
-{{/if}}
+<div class="row field-selection-container validated-field-selection {{if this.isInvalid "has-error"}}">
+  {{#if this.isInvalid}}
+    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @changeset={{@changeset}} @valuePath={{@valuePath}}/>
+  {{/if}}
 
-{{yield}}
+  {{!-- Yield to add additional HTML in the row --}}
+  {{yield}}
 
-{{#unless disableField}}
-  <div class="{{fieldClasses}} field-selection">
-    <ColumnField @columns={{columns}} @disabled={{disabled}} @initialValue={{model.field}} @subfieldKey="show_subfield" @subfieldSeparator={{subfieldSeparator}} @subfieldSuffix={{subfieldSuffix}} @onDone={{action "modifyField"}} />
-  </div>
-{{/unless}}
+  {{!--}}
+  {{#unless @disableField}}
+    <div class="{{@fieldClasses}} field-selection">
+      <ColumnField @columns={{@columns}} @initialValue={{@changeset.field}} @subfieldKey="show_subfield"
+                   @subfieldSeparator={{@subfieldSeparator}} @subfieldSuffix={{@subfieldSuffix}}
+                   @onDone={{this.modifyField}} @disabled={{@disabled}} />
+    </div>
+  {{/unless}}
+  --}}
 
-{{#if enableRenaming}}
-  <div class="{{nameClasses}} field-name">
-    <LabeledInput @fieldName="Display Name" @fieldValue={{model.name}} @placeholder="Optional" @disabled={{disabled}} />
-  </div>
-{{/if}}
-{{#if enableDeleting}}
-  <button {{action "deleteClicked"}} disabled={{disabled}} class="btn btn-danger btn-xs delete-button pull-right">
-    {{fa-icon "close"}}
-  </button>
-{{/if}}
+  {{#if @enableRenaming}}
+    <div class="{{@nameClasses}} field-name">
+      <LabeledInput @label="Display Name" @value={{changeset-get @changeset "name"}}
+                    @onChange={{fn (changeset-set @changeset "name")}}
+                    placeholder="Optional" disabled={{@disabled}} />
+    </div>
+  {{/if}}
+  {{#if @enableDeleting}}
+    <button {{on "click" this.deleteClicked}} type="button" disabled={{@disabled}} class="btn btn-danger btn-xs delete-button pull-right">
+      {{fa-icon "close"}}
+    </button>
+  {{/if}}
+</div>

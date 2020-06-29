@@ -5,8 +5,8 @@
  --}}
  <div class="validated-input {{if this.isInvalid "has-error"}}">
   {{#if this.isInvalid}}
-    {{partial "partials/validation-tooltip"}}
+    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @changeset={{@changeset}} valuePath={{@valuePath}}/>
   {{/if}}
-  <LabeledInput @type={{this.type}} @placeholder={{this.placeholder}} @fieldName={{this.fieldName}}
-                @fieldValue={{mut (changeset-get @changeset @valuePath)}} @disabled={{this.disabled}} ...attributes/>
+  <LabeledInput @label={{@label}} @value={{changeset-get @changeset @valuePath}}
+                @onChange={{fn this.onChange}} ...attributes/>
 </div>

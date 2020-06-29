@@ -5,6 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 
 export default class LabeledInputComponent extends Component {
@@ -12,18 +13,11 @@ export default class LabeledInputComponent extends Component {
 
   constructor() {
     super(...arguments);
-    this.id = `${guidFor(this)}-${this.args.fieldName}`;
+    this.id = `${guidFor(this)}-${this.args.label}`;
   }
 
-  get type() {
-    return this.args.type || 'text';
-  }
-
-  get disabled() {
-    return this.args.disabled || false;
-  }
-
-  get maxlength() {
-    return this.args.maxlength || 30;
+  @action
+  onChange(event) {
+    this.args.onChange(event.target.value);
   }
 }

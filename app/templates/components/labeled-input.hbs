@@ -3,7 +3,7 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
- <div class="labeled-input" ...attributes>
-  <label for="{{this.id}}">{{@fieldName}}</label>
-  <Input @type={{@type}} @disabled={{@disabled}} @value={{@fieldValue}} placeholder={{@placeholder}} @maxlength={{@maxlength}} @id={{this.id}} class="form-control" />
+ <div class="labeled-input">
+  <label for="{{this.id}}">{{@label}}</label>
+  <Input class="form-control" @value={{@value}} @id={{this.id}} @keyUp={{this.onChange}} ...attributes />
 </div>

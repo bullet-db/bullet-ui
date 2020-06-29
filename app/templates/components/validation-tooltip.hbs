@@ -1,0 +1,7 @@
+<a tabindex="0" class="fa fa-exclamation-circle error-tooltip-link" role="button">
+  <EmberTooltip @side={{@tooltipPosition}}>
+    {{#each (get (get @changeset.error @valuePath) "validation") as |validation| }}
+      <p>{{validation}}</p>
+    {{/each}}
+  </EmberTooltip>
+</a>

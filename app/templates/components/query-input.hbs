@@ -30,7 +30,9 @@
   <div class="scrollable-panel">
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
-        <LabeledInput @fieldName="Name" @placeholder="Name Your Query" @fieldValue={{mut (get this.queryChangeset 'name')}} @disabled={{this.isListening}} @maxlength={{80}} />
+        <LabeledInput @label="Name" @value={{changeset-get this.queryChangeset "name"}}
+                      @onChange={{fn (changeset-set this.queryChangeset "name")}}
+                      type="text" placeholder="Name Your Query" disabled={{this.isListening}} maxlength={{80}}/>
       </div>
     </div>
 
@@ -60,19 +62,28 @@
 
         <div class="subsection-header">Select your Output Type</div>
         <div class="output-options">
-          <RadioButton @id="raw" @value={{this.AGGREGATION_TYPES.RAW}} @checkedValue={{this.outputDataType}} @changed={{fn this.addRawAggregation false}} @updated={{fn (mut this.outputDataType)}} @disabled={{this.isListening}}>
+          <RadioButton @id="raw" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addRawAggregation false}} @updated={{fn (mut this.outputDataType)}}
+                       value={{this.AGGREGATION_TYPES.RAW}} disabled={{this.isListening}}>
             Raw Data
           </RadioButton>
-          <RadioButton @id="grouped-data" @value={{this.AGGREGATION_TYPES.GROUP}} @checkedValue={{this.outputDataType}} @changed={{fn this.addGroupAggregation}} @updated={{fn (mut this.outputDataType)}} @disabled={{this.isListening}}>
+          <RadioButton @id="grouped-data" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addGroupAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       value={{this.AGGREGATION_TYPES.GROUP}} disabled={{this.isListening}}>
             Group Data
           </RadioButton>
-          <RadioButton @id="count-distinct" @value={{this.AGGREGATION_TYPES.COUNT_DISTINCT}} @checkedValue={{this.outputDataType}} @changed={{fn this.addCountDistinctAggregation}} @updated={{fn (mut this.outputDataType)}} @disabled={{this.isListening}}>
+          <RadioButton @id="count-distinct" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addCountDistinctAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       value={{this.AGGREGATION_TYPES.COUNT_DISTINCT}} disabled={{this.isListening}}>
             Count Distinct
           </RadioButton>
-          <RadioButton @id="distribution" @value={{this.AGGREGATION_TYPES.DISTRIBUTION}} @checkedValue={{this.outputDataType}} @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}} @disabled={{this.isListening}}>
+          <RadioButton @id="distribution" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}} value={{this.AGGREGATION_TYPES.DISTRIBUTION}} disabled={{this.isListening}}>
             Distribution
           </RadioButton>
-          <RadioButton @id="top-k" @value={{this.AGGREGATION_TYPES.TOP_K}} @checkedValue={{this.outputDataType}} @changed={{fn this.addTopKAggregation}} @updated={{fn (mut this.outputDataType)}} @disabled={{this.isListening}}>
+          <RadioButton @id="top-k" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addTopKAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       value={{this.AGGREGATION_TYPES.TOP_K}} disabled={{this.isListening}}>
             Top K
           </RadioButton>
         </div>
@@ -81,10 +92,14 @@
           {{#if this.isRawAggregation}}
             <div class="subsection-header">Select your Fields</div>
             <div class="raw-sub-options inline-radio-buttons">
-              <RadioButton @id="all" @value={{this.RAW_TYPES.ALL}} @checkedValue={{this.rawType}} @changed={{fn this.deleteProjections}} @updated={{fn (mut this.rawType)}} @disabled={{this.isListening}}>
+              <RadioButton @id="all" @checkedValue={{this.rawType}}
+                           @changed={{fn this.deleteProjections}} @updated={{fn (mut this.rawType)}}
+                           value={{this.RAW_TYPES.ALL}} disabled={{this.isListening}}>
                 Show All Fields
               </RadioButton>
-              <RadioButton @id="select" @value={{this.RAW_TYPES.SELECT}} @checkedValue={{this.rawType}} @changed={{fn this.addRawAggregation true}} @updated={{fn (mut this.rawType)}} @disabled={{this.isListening}}>
+              <RadioButton @id="select" @checkedValue={{this.rawType}}
+                           @changed={{fn this.addRawAggregation true}} @updated={{fn (mut this.rawType)}}
+                           value={{this.RAW_TYPES.SELECT}} disabled={{this.isListening}}>
                 Select Fields
               </RadioButton>
             </div>
@@ -92,11 +107,18 @@
               {{#if this.showRawSelections}}
                 <div class="fields-selection-container projections-container">
                   {{#each this.projections as |projection|}}
-                    <ValidatedFieldSelection @model={{projection}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @enableDeleting={{this.canDeleteProjections}} @fieldModified={{fn this.modifyFieldLike projection}} @deleteModel={{fn this.destroyModel projection this.projections}} />
+                    {{#with (changeset projection this.ProjectionValidations) as |changeset|}}
+                      <ValidatedFieldSelection
+                          @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteProjections}}
+                          @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                          @fieldModified={{fn this.modifyFieldLike projection}}
+                          @fieldDeleted={{fn this.destroyModel projection this.projections}}
+                          @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @disabled={{this.isListening}}/>
+                    {{/with}}
                   {{/each}}
-                  <button type="button" {{on "click" (fn this.addFieldLike "projection" this.projections)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
-                    {{fa-icon "plus"}}
-                    Field
+                  <button type="button" {{on "click" (fn this.addFieldLike "projection" this.projections)}}
+                          disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
+                    {{fa-icon "plus"}} Field
                   </button>
                 </div>
               {{/if}}
@@ -108,11 +130,18 @@
               <div class="fields-selection-container groups-container">
                 <div class="subsection-header">Select Group Fields</div>
                 {{#each this.groups as |group|}}
-                  <ValidatedFieldSelection @model={{group}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @fieldModified={{fn this.modifyFieldLike group}} @deleteModel={{fn this.destroyModel group this.groups}} />
+                  {{#with (changeset group this.GroupValidations) as |changeset|}}
+                    <ValidatedFieldSelection
+                        @changeset={{changeset}} @columns={{this.columns}}
+                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                        @fieldModified={{fn this.modifyFieldLike group}}
+                        @fieldDeleted={{fn this.destroyModel group this.groups}}
+                        @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @disabled={{this.isListening}}/>
+                  {{/with}}
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
-                  {{fa-icon "plus"}}
-                  Group Field
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
+                  {{fa-icon "plus"}} Group Field
                 </button>
               </div>
 
@@ -121,18 +150,28 @@
               <div class="fields-selection-container metrics-container">
                 <div class="subsection-header">Select Metric Fields</div>
                 {{#each this.metrics as |metric|}}
-                  <ValidatedFieldSelection @model={{metric}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disableField={{metric.hasNoField}} @fieldModified={{fn this.modifyFieldLike metric}} @deleteModel={{fn this.destroyModel metric this.metrics}}>
-                    <div class="col-xs-3 metrics-selection">
-                      <label class="power-select-label">Metric</label>
-                      <PowerSelect @disabled={{this.isListening}} @selected={{lift-string "name" metric.type}} @options={{this.METRICS_LIST}} @onchange={{fn this.handleMetricChange metric}} as |metricItem|>
-                        {{metricItem.name}}
-                      </PowerSelect>
-                    </div>
-                  </ValidatedFieldSelection>
+                  {{#with (changeset metric this.MetricValidations) as |changeset|}}
+                    <ValidatedFieldSelection
+                        @changeset={{changeset}} @columns={{this.columns}}
+                        @disableField={{changeset-get changeset "hasNoField"}}
+                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                        @fieldModified={{fn this.modifyFieldLike metric}}
+                        @fieldDeleted={{fn this.destroyModel metric this.metrics}}
+                        @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disabled={{this.isListening}}>
+                      <div class="col-xs-3 metrics-selection">
+                        <label class="power-select-label">Metric</label>
+                        <PowerSelect @selected={{lift-string "name" metric.type}} @options={{this.METRICS_LIST}}
+                                     @onchange={{fn this.handleMetricChange metric}} as |metricItem|
+                                     @disabled={{this.isListening}}>
+                          {{metricItem.name}}
+                        </PowerSelect>
+                      </div>
+                    </ValidatedFieldSelection>
+                  {{/with}}
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}} disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
-                  {{fa-icon "plus"}}
-                  Metric Field
+                <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}}
+                        disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
+                  {{fa-icon "plus"}} Metric Field
                 </button>
               </div>
             </div>
@@ -143,17 +182,26 @@
               <div class="subsection-header">Select your Fields</div>
               <div class="fields-selection-container fields-container">
                 {{#each this.groups as |field|}}
-                  <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}} @fieldClasses="col-xs-10" @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field this.groups}} />
+                  {{#with (changeset field this.GroupValidations) as |changeset|}}
+                    <ValidatedFieldSelection
+                        @changeset={{changeset}} @columns={{this.columns}}
+                        @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}}
+                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                        @fieldModified={{fn this.modifyFieldLike field}}
+                        @fieldDeleted={{fn this.destroyModel field this.groups}}
+                        @fieldClasses="col-xs-10" @disabled={{this.isListening}}/>
+                  {{/with}}
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
-                  {{fa-icon "plus"}}
-                  Field
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                  {{fa-icon "plus"}} Field
                 </button>
               </div>
 
               <div class="subsection-header">Rename Count Field</div>
               <div class="row narrow-row count-distinct-display-name">
-                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{changeset-get this.aggregationChangeset 'attributes.newName'}} @placeholder="Optional" @disabled={{this.isListening}} />
+                <LabeledInput @label="Display Name" @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
+                              class="col-xs-2" placeholder="Optional" disabled={{this.isListening}} />
               </div>
             </div>
           {{/if}}
@@ -162,13 +210,22 @@
             <div class="output-nested-container">
               <div class="subsection-header">Select Distribution</div>
               <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
-                <RadioButton @id="quantile" @value={{this.DISTRIBUTION_TYPES.QUANTILE}} @checkedValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.QUANTILE}} @updated={{fn (mut this.distributionType)}} @disabled={{this.isListening}}>
+                <RadioButton @id="quantile" @checkedValue={{this.distributionType}}
+                              @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.QUANTILE}}
+                              @updated={{fn (mut this.distributionType)}}
+                              value={{this.DISTRIBUTION_TYPES.QUANTILE}} disabled={{this.isListening}}>
                   Quantiles
                 </RadioButton>
-                <RadioButton @id="frequency" @value={{this.DISTRIBUTION_TYPES.PMF}} @checkedValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.PMF}} @updated={{fn (mut this.distributionType)}} @disabled={{this.isListening}}>
+                <RadioButton @id="frequency" @checkedValue={{this.distributionType}}
+                             @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.PMF}}
+                             @updated={{fn (mut this.distributionType)}}
+                             value={{this.DISTRIBUTION_TYPES.PMF}} disabled={{this.isListening}}>
                   Frequencies
                 </RadioButton>
-                <RadioButton @id="cumulative" @value={{this.DISTRIBUTION_TYPES.CDF}} @checkedValue={{this.distributionType}} @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.CDF}} @updated={{fn (mut this.distributionType)}} @disabled={{this.isListening}}>
+                <RadioButton @id="cumulative" @checkedValue={{this.distributionType}}
+                             @changed={{fn this.modifyDistributionType this.DISTRIBUTION_TYPES.CDF}}
+                             @updated={{fn (mut this.distributionType)}}
+                             value={{this.DISTRIBUTION_TYPES.CDF}} disabled={{this.isListening}}>
                   Cumulative Frequencies
                 </RadioButton>
               </div>
@@ -176,36 +233,62 @@
               <div class="subsection-header">Select a Field</div>
               <div class="fields-selection-container fields-container">
                 {{#each this.groups as |field|}}
-                  <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @enableRenaming={{false}} @enableDeleting={{false}} @fieldClasses="col-xs-10" @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field this.groups}} />
+                  {{#with (changeset field this.GroupValidations) as |changeset|}}
+                    <ValidatedFieldSelection
+                        @changeset={{changeset}} @columns={{this.columns}}
+                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                        @enableRenaming={{false}} @enableDeleting={{false}}
+                        @fieldModified={{fn this.modifyFieldLike field}}
+                        @fieldDeleted={{fn this.destroyModel field this.groups}}
+                        @disabled={{this.isListening}} @fieldClasses="col-xs-10"/>
+                  {{/with}}
                 {{/each}}
               </div>
 
               <div class="subsection-header">Select how your Points are created</div>
               <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
-                <RadioButton @id="number-points" @value={{this.DISTRIBUTION_POINT_TYPES.NUMBER}} @checkedValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}} @updated={{fn (mut this.pointType)}} @disabled={{this.isListening}}>
+                <RadioButton @id="number-points" @checkedValue={{this.pointType}}
+                             @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}}
+                             @updated={{fn (mut this.pointType)}}
+                             value={{this.DISTRIBUTION_POINT_TYPES.NUMBER}} disabled={{this.isListening}}>
                   Evenly spaced points
                 </RadioButton>
-                <RadioButton @id="generate-points" @value={{this.DISTRIBUTION_POINT_TYPES.GENERATED}} @checkedValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.GENERATED}} @updated={{fn (mut this.pointType)}} @disabled={{this.isListening}}>
+                <RadioButton @id="generate-points" @checkedValue={{this.pointType}}
+                             @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.GENERATED}}
+                             @updated={{fn (mut this.pointType)}}
+                             value={{this.DISTRIBUTION_POINT_TYPES.GENERATED}} disabled={{this.isListening}}>
                   Evenly spaced points in a region
                 </RadioButton>
-                <RadioButton @id="points" @value={{this.DISTRIBUTION_POINT_TYPES.POINTS}} @checkedValue={{this.pointType}} @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.POINTS}} @updated={{fn (mut this.pointType)}} @disabled={{this.isListening}}>
+                <RadioButton @id="points" @checkedValue={{this.pointType}}
+                             @changed={{fn this.modifyDistributionPointType this.DISTRIBUTION_POINT_TYPES.POINTS}}
+                             @updated={{fn (mut this.pointType)}}
+                             value={{this.DISTRIBUTION_POINT_TYPES.POINTS}} disabled={{this.isListening}}>
                   Define points
                 </RadioButton>
               </div>
 
               {{#if this.isNumberOfPoints}}
                 <div class="row narrow-row distribution-type-number-of-points">
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Number of Points" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.numberOfPoints')}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput @label="Number of Points"
+                                @value={{mut (changeset-get this.aggregationChangeset "attributes.numberOfPoints")}}
+                                class="col-xs-2" @type="number" placeholder="Number" disabled={{this.isListening}} />
                 </div>
               {{else if this.isPoints}}
                 <div class="row narrow-row distribution-type-points">
-                  <LabeledInput class="col-xs-4" @fieldName="Points" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.points')}} @maxlength={{131072}} @placeholder="Comma separated numbers" @disabled={{this.isListening}} />
+                  <LabeledInput @label="Points"
+                                @value={{mut (changeset-get this.aggregationChangeset "attributes.points")}}
+                                class="col-xs-4" maxlength={{131072}} placeholder="Comma separated numbers"
+                                disabled={{this.isListening}} />
                 </div>
               {{else if this.isGeneratedPoints}}
                 <div class="row narrow-row distribution-type-point-range">
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Start" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.start')}} @placeholder="Number" @disabled={{this.isListening}} />
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="End" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.end')}} @placeholder="Number" @disabled={{this.isListening}} />
-                  <LabeledInput class="col-xs-2" @type="number" @fieldName="Increment" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.increment')}} @placeholder="Number" @disabled={{this.isListening}} />
+                  <LabeledInput @label="Start"
+                                @value={{mut (changeset-get this.aggregationChangeset "attributes.start")}} class="col-xs-2" @type="number" placeholder="Number" disabled={{this.isListening}} />
+                  <LabeledInput @label="End" @value={{mut (changeset-get this.aggregationChangeset "attributes.end")}}
+                                class="col-xs-2" type="number" placeholder="Number" disabled={{this.isListening}} />
+                  <LabeledInput @label="Increment"
+                                @value={{mut (changeset-get this.aggregationChangeset "attributes.increment")}}
+                                class="col-xs-2" type="number" placeholder="Number" disabled={{this.isListening}} />
                 </div>
               {{/if}}
             </div>
@@ -216,24 +299,36 @@
               <div class="subsection-header">Select Fields</div>
               <div class="fields-selection-container fields-container">
                 {{#each this.groups as |field|}}
-                  <ValidatedFieldSelection @model={{field}} @columns={{this.columns}} @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}} @disabled={{this.isListening}} @forceDirty={{this.hasError}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @enableDeleting={{this.canDeleteField}} @fieldModified={{fn this.modifyFieldLike field}} @deleteModel={{fn this.destroyModel field this.groups}} />
+                  {{#with (changeset field this.GroupValidations) as |changeset|}}
+                    <ValidatedFieldSelection
+                        @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteField}}
+                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                        @fieldModified={{fn this.modifyFieldLike field}}
+                        @fieldDeleted={{fn this.destroyModel field this.groups}}
+                        @disabled={{this.isListening}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5"/>
+                  {{/with}}
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
-                  {{fa-icon "plus"}}
-                  Field
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                  {{fa-icon "plus"}} Field
                 </button>
               </div>
               <div class="subsection-header">Select the maximum number of results</div>
               <div class="row narrow-row top-k-size">
-                <ValidatedInput class="col-xs-2" @changeset={{this.aggregationChangeset}} @valuePath="size" @fieldName="K" @disabled={{this.isListening}} />
+                <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="K"
+                                class="col-xs-2" type="number" placeholder="Number"/>
               </div>
               <div class="subsection-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
-                <LabeledInput class="col-xs-2" @type="number" @fieldName="Minimum Count" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.threshold')}} @placeholder="Optional" @disabled={{this.isListening}} />
+                <LabeledInput @label="Minimum Count"
+                              @value={{mut (changeset-get this.aggregationChangeset "attributes.threshold")}}
+                              class="col-xs-2" type="number" placeholder="Optional" disabled={{this.isListening}} />
               </div>
               <div class="subsection-header">Rename Count Field</div>
               <div class="row narrow-row top-k-display-name">
-                <LabeledInput class="col-xs-2" @fieldName="Display Name" @fieldValue={{mut (changeset-get this.aggregationChangeset 'attributes.newName')}} @placeholder="Optional" @disabled={{this.isListening}} />
+                <LabeledInput @label="Display Name"
+                              @value={{mut (changeset-get this.aggregationChangeset "attributes.newName")}}
+                              class="col-xs-2" placeholder="Optional" disabled={{this.isListening}} />
               </div>
             </div>
           {{/if}}
@@ -279,48 +374,63 @@
 
         {{#if this.noWindow}}
           <div class="no-window-section">
-            <button type="button" {{on "click" this.addWindow}} disabled={{this.isListening}} class="btn btn-primary btn-xs add-button">
-              {{fa-icon "plus"}}
-              Window
+            <button type="button" {{on "click" this.addWindow}} disabled={{this.isListening}}
+                    class="btn btn-primary btn-xs add-button">
+              {{fa-icon "plus"}} Window
             </button>
           </div>
         {{else}}
           <div class="window-section">
             <div class="subsection-header">
               <span>Select how your window emits</span>
-              <button type="button" {{on "click" this.deleteWindow}} disabled={{this.isListening}} class="btn btn-xs btn-danger pull-right delete-button">
+              <button type="button" {{on "click" this.deleteWindow}} disabled={{this.isListening}}
+                      class="btn btn-xs btn-danger pull-right delete-button">
                 {{fa-icon "close"}}
               </button>
             </div>
 
             <div class="emit-type-options">
-              <RadioButton @id="time-based" @value={{this.EMIT_TYPES.TIME}} @checkedValue={{this.emitType}} @changed={{fn this.changeEmitType this.EMIT_TYPES.TIME}} @updated={{fn (mut this.emitType)}} @disabled={{this.isListening}}>
+              <RadioButton @id="time-based" @checkedValue={{this.emitType}}
+                           @changed={{fn this.changeEmitType this.EMIT_TYPES.TIME}}
+                           @updated={{fn (mut this.emitType)}}
+                           value={{this.EMIT_TYPES.TIME}} disabled={{this.isListening}}>
                 {{this.EMIT_TYPES.TIME}}
               </RadioButton>
-              <RadioButton @id="record-based" @value={{this.EMIT_TYPES.RECORD}} @checkedValue={{this.emitType}} @changed={{fn this.changeEmitType this.EMIT_TYPES.RECORD}} @updated={{fn (mut this.emitType)}} @disabled={{this.recordBasedWindowDisabled}}>
+              <RadioButton @id="record-based" @checkedValue={{this.emitType}}
+                           @changed={{fn this.changeEmitType this.EMIT_TYPES.RECORD}}
+                           @updated={{fn (mut this.emitType)}}
+                           value={{this.EMIT_TYPES.RECORD}} disabled={{this.recordBasedWindowDisabled}}>
                 {{this.EMIT_TYPES.RECORD}}
               </RadioButton>
             </div>
 
             <div class="subsection-header">Emit Every</div>
             <div class="row">
-              <ValidatedInput class="col-xs-3 window-emit-every" @fieldName={{this.everyFieldName}} @model={{this.windowChangeset}} @valuePath="emitEvery" @type="number" @placeholder="Number" @disabled={{this.everyDisabled}} />
+              <ValidatedInput @label={{this.everyFieldName}} @changeset={{this.windowChangeset}} @valuePath="emitEvery"
+                              class="col-xs-3 window-emit-every" type="number" placeholder="Number" disabled={{this.everyDisabled}} />
             </div>
 
 
             {{#if this.isTimeBasedWindow}}
               <div class="subsection-header">Select what is included in each window</div>
               <div class="include-type-options">
-                <RadioButton @id="include-window" @value={{this.INCLUDE_TYPES.WINDOW}} @checkedValue={{this.includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}} @updated={{fn (mut this.includeType)}} @disabled={{this.includeDisabled}}>
+                <RadioButton @id="include-window" @checkedValue={{this.includeType}}
+                             @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}}
+                             @updated={{fn (mut this.includeType)}}
+                             value={{this.INCLUDE_TYPES.WINDOW}} disabled={{this.includeDisabled}}>
                   {{this.INCLUDE_TYPES.WINDOW}}
                 </RadioButton>
-                <RadioButton @id="include-all" @value={{this.INCLUDE_TYPES.ALL}} @checkedValue={{this.includeType}} @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}} @updated={{fn (mut this.includeType)}} @disabled={{this.allIncludeTypeDisabled}}>
+                <RadioButton @id="include-all" @checkedValue={{this.includeType}}
+                             @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}}
+                             @updated={{fn (mut this.includeType)}}
+                             value={{this.INCLUDE_TYPES.ALL}} disabled={{this.allIncludeTypeDisabled}}>
                   {{this.INCLUDE_TYPES.ALL}}
                 </RadioButton>
               </div>
               {{#if this.isRawAggregation}}
                 <div class="row">
-                  <ValidatedInput class="col-xs-3 window-size" @model={{this.aggregationChangeset}} @valuePath="size" @fieldName="Maximum Rows in Window" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="Maximum Rows in Window"
+                                  class="col-xs-3 window-size" type="number" placeholder="Number" disabled={{this.isListening}} />
                 </div>
               {{/if}}
             {{/if}}
@@ -344,11 +454,11 @@
 
       <div class="row">
         {{#if this.showAggregationSize}}
-          <ValidatedInput class="col-xs-2 aggregation-size" @model={{this.aggregationChangeset}} @valuePath="size"
-                          @fieldName="Maximum Result Count" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
+          <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="Maximum Result Count"
+                          class="col-xs-2 aggregation-size" type="number" placeholder="Number" disabled={{this.isListening}} />
         {{/if}}
-        <ValidatedInput class="col-xs-2 query-duration" @model={{this.queryChangeset}} @valuePath="duration"
-                        @fieldName="Maximum Duration (seconds)" @type="number" @placeholder="Number" @disabled={{this.isListening}} />
+        <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
+                        class="col-xs-2 query-duration" type="number" placeholder="Number" disabled={{this.isListening}} />
       </div>
     </div>
     {{!-- End Options Section --}}

@@ -445,9 +445,12 @@ export default class QueryInputComponent extends Component {
 
   @action
   save() {
-    this.doSave().then(() => {
-      this.hasSaved = true;
-    });
+    console.log(this.queryChangeset.get('name'));
+    console.log(this.queryChangeset.get('changes'));
+    console.log(this.aggregationChangeset.get('changes'));
+    // this.doSave().then(() => {
+    //   this.hasSaved = true;
+    // });
   }
 
   @action

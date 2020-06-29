@@ -4,37 +4,26 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { isEmpty } from '@ember/utils';
 
 export default class ValidatedInputComponent extends Component {
-  get type() {
-    return this.args.type || 'text';
-  }
-
-  get disabled() {
-    return this.args.disabled || false;
-  }
+  @tracked isInvalid = false;
 
   get tooltipPosition() {
     return this.args.tooltipPosition || 'right';
   }
 
-  get placeholder() {
-    return this.args.placeholder || '';
-  }
-
-  get fieldName() {
-    return this.args.fieldName || '';
-  }
-
-  get isInvalid() {
-    return false;
-  //   let isValidating = get(validations, `${this.valuePath}.isValidating`) || false;
-  //   console.log(isValidating);
-  //   let isDirty = get(validations, 'isDirty') || this.args.forceDirty;
-  //   console.log(isDirty);
-  //   let isInvalid = get(validations, 'isInvalid') || false;
-  //   console.log(isInvalid);
-  //   console.log(!isValidating && isDirty && isInvalid);
-  //   return !isValidating && isDirty && isInvalid;
+  @action
+  onChange(value) {
+    let changeset = this.args.changeset;
+    let path = this.args.valuePath;
+    changeset.set(path, value);
+    changeset.validate(path).then(() => {
+      let isInvalid = changeset.get('isInvalid');
+      let fieldHasError = !isEmpty(changeset.get(`error.${valuePath}`));
+      this.isInvalid = isInvalid && fieldHasError;
+    });
   }
 }

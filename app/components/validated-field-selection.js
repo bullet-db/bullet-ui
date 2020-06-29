@@ -3,46 +3,32 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { defineProperty } from '@ember/object';
-import { not, or, and, alias } from '@ember/object/computed';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { isEmpty } from '@ember/utils';
 
-// Adapted from the dummy app validated-input in
-// https://github.com/offirgolan/ember-cp-validations
-export default Component.extend({
-  classNames: ['row field-selection-container validated-field-selection'],
-  classNameBindings: ['isInvalid:has-error'],
-  columns: null,
-  model: null,
-  tooltipPosition: 'right',
-  forceDirty: false,
-  validation: null,
-  valuePath: 'field',
-  subfieldSuffix: '',
-  subfieldSeparator: '',
-  fieldClasses: '',
-  nameClasses: '',
-  disabled: false,
-  enableRenaming: true,
-  enableDeleting: true,
+export default class ValidatedFieldSelectionComponent extends Component {
+  @tracked isInvalid = false;
+  valuePath = 'field';
 
-  notValidating: not('validation.isValidating'),
-  isDirty: or('validation.isDirty', 'forceDirty'),
-  isInvalid: and('notValidating', 'isDirty', 'validation.isInvalid'),
-
-  init() {
-    this._super(...arguments);
-    let valuePath = this.valuePath;
-    defineProperty(this, 'validation', alias(`model.validations.attrs.${valuePath}`));
-  },
-
-  actions: {
-    modifyField(field) {
-      this.sendAction('fieldModified', field);
-    },
-
-    deleteClicked() {
-      this.sendAction('deleteModel');
-    }
+  get tooltipPosition() {
+    return this.args.tooltipPosition || 'right';
   }
-});
+
+  @action
+  modifyField(field) {
+    let changeset = this.args.changeset;
+    this.args.fieldModified(field);
+    changeset.validate().then(() => {
+      let isInvalid = changeset.get('isInvalid');
+      let fieldHasError = !isEmpty(changeset.get(`error.${this.valuePath}`));
+      this.isInvalid = isInvalid && fieldHasError;
+    });
+  }
+
+  @action
+  deleteClicked() {
+    this.args.fieldDeleted();
+  }
+}
