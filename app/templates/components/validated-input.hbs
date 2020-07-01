@@ -5,10 +5,12 @@
  --}}
  <div class="validated-input {{if this.isInvalid "has-error"}}">
   {{#if this.isInvalid}}
-    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @changeset={{@changeset}} valuePath={{@valuePath}}/>
+    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @changeset={{@changeset}} @valuePath={{@valuePath}}/>
   {{/if}}
+  {{!-- Unlike passing in @value bound to our changeset directly for Input, we need the onChange action to update it
+        since we are going through the LabeledInput --}}
   <LabeledInput @label={{@label}} @value={{changeset-get @changeset @valuePath}}
-                @onChange={{fn this.onChange}}
+                @onChange={{this.onChange}} @classNames={{@classNames}}
                 @maxlength={{@maxlength}} @disabled={{@disabled}} @type={{@type}} @placeholder={{@placeholder}}
                 ...attributes/>
 </div>

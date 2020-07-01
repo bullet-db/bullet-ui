@@ -7,19 +7,33 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
+import argsGet from 'bullet-ui/utils/args-get';
 
 export default class ValidatedFieldSelectionComponent extends Component {
   @tracked isInvalid = false;
   valuePath = 'field';
 
   get tooltipPosition() {
-    return this.args.tooltipPosition || 'right';
+    return argsGet(this.args, 'tooltipPosition', 'right');
+  }
+
+  get disableField() {
+    return argsGet(this.args, 'disableField', false);
+  }
+
+  get enableRenaming() {
+    return argsGet(this.args, 'enableRenaming', true);
+  }
+
+  get enableDeleting() {
+    return argsGet(this.args, 'enableDeleting', true);
   }
 
   @action
-  modifyField(field) {
+  onModify(field) {
     let changeset = this.args.changeset;
-    this.args.fieldModified(field);
+    changeset.set('field', field);
+    changeset.set('name', '');
     changeset.validate().then(() => {
       let isInvalid = changeset.get('isInvalid');
       let fieldHasError = !isEmpty(changeset.get(`error.${this.valuePath}`));
@@ -28,7 +42,7 @@ export default class ValidatedFieldSelectionComponent extends Component {
   }
 
   @action
-  deleteClicked() {
-    this.args.fieldDeleted();
+  onDelete() {
+    this.args.onDelete();
   }
 }

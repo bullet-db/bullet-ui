@@ -10,7 +10,7 @@ import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import { action, computed, get } from '@ember/object';
+import EmberObject, { action, computed, get } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
@@ -50,18 +50,17 @@ export default class QueryInputComponent extends Component {
 
   @service queryManager;
 
-  // Variables and changesets
+  builderAdapter;
+  settings;
+  query;
+
   queryChangeset;
   aggregationChangeset;
   windowChangeset;
-  projections;
-  groups;
-  metrics;
 
-  query;
-  schema;
-  builderAdapter;
-  settings;
+  @tracked projections;
+  @tracked groups;
+  @tracked metrics;
 
   @tracked isListening = false;
   @tracked hasError = false;
@@ -99,7 +98,7 @@ export default class QueryInputComponent extends Component {
 
   constructor() {
     super(...arguments);
-    this.schema = this.args.schema;
+    this.settings = getOwner(this).lookup('settings:main');
     this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
     this.query = this.args.query;
     this.projections = A(this.query.get('projections'));
@@ -122,15 +121,14 @@ export default class QueryInputComponent extends Component {
     if (this.hasWindow) {
       this.createWindowChangeset(this.query.get('window'));
     }
-    this.settings = getOwner(this).lookup('settings:main');
   }
 
   // Getters
 
   // This is computed since it shouldn't change and we want to cache it for large schemas
-  @computed('schema')
+  @computed('args.schema')
   get columns() {
-    return this.builderAdapter.builderFilters(this.schema);
+    return this.builderAdapter.builderFilters(this.args.schema);
   }
 
   get recordBasedWindowDisabled() {
@@ -154,7 +152,7 @@ export default class QueryInputComponent extends Component {
   }
 
   get showAggregationSize() {
-    return this.isRawAggregation && this.hasWindow;
+    return this.isRawAggregation && !this.hasWindow;
   }
 
   get queryBuilderElement() {
@@ -285,7 +283,15 @@ export default class QueryInputComponent extends Component {
     }
     fields.push({ name: 'type', value: type, forceSet: true });
     fields.push({ name: 'pointType', value: pointType, forceSet: true });
-    this.queryManager.setAggregationAttributes(this.aggregationChangeset, fields.map(f => EmberObject.create(f)));
+    fields.forEach(field => {
+      let name = field.name;
+      let value = field.value;
+      let forceSet = field.forceSet || false;
+      let fieldPath = `attributes.${name}`;
+      if (forceSet || isEmpty(this.aggregationChangeset.get(fieldPath))) {
+        this.aggregationChangeset.set(fieldPath, value);
+      }
+    });
   }
 
   reset() {
@@ -397,12 +403,6 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  modifyFieldLike(fieldLike, field) {
-    fieldLike.set('field', field);
-    fieldLike.set('name', '');
-  }
-
-  @action
   deleteProjections() {
     this.queryManager.deleteMultipleCollection(this.projections, 'query');
   }
@@ -435,9 +435,8 @@ export default class QueryInputComponent extends Component {
 
   @action
   addWindow() {
-    this.emitType = EMIT_TYPES.get('TIME');
     this.includeType = INCLUDE_TYPES.get('WINDOW');
-    this.createWindowChangeset();
+    this.changeEmitType(EMIT_TYPES.get('TIME'));
     this.hasWindow = true;
   }
 

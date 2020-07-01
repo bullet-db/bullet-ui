@@ -7,12 +7,13 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
+import argsGet from 'bullet-ui/utils/args-get';
 
 export default class ValidatedInputComponent extends Component {
   @tracked isInvalid = false;
 
   get tooltipPosition() {
-    return this.args.tooltipPosition || 'right';
+    return argsGet(this.args, 'tooltipPosition', 'right');
   }
 
   @action
@@ -22,7 +23,7 @@ export default class ValidatedInputComponent extends Component {
     changeset.set(path, value);
     changeset.validate(path).then(() => {
       let isInvalid = changeset.get('isInvalid');
-      let fieldHasError = !isEmpty(changeset.get(`error.${valuePath}`));
+      let fieldHasError = !isEmpty(changeset.get(`error.${path}`));
       this.isInvalid = isInvalid && fieldHasError;
     });
   }

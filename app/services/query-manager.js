@@ -146,18 +146,6 @@ export default class QueryManagerService extends Service {
     return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
   }
 
-  setAggregationAttributes(aggregation, fields) {
-    fields.forEach(field => {
-      let name = field.get('name');
-      let value = field.get('value');
-      let fieldPath = `attributes.${name}`;
-      let forceSet = field.getWithDefault('forceSet', false);
-      if (forceSet || isEmpty(aggregation.get(fieldPath))) {
-        aggregation.set(fieldPath, value);
-      }
-    });
-  }
-
   resetAggregation(aggregation, type, size = 1) {
     aggregation.set('type', type);
     aggregation.set('size', size);

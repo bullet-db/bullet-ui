@@ -3,8 +3,11 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
- <div class="labeled-input" ...attributes>
+ <div class="labeled-input {{@classNames}}">
   <label for="{{this.id}}">{{@label}}</label>
-  <Input class="form-control" @value={{@value}} @id={{this.id}} @keyUp={{this.onChange}}
-         @maxlength={{@maxlength}} @disabled={{@disabled}} @type={{@type}} @placeholder={{@placeholder}}/>
+  {{!-- Could use attributes to pass in disabled, placeholder etc. Doing it this way for consistency in query input --}}
+  {{!-- This needs the fn since there's a bug in ember: https://github.com/emberjs/ember.js/issues/18654 --}}
+  <Input {{on "change" (fn this.onChange)}} @value={{@value}} @type={{@type}}
+         class="form-control" id={{this.id}} maxlength={{this.maxLength}} placeholder={{@placeholder}}
+         disabled={{@disabled}} ...attributes/>
 </div>

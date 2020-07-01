@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
-import { action } from '@ember/object';
+import { action, computed } from '@ember/object';
 import { typeOf } from '@ember/utils';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/components/paginated-table';
@@ -24,6 +24,7 @@ export default class SchemaTableComponent extends PaginatedTable {
     this.addPages(2);
   }
 
+  @computed('args.fields')
   get rows() {
     let fields = this.args.fields;
     // This needs to handle arrays (for enumeratedColumns) and the model result collection

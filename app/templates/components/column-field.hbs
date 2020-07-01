@@ -3,16 +3,21 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-{{#if subfieldEnabled}}
-  <div class="column-mainfield col-xs-8">
-    {{partial "partials/power-select-column"}}
-  </div>
-  <div class="column-subfield col-xs-4">
-    <label>Subfield</label>
-    <Input @type="text" @value={{subfield}} placeholder="Optional" @classNames="form-control" @focus-out={{action "handleFocusOut"}} @disabled={{disabled}} />
-  </div>
-{{else}}
-  <div class="column-onlyfield col-xs-12">
-    {{partial "partials/power-select-column"}}
-  </div>
-{{/if}}
+<div class="column-field">
+  {{#if this.subfieldEnabled}}
+    <div class="column-mainfield col-xs-8">
+      <PowerSelectColumn @disabled={{@disabled}} @selectedColumn={{this.selectedColumn}} @columns={{@columns}}
+                         @onChange={{this.onSelect}}/>
+    </div>
+    <div class="column-subfield col-xs-4">
+      <label>Subfield</label>
+      <Input @value={{this.subfield}} @type="text" @focusOut={{this.onFocusOut}}
+             placeholder="Optional" class="form-control" disabled={{@disabled}} />
+    </div>
+  {{else}}
+    <div class="column-onlyfield col-xs-12">
+      <PowerSelectColumn @disabled={{@disabled}} @selectedColumn={{this.selectedColumn}} @columns={{@columns}}
+                         @onChange={{this.onSelect}}/>
+    </div>
+  {{/if}}
+</div>
