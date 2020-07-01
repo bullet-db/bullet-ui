@@ -12,7 +12,7 @@ import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import EmberObject, { action, computed, get } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
-import { isEqual, isEmpty } from '@ember/utils';
+import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
@@ -95,26 +95,34 @@ export default class QueryInputComponent extends Component {
     super(...arguments);
     this.settings = getOwner(this).lookup('settings:main');
     this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
+    this.errors = A();
     this.query = this.args.query;
 
-    this.outputDataType = this.query.get('aggregation.type') || AGGREGATIONS.get('RAW');
-    this.rawType = isEmpty(this.query.get('projections')) ? RAWS.get('ALL') : RAWS.get('SELECT');
-    this.distributionType = this.query.get('aggregation.attributes.type') || DISTRIBUTIONS.get('QUANTILE');
-    this.pointType = this.query.get('aggregation.attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
-    this.emitType = this.query.get('window.emitType');
-    this.includeType = this.query.get('window.includeType');
-
-    this.hasWindow = !isEmpty(this.query.get('window.id'));
-    this.errors = A();
-
     this.createQueryChangeset(this.query);
-    this.createAggregationChangeset(this.query.get('aggregation'));
-    if (this.hasWindow) {
-      this.createWindowChangeset(this.query.get('window'));
-    }
-    this.projections = this.createFieldLikeChangesets(this.query.get('projections'), ProjectionValidations);
-    this.groups = this.createFieldLikeChangesets(this.query.get('aggregation.groups'), GroupValidations);
-    this.metrics = this.createFieldLikeChangesets(this.query.get('aggregation.metrics'), MetricValidations);
+    this.query.get('aggregation').then(aggregation => {
+      this.outputDataType = aggregation.get('type') || AGGREGATIONS.get('RAW');
+      this.distributionType = aggregation.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
+      this.pointType = aggregation.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
+      this.createAggregationChangeset(aggregation);
+      aggregation.get('groups').then(groups => {
+        this.groups = this.createFieldLikeChangesets(groups, GroupValidations);
+      });
+      aggregation.get('metrics').then(metrics => {
+        this.metrics = this.createFieldLikeChangesets(metrics, MetricValidations);
+      });
+    });
+    this.query.get('projections').then(projections => {
+      this.rawType = isEmpty(projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
+      this.projections = this.createFieldLikeChangesets(projections, ProjectionValidations);
+    });
+    this.query.get('window').then(window => {
+      this.hasWindow = !isNone(window);
+      if (this.hasWindow) {
+        this.createWindowChangeset(window);
+        this.emitType = window.get('emitType');
+        this.includeType = window.get('includeType');
+      }
+    });
   }
 
   // Getters
@@ -439,6 +447,11 @@ export default class QueryInputComponent extends Component {
   @action
   changeMetricType(metric, value) {
     metric.set('type', value.get('name'));
+  }
+
+  @action
+  changeAttribute(field, value) {
+    this.aggregationChangeset.set(`attributes.${field}`, value);
   }
 
   @action

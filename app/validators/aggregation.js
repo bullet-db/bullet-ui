@@ -19,6 +19,12 @@ export default {
   groups: validateGroupMetricPresence(),
   metrics: validateGroupMetricPresence(),
   attributes: {
-    pointType: validatePoints()
+    type: validatePoints(),
+    pointType: validatePoints(),
+    numberOfPoints: validatePoints(),
+    points: validatePoints(),
+    start: validatePoints(),
+    end: validatePoints(),
+    increment: validatePoints()
   }
 }

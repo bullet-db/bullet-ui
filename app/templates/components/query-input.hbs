@@ -30,7 +30,7 @@
   <div class="scrollable-panel">
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
-        <LabeledInput @value={{changeset-get this.queryChangeset "name"}}
+        <LabeledInput @value={{this.queryChangeset.name}}
                       @label="Name" @type="text" @placeholder="Name Your Query" @maxlength={{80}}
                       @disabled={{this.isListening}}/>
       </div>
@@ -144,10 +144,9 @@
               <div class="fields-selection-container metrics-container">
                 <div class="subsection-header">Select Metric Fields</div>
                 {{#each this.metrics as |changeset|}}
-                {{log (fn this.disableMetricField changeset)}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
-                      @disableField={{eq (changeset-get changeset "type") this.METRIC_TYPES.COUNT}}
+                      @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLikeChangeset changeset this.metrics}}
                       @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disabled={{this.isListening}}>
@@ -189,7 +188,8 @@
 
               <div class="subsection-header">Rename Count Field</div>
               <div class="row narrow-row count-distinct-display-name">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
+                <LabeledInput @value={{this.aggregationChangeset.attributes.newName}}
+                              @onChange={{fn this.changeAttribute "newName"}}
                               @label="Display Name"@classNames="col-xs-2" @type="text" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>
@@ -256,25 +256,30 @@
 
               {{#if this.isNumberOfPoints}}
                 <div class="row narrow-row distribution-type-number-of-points">
-                  <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.numberOfPoints"}}
-                                @label="Number of Points"@classNames="col-xs-2" @type="number" @placeholder="Number"
+                  <LabeledInput @value={{this.aggregationChangeset.attributes.numberOfPoints}}
+                                @onChange={{fn this.changeAttribute "numberOfPoints"}}
+                                @label="Number of Points" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                 @disabled={{this.isListening}}/>
                 </div>
               {{else if this.isPoints}}
                 <div class="row narrow-row distribution-type-points">
-                  <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.points"}}
+                  <LabeledInput @value={{this.aggregationChangeset.attributes.points}}
+                                @onChange={{fn this.changeAttribute "points"}}
                                 @label="Points" @classNames="col-xs-4" @maxlength={{131072}}
                                 @placeholder="Comma separated numbers" @disabled={{this.isListening}}/>
                 </div>
               {{else if this.isGeneratedPoints}}
                 <div class="row narrow-row distribution-type-point-range">
-                  <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.start"}}
+                  <LabeledInput @value={{this.aggregationChangeset.attributes.start}}
+                                @onChange={{fn this.changeAttribute "start"}}
                                 @label="Start" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                 @disabled={{this.isListening}}/>
-                  <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.end"}}
+                  <LabeledInput @value={{this.aggregationChangeset.attributes.end}}
+                                @onChange={{fn this.changeAttribute "end"}}
                                 @label="End" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                 @disabled={{this.isListening}}/>
-                  <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.increment"}}
+                  <LabeledInput @value={{this.aggregationChangeset.attributes.increment}}
+                                @onChange={{fn this.changeAttribute "increment"}}
                                 @label="Increment" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                 @disabled={{this.isListening}}/>
                 </div>
@@ -305,13 +310,15 @@
               </div>
               <div class="subsection-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.threshold"}}
+                <LabeledInput @value={{this.aggregationChangeset.attributes.threshold}}
+                              @onChange={{fn this.changeAttribute "threshold"}}
                               @label="Minimum Count" @classNames="col-xs-2" @type="number" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>
               <div class="subsection-header">Rename Count Field</div>
               <div class="row narrow-row top-k-display-name">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
+                <LabeledInput @value={{this.aggregationChangeset.attributes.newName}}
+                              @onChange={{fn this.changeAttribute "newName"}}
                               @label="Display Name" @classNames="col-xs-2" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>

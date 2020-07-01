@@ -15,6 +15,11 @@ export default class ValidatedFieldSelectionComponent extends Component {
   fieldPath = 'field';
   namePath = 'name';
 
+  constructor() {
+    super(...arguments);
+    this.validate(this.args.changeset, this.fieldPath);
+  }
+
   get tooltipPosition() {
     return argsGet(this.args, 'tooltipPosition', 'right');
   }
@@ -31,11 +36,7 @@ export default class ValidatedFieldSelectionComponent extends Component {
     return argsGet(this.args, 'enableDeleting', true);
   }
 
-  @action
-  onModifyField(field) {
-    let changeset = this.args.changeset;
-    changeset.set(this.fieldPath, field);
-    changeset.set(this.namePath, '');
+  validate(changeset, path) {
     changeset.validate().then(() => {
       if (!changeset.get('isInvalid')) {
         this.isInvalid = false;
@@ -45,6 +46,15 @@ export default class ValidatedFieldSelectionComponent extends Component {
       this.isInvalid = !isEmpty(errors);
       this.errors = errors;
     });
+  }
+
+  @action
+  onModifyField(field) {
+    let changeset = this.args.changeset;
+    let path = this.fieldPath;
+    changeset.set(path, field);
+    changeset.set(this.namePath, '');
+    this.validate(changeset, path);
   }
 
   @action

@@ -4,7 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <label class="power-select-label">Field</label>
-<PowerSelect @selected={{@selectedColumn}} @options={{@columns}}
+<PowerSelect @selected={{@selectedColumn}} @options={{@columns}} 
              @searchField="id" @onChange={{@onChange}} @disabled={{@disabled}} as |column|>
   {{column.id}}
 </PowerSelect>

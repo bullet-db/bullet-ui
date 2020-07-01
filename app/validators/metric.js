@@ -6,6 +6,10 @@
 import validateMetricField from 'bullet-ui/validators/metric-field';
 
 export default {
-  field: validateMetricField(),
-  type: validateMetricField()
+  field: [
+    validateMetricField()
+  ],
+  type: [
+    validateMetricField()
+  ]
 }

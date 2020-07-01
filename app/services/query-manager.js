@@ -149,7 +149,11 @@ export default class QueryManagerService extends Service {
   resetAggregation(aggregation, type, size = 1) {
     aggregation.set('type', type);
     aggregation.set('size', size);
-    aggregation.set('attributes', EmberObject.create());
+    let attributes = aggregation.get('attributes');
+    let fields = Object.getOwnPropertyNames(attributes);
+    for (let i = 0; i < fields.length; i++) {
+      delete attributes[fields[i]];
+    }
   }
 
   /* TO REMOVE

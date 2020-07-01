@@ -233,7 +233,7 @@ export default class QuerierService extends Service {
 
   makeAttributes(json) {
     if (isEmpty(json)) {
-      return EmberObject.create();
+      return { };
     }
 
     let attributes = { };
@@ -254,7 +254,7 @@ export default class QuerierService extends Service {
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
-    return EmberObject.create(attributes);
+    return attributes;
   }
 
   getAttributes(aggregation) {

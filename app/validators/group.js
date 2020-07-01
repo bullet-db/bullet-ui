@@ -6,5 +6,7 @@
 import { validatePresence } from 'ember-changeset-validations/validators';
 
 export default {
-  field: validatePresence({ presence: true, ignoreBlank: true, message: 'A field needs to be selected first' })
+  field: [
+    validatePresence({ presence: true, ignoreBlank: true, message: 'A field needs to be selected first' })
+  ]
 }
