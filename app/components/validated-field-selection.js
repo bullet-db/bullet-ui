@@ -11,7 +11,9 @@ import argsGet from 'bullet-ui/utils/args-get';
 
 export default class ValidatedFieldSelectionComponent extends Component {
   @tracked isInvalid = false;
-  valuePath = 'field';
+  @tracked errors;
+  fieldPath = 'field';
+  namePath = 'name';
 
   get tooltipPosition() {
     return argsGet(this.args, 'tooltipPosition', 'right');
@@ -30,15 +32,26 @@ export default class ValidatedFieldSelectionComponent extends Component {
   }
 
   @action
-  onModify(field) {
+  onModifyField(field) {
     let changeset = this.args.changeset;
-    changeset.set('field', field);
-    changeset.set('name', '');
+    changeset.set(this.fieldPath, field);
+    changeset.set(this.namePath, '');
     changeset.validate().then(() => {
-      let isInvalid = changeset.get('isInvalid');
-      let fieldHasError = !isEmpty(changeset.get(`error.${this.valuePath}`));
-      this.isInvalid = isInvalid && fieldHasError;
+      if (!changeset.get('isInvalid')) {
+        this.isInvalid = false;
+        return;
+      }
+      let errors = changeset.get(`error.${path}`);
+      this.isInvalid = !isEmpty(errors);
+      this.errors = errors;
     });
+  }
+
+  @action
+  onModifyName(name) {
+    let changeset = this.args.changeset;
+    changeset.set(this.namePath, name);
+    // No need to validate name
   }
 
   @action

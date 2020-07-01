@@ -15,9 +15,10 @@ export default {
     validateNumber({ gte: 1, message: 'Maximum results must be a positive integer' }),
     validateAggregationMaxSize()
   ],
-  type: [
-    validateGroupMetricPresence(),
-    validatePoints(),
-    validateWindow()
-  ]
+  type: validateWindow(),
+  groups: validateGroupMetricPresence(),
+  metrics: validateGroupMetricPresence(),
+  attributes: {
+    pointType: validatePoints()
+  }
 }

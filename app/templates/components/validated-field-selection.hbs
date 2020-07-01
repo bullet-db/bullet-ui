@@ -5,7 +5,7 @@
  --}}
 <div class="row field-selection-container validated-field-selection {{if this.isInvalid "has-error"}}">
   {{#if this.isInvalid}}
-    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @changeset={{@changeset}} @valuePath={{@valuePath}}/>
+    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @errors={{this.errors}}/>
   {{/if}}
 
   {{!-- Yield to add additional HTML in the row --}}
@@ -15,14 +15,14 @@
     <div class="{{@fieldClasses}} field-selection">
       <ColumnField @columns={{@columns}} @initialValue={{@changeset.field}} @subfieldKey="show_subfield"
                    @subfieldSeparator={{@subfieldSeparator}} @subfieldSuffix={{@subfieldSuffix}}
-                   @onDone={{this.onModify}} @disabled={{@disabled}} />
+                   @onDone={{this.onModifyField}} @disabled={{@disabled}} />
     </div>
   {{/unless}}
 
   {{#if this.enableRenaming}}
     <div class="{{@nameClasses}} field-name">
       <LabeledInput @label="Display Name" @value={{changeset-get @changeset "name"}}
-                    @onChange={{fn (changeset-set @changeset "name")}}
+                    @onChange={{this.onModifyName}}
                     @type="text" @placeholder="Optional" @disabled={{@disabled}} />
     </div>
   {{/if}}

@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Model, { attr, belongsTo } from '@ember-data/model';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
 
 let Metric = EmberObject.extend({
   NAMES: {
@@ -47,10 +47,4 @@ export default class MetricModel extends Model {
   @attr('string') field;
   @attr('string') name;
   @belongsTo('aggregation', { autoSave: true }) aggregation;
-
-  @computed('type')
-  get hasNoField() {
-    let type = this.type;
-    return type === 'Count';
-  }
 }

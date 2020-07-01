@@ -11,7 +11,7 @@ export default function validateMetricField() {
   return (key, newFieldValue, oldFieldValue, changes, content) => {
     const COUNT = METRICS.get('COUNT');
     let { type } = currentValue(changes, content, ['type']);
-    if (!isEmpty(newValue) || isEqual(type, COUNT)) {
+    if (!isEmpty(newFieldValue) || isEqual(type, COUNT)) {
       return true;
     }
     return `All metrics but ${COUNT} require a field`;

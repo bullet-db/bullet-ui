@@ -11,6 +11,7 @@ import argsGet from 'bullet-ui/utils/args-get';
 
 export default class ValidatedInputComponent extends Component {
   @tracked isInvalid = false;
+  @tracked errors;
 
   get tooltipPosition() {
     return argsGet(this.args, 'tooltipPosition', 'right');
@@ -22,9 +23,13 @@ export default class ValidatedInputComponent extends Component {
     let path = this.args.valuePath;
     changeset.set(path, value);
     changeset.validate(path).then(() => {
-      let isInvalid = changeset.get('isInvalid');
-      let fieldHasError = !isEmpty(changeset.get(`error.${path}`));
-      this.isInvalid = isInvalid && fieldHasError;
+      if (!changeset.get('isInvalid')) {
+        this.isInvalid = false;
+        return;
+      }
+      let errors = changeset.get(`error.${path}`);
+      this.isInvalid = !isEmpty(errors);
+      this.errors = errors;
     });
   }
 }

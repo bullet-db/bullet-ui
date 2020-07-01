@@ -3,9 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import validateMetricField from 'bullet-ui/validators/metric-field';
+import { helper } from '@ember/component/helper';
 
-export default {
-  field: validateMetricField(),
-  type: validateMetricField()
-}
+export default helper(function eq([first, second]) {
+  return first === second;
+});

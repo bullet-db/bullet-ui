@@ -40,13 +40,8 @@ export default class QueryInputComponent extends Component {
   DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
   EMIT_TYPES = EMIT_TYPES.get('NAMES');
   INCLUDE_TYPES = INCLUDE_TYPES.get('NAMES');
+  METRIC_TYPES = METRICS.get('NAMES');
   METRICS_LIST = METRICS.asList();
-
-  // Export validations for use from template
-  ProjectionValidations;
-  GroupValidations;
-  MetricValidations;
-  WindowValidations;
 
   @service queryManager;
 
@@ -101,9 +96,6 @@ export default class QueryInputComponent extends Component {
     this.settings = getOwner(this).lookup('settings:main');
     this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
     this.query = this.args.query;
-    this.projections = A(this.query.get('projections'));
-    this.groups = A(this.query.get('aggregation.groups'));
-    this.metrics = A(this.query.get('aggregation.metrics'));
 
     this.outputDataType = this.query.get('aggregation.type') || AGGREGATIONS.get('RAW');
     this.rawType = isEmpty(this.query.get('projections')) ? RAWS.get('ALL') : RAWS.get('SELECT');
@@ -117,10 +109,12 @@ export default class QueryInputComponent extends Component {
 
     this.createQueryChangeset(this.query);
     this.createAggregationChangeset(this.query.get('aggregation'));
-    // Create the window changeset initially only if there is a window
     if (this.hasWindow) {
       this.createWindowChangeset(this.query.get('window'));
     }
+    this.projections = this.createFieldLikeChangesets(this.query.get('projections'), ProjectionValidations);
+    this.groups = this.createFieldLikeChangesets(this.query.get('aggregation.groups'), GroupValidations);
+    this.metrics = this.createFieldLikeChangesets(this.query.get('aggregation.metrics'), MetricValidations);
   }
 
   // Getters
@@ -221,6 +215,30 @@ export default class QueryInputComponent extends Component {
     this.windowChangeset = new Changeset(windowModel, lookupValidator(WindowValidations), WindowValidations);
   }
 
+  createFieldLikeChangesets(collection, validations) {
+    let result = A();
+    collection.reduce((accumulator, model) => {
+      accumulator.pushObject(this.createFieldLikeChangeset(model, validations))
+      return accumulator;
+    }, result);
+    return result;
+  }
+
+  createFieldLikeChangeset(model, validations) {
+    return new Changeset(model, lookupValidator(validations), validations);
+  }
+
+  getValidationsForFieldLike(modelName) {
+    switch (modelName) {
+      case 'projection':
+        return ProjectionValidations;
+      case 'group':
+        return GroupValidations;
+      case 'metric':
+        return MetricValidations;
+    }
+  }
+
   replaceAggregation(type) {
     if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
       this.rawType = RAWS.get('ALL');
@@ -243,7 +261,7 @@ export default class QueryInputComponent extends Component {
     return this.replaceAggregation(type).then(() => {
       return this.queryManager.createModel(modelName);
     }).then((model) => {
-      collection.pushObject(model);
+      collection.pushObject(this.createFieldLikeChangeset(model, this.getValidationsForFieldLike(modelName)));
       return resolve();
     });
   }
@@ -386,19 +404,12 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  addFieldLike(childModelName, collection) {
-    this.queryManager.createModel(childModelName).then((model) => {
-      collection.pushObject(model);
-    });
-  }
-
-  @action
-  modifyDistributionType(type) {
+  changeDistributionType(type) {
     this.setAttributes(type, this.pointType);
   }
 
   @action
-  modifyDistributionPointType(type) {
+  changeDistributionPointType(type) {
     this.setAttributes(this.distributionType, type);
   }
 
@@ -408,13 +419,25 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  destroyModel(item, collection) {
-    collection.removeObject(item);
-    this.queryManager.deleteModel(item);
+  addFieldLikeChangeset(modelName, collection) {
+    this.queryManager.createModel(modelName).then((model) => {
+      collection.pushObject(this.createFieldLikeChangeset(model, this.getValidationsForFieldLike(modelName)));
+    });
   }
 
   @action
-  handleMetricChange(metric, value) {
+  deleteFieldLikeChangeset(item, collection) {
+    collection.removeObject(item);
+    this.queryManager.deleteModel(item.get('data'));
+  }
+
+  @action
+  disableMetricField(changeset) {
+    return changeset.get('type') !== 'Count';
+  }
+
+  @action
+  changeMetricType(metric, value) {
     metric.set('type', value.get('name'));
   }
 

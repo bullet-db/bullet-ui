@@ -28,7 +28,6 @@ export default class ColumnFieldComponent extends Component {
   // Reverse mapping from ids back to the columns for easy lookup
   @computed('args.columns.[]')
   get columnMapping() {
-    console.log('triggered');
     return this.columns.reduce((previous, current) => {
       previous[current.id] = current;
       return previous;
