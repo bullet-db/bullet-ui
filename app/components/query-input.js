@@ -112,7 +112,6 @@ export default class QueryInputComponent extends Component {
     this.distributionType = aggregation.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
     this.pointType = aggregation.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
     this.createAggregationChangeset(aggregation);
-
     let groups = this.args.groups;
     this.createFieldLikeChangesets(['field', 'name'], 'group', groups, GroupValidations).then(changesets => {
       this.groups = changesets;

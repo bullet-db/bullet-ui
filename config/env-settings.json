@@ -1,11 +1,11 @@
 {
   "default": {
-    "queryHost": "https://bullet-api.data.yahoo.com:4443",
+    "queryHost": "https://foo.bar.com:4443",
     "queryNamespace": "bullet/api",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://bullet-api.data.yahoo.com:4443",
+    "schemaHost": "https://foo.bar.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
@@ -14,11 +14,11 @@
       }
     ],
     "bugLink": "https://github.com/bullet-db/bullet-ui/issues",
-    "modelVersion": 4,
+    "modelVersion": 3,
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": "https://bullet-api.data.yahoo.com:4443/bullet/api/custom-query",
+    "defaultQuery": null,
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,
