@@ -14,24 +14,21 @@ export default class ResultRoute extends QueryableRoute {
   @service queryManager;
   @service store;
 
-  model(params) {
-    return this.store.findRecord('result', params.result_id).catch(() => {
+  async model(params) {
+    try {
+      let result = await this.store.findRecord('result', params.result_id);
+      // Fetch all the things
+      let query = await result.query;
+      let filter = await query.filter;
+      let projections = await query.projections;
+      let aggregation = await query.aggregation;
+      let groups = await aggregation.groups;
+      let metrics = await aggregation.metrics;
+      let window = await query.window;
+      return result;
+    } catch(error) {
       this.transitionTo('missing', 'not-found');
-    });
-  }
-
-  afterModel(model) {
-    // Fetch all the things
-    return model.get('query').then(query => {
-      return hash({
-        filter: query.get('filter'),
-        projections: query.get('projections'),
-        aggregation: query.get('aggregation').then(aggregation => {
-          return hash({ groups: aggregation.get('groups'), metrics: aggregation.get('metrics') });
-        }),
-        window: query.get('window')
-      });
-    });
+    }
   }
 
   @action

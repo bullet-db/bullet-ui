@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject, { action } from '@ember/object';
-import { hash, reject, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 
@@ -12,16 +11,15 @@ export default class QueriesRoute extends Route {
   @service queryManager;
   @service router;
 
-  model() {
-    return hash({
-      queries: this.store.findAll('query'),
-      results: this.store.findAll('result'),
-      groups: this.store.findAll('group'),
-      aggregations: this.store.findAll('aggregation'),
-      projections: this.store.findAll('projection'),
-      metrics: this.store.findAll('metric'),
-      windows: this.store.findAll('window')
-    });
+  async model() {
+    let queries = await this.store.findAll('query');
+    let results = await this.store.findAll('result');
+    let groups = await this.store.findAll('group');
+    let aggregations = await this.store.findAll('aggregation');
+    let projections = await this.store.findAll('projection');
+    let metrics = await this.store.findAll('metric');
+    let windows = await this.store.findAll('window');
+    return { queries, results, groups, aggregations, projections, metrics, windows };
   }
 
   getOrigin() {
