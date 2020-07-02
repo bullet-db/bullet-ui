@@ -291,12 +291,12 @@ export default class QueryInputComponent extends Component {
   setAttributes(type, pointType) {
     let defaults = { points: '', start: '', end: '', increment: '', numberOfPoints: '' };
     if (isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
-      defaults.points = get(this.settings, 'defaultValues.distributionQuantilePoints');
-      defaults.start = get(this.settings, 'defaultValues.distributionQuantileStart');
-      defaults.end = get(this.settings, 'defaultValues.distributionQuantileEnd');
-      defaults.increment = get(this.settings, 'defaultValues.distributionQuantileIncrement');
+      defaults.points = this.settings.get('defaultValues.distributionQuantilePoints');
+      defaults.start = this.settings.get('defaultValues.distributionQuantileStart');
+      defaults.end = this.settings.get('defaultValues.distributionQuantileEnd');
+      defaults.increment = this.settings.get('defaultValues.distributionQuantileIncrement');
     }
-    defaults.numberOfPoints = get(this.settings, 'defaultValues.distributionNumberOfPoints');
+    defaults.numberOfPoints = this.settings.get('defaultValues.distributionNumberOfPoints');
 
     let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
     let isQuantile = isEqual(type, DISTRIBUTIONS.get('QUANTILE'));

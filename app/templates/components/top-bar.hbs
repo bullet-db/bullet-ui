@@ -24,7 +24,7 @@
           <li>
             <a href="#help" class="help-link" data-toggle="modal" data-target="#help-modal">Basic Usage</a>
           </li>
-          {{#each settings.helpLinks as |helpLink|}}
+          {{#each @settings.helpLinks as |helpLink|}}
             <li>
               <a href="{{helpLink.link}}" class="help-link">{{helpLink.name}}</a>
             </li>
@@ -36,4 +36,4 @@
   </div>
 </nav>
 
-{{partial "partials/help-modal"}}
+<HelpModal />

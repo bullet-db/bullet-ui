@@ -41,7 +41,7 @@
       <div class="section-header">
         <h3 class="section-title">Filters</h3>
         <InfoPopover @title="Filters">
-          {{partial "partials/filter-help"}}
+          <Popovers::FilterHelp @settings={{this.settings}}/>
         </InfoPopover>
       </div>
       <div class="{{this.queryBuilderClass}}" {{did-insert this.addQueryBuilder this.queryBuilderOptions}}/>
@@ -54,7 +54,7 @@
       <div class="section-header">
         <h3 class="section-title">Output Data</h3>
         <InfoPopover @title="Output Data">
-          {{partial "partials/output-data-help"}}
+          <Popovers::OutputDataHelp @settings={{this.settings}}/>
         </InfoPopover>
       </div>
 
@@ -328,23 +328,23 @@
           <div class="help">
             {{#if this.isRawAggregation}}
               <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Raw Data">
-                {{partial "partials/raw-data-help"}}
+                <Popovers::RawDataHelp @settings={{this.settings}}/>
               </InfoPopover>
             {{else if this.isGroupAggregation}}
               <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Group Data">
-                {{partial "partials/group-data-help"}}
+                <Popovers::GroupDataHelp @settings={{this.settings}}/>
               </InfoPopover>
             {{else if this.isCountDistinctAggregation}}
               <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Count Distinct">
-                {{partial "partials/count-distinct-help"}}
+                <Popovers::CountDistinctHelp @settings={{this.settings}}/>
               </InfoPopover>
             {{else if this.isDistributionAggregation}}
               <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Distribution">
-                {{partial "partials/distribution-help"}}
+                <Popovers::DistributionHelp @settings={{this.settings}}/>
               </InfoPopover>
             {{else if this.isTopKAggregation}}
               <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Top K">
-                {{partial "partials/top-k-help"}}
+                <Popovers::TopKHelp @settings={{this.settings}}/>
               </InfoPopover>
             {{/if}}
           </div>
@@ -358,7 +358,7 @@
       <div class="section-header">
         <h3 class="section-title">Windowing</h3>
         <InfoPopover @title="Window">
-          {{partial "partials/window-help"}}
+          <Popovers::WindowHelp @settings={{this.settings}}/>
         </InfoPopover>
       </div>
       <div class="window-input">
@@ -440,7 +440,7 @@
       <div class="section-header">
         <h3 class="section-title">Query Stop Criteria</h3>
         <InfoPopover @title="Query Stop Criteria">
-          {{partial "partials/options-help"}}
+          <Popovers::OptionsHelp @settings={{this.settings}}/>
         </InfoPopover>
       </div>
 

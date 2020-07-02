@@ -7,7 +7,7 @@
   <span class="section-header">
     <h3 class="section-title">Schema</h3>
     <InfoPopover @title="Schema">
-      {{partial "partials/schema-help"}}
+      <Popovers::SchemaHelp/>
     </InfoPopover>
   </span>
   <SchemaTable @fields={{@model}} />

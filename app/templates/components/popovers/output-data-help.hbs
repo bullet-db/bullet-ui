@@ -13,7 +13,7 @@
 
 <h5 class="content-header">Approximate Results</h5>
 <p>
-  Note that due to the streaming nature of the data, certain aggregations are <strong>approximate</strong>. We use <a href="http://datasketches.github.io">Sketches</a> to perform aggregations like Count Distinct, Distribution, Top K. While these give out approximate results, the accuracy and the
+  Note that due to the streaming nature of the data, certain aggregations are <strong>approximate</strong>. We use <a href="http://datasketches.apache.org">Sketches</a> to perform aggregations like Count Distinct, Distribution, Top K. While these give out approximate results, the accuracy and the
   errors are reported in the Result Metadata section in the Results Page. Please note that the values are <strong>exact</strong> up to a configured threshold, which changes per aggregation. Please see each individual aggregation help for more details.
 
   These limits arise partly from the streaming nature of the data and computational intractability of keeping track of arbitrary numbers of unique values and partly from having to prevent users from overloading the system due to improperly created queries.

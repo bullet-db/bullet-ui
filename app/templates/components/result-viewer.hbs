@@ -53,7 +53,7 @@
     <span class="section-header">
       <h3 class="section-title">Results</h3>
       <InfoPopover @title="Results">
-        {{partial "partials/results-help"}}
+        <Popovers::ResultsHelp @settings={{this.settings}}/>
       </InfoPopover>
     </span>
     <WindowMetadata @metadata={{metadata}} />
@@ -62,12 +62,12 @@
 
 <div class="records-container">
   {{#if hasError}}
-    {{partial "partials/query-killed"}}
+    <QueryKilled/>
   {{else if hasData}}
     <RecordsViewer @records={{records}} @metadata={{metadata}} @config={{config}} @appendMode={{aggregateMode}} @timeSeriesMode={{timeSeriesMode}} @model={{result}} />
   {{else if isRunningQuery}}
-    {{partial "partials/running-query"}}
+    <RunningQuery/>
   {{else}}
-    {{partial "partials/no-data-help"}}
+    <NoDataHelp/>
   {{/if}}
 </div>

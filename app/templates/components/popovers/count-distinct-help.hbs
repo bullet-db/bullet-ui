@@ -11,5 +11,5 @@
 </p>
 <h5 class="content-header">Constraints</h5>
 <p>
-  Count Distinct is exact up to <strong>{{settings.defaultValues.sketches.countDistinctMaxEntries}}</strong> unique entries. The value of Count Distinct is approximate after this threshold, with a <strong>bounded maximum error</strong>. For example, for k = 16,384, the error is at most 2.34% at 99.73% confidence. In other words, if your count distinct value was 2,000,000, the real value was somewhere between 1,953,200 and 2,046,800 at 99.73% confidence. The error bounds for other values of k can be seen <a href="https://datasketches.github.io/docs/Theta/ThetaErrorTable.html">here</a>.
+  Count Distinct is exact up to <strong>{{@settings.defaultValues.sketches.countDistinctMaxEntries}}</strong> unique entries. The value of Count Distinct is approximate after this threshold, with a <strong>bounded maximum error</strong>. For example, for k = 16,384, the error is at most 2.34% at 99.73% confidence. In other words, if your count distinct value was 2,000,000, the real value was somewhere between 1,953,200 and 2,046,800 at 99.73% confidence. The error bounds for other values of k can be seen <a href="https://datasketches.apache.org/docs/Theta/ThetaErrorTable.html">here</a>.
 </p>

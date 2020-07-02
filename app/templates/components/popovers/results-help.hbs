@@ -1,0 +1,137 @@
+{{!--
+  Copyright 2018, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<h4>Controlling your Results</h4>
+
+<p>
+  The results page shows you the various rows returned by your running query and lets you navigate through your windows (if your
+  query configured the Window section). You can track of the progress of your query below and use the Cancel/Rerun buttons above
+  to stop or rerun the query. You can also click the query definition above or the Edit button to iterate on your query.
+</p>
+
+<h5 class="content-header">Navigating through Windows</h5>
+If your query included a Window, the UI supports a few different ways to navigate through them.
+
+<h6 class="content-subheader">Window Navigation Dropdown</h6>
+<p>
+  If your query had a window and it was not aggregated across windows, you can navigate to a particular window by using the dropdown. If the maintainer configured the <strong>{{@settings.defaultValues.metadataKeyMapping.windowNumber}}</strong> metadata entry, the windows can be searched using their expected sequence. The dropdown
+  also shows the total number of windows that have been currently received.
+</p>
+
+<h6 class="content-header">Showing the Last Window</h6>
+<p>If you navigate to a particular window or turn off automatically moving to the latest window, you can investigate the results in a particular window by using the window navigation dropdown.</p>
+
+<h6 class="content-header">Aggregate across Windows</h6>
+<p>If you are running a RAW query with a Record Based Window, the resulting windows are automatically combined and shown together.</p>
+
+<h5 class="content-header">Timing indicators</h5>
+<p>The overall query progress (defined by your Maximum Duration) is shown on the right.</p>
+<p>If you are running a Time Window based query, the approximate time to your next window is shown as a bar above the window selection dropdown.</p>
+
+<h5 class="content-header">Rate Limiting Errors</h5>
+<p>
+  It is possible to write a query (with a Record Based window for instance), that retrieves data from Bullet too fast. If this happens, your query will be killed and an error message will be shown
+  to you. You can edit your query to add more filters or switch to a different kind of window to prevent this from happening. The rate that cuts off a query is defined by your maintainer.
+</p>
+
+<h4>Result Metadata</h4>
+<p>
+  You can see metadata for your results by clicking the expand caret at the bottom of this block. The fields shown here are configured by the maintainer of Bullet. Not all the fields shown here are described below and some are debugging information for the maintainer. Also, the maintainer may have turned off metadata entirely. Bullet uses Sketches to approximate results if it is computationally intractable to get the result exactly. For a primer on Sketches, please visit the <a href=https://datasketches.apache.org/docs/TheChallenge.html>Sketches home page</a>.
+</p>
+
+<p>There are three main sections to the metadata</p>
+<ul>
+  <li>{{@settings.defaultValues.metadataKeyMapping.querySection}}</li>
+  <li>{{@settings.defaultValues.metadataKeyMapping.sketchSection}}</li>
+  <li>{{@settings.defaultValues.metadataKeyMapping.windowSection}}</li>
+</ul>
+
+<h5>{{@settings.defaultValues.metadataKeyMapping.querySection}}</h5>
+<p>
+  This section lists metadata about the query such as its receive time, finish time (only on the final window), the query ID and the raw JSON version of the Bullet query.
+</p>
+
+<h6 class="content-subheader">Query Creation Time</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.queryCreationTime}}</strong> is the start time of the query. This denotes the time Bullet received the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
+</p>
+
+<h6 class="content-subheader">Query Termination Time</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.queryTerminationTime}}</strong> is the finish time of the query. This denotes the time Bullet terminated the query. This is useful to help you determine whether the data you were looking for had or had not reached Bullet yet.
+</p>
+
+<h5>{{@settings.defaultValues.metadataKeyMapping.sketchSection}}</h5>
+<p>
+  This section lists metadata about the Sketch used in the query, if any.
+</p>
+
+<h6 class="content-subheader">Result Estimated</h6>
+<p>
+  You may notice a <strong>{{@settings.defaultValues.metadataKeyMapping.estimatedResult}}</strong> entry which denotes whether the result was estimated or not. If the result was not estimated, the Standard Deviations section (see below) would show exact upper and lower bounds for the estimate.
+</p>
+
+<h6 class="content-subheader">Standard Deviations</h6>
+<p>
+  If you see a <strong>{{@settings.defaultValues.metadataKeyMapping.standardDeviations}}</strong> entry in the metadata, there are 3 different entries at "1", "2" and "3", each having an upper and a lower bound. These are the ranges of the true value of an approximated result at 1, 2 and 3 Standard Deviations of Confidence.
+  <ul>
+    <li>1 Standard Deviation is 68.27% confidence</li>
+    <li>2 Standard Deviation is 95.45% confidence</li>
+    <li>3 Standard Deviation is 99.73% confidence</li>
+  </ul>
+</p>
+<p>
+  In other words, if you were performing a Count Distinct and the result was estimated, then these Standard Deviations help you to bound the true value with these levels of confidence. For example, if your Count Distinct result was 34326.58, and the Upper and Lower Bound at "1" Standard Deviation was 34522.56, 34131.69 respectively. This means that we can be sure with 68% confidence that the true value of the count distinct was between 34131 and 34522. Similarly, for the other standard deviations.
+</p>
+
+<h6 class="content-subheader">Uniques Estimate</h6>
+<p>
+  The <strong>{{@settings.defaultValues.metadataKeyMapping.uniquesEstimate}}</strong> key is present if you have Grouped Data and the number of unique groups exceeded the maximum number of rows returned (<strong>{{@settings.defaultValues.sketches.groupByMaxEntries}}</strong> by default). If so, the value for the key denotes the approximate number of unique groups there were. You can use the Standard Deviations section as usual to estimate the true range of the estimate. You will have received a uniform sample of these unique groups (with the right values for your metrics) as the result.
+</p>
+
+<h6 class="content-subheader">Theta</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.theta}}</strong> denotes the theta value of the Sketch that was used underneath to perform a Count Distinct or a Group operation. This is particularly useful if you have Grouped Data and you have more groups than can be returned. If you have performed metrics like Sum or Count, you can add them up over the returned rows in the Result below and divide by this Sketch Theta. The resulting number is an estimate of the Sum or Count across <strong>all</strong> your unique values that could not be returned.
+</p>
+
+<h6 class="content-subheader">Minimum and Maximum</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.minimumValue}}</strong> and <strong>{{@settings.defaultValues.metadataKeyMapping.minimumValue}}</strong> denote the minimum and maximum value seen for a Distribution operation. This is useful if you still wanted to see the minimum and maximum but were looking at a narrower region of the domain.
+</p>
+
+<h6 class="content-subheader">Items Seen</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.itemsSeen}}</strong> denotes the number of data records seen for your query (that matched the filters). This is provided only for Distribution and Top K operations.
+</p>
+
+<h6 class="content-subheader">Normalized Rank Error</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.normalizedRankError}}</strong> represents the Normalized Rank Error for the Distribution operation. This value is only applicated if the result was estimated. This error is independent of amount of data seen or the distribution of your data. The normalized rank is obtained by taking the values of the field in your distribution, sorting them and dividing the resulting ranks by the number of values. This creates a rank ranging from 0 to 1 for each item. The normalized rank error refers to how off the rank of an item could be in this domain. For example, if you were obtaining the median or the 0.5 quantile value for an item and the normalized rank error was 0.005, this means that the value provided as the result had a normalized rank somewhere between 0.495 and 0.505 with 99% confidence. In practice, the smaller the number, the more accurate your result is (if it was estimated).
+</p>
+
+<h6 class="content-subheader">Maximum Count Error</h6>
+<p>
+  <strong>{{@settings.defaultValues.metadataKeyMapping.maximumCountError}}</strong> represents the length of the interval for a count estimate in a Top K result. This is only applicable if the result was estimated. The count estimate provided by Bullet is the upper bound of the range. The true count lies somewhere between the upper bound and upper bound - the maximum count error. Note that if two items have counts that are closer than the maximum count error, it is possible that the one with the higher count may have a true count that is smaller than the true count of the lower one. Conversely, if two items are separated by more than this error, then you can be certain that the rank of the one with the higher count is indeed higher than the one with the lower count.
+</p>
+
+<h5>{{@settings.defaultValues.metadataKeyMapping.windowSection}}</h5>
+<p>
+  If you specified a window for your query, this section lists the various window related metadata for your query, such as the number of the window etc.
+</p>
+
+<h6 class="content-subheader">Window Number</h6>
+<p>
+  The <strong>{{@settings.defaultValues.metadataKeyMapping.windowNumber}}</strong> is the monotonically increasing sequence that denotes which window this particular set of records belong to. Windows start at 1 and increase by 1.
+</p>
+
+<h6 class="content-subheader">Window Size</h6>
+<p>
+  The <strong>{{@settings.defaultValues.metadataKeyMapping.windowSize}}</strong> tells you how many records are in this window.
+</p>
+
+<h6 class="content-subheader">Expected Emit Time</h6>
+<p>
+  For <strong>Time Based</strong> windows, the <strong>{{@settings.defaultValues.metadataKeyMapping.expectedEmitTime}}</strong> tells you when your window was expected to be emitted. You can compare it to the actual emit time of the window to help you debug why, if a window arrived later than expected.
+</p>
