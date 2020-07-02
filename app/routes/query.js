@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { hash, resolve } from 'rsvp';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
@@ -14,24 +13,16 @@ export default class QueryRoute extends QueryableRoute {
   @service queryManager;
   @service store;
 
-  model(params) {
-    return hash({
-      schema: this.store.findAll('column'),
-      query: this.store.findRecord('query', params.query_id)
-    }).catch(() => {
-      // Needed since findRecord adds the non-existant record to the cache
-      this.store.unloadAll('query');
-      this.transitionTo('errored');
-    });
-  }
-
-  // Force the fetching of filter because template doesn't render it since it's wrapped in QueryBuilder
-  afterModel(model) {
-    return hash({
-      schema: resolve(model.schema),
-      query: resolve(model.query),
-      filter: model.query.get('filter')
-    });
+  async model(params) {
+    let schema = await this.store.findAll('column');
+    let query = await this.store.findRecord('query', params.query_id);
+    let filter = await query.filter;
+    let projections = await query.projections;
+    let window = await query.window;
+    let aggregation = await query.aggregation;
+    let groups = await aggregation.groups;
+    let metrics = await aggregation.metrics;
+    return { schema, query, filter, projections, window, aggregation, groups, metrics };
   }
 
   @action

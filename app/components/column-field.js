@@ -28,7 +28,7 @@ export default class ColumnFieldComponent extends Component {
   // Reverse mapping from ids back to the columns for easy lookup
   @computed('args.columns.[]')
   get columnMapping() {
-    return this.columns.reduce((previous, current) => {
+    return this.args.columns.reduce((previous, current) => {
       previous[current.id] = current;
       return previous;
     }, {});
@@ -38,7 +38,7 @@ export default class ColumnFieldComponent extends Component {
   get compositeField() {
     let top = this.selectedColumn.id;
     let sub = this.subfield;
-    let suffixPosition = top.lastIndexOf(this.subfieldSuffix);
+    let suffixPosition = top.lastIndexOf(this.args.subfieldSuffix);
     if (suffixPosition === -1) {
       return top;
     }
@@ -46,16 +46,16 @@ export default class ColumnFieldComponent extends Component {
     if (isEmpty(sub)) {
       return mainField;
     }
-    return `${mainField}${this.subfieldSeparator}${sub}`;
+    return `${mainField}${this.args.subfieldSeparator}${sub}`;
   }
 
   sliceToLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.subfieldSeparator);
+    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
     return lastSeparator !== -1 ? name.slice(0, lastSeparator) : name;
   }
 
   sliceFromLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.subfieldSeparator);
+    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
     return lastSeparator !== -1 ? name.slice(lastSeparator + 1) : name;
   }
 
@@ -65,7 +65,7 @@ export default class ColumnFieldComponent extends Component {
     let subfield = '';
     // If we didn't find the full field, it is a field with a subfield
     if (isEmpty(field)) {
-      let mainField = `${this.sliceToLastSeparator(name)}${this.subfieldSuffix}`;
+      let mainField = `${this.sliceToLastSeparator(name)}${this.args.subfieldSuffix}`;
       field = this.columnMapping[mainField];
       subfield = this.sliceFromLastSeparator(name);
     }

@@ -13,7 +13,7 @@
 
   {{#unless this.disableField}}
     <div class="{{@fieldClasses}} field-selection">
-      <ColumnField @columns={{@columns}} @initialValue={{@initialValue}} @subfieldKey="show_subfield"
+      <ColumnField @columns={{@columns}} @initialValue={{@changeset.field}} @subfieldKey="show_subfield"
                    @subfieldSeparator={{@subfieldSeparator}} @subfieldSuffix={{@subfieldSuffix}}
                    @onDone={{this.onModifyField}} @disabled={{@disabled}} />
     </div>

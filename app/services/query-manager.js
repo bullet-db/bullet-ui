@@ -28,12 +28,22 @@ export default class QueryManagerService extends Service {
     return `${windowSection}.${windowNumber}`;
   }
 
-  copyModelRelationship(from, to, fields, inverseName, inverseValue) {
+  copyFields(from, to, fields) {
     fields.forEach(field => {
       to.set(field, from.get(field));
     });
+  }
+
+  copyModelRelationship(from, to, fields, inverseName, inverseValue) {
+    this.copyFields(from, to, fields);
     to.set(inverseName, inverseValue);
     return to.save();
+  }
+
+  copyModelAndFields(model, modelName, fields) {
+    let copy = this.store.createRecord(modelName);
+    this.copyFields(model, copy, fields);
+    return copy.save();
   }
 
   copySingle(source, target, name, inverseName, fields) {
@@ -72,13 +82,12 @@ export default class QueryManagerService extends Service {
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
-    return all(promises).then(() => {
+    return all(promises).then(([copiedFilter, copiedAggregation, copiedWindow, copiedProjections]) => {
       let originalAggregation = query.get('aggregation');
-      let copiedAggregation = copied.get('aggregation');
       return all([
         this.copyMultiple(originalAggregation, copiedAggregation, 'group', 'aggregation', ['field', 'name']),
         this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
-      ]);
+      ]).then(() => copiedAggregation.save());
     }).then(() => copied.save()).then(() => copied);
   }
 

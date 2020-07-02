@@ -24,15 +24,6 @@ export default class QueriesRoute extends Route {
     });
   }
 
-  validate(query) {
-    return query.validate().then(hash => {
-      if (!hash.validations.get('isValid')) {
-        return reject();
-      }
-      return resolve(query);
-    });
-  }
-
   getOrigin() {
     let { protocol, hostname, port } = window.location;
     port = port ? `:${port}` : '';
@@ -47,18 +38,16 @@ export default class QueriesRoute extends Route {
 
   @action
   copyQueryClick(query, callback) {
-    this.validate(query).then(query => this.queryManager.copyQuery(query)).then(copy => callback(copy));
+    this.queryManager.copyQuery(query).then(copy => callback(copy));
   }
 
   @action
   linkQueryClick(query, callback) {
-    this.validate(query)
-      .then(query => this.queryManager.encodeQuery(query))
-      .then(encoded => {
-        let origin = this.getOrigin();
-        let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
-        callback(`${origin}${path}`);
-      });
+    this.queryManager.encodeQuery(query).then(encoded => {
+      let origin = this.getOrigin();
+      let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
+      callback(`${origin}${path}`);
+    });
   }
 
   @action

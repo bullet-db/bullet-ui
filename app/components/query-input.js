@@ -96,33 +96,39 @@ export default class QueryInputComponent extends Component {
     this.settings = getOwner(this).lookup('settings:main');
     this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
     this.errors = A();
-    this.query = this.args.query;
 
+    // Create all changesets
+    this.query = this.args.query;
     this.createQueryChangeset(this.query);
-    this.query.get('aggregation').then(aggregation => {
-      this.outputDataType = aggregation.get('type') || AGGREGATIONS.get('RAW');
-      this.distributionType = aggregation.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
-      this.pointType = aggregation.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
-      this.createAggregationChangeset(aggregation);
-      aggregation.get('groups').then(groups => {
-        this.groups = this.createFieldLikeChangesets(groups, GroupValidations);
-      });
-      aggregation.get('metrics').then(metrics => {
-        this.metrics = this.createFieldLikeChangesets(metrics, MetricValidations);
-      });
+
+    let projections = this.args.projections;
+    this.rawType = isEmpty(projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
+    this.createFieldLikeChangesets(['field', 'name'], 'projection', projections, ProjectionValidations).then(changesets => {
+      this.projections = changesets;
     });
-    this.query.get('projections').then(projections => {
-      this.rawType = isEmpty(projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
-      this.projections = this.createFieldLikeChangesets(projections, ProjectionValidations);
+
+    let aggregation = this.args.aggregation;
+    this.outputDataType = aggregation.get('type') || AGGREGATIONS.get('RAW');
+    this.distributionType = aggregation.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
+    this.pointType = aggregation.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
+    this.createAggregationChangeset(aggregation);
+
+    let groups = this.args.groups;
+    this.createFieldLikeChangesets(['field', 'name'], 'group', groups, GroupValidations).then(changesets => {
+      this.groups = changesets;
     });
-    this.query.get('window').then(window => {
-      this.hasWindow = !isNone(window);
-      if (this.hasWindow) {
-        this.createWindowChangeset(window);
-        this.emitType = window.get('emitType');
-        this.includeType = window.get('includeType');
-      }
+    let metrics = this.args.metrics;
+    this.createFieldLikeChangesets(['type', 'field', 'name'], 'metric', metrics, MetricValidations).then(changesets => {
+      this.metrics = changesets;
     });
+
+    let window = this.args.window;
+    this.hasWindow = !isNone(window);
+    if (this.hasWindow) {
+      this.createWindowChangeset(window);
+      this.emitType = window.get('emitType');
+      this.includeType = window.get('includeType');
+    }
   }
 
   // Getters
@@ -223,13 +229,17 @@ export default class QueryInputComponent extends Component {
     this.windowChangeset = new Changeset(windowModel, lookupValidator(WindowValidations), WindowValidations);
   }
 
-  createFieldLikeChangesets(collection, validations) {
-    let result = A();
-    collection.reduce((accumulator, model) => {
-      accumulator.pushObject(this.createFieldLikeChangeset(model, validations))
-      return accumulator;
-    }, result);
-    return result;
+  createFieldLikeChangesets(fields, modelName, collection, validations) {
+    if (isEmpty(collection)) {
+      return resolve();
+    }
+    // Copy the models since we don't want to edit any original field-like hasManys when working on the query
+    let promises = collection.map(model => this.queryManager.copyModelAndFields(model, modelName, fields));
+    return all(promises).then(results => {
+      let changesets = A();
+      results.forEach(result => changesets.pushObject(this.createFieldLikeChangeset(result, validations)));
+      return resolve(changesets);
+    });
   }
 
   createFieldLikeChangeset(model, validations) {
