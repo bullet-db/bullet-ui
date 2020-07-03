@@ -106,7 +106,7 @@ export default class QueryRoute extends QueryableRoute {
 
   @action
   willTransition(transition) {
-    if (!this.areChangesetsDirty && !confirm('You have made changes! Are you sure you want to navigate away?')) {
+    if (this.areChangesetsDirty && !confirm('You have made changes! Are you sure you want to navigate away?')) {
       transition.abort();
     } else {
       return true;
