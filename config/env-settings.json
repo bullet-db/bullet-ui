@@ -1,11 +1,11 @@
 {
   "default": {
-    "queryHost": "https://foo.bar.com:4443",
+    "queryHost": "https://bullet-api.data.yahoo.com:4443",
     "queryNamespace": "bullet/api",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://foo.bar.com:4443",
+    "schemaHost": "https://bullet-api.data.yahoo.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
@@ -14,11 +14,73 @@
       }
     ],
     "bugLink": "https://github.com/bullet-db/bullet-ui/issues",
-    "modelVersion": 3,
+    "modelVersion": 4,
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": null,
+    "defaultQuery": {
+       "filters":[
+          {
+             "clauses":[
+                {
+                   "field":"bcookie",
+                   "values":[
+                      "foo"
+                   ],
+                   "operation":"=="
+                },
+                {
+                   "field":"ptyid",
+                   "values":[
+                      "bar"
+                   ],
+                   "operation":"!="
+                }
+             ],
+             "operation":"AND"
+          }
+       ],
+       "projection" : {
+          "fields": {
+              "view_id": "pid",
+              "event_tag": "tags",
+              "demog_info.age": "age"
+          }
+       },
+       "aggregation":{
+          "size":1,
+          "type":"GROUP",
+          "fields":{
+             "demog_info.country":"country",
+             "bcookie":"bid"
+          },
+          "attributes":{
+             "operations":[
+                {
+                   "type":"COUNT",
+                   "newName":"count"
+                },
+                {
+                   "type":"AVG",
+                   "field":"click_info.foo",
+                   "newName":"averageAge"
+                },
+                {
+                   "type":"AVG",
+                   "field":"session_info.duration",
+                   "newName":"averageTimespent"
+                }
+             ]
+          }
+       },
+       "window":{
+          "emit":{
+             "type":"RECORD",
+             "every":1
+          }
+       },
+       "duration":20000
+    },
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,
