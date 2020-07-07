@@ -10,15 +10,6 @@ import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
 import Route from '@ember/routing/route';
 import QueryableRoute from 'bullet-ui/routes/queryable-route';
-// Validations
-import QueryValidations from 'bullet-ui/validators/query';
-import ProjectionValidations from 'bullet-ui/validators/projection';
-import AggregationValidations from 'bullet-ui/validators/aggregation';
-import GroupValidations from 'bullet-ui/validators/group';
-import MetricValidations from 'bullet-ui/validators/metric';
-import WindowValidations from 'bullet-ui/validators/window';
-import lookupValidator from 'ember-changeset-validations';
-import Changeset from 'ember-changeset';
 
 export default class QueryRoute extends QueryableRoute {
   @service querier;
@@ -26,17 +17,10 @@ export default class QueryRoute extends QueryableRoute {
   @service store;
 
   get areChangesetsDirty() {
-    let changesets = this.controller.get('changesets');
-    let isDirty = false;
-    for (const value of Object.values(changesets)) {
-      if (typeOf(value) !== 'array') {
-        isDirty = isDirty || value.get('isDirty');
-      } else {
-        values.forEach(v => {
-          isDirty = isDirty || v.get('isDirty');
-        });
-      }
-      if (isDirty) {
+    let changesets = Object.values(this.controller.get('changesets'));
+    for (const value of changesets) {
+      // If array (EmberArray), is anything dirty? Otherwise, is the value dirty?
+      if (typeOf(value) === 'array' ? value.isAny('isDirty') : value.get('isDirty')) {
         return true;
       }
     }
@@ -60,7 +44,7 @@ export default class QueryRoute extends QueryableRoute {
     models.metrics = await models.aggregation.metrics;
 
     let modelChangesets = await this.createChangesets(models);
-    // No changeset!
+    // No changesets for filters and schema!
     modelChangesets.filter = models.filter;
     modelChangesets.schema = models.schema;
     return modelChangesets;
@@ -68,21 +52,17 @@ export default class QueryRoute extends QueryableRoute {
 
   async createChangesets(models) {
     let changesets = { };
-    changesets.query = this.createChangeset(models.query, QueryValidations);
-    changesets.aggregation = this.createChangeset(models.aggregation, AggregationValidations);
-    // Wrapped into an array
-    changesets.window = isNone(models.window) ? A() : A([this.createChangeset(models.window, WindowValidations)]);
-    changesets.projections = await this.createFieldLikeChangesets(models.projections, 'projection', ProjectionValidations);
-    changesets.groups = await this.createFieldLikeChangesets(models.groups, 'group', GroupValidations);
-    changesets.metrics = await this.createFieldLikeChangesets(models.metrics, 'metric', MetricValidations, ['type', 'field', 'name']);
+    changesets.query = this.queryManager.createChangeset(models.query, 'query');
+    changesets.aggregation = this.queryManager.createChangeset(models.aggregation, 'aggregation');
+    // Wrapping the window into an array so that any new windows created from the form can be added to it
+    changesets.window = isNone(models.window) ? A() : A([this.queryManager.createChangeset(models.window, 'window')]);
+    changesets.projections = await this.createFieldLikeChangesets(models.projections, 'projection');
+    changesets.groups = await this.createFieldLikeChangesets(models.groups, 'group');
+    changesets.metrics = await this.createFieldLikeChangesets(models.metrics, 'metric', ['type', 'field', 'name']);
     return changesets;
   }
 
-  createChangeset(model, validations) {
-    return new Changeset(model, lookupValidator(validations), validations);
-  }
-
-  createFieldLikeChangesets(collection, modelName, validations, fields = ['field', 'name']) {
+  createFieldLikeChangesets(collection, modelName, fields = ['field', 'name']) {
     if (isEmpty(collection)) {
       return A();
     }
@@ -90,18 +70,9 @@ export default class QueryRoute extends QueryableRoute {
     let promises = collection.map(model => this.queryManager.copyModelAndFields(model, modelName, fields));
     return all(promises).then(results => {
       let changesets = A();
-      results.forEach(result => changesets.pushObject(this.createChangeset(result, validations)));
+      results.forEach(result => changesets.pushObject(this.queryManager.createChangeset(result, modelName)));
       return resolve(changesets);
     });
-  }
-
-  @action
-  wipeFieldLikes(collectionName) {
-    let changesets = this.controllerFor('query').get('changesets');
-  }
-
-  @action
-  addFieldLike(collectionName, modelName) {
   }
 
   @action

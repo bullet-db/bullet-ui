@@ -13,7 +13,15 @@ import { isBlank, isEqual } from '@ember/utils';
 import config from '../config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import QueryValidation from 'bullet-ui/validators/query';
+// Validations
+import QueryValidations from 'bullet-ui/validators/query';
+import ProjectionValidations from 'bullet-ui/validators/projection';
+import AggregationValidations from 'bullet-ui/validators/aggregation';
+import GroupValidations from 'bullet-ui/validators/group';
+import MetricValidations from 'bullet-ui/validators/metric';
+import WindowValidations from 'bullet-ui/validators/window';
+import lookupValidator from 'ember-changeset-validations';
+import Changeset from 'ember-changeset';
 
 export default class QueryManagerService extends Service {
   @service store;
@@ -111,16 +119,6 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  /* TO REMOVE
-  addFieldLike(childModelName, modelFieldName, model) {
-    // Autosave takes care of updating parent model
-    let opts = {};
-    opts[modelFieldName] = model;
-    let childModel = this.store.createRecord(childModelName, opts);
-    return childModel.save();
-  }
-  */
-
   addResult(id) {
     return this.store.findRecord('query', id).then(query => {
       let result = this.store.createRecord('result', {
@@ -155,52 +153,31 @@ export default class QueryManagerService extends Service {
     return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
   }
 
-  resetAggregation(aggregation, type, size = 1) {
-    aggregation.set('type', type);
-    aggregation.set('size', size);
-    let attributes = aggregation.get('attributes');
-    let fields = Object.getOwnPropertyNames(attributes);
-    for (let i = 0; i < fields.length; i++) {
-      delete attributes[fields[i]];
+  // Changesets
+
+  validationsFor(modelName) {
+    switch (modelName) {
+      case 'query':
+        return QueryValidations;
+      case 'projection':
+        return ProjectionValidations;
+      case 'window':
+        return WindowValidations;
+      case 'aggregation':
+        return AggregationValidations;
+      case 'group':
+        return GroupValidations;
+      case 'metric':
+        return MetricValidations;
     }
   }
 
-  /* TO REMOVE
-  replaceAggregation(query, type, size = 1) {
-    return query.get('aggregation').then(aggregation => {
-      return all([
-        this.deleteMultiple('groups', aggregation, 'aggregation'),
-        this.deleteMultiple('metrics', aggregation, 'aggregation')
-      ]).then(() => {
-        this.resetAggregation(type, size);
-        return aggregation.save();
-      });
-    });
+  createChangeset(model, modelName) {
+    let validations = this.validationsFor(modelName);
+    return new Changeset(model, lookupValidator(validations), validations);
   }
-  */
 
-  /* TO REMOVE
-  replaceWindow(query, emitType, emitEvery, includeType) {
-    return query.get('window').then(window => {
-      window.set('emitType', emitType);
-      window.set('emitEvery', emitEvery);
-      window.set('includeType', includeType);
-      return window.save();
-    });
-  }
-  */
-
-  /* TO REMOVE
-  addWindow(query) {
-    let window = this.store.createRecord('window', {
-      query: query
-    });
-    query.set('window', window);
-    return query.save().then(() => {
-      return window.save();
-    });
-  }
-  */
+  // Cleanup
 
   fixFieldLikes(fieldLikes) {
     fieldLikes.forEach(i => {

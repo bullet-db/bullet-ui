@@ -110,10 +110,10 @@
                     <ValidatedFieldSelection
                         @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteProjections}}
                         @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                        @onDelete={{fn this.deleteFieldLikeChangeset changeset this.projections}}
+                        @onDelete={{fn this.deleteFieldLike changeset this.projections}}
                         @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @disabled={{this.isListening}}/>
                   {{/each}}
-                  <button type="button" {{on "click" (fn this.addFieldLikeChangeset "projection" this.projections)}}
+                  <button type="button" {{on "click" (fn this.addFieldLike "projection" this.projections)}}
                           disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
                     {{fa-icon "plus"}} Field
                   </button>
@@ -130,10 +130,10 @@
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLikeChangeset changeset this.groups}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
                       @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @disabled={{this.isListening}}/>
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLikeChangeset "group" this.groups)}}
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
                         disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
                   {{fa-icon "plus"}} Group Field
                 </button>
@@ -148,7 +148,7 @@
                       @changeset={{changeset}} @columns={{this.columns}}
                       @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLikeChangeset changeset this.metrics}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.metrics}}
                       @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disabled={{this.isListening}}>
                     <div class="col-xs-3 metrics-selection">
                       <label class="power-select-label">Metric</label>
@@ -160,7 +160,7 @@
                     </div>
                   </ValidatedFieldSelection>
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLikeChangeset "metric" this.metrics)}}
+                <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}}
                         disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
                   {{fa-icon "plus"}} Metric Field
                 </button>
@@ -177,10 +177,10 @@
                       @changeset={{changeset}} @columns={{this.columns}}
                       @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLikeChangeset changeset this.groups}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
                       @fieldClasses="col-xs-10" @disabled={{this.isListening}}/>
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLikeChangeset "group" this.groups)}}
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
                         disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
                   {{fa-icon "plus"}} Field
                 </button>
@@ -227,7 +227,7 @@
                       @changeset={{changeset}} @columns={{this.columns}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @enableRenaming={{false}} @enableDeleting={{false}}
-                      @onDelete={{fn this.deleteFieldLikeChangeset changeset this.groups}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
                       @disabled={{this.isListening}} @fieldClasses="col-xs-10"/>
                 {{/each}}
               </div>
@@ -295,10 +295,10 @@
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteField}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLikeChangeset changeset this.groups}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
                       @disabled={{this.isListening}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5"/>
                 {{/each}}
-                <button type="button" {{on "click" (fn this.addFieldLikeChangeset "group" this.groups)}}
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
                         disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
                   {{fa-icon "plus"}} Field
                 </button>
