@@ -19,15 +19,6 @@ import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-u
 import { METRICS } from 'bullet-ui/models/metric';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
-// Validations
-import QueryValidations from 'bullet-ui/validators/query';
-import ProjectionValidations from 'bullet-ui/validators/projection';
-import AggregationValidations from 'bullet-ui/validators/aggregation';
-import GroupValidations from 'bullet-ui/validators/group';
-import MetricValidations from 'bullet-ui/validators/metric';
-import WindowValidations from 'bullet-ui/validators/window';
-import lookupValidator from 'ember-changeset-validations';
-import Changeset from 'ember-changeset';
 
 export default class QueryInputComponent extends Component {
   // Constants
@@ -45,9 +36,8 @@ export default class QueryInputComponent extends Component {
 
   @service queryManager;
 
-  builderAdapter;
+  // Settings are not auto-injected. Need to save it from factory lookup
   settings;
-
   // The args filter
   filter;
   // Keep track of the args window array to add a new window to it if the query did not have one to begin with
@@ -60,13 +50,12 @@ export default class QueryInputComponent extends Component {
   @tracked projections;
   @tracked groups;
   @tracked metrics;
-
+  // State and errors
   @tracked isListening = false;
   @tracked hasError = false;
   @tracked errors;
   @tracked hasSaved = false;
   @tracked hasWindow;
-
   // Radio button properties
   @tracked outputDataType;
   @tracked rawType;
@@ -91,16 +80,15 @@ export default class QueryInputComponent extends Component {
   @or('isRecordBasedWindow', 'isListening') everyDisabled;
   @or('isRecordBasedWindow', 'isListening') includeDisabled;
   @not('hasWindow') noWindow;
-
   @alias('settings.defaultValues.everyForRecordBasedWindow') defaultEveryForRecordWindow;
   @alias('settings.defaultValues.everyForTimeBasedWindow') defaultEveryForTimeWindow;
 
   constructor() {
     super(...arguments);
     this.settings = getOwner(this).lookup('settings:main');
-    this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
     this.errors = A();
 
+    this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
     this.filter = this.args.filter;
     // Create all changesets
     this.queryChangeset = this.args.query;
@@ -200,8 +188,11 @@ export default class QueryInputComponent extends Component {
   }
 
   // Render modifier on did-insert for adding the QueryBuilder
-  addQueryBuilder(element, [options]) {
+  addQueryBuilder(element, [options, onChange]) {
     $(element).queryBuilder(options);
+    $(element).on('rulesChanged.queryBuilder', () => {
+      onChange();
+    });
   }
 
   // Render modifier on did-insert for scrolling into the validation container
@@ -404,12 +395,14 @@ export default class QueryInputComponent extends Component {
   @action
   deleteProjections() {
     this.queryManager.deleteMultipleCollection(this.projections, 'query');
+    this.args.forceDirty();
   }
 
   @action
   addFieldLike(modelName, collection) {
     this.queryManager.createModel(modelName).then((model) => {
       collection.pushObject(this.queryManager.createChangeset(model, modelName));
+      this.args.forceDirty();
     });
   }
 
@@ -417,6 +410,7 @@ export default class QueryInputComponent extends Component {
   deleteFieldLike(item, collection) {
     collection.removeObject(item);
     this.queryManager.deleteModel(item.get('data'));
+    this.args.forceDirty();
   }
 
   @action
@@ -453,6 +447,7 @@ export default class QueryInputComponent extends Component {
       this.emitType = EMIT_TYPES.get('TIME');
       this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
       this.hasWindow = true;
+      this.args.forceDirty();
     });
   }
 
@@ -461,6 +456,7 @@ export default class QueryInputComponent extends Component {
     this.hasWindow = false;
     this.windowChangeset = null;
     this.queryManager.deleteMultipleCollection(this.window, 'query');
+    this.args.forceDirty();
   }
 
   @action

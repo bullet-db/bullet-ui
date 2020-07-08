@@ -17,6 +17,10 @@ export default class QueryRoute extends QueryableRoute {
   @service store;
 
   get areChangesetsDirty() {
+    if (this.controller.get('forceDirty')) {
+      console.log('is forced dirty');
+      return true;
+    }
     let changesets = Object.values(this.controller.get('changesets'));
     for (const value of changesets) {
       // If array (EmberArray), is anything dirty? Otherwise, is the value dirty?
@@ -30,6 +34,8 @@ export default class QueryRoute extends QueryableRoute {
   setupController(controller, model) {
     super.setupController(controller, model);
     controller.set('changesets', model);
+    console.log('unsetting');
+    controller.set('forceDirty', false);
   }
 
   async model(params) {
@@ -75,11 +81,21 @@ export default class QueryRoute extends QueryableRoute {
     });
   }
 
+  cleanupChangesets() {
+  }
+
+  @action
+  forceDirty() {
+    console.log('forcedDirty');
+    this.controller.set('forceDirty', true);
+  }
+
   @action
   willTransition(transition) {
-    if (this.areChangesetsDirty && !confirm('You have made changes! Are you sure you want to navigate away?')) {
+    if (this.areChangesetsDirty && !confirm('You have changes that may be lost unless you save! Are you sure?')) {
       transition.abort();
     } else {
+      this.cleanupChangesets();
       return true;
     }
   }
