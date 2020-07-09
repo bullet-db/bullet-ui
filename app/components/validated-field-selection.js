@@ -56,7 +56,9 @@ export default class ValidatedFieldSelectionComponent extends Component {
   onModifyAdditionalOption(option) {
     let changeset = this.args.changeset;
     let path = this.args.additionalPath;
+    console.log(changeset.get(path));
     changeset.set(path, option);
+    console.log(changeset.get(path));
     this.validate(changeset, path);
   }
 
@@ -64,8 +66,10 @@ export default class ValidatedFieldSelectionComponent extends Component {
   onModifyField(field) {
     let changeset = this.args.changeset;
     let path = this.fieldPath;
+    console.log(changeset.get(path));
     changeset.set(path, field);
     changeset.set(this.namePath, '');
+    console.log(changeset.get(path));
     this.validate(changeset, path);
   }
 

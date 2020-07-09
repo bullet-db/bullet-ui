@@ -9,7 +9,7 @@ export default {
   field: [
     validateMetricField()
   ],
-  kind: [
+  type: [
     validateMetricField()
   ]
 }

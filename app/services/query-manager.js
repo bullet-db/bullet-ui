@@ -95,7 +95,7 @@ export default class QueryManagerService extends Service {
       let originalAggregation = query.get('aggregation');
       return all([
         this.copyMultiple(originalAggregation, copiedAggregation, 'group', 'aggregation', ['field', 'name']),
-        this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['kind', 'field', 'name'])
+        this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
       ]).then(() => copiedAggregation.save());
     }).then(() => copied.save()).then(() => copied);
   }

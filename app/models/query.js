@@ -50,17 +50,17 @@ export default class QueryModel extends Model {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
   }
 
-  @computed('aggregation.metrics.@each.{kind,name}').readOnly()
+  @computed('aggregation.metrics.@each.{type,name}').readOnly()
   get metricsSummary() {
     let metrics = this.getWithDefault('aggregation.metrics', A());
     return metrics.map(m => {
-      let kind = m.get('kind');
+      let type = m.get('type');
       let field = m.get('field');
       let name = m.get('name');
-      if (kind === METRICS.get('COUNT')) {
+      if (type === METRICS.get('COUNT')) {
         field = '*';
       }
-      return isEmpty(name) ? `${kind}(${field})` : name;
+      return isEmpty(name) ? `${type}(${field})` : name;
     }).join(', ');
   }
 

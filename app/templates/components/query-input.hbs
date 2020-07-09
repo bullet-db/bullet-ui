@@ -149,7 +149,7 @@
                       @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.metrics}}
-                      @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="kind"
+                      @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="type"
                       @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection"
                       @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disabled={{this.isListening}}>
                   </ValidatedFieldSelection>

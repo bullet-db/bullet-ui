@@ -39,7 +39,7 @@ let Metric = EmberObject.extend({
 export const METRICS = Metric.create();
 
 export default class MetricModel extends Model {
-  @attr('string', { defaultValue: METRICS.get('SUM') }) kind;
+  @attr('string', { defaultValue: METRICS.get('SUM') }) type;
   @attr('string') field;
   @attr('string') name;
   @belongsTo('aggregation', { autoSave: true }) aggregation;

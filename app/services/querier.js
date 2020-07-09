@@ -298,7 +298,7 @@ export default class QuerierService extends Service {
     let groupOperations = A();
     json.forEach(item => {
       let type = METRICS.get(item.type);
-      let operation = EmberObject.create({ kind: type });
+      let operation = EmberObject.create({ type: type });
       this.setIfTruthy(operation, 'field', item.field);
       this.setIfTruthy(operation, 'name', item.newName);
       groupOperations.pushObject(operation);
@@ -312,7 +312,7 @@ export default class QuerierService extends Service {
     }
     let json = [];
     metrics.forEach(item => {
-      let invertedType = METRICS.invert(item.get('kind'));
+      let invertedType = METRICS.invert(item.get('type'));
       let metric = { type: invertedType };
       this.assignIfTruthy(metric, 'field', item.get('field'));
       this.assignIfTruthy(metric, 'newName', item.get('name'));

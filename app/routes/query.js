@@ -64,7 +64,7 @@ export default class QueryRoute extends QueryableRoute {
     // Optional multiple
     changesets.projections = await this.createFieldLikeChangesets(models.projections, 'projection');
     changesets.groups = await this.createFieldLikeChangesets(models.groups, 'group');
-    changesets.metrics = await this.createFieldLikeChangesets(models.metrics, 'metric', ['kind', 'field', 'name']);
+    changesets.metrics = await this.createFieldLikeChangesets(models.metrics, 'metric', ['type', 'field', 'name']);
     return changesets;
   }
 
