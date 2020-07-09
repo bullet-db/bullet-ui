@@ -149,19 +149,13 @@
                       @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.metrics}}
+                      @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="kind"
+                      @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection"
                       @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disabled={{this.isListening}}>
-                    <div class="col-xs-3 metrics-selection">
-                      <label class="power-select-label">Metric</label>
-                      <PowerSelect @selected={{lift-string "name" changeset.type}} @options={{this.METRICS_LIST}}
-                                   @onChange={{fn this.changeMetricType changeset}} @disabled={{this.isListening}}
-                                   as |metricItem|>
-                        {{metricItem.name}}
-                      </PowerSelect>
-                    </div>
                   </ValidatedFieldSelection>
                 {{/each}}
                 <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}}
-                        disabled={{this.disableAddingMetric}} class="btn btn-primary btn-xs add-button add-metric">
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-metric">
                   {{fa-icon "plus"}} Metric Field
                 </button>
               </div>
@@ -256,32 +250,27 @@
 
               {{#if this.isNumberOfPoints}}
                 <div class="row narrow-row distribution-type-number-of-points">
-                  <LabeledInput @value={{this.aggregationChangeset.attributes.numberOfPoints}}
-                                @onChange={{fn this.changeAttribute "numberOfPoints"}}
-                                @label="Number of Points" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                @disabled={{this.isListening}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.numberOfPoints"
+                                  @label="Number of Points" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}}/>
                 </div>
               {{else if this.isPoints}}
                 <div class="row narrow-row distribution-type-points">
-                  <LabeledInput @value={{this.aggregationChangeset.attributes.points}}
-                                @onChange={{fn this.changeAttribute "points"}}
-                                @label="Points" @classNames="col-xs-4" @maxlength={{131072}}
-                                @placeholder="Comma separated numbers" @disabled={{this.isListening}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.points"
+                                  @label="Points" @classNames="col-xs-4" @maxlength={{131072}}
+                                  @placeholder="Comma separated numbers" @disabled={{this.isListening}}/>
                 </div>
               {{else if this.isGeneratedPoints}}
                 <div class="row narrow-row distribution-type-point-range">
-                  <LabeledInput @value={{this.aggregationChangeset.attributes.start}}
-                                @onChange={{fn this.changeAttribute "start"}}
-                                @label="Start" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                @disabled={{this.isListening}}/>
-                  <LabeledInput @value={{this.aggregationChangeset.attributes.end}}
-                                @onChange={{fn this.changeAttribute "end"}}
-                                @label="End" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                @disabled={{this.isListening}}/>
-                  <LabeledInput @value={{this.aggregationChangeset.attributes.increment}}
-                                @onChange={{fn this.changeAttribute "increment"}}
-                                @label="Increment" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                @disabled={{this.isListening}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.start"
+                                  @label="Start" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.end"
+                                  @label="End" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.increment"
+                                  @label="Increment" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}}/>
                 </div>
               {{/if}}
             </div>
@@ -306,7 +295,7 @@
               <div class="subsection-header">Select the maximum number of results</div>
               <div class="row narrow-row top-k-size">
                 <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="K"
-                                @classNames="col-xs-2" @type="number" @placeholder="Number"/>
+                                @classNames="col-xs-2" @type="number" @placeholder="Number" @disabled={{this.isListening}}/>
               </div>
               <div class="subsection-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
@@ -462,8 +451,8 @@
 
   <div class="container-fluid control-container">
     <hr/>
-    <button type="submit" class="btn btn-primary btn-md submit-button" {{on "click" this.listen}}>Run Query</button>
-    <button type="button" class="btn btn-default btn-md save-button" {{on "click" this.save}}>Save Query</button>
+    <button type="submit" disabled={{this.isListening}} class="btn btn-primary btn-md submit-button" {{on "click" this.listen}}>Run Query</button>
+    <button type="button" disabled={{this.isListening}} class="btn btn-default btn-md save-button" {{on "click" this.save}}>Save Query</button>
   </div>
 
 

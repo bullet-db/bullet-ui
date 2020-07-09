@@ -8,10 +8,10 @@ import { METRICS } from 'bullet-ui/models/metric';
 import currentValue from 'bullet-ui/utils/current-value';
 
 export default function validateMetricField() {
-  return (key, newFieldValue, oldFieldValue, changes, content) => {
+  return (key, newValue, oldValue, changes, content) => {
     const COUNT = METRICS.get('COUNT');
-    let { type } = currentValue(changes, content, ['type']);
-    if (!isEmpty(newFieldValue) || isEqual(type, COUNT)) {
+    let { type, field } = currentValue(changes, content, ['type', 'field']);
+    if (!isEmpty(field) || isEqual(type, COUNT)) {
       return true;
     }
     return `All metrics but ${COUNT} require a field`;

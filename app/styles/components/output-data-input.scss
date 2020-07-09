@@ -37,8 +37,8 @@
 
     .info-popover-wrapper {
       display: inline;
-
     }
+
     .fields-selection-container {
       @import "validated-field-selection";
 
@@ -52,12 +52,7 @@
           width: 120px;
         }
       }
-
-      &.metrics-container .metrics-selection {
-        @import "power-select-query-field";
-      }
     }
-
 
     .narrow-row {
       margin-top: 5px;

@@ -8,20 +8,20 @@ import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/mode
 import currentValue from 'bullet-ui/utils/current-value';
 
 export default function validatePoints() {
-  return (key, newType, oldType, changes, content) => {
-    if (!isEqual(newType, AGGREGATIONS.get('DISTRIBUTION'))) {
+  return (key, newValue, oldValue, changes, content) => {
+    let {
+      'type': type,
+      'attributes.pointType' : pointType
+    } = currentValue(changes, content, ['type', 'attributes.pointType']);
+    if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
       return true;
     }
-    let {
-      'attributes.pointType' : pointType
-    } = currentValue(changes, content, ['attributes.type']);
-
     if (isEqual(pointType, DISTRIBUTION_POINTS.get('POINTS'))) {
-      return validateFreeFormPoints(newType, changes, content);
+      return validateFreeFormPoints(type, changes, content);
     } else if (isEqual(pointType, DISTRIBUTION_POINTS.get('NUMBER'))) {
       return validateNumberOfPoints(changes, content);
     } else if (isEqual(pointType, DISTRIBUTION_POINTS.get('GENERATED'))) {
-      return validateGeneratedPoints(newType, changes, content);
+      return validateGeneratedPoints(type, changes, content);
     }
   }
 }

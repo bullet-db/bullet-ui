@@ -8,8 +8,15 @@
     <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @errors={{this.errors}}/>
   {{/if}}
 
-  {{!-- Yield to add additional HTML in the row --}}
-  {{yield}}
+  {{#if this.enableAdditionalOptions}}
+    <div class="{{@additionalClasses}} additional-selection">
+      <label class="power-select-label">{{@additionalLabel}}</label>
+      <PowerSelect @selected={{get @changeset @additionalPath}} @options={{@additionalOptions}}
+                   @onChange={{this.onModifyAdditionalOption}} @disabled={{@disabled}} as |item|>
+        {{item}}
+      </PowerSelect>
+    </div>
+  {{/if}}
 
   {{#unless this.disableField}}
     <div class="{{@fieldClasses}} field-selection">

@@ -38,11 +38,11 @@ export default class QueryInputComponent extends Component {
 
   // Settings are not auto-injected. Need to save it from factory lookup
   settings;
-  // The args filter
+  // Keep track of the args window and filter array to add a new one to it if the query did not have one to begin with
   filter;
-  // Keep track of the args window array to add a new window to it if the query did not have one to begin with
   window;
   // Unchanging changesets. No need to track.
+  filterChangeset;
   queryChangeset;
   aggregationChangeset;
 
@@ -89,28 +89,31 @@ export default class QueryInputComponent extends Component {
     this.errors = A();
 
     this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
-    this.filter = this.args.filter;
-    // Create all changesets
+
+    // Save all changesets and changeset arrays
     this.queryChangeset = this.args.query;
-
-    this.projections = this.args.projections;
-    this.rawType = isEmpty(this.projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
-
-    this.outputDataType = this.args.aggregation.get('type') || AGGREGATIONS.get('RAW');
-    this.distributionType = this.args.aggregation.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
-    this.pointType = this.args.aggregation.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
     this.aggregationChangeset = this.args.aggregation;
-
+    this.filter = this.args.filter;
+    this.window = this.args.window;
+    this.projections = this.args.projections;
     this.groups = this.args.groups;
     this.metrics = this.args.metrics;
 
-    this.window = this.args.window;
+    let hasFilter = !isEmpty(this.filter);
+    if (hasFilter) {
+      this.filterChangeset = this.filter.objectAt(0);
+    }
     this.hasWindow = !isEmpty(this.window);
     if (this.hasWindow) {
       this.windowChangeset = this.window.objectAt(0);
       this.emitType = this.windowChangeset.get('emitType');
       this.includeType = this.windowChangeset.get('includeType');
     }
+
+    this.rawType = isEmpty(this.projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
+    this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATIONS.get('RAW');
+    this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
+    this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
   }
 
   // Getters
@@ -173,7 +176,7 @@ export default class QueryInputComponent extends Component {
   // Render Modifiers and Modifier Helpers
 
   get filterClause() {
-    let rules = this.filter.get('clause');
+    let rules = this.filterChangeset && this.filterChangeset.get('clause');
     if (rules && !$.isEmptyObject(rules)) {
       return rules;
     }
@@ -201,6 +204,21 @@ export default class QueryInputComponent extends Component {
   }
 
   // Helpers
+  async createOptionalModel(modelName, collection) {
+    let model = await this.queryManager.createModel(modelName);
+    let changeset = this.queryManager.createChangeset(model, modelName);
+    collection.pushObject(changeset);
+    return changeset;
+  }
+
+  async setFilter() {
+    if (isNone(this.filterChangeset)) {
+      this.filterChangeset = await this.createOptionalModel('filter', this.filter);
+    }
+    this.filterChangeset.set('clause', this.currentFilterClause);
+    this.filterChangeset.set('summary', this.currentFilterSummary);
+    return this.filterChangeset;
+  }
 
   changeAggregation(type) {
     if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
@@ -234,22 +252,6 @@ export default class QueryInputComponent extends Component {
     }).then((model) => {
       collection.pushObject(this.queryManager.createChangeset(model, modelName));
       return resolve();
-    });
-  }
-
-  changeAggregationToProjection(type) {
-    return this.changeAggregationToFieldLike(type, 'projection', this.projections);
-  }
-
-  changeAggregationToGroup(type) {
-    return this.changeAggregationToFieldLike(type, 'group', this.groups);
-  }
-
-  createWindow() {
-    return this.queryManager.createModel('window').then(window => {
-      this.windowChangeset = this.queryManager.createChangeset(window, 'window');
-      this.window.pushObject(this.windowChangeset);
-      return resolve(this.windowChangeset);
     });
   }
 
@@ -291,28 +293,6 @@ export default class QueryInputComponent extends Component {
     });
   }
 
-  validateChangeset(changeset) {
-    return changeset.validate().then(() => {
-      return resolve(A(changeset.get('isInvalid') ? changeset.errors : []));
-    });
-  }
-
-  collectValidations(promises, accumulator = A()) {
-    return promises.then((results) => {
-      results.forEach((result) => {
-        accumulator.pushObjects(result);
-      });
-      return resolve(accumulator);
-    });
-  }
-
-  validateCollection(collection, onErrorMessage) {
-    let validations = collection.map(item => this.validateChangeset(item));
-    return this.collectValidations(all(validations)).then(result => {
-      return resolve(A(isEmpty(result) ? [] : [onErrorMessage]));
-    });
-  }
-
   reset() {
     this.isListening = false;
     this.hasError = false;
@@ -321,31 +301,37 @@ export default class QueryInputComponent extends Component {
     $(this.queryBuilderInputs).removeAttr('disabled');
   }
 
-  validate() {
+  async validate() {
     this.reset();
-    this.queryManager.cleanup(this.aggregationChangeset, this.projections, this.groups);
-    let changesetValidations = [
-      this.validateChangeset(this.queryChangeset),
-      this.validateChangeset(this.aggregationChangeset),
-      this.hasWindow ? this.validateChangeset(this.windowChangeset) : resolve(A()),
-      this.validateCollection(this.projections, 'There is an issue with Raw projected fields'),
-      this.validateCollection(this.groups, 'There is an issue with aggregation fields'),
-      this.validateCollection(this.metrics, 'There is an issue with metrics')
-    ];
-    return this.collectValidations(all(changesetValidations), this.errors).then((errors) => {
-      return isEmpty(errors) ? resolve() : reject();
-    });
+    await this.queryManager.cleanup(this.aggregationChangeset, this.projections, this.groups);
+    let changesets = {
+      query: this.queryChangeset,
+      aggregation: this.aggregationChangeset,
+      window: this.windowChangeset,
+      projections: this.projections,
+      groups: this.groups,
+      metrics: this.metrics
+    };
+    let validations = await this.queryManager.validate(changesets);
+    if (!this.isCurrentFilterValid) {
+      validations.push(this.queryManager.createValidationError('There is an issue with the filters'));
+    }
+    if (!isEmpty(validations)) {
+      throw validations;
+    }
   }
 
-  doSave() {
-    return this.validate().then(() => {
-      return this.queryManager.save(this.query, this.queryChangeset, this.aggregationChangeset,
-                                    this.projections, this.groups, this.metrics,
-                                    this.currentFilterClause, this.currentFilterSummary);
-    }, () => {
+  async doSave() {
+    await this.setFilter();
+    try {
+      await this.validate();
+      //await this.args.saveQuery();
+      this.hasSaved = true;
+    } catch(errors) {
       this.hasError = true;
-      return reject();
-    });
+      this.errors = A(errors);
+      throw error;
+    }
   }
 
   // Actions
@@ -353,7 +339,7 @@ export default class QueryInputComponent extends Component {
   @action
   addRawAggregation(selectType = false) {
     if (selectType) {
-      this.changeAggregationToProjection(AGGREGATIONS.get('RAW'), 'projection', this.projections);
+      this.changeAggregationToFieldLike(AGGREGATIONS.get('RAW'), 'projection', this.projections);
     } else {
       this.changeAggregation(AGGREGATIONS.get('RAW'));
     }
@@ -366,17 +352,17 @@ export default class QueryInputComponent extends Component {
 
   @action
   addCountDistinctAggregation() {
-    this.changeAggregationToGroup(AGGREGATIONS.get('COUNT_DISTINCT'));
+    this.changeAggregationToFieldLike(AGGREGATIONS.get('COUNT_DISTINCT'), 'group', this.groups);
   }
 
   @action
   addTopKAggregation() {
-    this.changeAggregationToGroup(AGGREGATIONS.get('TOP_K'));
+    this.changeAggregationToFieldLike(AGGREGATIONS.get('TOP_K'), 'group', this.groups);
   }
 
   @action
   addDistributionAggregation() {
-    this.changeAggregationToGroup(AGGREGATIONS.get('DISTRIBUTION')).then(() => {
+    this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups).then(() => {
       // Default type is Quantile, Number of Points
       this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
     });
@@ -414,11 +400,6 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  changeMetricType(metric, value) {
-    metric.set('type', value.get('name'));
-  }
-
-  @action
   changeAttribute(field, value) {
     this.aggregationChangeset.set(`attributes.${field}`, value);
   }
@@ -442,7 +423,8 @@ export default class QueryInputComponent extends Component {
 
   @action
   addWindow() {
-    this.createWindow().then(() => {
+    this.createOptionalModel('window', this.window).then(changeset => {
+      this.windowChangeset = changeset;
       this.includeType = INCLUDE_TYPES.get('WINDOW');
       this.emitType = EMIT_TYPES.get('TIME');
       this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
@@ -460,21 +442,19 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  save() {
-    console.log(this);
-    return;
-    this.doSave().then(() => {
-      this.hasSaved = true;
-    });
+  async save() {
+    try {
+      await this.doSave();
+    } catch(error) { }
   }
 
   @action
-  listen() {
-    this.doSave().then(() => {
+  async listen() {
+    try {
+      await this.doSave();
       this.isListening = true;
-      this.hasSaved = true;
       $(this.queryBuilderInputs).attr('disabled', true);
       this.args.fireQuery();
-    });
+    } catch(error) { }
   }
 }

@@ -6,6 +6,7 @@
 import EmberObject, { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
+import { isNone } from '@ember/utils';
 
 export default class QueriesRoute extends Route {
   @service queryManager;
@@ -13,13 +14,38 @@ export default class QueriesRoute extends Route {
 
   async model() {
     let queries = await this.store.findAll('query');
+    let filters = await this.store.findAll('filter');
     let results = await this.store.findAll('result');
     let groups = await this.store.findAll('group');
     let aggregations = await this.store.findAll('aggregation');
     let projections = await this.store.findAll('projection');
     let metrics = await this.store.findAll('metric');
     let windows = await this.store.findAll('window');
-    return { queries, results, groups, aggregations, projections, metrics, windows };
+    return { queries, filters, results, groups, aggregations, projections, metrics, windows };
+  }
+
+  afterModel(model) {
+    // This exists to cleanup any copy models that were created for the query form but not discarded. This can happen if
+    // the router transition does not fire for some reason (bookmark, close browser etc.) No need to do results, query
+    // or aggregation since they are not copied. Also don't care about holding up anything while this is happening.
+    this.reapUnparented(model.filters, 'query');
+    this.reapUnparented(model.windows, 'query');
+    this.reapUnparented(model.projections, 'query');
+    this.reapUnparented(model.groups, 'aggregation');
+    this.reapUnparented(model.metrics, 'aggregation');
+  }
+
+  reapUnparented(collection, parentName) {
+    if (isNone(collection)) {
+      return;
+    }
+    collection.forEach(item => {
+      item.get(parentName).then(parent => {
+        if (isNone(parent)) {
+          this.queryManager.deleteModel(item);
+        }
+      });
+    });
   }
 
   getOrigin() {

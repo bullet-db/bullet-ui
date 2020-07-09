@@ -24,6 +24,10 @@ export default class ValidatedFieldSelectionComponent extends Component {
     return argsGet(this.args, 'tooltipPosition', 'right');
   }
 
+  get enableAdditionalOptions() {
+    return argsGet(this.args, 'enableAdditionalOptions', false);
+  }
+
   get disableField() {
     return argsGet(this.args, 'disableField', false);
   }
@@ -46,6 +50,14 @@ export default class ValidatedFieldSelectionComponent extends Component {
       this.isInvalid = !isEmpty(errors);
       this.errors = errors;
     });
+  }
+
+  @action
+  onModifyAdditionalOption(option) {
+    let changeset = this.args.changeset;
+    let path = this.args.additionalPath;
+    changeset.set(path, option);
+    this.validate(changeset, path);
   }
 
   @action

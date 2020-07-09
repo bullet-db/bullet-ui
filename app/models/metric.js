@@ -32,18 +32,14 @@ let Metric = EmberObject.extend({
   },
 
   asList() {
-    return [
-      EmberObject.create({ name: this.SUM }), EmberObject.create({ name: this.COUNT }),
-      EmberObject.create({ name: this.MIN }), EmberObject.create({ name: this.MAX }),
-      EmberObject.create({ name: this.AVG })
-    ];
+    return [this.SUM, this.COUNT, this.MIN, this.MAX, this.AVG];
   }
 });
 
 export const METRICS = Metric.create();
 
 export default class MetricModel extends Model {
-  @attr('string', { defaultValue: METRICS.get('SUM') }) type;
+  @attr('string', { defaultValue: METRICS.get('SUM') }) kind;
   @attr('string') field;
   @attr('string') name;
   @belongsTo('aggregation', { autoSave: true }) aggregation;

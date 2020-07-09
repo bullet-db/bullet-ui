@@ -9,7 +9,7 @@ import { all, Promise, resolve } from 'rsvp';
 import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
-import { isBlank, isEqual } from '@ember/utils';
+import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
 import config from '../config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
@@ -20,6 +20,7 @@ import AggregationValidations from 'bullet-ui/validators/aggregation';
 import GroupValidations from 'bullet-ui/validators/group';
 import MetricValidations from 'bullet-ui/validators/metric';
 import WindowValidations from 'bullet-ui/validators/window';
+import validateMultiModelRelationships from 'bullet-ui/validators/multi-model';
 import lookupValidator from 'ember-changeset-validations';
 import Changeset from 'ember-changeset';
 
@@ -94,7 +95,7 @@ export default class QueryManagerService extends Service {
       let originalAggregation = query.get('aggregation');
       return all([
         this.copyMultiple(originalAggregation, copiedAggregation, 'group', 'aggregation', ['field', 'name']),
-        this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
+        this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['kind', 'field', 'name'])
       ]).then(() => copiedAggregation.save());
     }).then(() => copied.save()).then(() => copied);
   }
@@ -153,7 +154,7 @@ export default class QueryManagerService extends Service {
     return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
   }
 
-  // Changesets
+  // Changesets and validations
 
   validationsFor(modelName) {
     switch (modelName) {
@@ -170,6 +171,54 @@ export default class QueryManagerService extends Service {
       case 'metric':
         return MetricValidations;
     }
+  }
+
+  createValidationError(messages) {
+    if (typeOf(messages) === 'string') {
+      messages = [messages];
+    }
+    return { 'validation' : messages };
+  }
+
+  async validateChangeset(changeset) {
+    if (isNone(changeset)) {
+      return [];
+    }
+    await changeset.validate();
+    return changeset.get('isInvalid') ? changeset.errors : [];
+  }
+
+  validateMultiModels(settings, changesets) {
+    let validations = validateMultiModelRelationships(settings, changesets);
+    return isEmpty(validations) ? validations : [this.createValidationError(validations)];
+  }
+
+  // Need to use rsvp
+  validateCollection(collection, message, accumulator = []) {
+    let validations = collection.map(item => this.validateChangeset(item));
+    return all(validations).then(results => {
+      results.filter(result => !isEmpty(result)).forEach(result => {
+        accumulator.push(result);
+      });
+      return resolve(isEmpty(accumulator) ? [] : [this.createValidationError(message)]);
+    });
+  }
+
+  async validate(changesets) {
+    let validations = [
+      await this.validateChangeset(changesets.query),
+      await this.validateChangeset(changesets.aggregation),
+      await this.validateChangeset(changesets.windowChangeset),
+      await this.validateCollection(changesets.projections, 'Please fix the fields'),
+      await this.validateCollection(changesets.groups, 'Please fix the fields'),
+      await this.validateCollection(changesets.metrics, 'Please fix the metrics'),
+      this.validateMultiModels(this.settings, changesets)
+    ];
+    validations = validations.filter(item => !isEmpty(item));
+    return validations.reduce((p, c) => {
+      p.push(...c);
+      return p;
+    }, []);
   }
 
   createChangeset(model, modelName) {
@@ -277,10 +326,6 @@ export default class QueryManagerService extends Service {
     return model.get(name).then(items => {
       return this.deleteMultipleCollection(items, inverseName);
     });
-  }
-
-  deleteProjections(query) {
-    return this.deleteMultiple('projections', query, 'query');
   }
 
   deleteAggregation(query) {

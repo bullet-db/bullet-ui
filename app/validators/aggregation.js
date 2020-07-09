@@ -6,8 +6,6 @@
 import { validatePresence, validateNumber } from 'ember-changeset-validations/validators';
 import validateAggregationMaxSize from 'bullet-ui/validators/aggregation-max-size';
 import validatePoints from 'bullet-ui/validators/valid-points';
-import validateWindow from 'bullet-ui/validators/valid-window';
-import validateGroupMetricPresence from 'bullet-ui/validators/group-metric-presence';
 
 export default {
   size: [
@@ -15,16 +13,13 @@ export default {
     validateNumber({ gte: 1, message: 'Maximum results must be a positive integer' }),
     validateAggregationMaxSize()
   ],
-  type: validateWindow(),
-  groups: validateGroupMetricPresence(),
-  metrics: validateGroupMetricPresence(),
   attributes: {
-    type: validatePoints(),
-    pointType: validatePoints(),
-    numberOfPoints: validatePoints(),
-    points: validatePoints(),
-    start: validatePoints(),
-    end: validatePoints(),
-    increment: validatePoints()
+    type: [validatePoints()],
+    pointType: [validatePoints()],
+    numberOfPoints: [validatePoints()],
+    points: [validatePoints()],
+    start: [validatePoints()],
+    end: [validatePoints()],
+    increment: [validatePoints()]
   }
 }
