@@ -44,8 +44,8 @@ export default class ValidatedFieldSelectionComponent extends Component {
     changeset.validate().then(() => {
       if (!changeset.get('isInvalid')) {
         this.isInvalid = false;
-        // This save is here for a weird bug. If we change a value and change back, no further changes apply. Saving
-        // it helps and it should be fine since we're saving to copied fields anyway
+        // This save is here for a weird bug. If we change a value and change back, no further changes apply.
+        // Saving it helps and it should be fine since we're saving to copied fields anyway
         changeset.save();
         return;
       }
@@ -76,7 +76,7 @@ export default class ValidatedFieldSelectionComponent extends Component {
   onModifyName(name) {
     let changeset = this.args.changeset;
     changeset.set(this.namePath, name);
-    // No need to validate name
+    this.validate(changeset, this.namePath);
   }
 
   @action

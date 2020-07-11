@@ -22,7 +22,6 @@ export default class QueryRoute extends QueryableRoute {
     }
     let changesets = Object.values(this.controller.get('changesets'));
     for (const value of changesets) {
-      // If array (EmberArray), is anything dirty? Otherwise, is the value dirty?
       if (typeOf(value) === 'array' ? value.isAny('isDirty') : value.get('isDirty')) {
         return true;
       }
@@ -34,23 +33,27 @@ export default class QueryRoute extends QueryableRoute {
     super.setupController(controller, model);
     controller.set('changesets', model);
     controller.set('forceDirty', false);
+    controller.set('hasSaved', false);
   }
 
   async model(params) {
+    let models = await this.getModels(params.query_id);
+    let changesets = await this.createChangesets(models);
+    // No changeset for schema
+    changesets.schema = await this.store.findAll('column');
+    return changesets;
+  }
+
+  async getModels(queryID) {
     let models = { };
-    models.schema = await this.store.findAll('column');
-    models.query = await this.store.findRecord('query', params.query_id);
+    models.query = await this.store.findRecord('query', queryID);
     models.projections = await models.query.projections;
     models.aggregation = await models.query.aggregation;
     models.groups = await models.aggregation.groups;
     models.metrics = await models.aggregation.metrics;
     models.filter = await models.query.filter;
     models.window = await models.query.window;
-
-    let changesets = await this.createChangesets(models);
-    // No changeset for schema
-    changesets.schema = models.schema;
-    return changesets;
+    return models;
   }
 
   async createChangesets(models) {
@@ -109,9 +112,6 @@ export default class QueryRoute extends QueryableRoute {
     this.deleteModels(metrics);
   }
 
-  async applyChangesets() {
-  }
-
   @action
   forceDirty() {
     this.controller.set('forceDirty', true);
@@ -119,10 +119,13 @@ export default class QueryRoute extends QueryableRoute {
 
   @action
   async saveQuery() {
-    if (this.areChangesetsDirty) {
-      // this.controller.set('forceDirty', false);
-      await this.applyChangesets();
+    if (!this.areChangesetsDirty) {
+      return;
     }
+    let changesets = this.controller.get('changesets');
+    await this.queryManager.save(changesets);
+    this.controller.set('forceDirty', false);
+    this.controller.set('hasSaved', true);
   }
 
   @action
@@ -140,7 +143,12 @@ export default class QueryRoute extends QueryableRoute {
     if (this.areChangesetsDirty && !confirm('You have changes that may be lost unless you save! Are you sure?')) {
       transition.abort();
     } else {
-      this.discardChangesets();
+      // If we saved, don't discard since changeset models ARE the underlying models now. Any new changeset changes
+      // will be discarded if the user makes changes after (except for field modifications: see bug note in
+      // validated-field-selection). Any new fields created will be reaped later when loading queries.
+      if (!this.controller.get('hasSaved')) {
+        this.discardChangesets();
+      }
       return true;
     }
   }

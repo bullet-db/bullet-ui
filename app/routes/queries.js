@@ -25,14 +25,14 @@ export default class QueriesRoute extends Route {
   }
 
   afterModel(model) {
-    // This exists to cleanup any copy models that were created for the query form but not discarded. This can happen if
-    // the router transition does not fire for some reason (bookmark, close browser etc.) No need to do results, query
-    // or aggregation since they are not copied. Also don't care about holding up anything while this is happening.
-    this.reapUnparented(model.filters, 'query');
-    this.reapUnparented(model.windows, 'query');
-    this.reapUnparented(model.projections, 'query');
-    this.reapUnparented(model.groups, 'aggregation');
-    this.reapUnparented(model.metrics, 'aggregation');
+    // This exists to cleanup any copy models that were created for the query form but not saved. No need to do
+    // results, query or aggregation since they are not copied. Also don't care about holding up anything while this
+    // is happening.
+    // this.reapUnparented(model.filters, 'query');
+    // this.reapUnparented(model.windows, 'query');
+    // this.reapUnparented(model.projections, 'query');
+    // this.reapUnparented(model.groups, 'aggregation');
+    // this.reapUnparented(model.metrics, 'aggregation');
   }
 
   reapUnparented(collection, parentName) {

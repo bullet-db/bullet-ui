@@ -180,12 +180,13 @@ export default class QueryManagerService extends Service {
     return { 'validation' : messages };
   }
 
-  async validateChangeset(changeset) {
+  validateChangeset(changeset) {
     if (isNone(changeset)) {
-      return [];
+      return resolve([]);
     }
-    await changeset.validate();
-    return changeset.get('isInvalid') ? changeset.errors : [];
+    return changeset.validate().then(() => {
+      return resolve(changeset.get('isInvalid') ? changeset.errors : []);
+    });
   }
 
   validateMultiModels(settings, changesets) {
@@ -193,7 +194,6 @@ export default class QueryManagerService extends Service {
     return isEmpty(validations) ? validations : [this.createValidationError(validations)];
   }
 
-  // Need to use rsvp
   validateCollection(collection, message, accumulator = []) {
     let validations = collection.map(item => this.validateChangeset(item));
     return all(validations).then(results => {
@@ -204,21 +204,24 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  async validate(changesets) {
+  validate(changesets) {
     let validations = [
-      await this.validateChangeset(changesets.query),
-      await this.validateChangeset(changesets.aggregation),
-      await this.validateChangeset(changesets.windowChangeset),
-      await this.validateCollection(changesets.projections, 'Please fix the fields'),
-      await this.validateCollection(changesets.groups, 'Please fix the fields'),
-      await this.validateCollection(changesets.metrics, 'Please fix the metrics'),
-      this.validateMultiModels(this.settings, changesets)
+      this.validateChangeset(changesets.query),
+      this.validateChangeset(changesets.aggregation),
+      this.validateChangeset(changesets.windowChangeset),
+      this.validateCollection(changesets.projections, 'Please fix the fields'),
+      this.validateCollection(changesets.groups, 'Please fix the fields'),
+      this.validateCollection(changesets.metrics, 'Please fix the metrics'),
+      resolve(this.validateMultiModels(this.settings, changesets))
     ];
-    validations = validations.filter(item => !isEmpty(item));
-    return validations.reduce((p, c) => {
-      p.push(...c);
-      return p;
-    }, []);
+    return all(validations).then(results => {
+      let messages = [];
+      results.filter(item => !isEmpty(item)).reduce((p, c) => {
+        p.push(...c);
+        return p;
+      }, messages);
+      resolve(messages);
+    });
   }
 
   createChangeset(model, modelName) {
@@ -271,29 +274,35 @@ export default class QueryManagerService extends Service {
     this.fixDistributionPointType(aggregation)
   }
 
-  save(query, queryChanges, aggregationChanges, projectionsChanges, groupsChanges, metricsChanges, clause, summary) {
-    // The underlying relationship saving need not block query saving
-    /*
-    let promises = [
-      query.get('filter').then(i => {
-        i.set('clause', clause);
-        i.set('summary', summary);
-        return i.save();
-      }),
-      query.get('projections').then(p => p.forEach(i => i.save())),
-      query.get('aggregation').then(a => {
-        let promises = [
-          a.get('groups').then(g => g.forEach(i => i.save())),
-          a.get('metrics').then(m => m.forEach(i => i.save())),
-          a.save()
-        ];
-        return all(promises);
-      }),
-      query.get('window').then(w => (isEmpty(w) ? resolve() : w.save())),
-      query.save()
-    ];
+  saveMultipleChangeset(model, hasManyChangeset, inverseName) {
+    if (isEmpty(hasManyChangeset)) {
+      return resolve();
+    }
+    let promises = [];
+    hasManyChangeset.forEach(relationChangeset => {
+      // Apply changeset and then point the relation to the model and save again.
+      promises.push(relationChangeset.save().then(relation => {
+        relation.set(inverseName, model);
+        return relation.save();
+      }));
+    });
     return all(promises);
-    */
+  }
+
+  async save(changesets) {
+    let { query, aggregation, filter, window, projections, groups, metrics } = changesets;
+    // Apply required changesets
+    let queryModel = await query.save();
+    let aggregationModel = await aggregation.save();
+    // Wipe all optional relations in the query model
+    await this.deleteOptionalRelations(queryModel);
+    await this.saveMultipleChangeset(queryModel, filter, 'query');
+    await this.saveMultipleChangeset(queryModel, window, 'query');
+    await this.saveMultipleChangeset(queryModel, projections, 'query');
+    await this.saveMultipleChangeset(aggregationModel, groups, 'aggregation');
+    await this.saveMultipleChangeset(aggregationModel, metrics, 'aggregation');
+    await aggregationModel.save();
+    await queryModel.save();
   }
 
   createModel(modelName, opts = {}) {
@@ -309,7 +318,7 @@ export default class QueryManagerService extends Service {
   deleteSingle(name, model, inverseName) {
     return model.get(name).then(item => {
       item.set(inverseName, null);
-      item.destroyRecord();
+      return item.destroyRecord();
     });
   }
 
@@ -326,6 +335,19 @@ export default class QueryManagerService extends Service {
     return model.get(name).then(items => {
       return this.deleteMultipleCollection(items, inverseName);
     });
+  }
+
+  deleteOptionalRelations(query) {
+    return query.get('aggregation').then(aggregation => {
+      let promises = [
+        this.deleteSingle('filter', query, 'query'),
+        this.deleteSingle('window', query, 'query'),
+        this.deleteMultiple('projections', query, 'query'),
+        this.deleteMultiple('groups', aggregation, 'aggregation'),
+        this.deleteMultiple('metrics', aggregation, 'aggregation')
+      ];
+      return all(promises).then(() => aggregation.save());
+    }).then(() => query.save());
   }
 
   deleteAggregation(query) {

@@ -325,7 +325,7 @@ export default class QueryInputComponent extends Component {
     await this.setFilter();
     try {
       await this.validate();
-      //await this.args.saveQuery();
+      await this.args.saveQuery();
       this.hasSaved = true;
     } catch(errors) {
       this.hasError = true;
