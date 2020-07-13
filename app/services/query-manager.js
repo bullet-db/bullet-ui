@@ -37,6 +37,8 @@ export default class QueryManagerService extends Service {
     return `${windowSection}.${windowNumber}`;
   }
 
+  // Copying
+
   copyFields(from, to, fields) {
     fields.forEach(field => {
       to.set(field, from.get(field));
@@ -100,6 +102,8 @@ export default class QueryManagerService extends Service {
     }).then(() => copied.save()).then(() => copied);
   }
 
+  // Transforming
+
   encodeQuery(query) {
     let querier = this.querier;
     querier.set('apiMode', false);
@@ -119,6 +123,8 @@ export default class QueryManagerService extends Service {
       resolve(querier.recreate(json));
     });
   }
+
+  // Result manipulation
 
   addResult(id) {
     return this.store.findRecord('query', id).then(query => {
@@ -154,7 +160,7 @@ export default class QueryManagerService extends Service {
     return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
   }
 
-  // Changesets and validations
+  // Validations
 
   validationsFor(modelName) {
     switch (modelName) {
@@ -208,7 +214,7 @@ export default class QueryManagerService extends Service {
     let validations = [
       this.validateChangeset(changesets.query),
       this.validateChangeset(changesets.aggregation),
-      this.validateChangeset(changesets.windowChangeset),
+      this.validateChangeset(changesets.window),
       this.validateCollection(changesets.projections, 'Please fix the fields'),
       this.validateCollection(changesets.groups, 'Please fix the fields'),
       this.validateCollection(changesets.metrics, 'Please fix the metrics'),
@@ -274,19 +280,55 @@ export default class QueryManagerService extends Service {
     this.fixDistributionPointType(aggregation)
   }
 
-  saveMultipleChangeset(model, hasManyChangeset, inverseName) {
-    if (isEmpty(hasManyChangeset)) {
-      return resolve();
+  // Saving
+
+  async mergeChangeset(parentModel, belongsToPath, changeset, inverseName) {
+    // If no changeset, need to delete model
+    if (isNone(changeset)) {
+      await this.deleteSingle(belongsToPath, parentModel, inverseName);
+      return;
     }
-    let promises = [];
-    hasManyChangeset.forEach(relationChangeset => {
-      // Apply changeset and then point the relation to the model and save again.
-      promises.push(relationChangeset.save().then(relation => {
-        relation.set(inverseName, model);
-        return relation.save();
-      }));
-    });
-    return all(promises);
+    let model = await parentModel.get(belongsToPath);
+    let relation = await changeset.save();
+    let inverse = await relation.get(inverseName);
+    // If no inverse, this is a copied changeset model. Delete the original in the parent
+    if (isNone(inverse)) {
+      await this.deleteSingle(belongsToPath, parentModel, inverseName);
+      relation.set(inverseName, parentModel);
+      await relation.save();
+    }
+    // If there was an inverse, nothing else to do. We already saved it.
+  }
+
+  async mergeChangesets(parentModel, hasManyPath, changesets, inverseName) {
+    if (isEmpty(changesets)) {
+      await this.deleteMultiple(hasManyPath, parentModel, inverseName);
+      return;
+    }
+    let models = await parentModel.get(hasManyPath);
+    // If there were originals, need to remove all since the order may have changed and destroy ones NOT in the changesets
+    if (!isEmpty(models)) {
+      let array = models.toArray();
+      for (let i = 0; i < array.length; ++i) {
+        let model = array[i];
+        models.removeObject(model);
+        let existingModel = changesets.findBy('id', model.get('id'));
+        // If it exists, this model needs to be destroyed since the new changes don't have it
+        if (isNone(existingModel)) {
+          model.set(inverseName, null);
+          await model.destroyRecord();
+        }
+      }
+    }
+    // At this point, models should be empty even if it wasn't to begin with. Add the new ones back in the right order
+    let newRelation = changesets.toArray();
+    for (let i = 0; i < newRelation.length; ++i) {
+      let relation = await newRelation[i].save();
+      // Could check inverse to see if it exists and not save but simpler to just set and save
+      relation.set(inverseName, parentModel);
+      await relation.save();
+      models.pushObject(relation);
+    }
   }
 
   async save(changesets) {
@@ -295,20 +337,23 @@ export default class QueryManagerService extends Service {
     let queryModel = await query.save();
     let aggregationModel = await aggregation.save();
     // Wipe all optional relations in the query model
-    await this.deleteOptionalRelations(queryModel);
-    await this.saveMultipleChangeset(queryModel, filter, 'query');
-    await this.saveMultipleChangeset(queryModel, window, 'query');
-    await this.saveMultipleChangeset(queryModel, projections, 'query');
-    await this.saveMultipleChangeset(aggregationModel, groups, 'aggregation');
-    await this.saveMultipleChangeset(aggregationModel, metrics, 'aggregation');
+    await this.mergeChangesets(aggregationModel, 'groups', groups, 'aggregation');
+    await this.mergeChangesets(aggregationModel, 'metrics', metrics, 'aggregation');
     await aggregationModel.save();
+    await this.mergeChangeset(queryModel, 'filter', filter, 'query');
+    await this.mergeChangeset(queryModel, 'window', window, 'query');
+    await this.mergeChangesets(queryModel, 'projections', projections, 'query');
     await queryModel.save();
   }
+
+  // Creating
 
   createModel(modelName, opts = {}) {
     let model = this.store.createRecord(modelName, opts);
     return model.save();
   }
+
+  // Deleting
 
   deleteModel(model) {
     // Autosave takes care of updating parent
@@ -317,6 +362,9 @@ export default class QueryManagerService extends Service {
 
   deleteSingle(name, model, inverseName) {
     return model.get(name).then(item => {
+      if (isNone(item)) {
+        return resolve();
+      }
       item.set(inverseName, null);
       return item.destroyRecord();
     });
@@ -337,17 +385,21 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  deleteOptionalRelations(query) {
-    return query.get('aggregation').then(aggregation => {
-      let promises = [
-        this.deleteSingle('filter', query, 'query'),
-        this.deleteSingle('window', query, 'query'),
-        this.deleteMultiple('projections', query, 'query'),
-        this.deleteMultiple('groups', aggregation, 'aggregation'),
-        this.deleteMultiple('metrics', aggregation, 'aggregation')
-      ];
-      return all(promises).then(() => aggregation.save());
-    }).then(() => query.save());
+  deleteUnparented(model, parentName) {
+    if (isNone(model)) {
+      return;
+    }
+    model.get(parentName).then(parent => {
+      if (isNone(parent)) {
+        this.deleteModel(item);
+      }
+    });
+  }
+  deleteMultipleUnparented(collection, parentName) {
+    if (isNone(collection)) {
+      return;
+    }
+    collection.forEach(model => this.deleteUnparented(model, parentName));
   }
 
   deleteAggregation(query) {
@@ -389,6 +441,14 @@ export default class QueryManagerService extends Service {
     ]).then(() => {
       return query.destroyRecord();
     });
+  }
+
+  deleteAllUnparented(models) {
+    this.deleteUnparented(models.filter, 'query');
+    this.deleteUnparented(models.window, 'query');
+    this.deleteMultipleUnparented(models.projections, 'query');
+    this.deleteMultipleUnparented(models.groups, 'aggregation');
+    this.deleteMultipleUnparented(models.metrics, 'aggregation');
   }
 
   deleteAllResults() {

@@ -25,27 +25,9 @@ export default class QueriesRoute extends Route {
   }
 
   afterModel(model) {
-    // This exists to cleanup any copy models that were created for the query form but not saved. No need to do
-    // results, query or aggregation since they are not copied. Also don't care about holding up anything while this
-    // is happening.
-    // this.reapUnparented(model.filters, 'query');
-    // this.reapUnparented(model.windows, 'query');
-    // this.reapUnparented(model.projections, 'query');
-    // this.reapUnparented(model.groups, 'aggregation');
-    // this.reapUnparented(model.metrics, 'aggregation');
-  }
-
-  reapUnparented(collection, parentName) {
-    if (isNone(collection)) {
-      return;
-    }
-    collection.forEach(item => {
-      item.get(parentName).then(parent => {
-        if (isNone(parent)) {
-          this.queryManager.deleteModel(item);
-        }
-      });
-    });
+    // This exists to cleanup any models that were created for the query form but not saved. No need to do results,
+    // query or aggregation since they are not copied. No need to hold up anything while this is happening.
+    // this.queryManager.deleteAllUnparented(model)
   }
 
   getOrigin() {

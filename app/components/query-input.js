@@ -325,7 +325,7 @@ export default class QueryInputComponent extends Component {
     await this.setFilter();
     try {
       await this.validate();
-      await this.args.saveQuery();
+      await this.args.onSaveQuery();
       this.hasSaved = true;
     } catch(errors) {
       this.hasError = true;
@@ -381,14 +381,14 @@ export default class QueryInputComponent extends Component {
   @action
   deleteProjections() {
     this.queryManager.deleteMultipleCollection(this.projections, 'query');
-    this.args.forceDirty();
+    this.args.onForceDirty();
   }
 
   @action
   addFieldLike(modelName, collection) {
     this.queryManager.createModel(modelName).then((model) => {
       collection.pushObject(this.queryManager.createChangeset(model, modelName));
-      this.args.forceDirty();
+      this.args.onForceDirty();
     });
   }
 
@@ -396,7 +396,7 @@ export default class QueryInputComponent extends Component {
   deleteFieldLike(item, collection) {
     collection.removeObject(item);
     this.queryManager.deleteModel(item.get('data'));
-    this.args.forceDirty();
+    this.args.onForceDirty();
   }
 
   @action
@@ -429,7 +429,7 @@ export default class QueryInputComponent extends Component {
       this.emitType = EMIT_TYPES.get('TIME');
       this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
       this.hasWindow = true;
-      this.args.forceDirty();
+      this.args.onForceDirty();
     });
   }
 
@@ -438,7 +438,7 @@ export default class QueryInputComponent extends Component {
     this.hasWindow = false;
     this.windowChangeset = null;
     this.queryManager.deleteMultipleCollection(this.window, 'query');
-    this.args.forceDirty();
+    this.args.onForceDirty();
   }
 
   @action
@@ -454,7 +454,7 @@ export default class QueryInputComponent extends Component {
       await this.doSave();
       this.isListening = true;
       $(this.queryBuilderInputs).attr('disabled', true);
-      this.args.fireQuery();
+      this.args.onFireQuery();
     } catch(error) { }
   }
 }

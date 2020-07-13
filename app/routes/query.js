@@ -17,7 +17,7 @@ export default class QueryRoute extends QueryableRoute {
   @service store;
 
   get areChangesetsDirty() {
-    if (this.controller.get('forceDirty')) {
+    if (this.controller.get('forcedDirty')) {
       return true;
     }
     let changesets = Object.values(this.controller.get('changesets'));
@@ -32,8 +32,7 @@ export default class QueryRoute extends QueryableRoute {
   setupController(controller, model) {
     super.setupController(controller, model);
     controller.set('changesets', model);
-    controller.set('forceDirty', false);
-    controller.set('hasSaved', false);
+    controller.set('forcedDirty', false);
   }
 
   async model(params) {
@@ -96,25 +95,9 @@ export default class QueryRoute extends QueryableRoute {
     });
   }
 
-  deleteModels(collection) {
-    collection.forEach(item => {
-      this.queryManager.deleteModel(item.get('data'));
-    });
-  }
-
-  discardChangesets() {
-    // Just toss away query and aggregation. Nothing to do. Wipe everything else.
-    let { filter, window, projections, groups, metrics } = this.controller.get('changesets');
-    this.deleteModels(filter);
-    this.deleteModels(window);
-    this.deleteModels(projections);
-    this.deleteModels(groups);
-    this.deleteModels(metrics);
-  }
-
   @action
   forceDirty() {
-    this.controller.set('forceDirty', true);
+    this.controller.set('forcedDirty', true);
   }
 
   @action
@@ -123,9 +106,12 @@ export default class QueryRoute extends QueryableRoute {
       return;
     }
     let changesets = this.controller.get('changesets');
-    await this.queryManager.save(changesets);
-    this.controller.set('forceDirty', false);
-    this.controller.set('hasSaved', true);
+    await this.queryManager.save({
+      query: changesets.query, aggregation: changesets.aggregation,
+      filter: changesets.filter.objectAt(0), window: changesets.window.objectAt(0),
+      projections: changesets.projections, metrics: changesets.metrics, groups: changesets.groups
+    });
+    this.controller.set('forcedDirty', false);
   }
 
   @action
@@ -143,12 +129,7 @@ export default class QueryRoute extends QueryableRoute {
     if (this.areChangesetsDirty && !confirm('You have changes that may be lost unless you save! Are you sure?')) {
       transition.abort();
     } else {
-      // If we saved, don't discard since changeset models ARE the underlying models now. Any new changeset changes
-      // will be discarded if the user makes changes after (except for field modifications: see bug note in
-      // validated-field-selection). Any new fields created will be reaped later when loading queries.
-      if (!this.controller.get('hasSaved')) {
-        this.discardChangesets();
-      }
+      // If the user url navigates away or closes the browser, these copied models will be cleaned up on queries load.
       return true;
     }
   }
