@@ -44,7 +44,7 @@
           <Popovers::FilterHelp @settings={{this.settings}}/>
         </InfoPopover>
       </div>
-      <div class="{{this.queryBuilderClass}}" {{did-insert this.addQueryBuilder this.queryBuilderOptions @forceDirty}}/>
+      <div class="{{this.queryBuilderClass}}" {{did-insert this.addQueryBuilder this.queryBuilderOptions this.changeFilter}}/>
     </div>
     {{!-- End Filter Section --}}
 

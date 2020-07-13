@@ -46,6 +46,9 @@ export default class QueryInputComponent extends Component {
   queryChangeset;
   aggregationChangeset;
 
+  // A helper variable to not cause unnecessary saves (changeset library uses ObjectTreeNode instead of literal object)
+  filterChanged;
+
   @tracked windowChangeset;
   @tracked projections;
   @tracked groups;
@@ -99,6 +102,7 @@ export default class QueryInputComponent extends Component {
     this.groups = this.args.groups;
     this.metrics = this.args.metrics;
 
+    this.filterChanged = false;
     let hasFilter = !isEmpty(this.filter);
     if (hasFilter) {
       this.filterChangeset = this.filter.objectAt(0);
@@ -215,8 +219,18 @@ export default class QueryInputComponent extends Component {
     if (isNone(this.filterChangeset)) {
       this.filterChangeset = await this.createOptionalModel('filter', this.filter);
     }
-    this.filterChangeset.set('clause', this.currentFilterClause);
-    this.filterChangeset.set('summary', this.currentFilterSummary);
+    // This check is here because the changeset creates a wrapper for the object literal clause and that counts as a
+    // change. Since we have an action for forcing dirty on a filter change, we can track this on a real change instead
+    // and use it to set the clause only if something really changed.
+    if (this.filterChanged) {
+      this.filterChangeset.set('clause', this.currentFilterClause);
+    }
+    // Summary might change even without the clause changing because we create it from the query builder's toSQL 
+    let originalSummary = this.filterChangeset.get('summary');
+    let currentFilterSummary = this.currentFilterSummary;
+    if (!isEqual(originalSummary, currentFilterSummary)) {
+      this.filterChangeset.set('summary', this.currentFilterSummary);
+    }
     return this.filterChangeset;
   }
 
@@ -297,6 +311,7 @@ export default class QueryInputComponent extends Component {
     this.isListening = false;
     this.hasError = false;
     this.hasSaved = false;
+    this.filterChanged = false;
     this.errors.clear();
     $(this.queryBuilderInputs).removeAttr('disabled');
   }
@@ -335,6 +350,12 @@ export default class QueryInputComponent extends Component {
   }
 
   // Actions
+
+  @action
+  changeFilter() {
+    this.filterChanged = true;
+    this.args.onForceDirty();
+  }
 
   @action
   addRawAggregation(selectType = false) {
