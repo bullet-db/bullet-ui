@@ -226,7 +226,7 @@ export default class QueryManagerService extends Service {
         p.push(...c);
         return p;
       }, messages);
-      resolve(messages);
+      return resolve(messages);
     });
   }
 
@@ -385,21 +385,17 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  deleteUnparented(model, parentName) {
-    if (isNone(model)) {
-      return;
-    }
-    model.get(parentName).then(parent => {
-      if (isNone(parent)) {
-        this.deleteModel(item);
-      }
-    });
-  }
   deleteMultipleUnparented(collection, parentName) {
     if (isNone(collection)) {
       return;
     }
-    collection.forEach(model => this.deleteUnparented(model, parentName));
+    collection.forEach(model => {
+      model.get(parentName).then(parent => {
+        if (isNone(parent)) {
+          this.deleteModel(model);
+        }
+      });
+    });
   }
 
   deleteAggregation(query) {
@@ -444,8 +440,9 @@ export default class QueryManagerService extends Service {
   }
 
   deleteAllUnparented(models) {
-    this.deleteUnparented(models.filter, 'query');
-    this.deleteUnparented(models.window, 'query');
+    // Aggregations, queries and results can't be unparented
+    this.deleteMultipleUnparented(models.filters, 'query');
+    this.deleteMultipleUnparented(models.windows, 'query');
     this.deleteMultipleUnparented(models.projections, 'query');
     this.deleteMultipleUnparented(models.groups, 'aggregation');
     this.deleteMultipleUnparented(models.metrics, 'aggregation');

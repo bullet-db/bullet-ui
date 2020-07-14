@@ -25,9 +25,14 @@ export default class QueriesRoute extends Route {
   }
 
   afterModel(model) {
-    // This exists to cleanup any models that were created for the query form but not saved. No need to do results,
-    // query or aggregation since they are not copied. No need to hold up anything while this is happening.
-    // this.queryManager.deleteAllUnparented(model)
+    /*
+      This exists to cleanup any models that were created for the query form but not saved. No need to do results,
+      query or aggregation since they are not copied. No need to hold up anything while this is happening. These
+      happen when the user doesn't save. We can handle it by discarding when the user transitions away without saving,
+      but even then cases where the user just closes the browser or types in a new url will need to be handled. So,
+      might as well handle it all here.
+    */
+    this.queryManager.deleteAllUnparented(model)
   }
 
   getOrigin() {
