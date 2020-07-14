@@ -248,8 +248,8 @@ export default class QueryInputComponent extends Component {
     this.aggregationChangeset.set('size', 1);
     let attributes = this.aggregationChangeset.get('attributes');
     let fields = Object.getOwnPropertyNames(attributes);
-    for (let i = 0; i < fields.length; i++) {
-      delete attributes[fields[i]];
+    for (const field of fields) {
+      delete attributes[field];
     }
     // Wipe projections, groups and metrics
     let promises = [

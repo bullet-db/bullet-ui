@@ -72,6 +72,7 @@ export default class QueryManagerService extends Service {
     let originals = source.get(pluralize(name));
     if (!isEmpty(originals)) {
       let promises = [];
+      // EmberArray not Array so regular for loop
       for (let i = 0; i < originals.length; ++i) {
         let copy = await this.store.createRecord(name);
         promises.push(this.copyModelRelationship(originals.objectAt(i), copy, fields, inverseName, target));
@@ -325,8 +326,7 @@ export default class QueryManagerService extends Service {
     // If there were originals, need to remove all since the order may have changed and destroy ones NOT in the changesets
     if (!isEmpty(models)) {
       let array = models.toArray();
-      for (let i = 0; i < array.length; ++i) {
-        let model = array[i];
+      for (const model of array) {
         models.removeObject(model);
         let existingModel = changesets.findBy('id', model.get('id'));
         // If it exists, this model needs to be destroyed since the new changes don't have it
@@ -337,9 +337,9 @@ export default class QueryManagerService extends Service {
       }
     }
     // At this point, models should be empty even if it wasn't to begin with. Add the new ones back in the right order
-    let newRelation = changesets.toArray();
-    for (let i = 0; i < newRelation.length; ++i) {
-      let relation = await newRelation[i].save();
+    let newRelations = changesets.toArray();
+    for (const newRelation of newRelations) {
+      let relation = await newRelation.save();
       // Could check inverse to see if it exists and not save but simpler to just set and save
       relation.set(inverseName, parentModel);
       await relation.save();
