@@ -3,12 +3,14 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="alert {{alertClass}} alert-dismissible" role="alert">
-  <i class="alert-status-icon {{alertIconClass}}"></i>
-  <div class="alert-message">
-    {{yield}}
+<div class="simple-alert">
+  <div class="alert {{this.alertClass}} alert-dismissible" role="alert">
+    <i class="alert-status-icon {{this.alertIconClass}}"></i>
+    <div class="alert-message">
+      {{yield}}
+    </div>
+    <button type="button" class="btn btn-danger btn-xs alert-close" data-dismiss="alert" aria-label="Close">
+      {{fa-icon "close"}}
+    </button>
   </div>
-  <button type="button" class="btn btn-danger btn-xs alert-close" data-dismiss="alert" aria-label="Close">
-    {{fa-icon "close"}}
-  </button>
 </div>

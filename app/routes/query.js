@@ -125,7 +125,7 @@ export default class QueryRoute extends QueryableRoute {
 
   @action
   willTransition(transition) {
-    // If dirty and the user clicked no (hence negated), abort. Else if not dirty or user clicked yes, throw away copies.
+    // If dirty and the user clicked no (hence negated), abort. Else if not dirty or user clicked yes, bubble.
     if (this.areChangesetsDirty && !confirm('You have changes that may be lost unless you save! Are you sure?')) {
       transition.abort();
     } else {

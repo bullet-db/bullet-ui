@@ -29,13 +29,13 @@ export default class QueriesRoute extends Route {
       This exists to cleanup any models that were created for the query form but not saved. No need to do results,
       query or aggregation since they are not copied. No need to hold up anything while this is happening. These
       happen when the user doesn't save. We can handle it by discarding when the user transitions away without saving,
-      but even then cases where the user just closes the browser or types in a new url will need to be handled. So,
-      might as well handle it all here.
+      but even then cases of unsaved models where the user just closes the browser or types in a new url will need to
+      be handled. So, might as well handle it all here. This isn't blocking the queries load.
     */
     this.queryManager.deleteAllUnparented(model)
   }
 
-  getOrigin() {
+  get origin() {
     let { protocol, hostname, port } = window.location;
     port = port ? `:${port}` : '';
     return `${protocol}//${hostname}${port}`;
@@ -55,7 +55,7 @@ export default class QueriesRoute extends Route {
   @action
   linkQueryClick(query, callback) {
     this.queryManager.encodeQuery(query).then(encoded => {
-      let origin = this.getOrigin();
+      let origin = this.origin;
       let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
       callback(`${origin}${path}`);
     });

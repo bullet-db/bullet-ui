@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { all, resolve, reject } from 'rsvp';
 import $ from 'jquery';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
@@ -234,7 +233,7 @@ export default class QueryInputComponent extends Component {
     return this.filterChangeset;
   }
 
-  changeAggregation(type) {
+  async changeAggregation(type) {
     if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
       this.rawType = RAWS.get('ALL');
     }
@@ -257,16 +256,13 @@ export default class QueryInputComponent extends Component {
       this.queryManager.deleteMultipleCollection(this.groups, 'aggregation'),
       this.queryManager.deleteMultipleCollection(this.metrics, 'aggregation'),
     ];
-    return all(promises);
+    return Promise.all(promises);
   }
 
-  changeAggregationToFieldLike(type, modelName, collection) {
-    return this.changeAggregation(type).then(() => {
-      return this.queryManager.createModel(modelName);
-    }).then((model) => {
-      collection.pushObject(this.queryManager.createChangeset(model, modelName));
-      return resolve();
-    });
+  async changeAggregationToFieldLike(type, modelName, collection) {
+    await this.changeAggregation(type);
+    let model = await this.queryManager.createModel(modelName);
+    collection.pushObject(this.queryManager.createChangeset(model, modelName));
   }
 
   changeWindow(emitType, emitEvery, includeType) {
@@ -382,11 +378,10 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  addDistributionAggregation() {
-    this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups).then(() => {
-      // Default type is Quantile, Number of Points
-      this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
-    });
+  async addDistributionAggregation() {
+    await this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups);
+    // Default type is Quantile, Number of Points
+    this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
   }
 
   @action
@@ -406,11 +401,10 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  addFieldLike(modelName, collection) {
-    this.queryManager.createModel(modelName).then((model) => {
-      collection.pushObject(this.queryManager.createChangeset(model, modelName));
-      this.args.onDirty();
-    });
+  async addFieldLike(modelName, collection) {
+    let model = await this.queryManager.createModel(modelName);
+    collection.pushObject(this.queryManager.createChangeset(model, modelName));
+    this.args.onDirty();
   }
 
   @action
@@ -443,15 +437,14 @@ export default class QueryInputComponent extends Component {
   }
 
   @action
-  addWindow() {
-    this.createOptionalModel('window', this.window).then(changeset => {
-      this.windowChangeset = changeset;
-      this.includeType = INCLUDE_TYPES.get('WINDOW');
-      this.emitType = EMIT_TYPES.get('TIME');
-      this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
-      this.hasWindow = true;
-      this.args.onDirty();
-    });
+  async addWindow() {
+    let changeset = await this.createOptionalModel('window', this.window);
+    this.windowChangeset = changeset;
+    this.includeType = INCLUDE_TYPES.get('WINDOW');
+    this.emitType = EMIT_TYPES.get('TIME');
+    this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
+    this.hasWindow = true;
+    this.args.onDirty();
   }
 
   @action

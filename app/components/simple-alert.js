@@ -3,15 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 
-export default Component.extend({
-  classNames: ['simple-alert'],
-  type: null,
-
-  alertIconClass: computed('type', function() {
-    switch (this.type) {
+export default class SimpleAlertComponent extends Component {
+  get alertIconClass() {
+    switch (this.args.type) {
       case 'error':
         return 'fa fa-ban';
       case 'success':
@@ -21,10 +17,10 @@ export default Component.extend({
       default:
         return '';
     }
-  }),
+  }
 
-  alertClass: computed('type', function() {
-    switch (this.type) {
+  get alertClass() {
+    switch (this.args.type) {
       case 'error':
         return 'alert-danger';
       case 'success':
@@ -34,5 +30,5 @@ export default Component.extend({
       default:
         return '';
     }
-  })
-});
+  }
+}
