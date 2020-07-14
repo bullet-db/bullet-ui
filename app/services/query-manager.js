@@ -5,7 +5,7 @@
  */
 import { pluralize } from 'ember-inflector';
 import { Base64 } from 'js-base64';
-import { all, Promise, resolve } from 'rsvp';
+import { all, resolve } from 'rsvp';
 import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
@@ -45,42 +45,44 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  copyModelRelationship(from, to, fields, inverseName, inverseValue) {
+  async copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     this.copyFields(from, to, fields);
     to.set(inverseName, inverseValue);
-    return to.save();
+    let saved = await to.save();
+    return saved;
   }
 
-  copyModelAndFields(model, modelName, fields) {
-    let copy = this.store.createRecord(modelName);
+  async copyModelAndFields(model, modelName, fields) {
+    let copy = await this.store.createRecord(modelName);
     this.copyFields(model, copy, fields);
-    return copy.save();
+    let saved = await copy.save();
+    return saved;
   }
 
-  copySingle(source, target, name, inverseName, fields) {
+  async copySingle(source, target, name, inverseName, fields) {
     let original = source.get(name);
-    if (isEmpty(original)) {
-      return resolve();
+    if (!isEmpty(original)) {
+      let copy = await this.store.createRecord(name);
+      let saved = await this.copyModelRelationship(original, copy, fields, inverseName, target);
+      return saved;
     }
-    let copy = this.store.createRecord(name);
-    return this.copyModelRelationship(original, copy, fields, inverseName, target);
   }
 
-  copyMultiple(source, target, name, inverseName, fields) {
+  async copyMultiple(source, target, name, inverseName, fields) {
     let originals = source.get(pluralize(name));
-    if (isEmpty(originals)) {
-      return resolve();
+    if (!isEmpty(originals)) {
+      let promises = [];
+      for (let i = 0; i < originals.length; ++i) {
+        let copy = await this.store.createRecord(name);
+        promises.push(this.copyModelRelationship(originals.objectAt(i), copy, fields, inverseName, target));
+      }
+      let results = await Promise.allSettled(promises);
+      return results.map(result => result.value);
     }
-    let promises = [];
-    originals.forEach(original => {
-      let copy = this.store.createRecord(name);
-      promises.push(this.copyModelRelationship(original, copy, fields, inverseName, target));
-    });
-    return all(promises);
   }
 
-  copyQuery(query) {
-    let copied = this.store.createRecord('query', {
+  async copyQuery(query) {
+    let copied = await this.store.createRecord('query', {
       name: query.get('name'),
       duration: query.get('duration')
     });
@@ -88,18 +90,32 @@ export default class QueryManagerService extends Service {
     let promises = [
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
-      query.get('isWindowless') ? resolve() :
+      query.get('isWindowless') ? Promise.resolve() :
         this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType']),
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
-    return all(promises).then(([copiedFilter, copiedAggregation, copiedWindow, copiedProjections]) => {
-      let originalAggregation = query.get('aggregation');
-      return all([
+    let results  = await Promise.allSettled(promises);
+    let [copiedFilter, copiedAggregation, copiedWindow, copiedProjections] = results.map(result => result.value);
+
+    let originalAggregation = await query.get('aggregation');
+    results = await Promise.allSettled([
         this.copyMultiple(originalAggregation, copiedAggregation, 'group', 'aggregation', ['field', 'name']),
         this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
-      ]).then(() => copiedAggregation.save());
-    }).then(() => copied.save()).then(() => copied);
+    ]);
+    let [copiedGroups, copiedMetrics] = results.map(result => result.value);
+    if (copiedGroups) {
+      copiedAggregation.set('groups', copiedGroups);
+    }
+    if (copiedMetrics) {
+      copiedAggregation.set('metrics', copiedMetrics);
+    }
+    await copiedAggregation.save();
+    if (copiedProjections) {
+      copied.set('projections', copiedProjections);
+    }
+    await copied.save();
+    return copied;
   }
 
   // Transforming
