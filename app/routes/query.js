@@ -115,7 +115,7 @@ export default class QueryRoute extends QueryableRoute {
   }
 
   @action
-  fireQuery() {
+  submitQuery() {
     this.queryManager.addResult(this.paramsFor('query').query_id).then(result => {
       this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
         this.submitQuery(query, result, this);

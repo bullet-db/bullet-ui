@@ -122,7 +122,7 @@ module('Integration | Component | query input', function(hooks) {
     });
 
     await render(
-      hbs`{{query-input query=mockQuery schema=mockSchema save=mockSave fireQuery=(action mockFireQuery)}}`
+      hbs`{{query-input query=mockQuery schema=mockSchema save=mockSave submitQuery=(action mockFireQuery)}}`
     );
 
     assert.equal(this.element.querySelector('.submit-button').disabled, false);

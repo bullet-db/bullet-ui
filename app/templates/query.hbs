@@ -7,7 +7,7 @@
   <QueryInput @query={{@model.query}} @schema={{@model.schema}} @filter={{@model.filter}}
               @aggregation={{@model.aggregation}} @groups={{@model.groups}} @metrics={{@model.metrics}}
               @projections={{@model.projections}} @window={{@model.window}}
-              @onForceDirty={{fn (route-action "forceDirty")}}
+              @onDirty={{fn (route-action "forceDirty")}}
               @onSaveQuery={{fn (route-action "saveQuery")}}
-              @onFireQuery={{fn (route-action "fireQuery")}} />
+              @onSubmitQuery={{fn (route-action "submitQuery")}} />
 </div>

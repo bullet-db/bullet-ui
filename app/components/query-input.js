@@ -225,7 +225,7 @@ export default class QueryInputComponent extends Component {
     if (this.filterChanged) {
       this.filterChangeset.set('clause', this.currentFilterClause);
     }
-    // Summary might change even without the clause changing because we create it from the query builder's toSQL 
+    // Summary might change even without the clause changing because we create it from the query builder's toSQL
     let originalSummary = this.filterChangeset.get('summary');
     let currentFilterSummary = this.currentFilterSummary;
     if (!isEqual(originalSummary, currentFilterSummary)) {
@@ -354,7 +354,7 @@ export default class QueryInputComponent extends Component {
   @action
   changeFilter() {
     this.filterChanged = true;
-    this.args.onForceDirty();
+    this.args.onDirty();
   }
 
   @action
@@ -402,14 +402,14 @@ export default class QueryInputComponent extends Component {
   @action
   deleteProjections() {
     this.queryManager.deleteMultipleCollection(this.projections, 'query');
-    this.args.onForceDirty();
+    this.args.onDirty();
   }
 
   @action
   addFieldLike(modelName, collection) {
     this.queryManager.createModel(modelName).then((model) => {
       collection.pushObject(this.queryManager.createChangeset(model, modelName));
-      this.args.onForceDirty();
+      this.args.onDirty();
     });
   }
 
@@ -417,7 +417,7 @@ export default class QueryInputComponent extends Component {
   deleteFieldLike(item, collection) {
     collection.removeObject(item);
     this.queryManager.deleteModel(item.get('data'));
-    this.args.onForceDirty();
+    this.args.onDirty();
   }
 
   @action
@@ -450,7 +450,7 @@ export default class QueryInputComponent extends Component {
       this.emitType = EMIT_TYPES.get('TIME');
       this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
       this.hasWindow = true;
-      this.args.onForceDirty();
+      this.args.onDirty();
     });
   }
 
@@ -459,7 +459,7 @@ export default class QueryInputComponent extends Component {
     this.hasWindow = false;
     this.windowChangeset = null;
     this.queryManager.deleteMultipleCollection(this.window, 'query');
-    this.args.onForceDirty();
+    this.args.onDirty();
   }
 
   @action
@@ -475,7 +475,7 @@ export default class QueryInputComponent extends Component {
       await this.doSave();
       this.isListening = true;
       $(this.queryBuilderInputs).attr('disabled', true);
-      this.args.onFireQuery();
+      this.args.onSubmitQuery();
     } catch(error) { }
   }
 }
