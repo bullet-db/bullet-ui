@@ -96,7 +96,7 @@ export default class QueryManagerService extends Service {
       this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
     ];
 
-    let results  = await Promise.allSettled(promises);
+    let results = await Promise.allSettled(promises);
     let [copiedFilter, copiedAggregation, copiedWindow, copiedProjections] = results.map(result => result.value);
 
     let originalAggregation = await query.get('aggregation');
@@ -115,7 +115,7 @@ export default class QueryManagerService extends Service {
     if (copiedProjections) {
       copied.set('projections', copiedProjections);
     }
-    await copied.save();
+    copied = await copied.save();
     return copied;
   }
 
@@ -143,25 +143,24 @@ export default class QueryManagerService extends Service {
 
   // Result manipulation
 
-  addResult(id) {
-    return this.store.findRecord('query', id).then(query => {
-      let result = this.store.createRecord('result', {
-        querySnapshot: {
-          type: query.get('aggregation.type'),
-          groupsSize: query.get('aggregation.groups.length'),
-          metricsSize: query.get('aggregation.metrics.length'),
-          projectionsSize: query.get('projections.length'),
-          fieldsSummary: query.get('fieldsSummary'),
-          filterSummary: query.get('filterSummary'),
-          windowSummary: query.get('windowSummary')
-        },
-        query: query
-      });
-      query.set('lastRun', result.get('created'));
-      return query.save().then(() => {
-        return result.save();
-      });
+  async addResult(id) {
+    let query = await this.store.findRecord('query', id);
+    let result = await this.store.createRecord('result', {
+      querySnapshot: {
+        type: query.get('aggregation.type'),
+        groupsSize: query.get('aggregation.groups.length'),
+        metricsSize: query.get('aggregation.metrics.length'),
+        projectionsSize: query.get('projections.length'),
+        fieldsSummary: query.get('fieldsSummary'),
+        filterSummary: query.get('filterSummary'),
+        windowSummary: query.get('windowSummary')
+      },
+      query: query
     });
+    query.set('lastRun', result.get('created'));
+    await query.save();
+    result = await result.save();
+    return result;
   }
 
   addSegment(result, data) {
@@ -173,8 +172,11 @@ export default class QueryManagerService extends Service {
       index: position,
       created: new Date(Date.now())
     });
-    let shouldDebounce = this.debounceSegmentSaves;
-    return shouldDebounce ? debounce(result, result.save, this.saveSegmentDebounceInterval) : result.save();
+    if (!this.debounceSegmentSaves) {
+      debounce(result, result.save, this.saveSegmentDebounceInterval);
+    } else {
+      result.save();
+    }
   }
 
   // Validations
@@ -203,13 +205,12 @@ export default class QueryManagerService extends Service {
     return { 'validation' : messages };
   }
 
-  validateChangeset(changeset) {
+  async validateChangeset(changeset) {
     if (isNone(changeset)) {
-      return resolve([]);
+      return [];
     }
-    return changeset.validate().then(() => {
-      return resolve(changeset.get('isInvalid') ? changeset.errors : []);
-    });
+    await changeset.validate();
+    return changeset.get('isInvalid') ? changeset.errors : [];
   }
 
   validateMultiModels(settings, changesets) {
@@ -217,17 +218,14 @@ export default class QueryManagerService extends Service {
     return isEmpty(validations) ? validations : [this.createValidationError(validations)];
   }
 
-  validateCollection(collection, message, accumulator = []) {
+  async validateCollection(collection, message) {
     let validations = collection.map(item => this.validateChangeset(item));
-    return all(validations).then(results => {
-      results.filter(result => !isEmpty(result)).forEach(result => {
-        accumulator.push(result);
-      });
-      return resolve(isEmpty(accumulator) ? [] : [this.createValidationError(message)]);
-    });
+    let results = await Promise.allSettled(validations);
+    let hasErrors = results.map(result => result.value).filter(result => !isEmpty(result)).length > 0;
+    return hasErrors ? [this.createValidationError(message)] : [];
   }
 
-  validate(changesets) {
+  async validate(changesets) {
     let validations = [
       this.validateChangeset(changesets.query),
       this.validateChangeset(changesets.aggregation),
@@ -237,14 +235,13 @@ export default class QueryManagerService extends Service {
       this.validateCollection(changesets.metrics, 'Please fix the metrics'),
       resolve(this.validateMultiModels(this.settings, changesets))
     ];
-    return all(validations).then(results => {
-      let messages = [];
-      results.filter(item => !isEmpty(item)).reduce((p, c) => {
-        p.push(...c);
-        return p;
-      }, messages);
-      return resolve(messages);
-    });
+    let results = await Promise.allSettled(validations);
+    let messages = [];
+    results.map(result => result.value).filter(item => !isEmpty(item)).reduce((p, c) => {
+      p.push(...c);
+      return p;
+    }, messages);
+    return messages;
   }
 
   createChangeset(model, modelName) {
