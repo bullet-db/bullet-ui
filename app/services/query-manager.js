@@ -5,7 +5,6 @@
  */
 import { pluralize } from 'ember-inflector';
 import { Base64 } from 'js-base64';
-import { all, resolve } from 'rsvp';
 import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
@@ -48,23 +47,20 @@ export default class QueryManagerService extends Service {
   async copyModelRelationship(from, to, fields, inverseName, inverseValue) {
     this.copyFields(from, to, fields);
     to.set(inverseName, inverseValue);
-    let saved = await to.save();
-    return saved;
+    return to.save();
   }
 
   async copyModelAndFields(model, modelName, fields) {
     let copy = await this.store.createRecord(modelName);
     this.copyFields(model, copy, fields);
-    let saved = await copy.save();
-    return saved;
+    return copy.save();
   }
 
   async copySingle(source, target, name, inverseName, fields) {
     let original = source.get(name);
     if (!isEmpty(original)) {
       let copy = await this.store.createRecord(name);
-      let saved = await this.copyModelRelationship(original, copy, fields, inverseName, target);
-      return saved;
+      return this.copyModelRelationship(original, copy, fields, inverseName, target);
     }
   }
 
@@ -77,8 +73,7 @@ export default class QueryManagerService extends Service {
         let copy = await this.store.createRecord(name);
         promises.push(this.copyModelRelationship(originals.objectAt(i), copy, fields, inverseName, target));
       }
-      let results = await Promise.allSettled(promises);
-      return results.map(result => result.value);
+      return Promise.all(promises);
     }
   }
 
@@ -88,23 +83,19 @@ export default class QueryManagerService extends Service {
       duration: query.get('duration')
     });
     // Assume prefetched
-    let promises = [
+    let [copiedFilter, copiedAggregation, copiedWindow] = await Promise.all([
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
       query.get('isWindowless') ? Promise.resolve() :
-        this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType']),
-      this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name'])
-    ];
-
-    let results = await Promise.allSettled(promises);
-    let [copiedFilter, copiedAggregation, copiedWindow, copiedProjections] = results.map(result => result.value);
+        this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType'])
+    ]);
 
     let originalAggregation = await query.get('aggregation');
-    results = await Promise.allSettled([
+    let [copiedProjections, copiedGroups, copiedMetrics]  = await Promise.all([
+        this.copyMultiple(query, copied, 'projection', 'query', ['field', 'name']),
         this.copyMultiple(originalAggregation, copiedAggregation, 'group', 'aggregation', ['field', 'name']),
         this.copyMultiple(originalAggregation, copiedAggregation, 'metric', 'aggregation', ['type', 'field', 'name'])
     ]);
-    let [copiedGroups, copiedMetrics] = results.map(result => result.value);
     if (copiedGroups) {
       copiedAggregation.set('groups', copiedGroups);
     }
@@ -220,8 +211,8 @@ export default class QueryManagerService extends Service {
 
   async validateCollection(collection, message) {
     let validations = collection.map(item => this.validateChangeset(item));
-    let results = await Promise.allSettled(validations);
-    let hasErrors = results.map(result => result.value).filter(result => !isEmpty(result)).length > 0;
+    let results = await Promise.all(validations);
+    let hasErrors = results.filter(result => !isEmpty(result)).length > 0;
     return hasErrors ? [this.createValidationError(message)] : [];
   }
 
@@ -233,11 +224,11 @@ export default class QueryManagerService extends Service {
       this.validateCollection(changesets.projections, 'Please fix the fields'),
       this.validateCollection(changesets.groups, 'Please fix the fields'),
       this.validateCollection(changesets.metrics, 'Please fix the metrics'),
-      resolve(this.validateMultiModels(this.settings, changesets))
+      Promise.resolve(this.validateMultiModels(this.settings, changesets))
     ];
-    let results = await Promise.allSettled(validations);
+    let results = await Promise.all(validations);
     let messages = [];
-    results.map(result => result.value).filter(item => !isEmpty(item)).reduce((p, c) => {
+    results.filter(item => !isEmpty(item)).reduce((p, c) => {
       p.push(...c);
       return p;
     }, messages);
@@ -361,109 +352,108 @@ export default class QueryManagerService extends Service {
 
   // Creating
 
-  createModel(modelName, opts = {}) {
-    let model = this.store.createRecord(modelName, opts);
+  async createModel(modelName, opts = {}) {
+    let model = await this.store.createRecord(modelName, opts);
     return model.save();
   }
 
   // Deleting
 
-  deleteModel(model) {
-    // Autosave takes care of updating parent
-    model.destroyRecord();
+  async deleteModel(model) {
+    // Autosave takes care of updating parent.
+    return model.destroyRecord();
   }
 
-  deleteSingle(name, model, inverseName) {
-    return model.get(name).then(item => {
-      if (isNone(item)) {
-        return resolve();
-      }
-      item.set(inverseName, null);
-      return item.destroyRecord();
-    });
+  async deleteSingle(name, model, inverseName) {
+    let item = await model.get(name);
+    if (isNone(item)) {
+      return;
+    }
+    item.set(inverseName, null);
+    return item.destroyRecord();
   }
 
-  deleteMultipleCollection(collection, inverseName) {
+  async deleteMultipleCollection(collection, inverseName) {
     let promises = collection.toArray().map(item => {
       collection.removeObject(item);
       item.set(inverseName, null);
-      item.destroyRecord();
+      return this.deleteModel(item);
     });
-    return all(promises);
+    return Promise.all(promises);
   }
 
-  deleteMultiple(name, model, inverseName) {
-    return model.get(name).then(items => {
-      return this.deleteMultipleCollection(items, inverseName);
-    });
+  async deleteMultiple(name, model, inverseName) {
+    let items = await model.get(name);
+    return this.deleteMultipleCollection(items, inverseName);
   }
 
-  deleteMultipleUnparented(collection, parentName) {
+  async deleteUnparented(model, parentName) {
+    let parent = await model.get(parentName);
+    if (isNone(parent)) {
+      return this.deleteModel(model);
+    }
+  }
+
+  async deleteMultipleUnparented(collection, parentName) {
     if (isNone(collection)) {
       return;
     }
-    collection.forEach(model => {
-      model.get(parentName).then(parent => {
-        if (isNone(parent)) {
-          this.deleteModel(model);
-        }
-      });
-    });
+    let promises = collection.map(model => this.deleteUnparented(model, parentName));
+    return Promise.all(promises);
   }
 
-  deleteAggregation(query) {
-    return query.get('aggregation').then(aggregation => {
-      this.deleteMultiple('groups', aggregation, 'aggregation');
-      this.deleteMultiple('metrics', aggregation, 'aggregation');
-      aggregation.set('query', null);
-      return aggregation.destroyRecord();
-    });
+  async deleteAggregation(query) {
+    let aggregation = await query.get('aggregation');
+    let promises = [
+      this.deleteMultiple('groups', aggregation, 'aggregation'),
+      this.deleteMultiple('metrics', aggregation, 'aggregation')
+    ];
+    await Promise.all(promises);
+    aggregation.set('query', null);
+    return aggregation.destroyRecord();
   }
 
-  deleteWindow(query) {
-    return query.get('window').then(window => {
-      if (isEmpty(window)) {
-        return resolve();
-      }
-      query.set('window', null);
-      return query.save().then(() => {
-        return window.destroyRecord();
-      });
-    });
+  async deleteWindow(query) {
+    let window = await query.get('window');
+    if (isEmpty(window)) {
+      return;
+    }
+    query.set('window', null);
+    await query.save();
+    return window.destroyRecord();
   }
 
-  deleteResults(query) {
-    return query.get('results').then(() => {
-      return this.deleteMultiple('results', query, 'query').then(() => {
-        return query.save();
-      });
-    });
+  async deleteResults(query) {
+    await this.deleteMultiple('results', query, 'query');
+    return query.save();
   }
 
-  deleteQuery(query) {
-    return all([
+  async deleteQuery(query) {
+    await Promise.all([
       this.deleteSingle('filter', query, 'query'),
       this.deleteMultiple('projections', query, 'query'),
       this.deleteResults(query),
       this.deleteWindow(query),
       this.deleteAggregation(query)
-    ]).then(() => {
-      return query.destroyRecord();
-    });
+    ]);
+    return query.destroyRecord();
   }
 
-  deleteAllUnparented(models) {
+  async deleteAllUnparented(models) {
     // Aggregations, queries and results can't be unparented
-    this.deleteMultipleUnparented(models.filters, 'query');
-    this.deleteMultipleUnparented(models.windows, 'query');
-    this.deleteMultipleUnparented(models.projections, 'query');
-    this.deleteMultipleUnparented(models.groups, 'aggregation');
-    this.deleteMultipleUnparented(models.metrics, 'aggregation');
+    let promises = [
+      this.deleteMultipleUnparented(models.filters, 'query'),
+      this.deleteMultipleUnparented(models.windows, 'query'),
+      this.deleteMultipleUnparented(models.projections, 'query'),
+      this.deleteMultipleUnparented(models.groups, 'aggregation'),
+      this.deleteMultipleUnparented(models.metrics, 'aggregation')
+    ];
+    return Promise.all(promises);
   }
 
-  deleteAllResults() {
-    return this.store.findAll('query').then(queries => {
-      queries.forEach(q => this.deleteResults(q));
-    });
+  async deleteAllResults() {
+    let queries = await this.store.findAll('query');
+    let promises = queries.map(this.deleteResults);
+    return Promise.all(promises);
   }
 }
