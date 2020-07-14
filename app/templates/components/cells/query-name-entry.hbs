@@ -3,7 +3,10 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="query-name-entry" {{on "mouseenter" this.onMouseEnter}} {{on "mouseleave" this.onMouseLeave}}>
+<div role="button" class="query-name-entry"
+    {{on "click" this.onClick}}
+    {{on "mouseenter" this.onMouseEnter}}
+    {{on "mouseleave" this.onMouseLeave}}>
   <div class="query-description">
     {{#if @row.name}}
       <p class="query-real-name"><strong>{{@row.name}}</strong></p>
