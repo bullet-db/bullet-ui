@@ -7,7 +7,8 @@
   <LightTable @table={{this.table}} @height="inherit" as |t|>
 
     {{#unless @isNested}}
-      <t.head @onColumnClick={{action "onColumnClick"}} @iconAscending="fa fa-chevron-up" @iconDescending="fa fa-chevron-down" @fixed={{true}} />
+      <t.head @onColumnClick={{action "onColumnClick"}} @iconAscending="fa fa-chevron-up"
+              @iconDescending="fa fa-chevron-down" @fixed={{true}} />
      {{/unless}}
 
     <t.body @canSelect={{false}} @canExpand={{true}} @scrollBuffer={{1000}} @onRowClick={{fn this.onRowClick}}

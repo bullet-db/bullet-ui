@@ -4,15 +4,10 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { htmlSafe } from '@ember/string';
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 
-export default Component.extend({
-  classNames: ['schema-description-entry'],
-  tagName: 'span',
-
-  // As the user of this UI, you are expected to make sure any html in the description is safe.
-  htmlSafeValue: computed('value', function() {
-    return htmlSafe(this.value);
-  })
-});
+export default class SchemaDescriptionEntryComponent extends Component {
+  get htmlSafeValue() {
+    return htmlSafe(this.args.value);
+  }
+}

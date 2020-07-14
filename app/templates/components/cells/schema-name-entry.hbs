@@ -3,15 +3,17 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<span class="schema-name">
-  {{extractedValue}}
-</span>
-{{#if row.hasEnumerations}}
-  <span class="schema-enumeration-caret">
-    {{#if row.expanded}}
-      {{fa-icon "chevron-down" class="expanded-caret"}}
-    {{else}}
-      {{fa-icon "chevron-right" class="expand-caret"}}
-    {{/if}}
+<div class="schema-name-entry {{if @row.hasEnumerations has-enumerations}}">
+  <span class="schema-name">
+    {{this.extractedValue}}
   </span>
-{{/if}}
+  {{#if @row.hasEnumerations}}
+    <span class="schema-enumeration-caret">
+      {{#if @row.expanded}}
+        {{fa-icon "chevron-down" class="expanded-caret"}}
+      {{else}}
+        {{fa-icon "chevron-right" class="expand-caret"}}
+      {{/if}}
+    </span>
+  {{/if}}
+</div>

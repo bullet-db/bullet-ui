@@ -6,6 +6,7 @@
 import { computed } from '@ember/object';
 import RowComponent from 'ember-light-table/components/lt-row';
 
+// This needs to remain a classic component because ember-light-table's lt-row is a classic component
 export default RowComponent.extend({
   classNameBindings: ['hasEnumerations'],
 
