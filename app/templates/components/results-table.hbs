@@ -5,8 +5,7 @@
  --}}
 <div class="results-table">
   <LightTable @table={{this.table}} @height="inherit"
-              @tableActions={{hash resultClick=(fn this.resultClick)
-                                   deleteResultsClick=(fn this.deleteResultsClick)}} as |t|>
+              @tableActions={{hash resultClick=(fn @resultClick)}} as |t|>
     <t.head @onColumnClick={{this.onColumnClick}} @fixed={{true}} @iconAscending="fa fa-chevron-up" @iconDescending="fa fa-chevron-down" />
     <t.body @canSelect={{false}} @scrollBuffer={{1000}} @onScrolledToBottom={{this.onScrolledToBottom}} />
   </LightTable>

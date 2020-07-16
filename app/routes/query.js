@@ -43,6 +43,7 @@ export default class QueryRoute extends QueryableRoute {
     return changesets;
   }
 
+
   async getModels(queryID) {
     let models = { };
     models.query = await this.store.findRecord('query', queryID);

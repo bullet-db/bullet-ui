@@ -39,6 +39,5 @@ body {
   .popover-wrapper {
     // Popovers are attached to the body
     @import "components/popovers/record-entry-popover";
-    @import "components/popovers/query-results-entry-popover";
   }
 }

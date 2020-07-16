@@ -32,7 +32,7 @@ export default class QueriesRoute extends Route {
       but even then cases of unsaved models where the user just closes the browser or types in a new url will need to
       be handled. So, might as well handle it all here. This isn't blocking the queries load.
     */
-    this.queryManager.deleteAllUnparented(model)
+    this.queryManager.deleteAllUnparented(model);
   }
 
   get origin() {

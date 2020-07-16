@@ -22,25 +22,25 @@ export default class QueryNameEntryComponent extends Component {
 
   @action
   onClick(event) {
-    event.preventDefault();
+    event.stopPropagation();
     this.args.tableActions.queryClick(this.args.row);
   }
 
   @action
   onCopyClick(event) {
-    event.preventDefault();
+    event.stopPropagation();
     this.args.tableActions.copyQueryClick(this.args.row);
   }
 
   @action
   onLinkClick() {
-    event.preventDefault();
+    event.stopPropagation();
     this.args.tableActions.linkQueryClick(this.args.row);
   }
 
   @action
   onDeleteClick(event) {
-    event.preventDefault();
+    event.stopPropagation();
     this.args.tableActions.deleteQueryClick(this.args.row);
   }
 }
