@@ -3,30 +3,30 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Component from '@ember/component';
-import ElementPopover from 'bullet-ui/mixins/element-popover';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import argsGet from 'bullet-ui/utils/args-get';
 
-export default Component.extend(ElementPopover, {
-  classNames: ['info-popover-wrapper'],
-  isButton: true,
-  buttonClasses: 'fa fa-info-circle',
-  additionalText: '',
-  title: '',
-
-  // ElementPopover properties
-  titleElement: '.popover-title',
-  bodyElement: '.popover-contents',
-  placeOn: 'right',
-  triggering: 'focus',
-  additionalClass: 'info-popover',
-
-  didInsertElement() {
-    this._super(...arguments);
-    this.getPopover();
-  },
-
-  willDestroyElement() {
-    this._super(...arguments);
-    this.removePopover();
+export default class InfoPopoverComponent extends Component {
+  get popperOptions() {
+    return {
+      modifiers: {
+        preventOverflow: {
+          escapeWithReference: false
+        }
+      } 
+    };
   }
-});
+
+  get isButton() {
+    return argsGet(this.args, 'isButton', true);
+  }
+
+  get side() {
+    return argsGet(this.args, 'side', 'right');
+  }
+
+  get additionalText() {
+    return argsGet(this.args, 'additionalText', '');
+  }
+}

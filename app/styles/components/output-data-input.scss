@@ -24,19 +24,18 @@
   }
 
   .output-container {
+    display: flex;
+    flex-direction: column;
     @import "validated-input";
 
     .help {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
+      align-self: flex-end;
       font-size: $font-size-regular-small;
       font-family: $font-family-regular;
       font-weight: $font-weight-regular;
-    }
-
-    .info-popover-wrapper {
-      display: inline;
+      .info-popover-wrapper {
+        display: inline;
+      }
     }
 
     .fields-selection-container {

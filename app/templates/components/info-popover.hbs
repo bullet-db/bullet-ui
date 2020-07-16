@@ -3,12 +3,18 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<a tabindex="0" class="info-popover-link {{if isButton buttonClasses}}">
-  <span class="info-link-text">{{additionalText}}</span>
-  <div class="popover-title hidden">
-    {{title}}
-  </div>
-  <div class="popover-contents hidden">
-    {{yield}}
-  </div>
-</a>
+<div class="info-popover-wrapper">
+  <a tabindex="0" class="info-popover-link {{if this.isButton "fa fa-info-circle"}}">
+    <span class="info-link-text">{{this.additionalText}}</span>
+    <EmberPopover @tooltipClass="info-popover" @event="focus" @side={{this.side}}
+                  @innerClass="info-popover-inner" @arrowClass="info-popover-arrow"
+                  @popperOptions={{this.popperOptions}}>
+      <div class="info-popover-title">
+        {{@title}}
+      </div>
+      <div class="info-popover-content">
+        {{yield}}
+      </div>
+    </EmberPopover>
+  </a>
+</div>
