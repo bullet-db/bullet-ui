@@ -3,27 +3,25 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: ['query-shareable-link'],
-  row: null,
-
-  queryLink: alias('row.queryLink').readOnly(),
-
-  queryID: computed('row.content.id', function() {
-    return `query-${this.get('row.content.id')}`;
-  }).readOnly(),
-
-  queryIDSelector: computed('queryID', function() {
-    return `#${this.queryID}`;
-  }).readOnly(),
-
-  actions: {
-    collapse() {
-      this.set('row.expanded', false);
-    }
+export default class QueryShareableLinkComponent extends Component {
+  get queryLink() {
+    return this.args.row.get('queryLink');
   }
-});
+
+  get queryID() {
+    let id = this.args.row.get('content.id');
+    return `query-${id}`;
+  }
+
+  get queryIDSelector() {
+    return `#${this.queryID}`;
+  }
+
+  @action
+  collapse() {
+    this.args.row.set('expanded', false);
+  }
+}

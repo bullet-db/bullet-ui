@@ -35,9 +35,4 @@ body {
   .modal-backdrop {
     background-color: $white;
   }
-
-  .popover-wrapper {
-    // Popovers are attached to the body
-    @import "components/popovers/record-entry-popover";
-  }
 }
