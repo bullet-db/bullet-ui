@@ -11,7 +11,7 @@ export default class QueryDateEntryComponent extends Component {
   onClick() {
     let result = this.args.value;
     if (result) {
-      this.get('tableActions.resultClick')(result);
+      this.args.tableActions.resultClick(result);
     }
   }
 }

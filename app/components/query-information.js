@@ -3,28 +3,30 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { alias } from '@ember/object/computed';
 
-export default Component.extend({
-  querier: service(),
-  query: null,
-  querySnapshot: null,
+export default class QueryInformationComponent extends Component {
+  @service querier;
+  @alias('querier.isRunningQuery') isRunningQuery;
 
-  isRunningQuery: alias('querier.isRunningQuery').readOnly(),
-
-  actions: {
-    cancelClick() {
-      this.sendAction('cancelClick');
-    },
-
-    reRunClick(query) {
-      this.sendAction('reRunClick', query);
-    },
-
-    queryClick(query) {
-      this.sendAction('queryClick', query);
-    }
+  @action
+  cancelClick(event) {
+    event.stopPropagation();
+    this.args.cancelClick();
   }
-});
+
+  @action
+  reRunClick(event) {
+    event.stopPropagation();
+    this.args.reRunClick(this.args.query);
+  }
+
+  @action
+  queryClick(event) {
+    event.stopPropagation();
+    this.args.queryClick(this.args.query);
+  }
+}

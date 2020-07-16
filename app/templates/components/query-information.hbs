@@ -3,23 +3,23 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="information-wrapper query-blurb-wrapper" {{action "queryClick" query}}>
+<div role="button" class="information-wrapper query-blurb-wrapper" {{on "click" this.queryClick}}>
   <div class="information-text query-text">
     <h4>Query Definition</h4>
-    <QueryBlurb @query={{query}} @summary={{querySnapshot}} />
+    <QueryBlurb @summary={{@querySnapshot}} />
   </div>
   <div class="query-controls">
-    <button class="btn btn-info btn-primary query-button link-button" {{action "queryClick" query bubbles=false}}>
+    <button type="button" class="btn btn-info btn-primary query-button link-button" {{on "click" this.queryClick}}>
       {{fa-icon "pencil"}}
       <EmberTooltip @side="bottom">Edit your query</EmberTooltip>
     </button>
-    {{#if isRunningQuery}}
-      <button class="btn btn-info btn-secondary query-button cancel-button" {{action "cancelClick" query bubbles=false}}>
+    {{#if this.isRunningQuery}}
+      <button type="button" class="btn btn-info btn-secondary query-button cancel-button" {{on "click" this.cancelClick}}>
         {{fa-icon "stop"}}
         <EmberTooltip>Cancel your query</EmberTooltip>
       </button>
     {{else}}
-      <button class="btn btn-info btn-secondary query-button rerun-button" {{action "reRunClick" query bubbles=false}}>
+      <button type="button" class="btn btn-info btn-secondary query-button rerun-button" {{on "click" this.reRunClick}}>
         {{fa-icon "repeat"}}
         <EmberTooltip>Rerun your query</EmberTooltip>
       </button>
