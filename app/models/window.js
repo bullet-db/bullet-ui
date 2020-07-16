@@ -55,5 +55,5 @@ export default class WindowModel extends Model {
   @attr('string', { defaultValue: INCLUDE_TYPES.get('WINDOW') }) includeType;
   @belongsTo('query', { autoSave: true }) query;
 
-  @equal('emitType', EMIT_TYPES.get('TIME')).readOnly() isTimeBased;
+  @equal('emitType', EMIT_TYPES.get('TIME')) isTimeBased;
 }

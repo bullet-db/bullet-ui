@@ -18,34 +18,34 @@ export default class ResultModel extends Model{
   @attr('string') pivotOptions;
   @attr() querySnapshot;
 
-  @equal('querySnapshot.type', AGGREGATIONS.get('RAW')).readOnly() isRaw;
-  @equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')).readOnly() isCountDistinct;
-  @equal('querySnapshot.type', AGGREGATIONS.get('GROUP')).readOnly() isGroup;
-  @equal('querySnapshot.type', AGGREGATIONS.get('DISTRIBUTION')).readOnly() isDistribution;
-  @equal('querySnapshot.type', AGGREGATIONS.get('TOP_K')).readOnly() isTopK;
-  @or('isCountDistinct', 'isGroupAll').readOnly() isSingleRow;
+  @equal('querySnapshot.type', AGGREGATIONS.get('RAW')) isRaw;
+  @equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')) isCountDistinct;
+  @equal('querySnapshot.type', AGGREGATIONS.get('GROUP')) isGroup;
+  @equal('querySnapshot.type', AGGREGATIONS.get('DISTRIBUTION')) isDistribution;
+  @equal('querySnapshot.type', AGGREGATIONS.get('TOP_K')) isTopK;
+  @or('isCountDistinct', 'isGroupAll') isSingleRow;
 
-  @computed('isRaw', 'querySnapshot.projectionsSize').readOnly()
+  @computed('isRaw', 'querySnapshot.projectionsSize')
   get isReallyRaw() {
     return this.isRaw && this.get('querySnapshot.projectionsSize') === 0;
   }
 
-  @computed('isGroup', 'querySnapshot.groupsSize').readOnly()
+  @computed('isGroup', 'querySnapshot.groupsSize')
   get isGroupAll() {
     return this.isGroup && this.get('querySnapshot.groupsSize') === 0;
   }
 
-  @computed('isGroup', 'querySnapshot.{metricsSize,groupsSize}').readOnly()
+  @computed('isGroup', 'querySnapshot.{metricsSize,groupsSize}')
   get isGroupBy() {
     return this.isGroup && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }
 
-  @computed('windows.[]').readOnly()
+  @computed('windows.[]')
   get errorWindow() {
     return this.windows.find(window => !isNone(window.metadata.errors));
   }
 
-  @computed('windows.[]').readOnly()
+  @computed('windows.[]')
   get hasData() {
     return !isEmpty(this.windows);
   }
