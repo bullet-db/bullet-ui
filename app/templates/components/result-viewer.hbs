@@ -25,8 +25,8 @@
         {{#unless this.appendRecordsMode}}
           {{#if this.isTimeWindow}}
             <div class="progress-indicator window-progress-indicator">
-              <TimedProgressBar @shape="Line" @active={{this.isRunningQuery}} @useStep={{false}}
-                                @duration={{this.windowDuration}} @retriggerOnChangeIn={{this.numberOfWindows}} />
+              <TimedProgressBar @isActive={{this.isRunningQuery}} @duration={{this.windowDuration}}
+                                @retriggerOnChangeIn={{this.numberOfWindows}} @useStep={{false}}/>
               <EmberTooltip @side="top" @text="Your next estimated window arrival time"/>
             </div>
           {{/if}}

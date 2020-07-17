@@ -3,10 +3,10 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="progress-container">
-  {{#if showDone}}
-    <EmberProgressBar @shape={{shape}} @useDefaultStep={{false}} @setProgress={{progress}} @options={{options}} />
+<div class="progress-container" {{did-update this.restartTimer @retriggerOnChangeIn}}>
+  {{#if this.showDone}}
+    <EmberProgressBar @shape={{this.shape}} @useDefaultStep={{false}} @setProgress={{this.progress}} @options={{this.options}}/>
   {{else}}
-    <EmberProgressBar @shape={{shape}} @useDefaultStep={{false}} @progress={{progress}} @options={{options}} />
+    <EmberProgressBar @shape={{this.shape}} @useDefaultStep={{false}} @progress={{this.progress}} @options={{this.options}}/>
   {{/if}}
 </div>

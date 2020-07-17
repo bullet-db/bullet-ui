@@ -31,7 +31,7 @@ export default class ResultViewerComponent extends Component {
   @alias('args.result.hasError') hasError;
   @alias('args.result.errorWindow') errorWindow;
   @alias('args.query.isWindowless') hasNoWindow;
-  @alias('result.windows.length') numberOfWindows;
+  @alias('args.result.windows.length') numberOfWindows;
   @alias('args.query.window.isTimeBased') isTimeWindow;
 
   @not('hasError') hasNoError;
@@ -43,6 +43,11 @@ export default class ResultViewerComponent extends Component {
   @and('hasData', 'hasNoError') showData;
   @and('showData', 'isTimeWindow') showTimeSeries;
   @and('showData', 'notAppendRecordsMode') showAutoUpdate;
+
+  constructor() {
+    super(...arguments);
+    this.settings = getOwner(this).lookup('settings:main');
+  }
 
   get queryDuration() {
     return this.args.query.get('duration') * 1000;
@@ -71,11 +76,6 @@ export default class ResultViewerComponent extends Component {
       return this.getAllWindowRecords();
     }
     return this.timeSeriesMode ? this.getTimeSeriesRecords() : this.getSelectedWindow('records', this.autoUpdate);
-  }
-
-  constructor() {
-    super(...arguments);
-    this.settings = getOwner(this).lookup('settings:main');
   }
 
   getSelectedWindow(property, autoUpdate) {
