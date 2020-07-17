@@ -4,10 +4,10 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="mode-toggle">
- <div class="mode on-view" {{action "toggle"}} hidden={{isToggled}}>
+ <div role="button" class="mode on-view" hidden={{this.isToggled}} {{on "click" this.onToggle}}>
    {{fa-icon "toggle-off" class="off" size=size}}
  </div>
- <div class="mode off-view" {{action "toggle"}} hidden={{notToggled}}>
+ <div role="button" class="mode off-view" hidden={{this.isNotToggled}} {{on "click" this.onToggle}} >
    {{fa-icon "toggle-on" class="on" size=size}}
  </div>
 </div>

@@ -41,6 +41,11 @@ export default class ResultModel extends Model{
   }
 
   @computed('windows.[]')
+  get hasError() {
+    return !isNone(this.windows.find(window => !isNone(window.metadata.errors)));
+  }
+
+  @computed('windows.[]')
   get errorWindow() {
     return this.windows.find(window => !isNone(window.metadata.errors));
   }

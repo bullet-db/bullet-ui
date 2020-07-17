@@ -35,7 +35,6 @@ export default class QueryInputComponent extends Component {
 
   @service queryManager;
 
-  // Settings are not auto-injected. Need to save it from factory lookup
   settings;
   // Keep track of the args window and filter array to add a new one to it if the query did not have one to begin with
   filter;

@@ -9,6 +9,6 @@ import { action } from '@ember/object';
 export default class ResultNumberEntryComponent extends Component {
   @action
   onClick() {
-    this.tableActions.resultClick(this.args.row);
+    this.args.tableActions.resultClick(this.args.row);
   }
 }

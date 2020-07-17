@@ -8,8 +8,7 @@ import { action } from '@ember/object';
 
 export default class ResultDateEntryComponent extends Component {
   @action
-  onClick(event) {
-    event.preventDefault();
+  onClick() {
     this.args.tableActions.resultClick(this.args.row);
   }
 }
