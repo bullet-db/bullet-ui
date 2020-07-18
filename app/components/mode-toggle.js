@@ -10,7 +10,7 @@ import { not } from '@ember/object/computed';
 
 export default class ModeToggleComponent extends Component {
   @tracked isToggled;
-  @not('args.isToggled') isNotToggled;
+  @not('isToggled') isNotToggled;
   size = 2;
 
   constructor() {
