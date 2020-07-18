@@ -17,34 +17,34 @@ export default class ResultRoute extends QueryableRoute {
   async model(params) {
     try {
       let result = await this.store.findRecord('result', params.result_id);
-      // Fetch all the things
       let query = await result.query;
-      let filter = await query.filter;
-      let projections = await query.projections;
+      // Fetch all the things
+      await query.filter;
+      await query.projections;
+      await query.window;
       let aggregation = await query.aggregation;
-      let groups = await aggregation.groups;
-      let metrics = await aggregation.metrics;
-      let window = await query.window;
-      return result;
+      await aggregation.groups;
+      await aggregation.metrics;
+      return { result, query };
     } catch(error) {
       this.transitionTo('missing', 'not-found');
     }
   }
 
   @action
-  queryClick(query) {
+  queryClick() {
+    let query = this.controller.get('model.query');
     this.transitionTo('query', query.get('id'));
   }
 
   @action
-  reRunClick(query) {
-    this.queryManager.addResult(query.get('id')).then(result => {
-      this.hasPendingSubmit = true;
-      this.pendingQuery = query;
-      this.savedResult = result;
-      // Sends us to a new result page but don't want to start the new query till we finish transitioning.
-      this.resultHandler(this);
-    });
+  async reRunClick() {
+    let query = this.controller.get('model.query');
+    let result = await this.queryManager.addResult(query.get('id'));
+    this.hasPendingSubmit = true;
+    this.savedResult = result;
+    // Sends us to a new result page but don't want to start the new query till we finish transitioning.
+    this.resultHandler(this);
   }
 
   @action
@@ -61,7 +61,7 @@ export default class ResultRoute extends QueryableRoute {
   @action
   didTransition() {
     if (this.hasPendingSubmit) {
-      let pendingQuery = this.pendingQuery;
+      let pendingQuery = this.controller.get('model.query');
       this.lateSubmitQuery(pendingQuery, this);
       this.hasPendingSubmit =  false;
       this.pendingQuery = null;

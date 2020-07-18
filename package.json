@@ -122,7 +122,8 @@
   },
   "resolutions": {
     "ember-composable-helpers": "^3.1.1",
-    "jquery": "^3.5.1"
+    "jquery": "^3.5.1",
+    "progressbar.js": "~1.0.1"
   },
   "engines": {
     "node": ">= 10.*"

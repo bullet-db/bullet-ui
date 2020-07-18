@@ -14,7 +14,7 @@
         </div>
         <div class="mode-control time-series-wrapper {{unless this.showTimeSeries "no-visibility"}}">
           <span>TimeSeries</span>
-          <ModeToggle @isToggled={{this.timeSeriesMode}} @onToggle={{fn this.changeTimeSeriesMode}} />
+          <ModeToggle @isToggled={{this.timeSeriesMode}} @onToggle={{fn this.changeTimeSeriesMode}}/>
           <EmberTooltip @side="right" @text="Compare data across your windows against the first numeric column in your data"/>
         </div>
     </div>
@@ -25,7 +25,7 @@
         {{#unless this.appendRecordsMode}}
           {{#if this.isTimeWindow}}
             <div class="progress-indicator window-progress-indicator">
-              <TimedProgressBar @isActive={{this.isRunningQuery}} @duration={{this.windowDuration}}
+              <TimedProgressBar @shape="Line" @isActive={{this.isRunningQuery}} @duration={{this.windowDuration}}
                                 @retriggerOnChangeIn={{this.numberOfWindows}} @useStep={{false}}/>
               <EmberTooltip @side="top" @text="Your next estimated window arrival time"/>
             </div>
@@ -48,7 +48,8 @@
       </div>
 
       <div class="progress-indicator query-progress-indicator">
-        <TimedProgressBar @shape="Circle" @active={{this.isRunningQuery}} @duration={{this.queryDuration}} />
+        <TimedProgressBar @shape="Circle" @isActive={{this.isRunningQuery}} @duration={{this.queryDuration}}
+                          @retriggerOnChangeIn={{this.isRunningQuery}}/>
         <EmberTooltip @side="left" @text="How long your query has been running compared to its total duration"/>
       </div>
 
@@ -63,7 +64,7 @@
           <Popovers::ResultsHelp @settings={{this.settings}}/>
         </InfoPopover>
       </span>
-      <WindowMetadata @metadata={{this.metadata}} />
+      <WindowMetadata @metadata={{this.metadata}}/>
     </div>
   {{/if}}
 
@@ -72,7 +73,7 @@
       <QueryKilled/>
     {{else if this.hasData}}
       {{!--
-      <RecordsViewer @records={{this.records}} @metadata={{this.metadata}} @config={{this.config}} @appendMode={{this.aggregateMode}} @timeSeriesMode={{this.timeSeriesMode}} @model={{@result}} />
+      <RecordsViewer @records={{this.records}} @metadata={{this.metadata}} @config={{this.config}} @appendMode={{this.aggregateMode}} @timeSeriesMode={{this.timeSeriesMode}} @model={{@result}}/>
       --}}
     {{else if this.isRunningQuery}}
       <RunningQuery/>

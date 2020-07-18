@@ -11,14 +11,14 @@ import { cancel, later } from '@ember/runloop';
 import argsGet from 'bullet-ui/utils/args-get';
 
 export default class TimedProgressBarComponent extends Component {
+  @tracked finished;
+  @tracked startTime;
+  @tracked endTime;
+  @tracked runTime;
+  @tracked percentNow = 0;
+  @tracked futureTimer;
+  @tracked timingDone = true;
   updateInterval = 200;
-  finished;
-  startTime;
-  endTime;
-  runTime;
-  percentNow = 0;
-  futureTimer;
-  timingDone = true;
 
   // Ember Progress Bar constants
   strokeWidth = 8.0;
@@ -33,11 +33,11 @@ export default class TimedProgressBarComponent extends Component {
   @or('timingDone', 'isNotActive') showDone;
 
   get shape() {
-    return argsGet('shape') || 'Circle';
+    return argsGet(this.args, 'shape', 'Circle');
   }
 
   get useStep() {
-    return argsGet('useStep') || true;
+    return argsGet(this.args, 'useStep', true);
   }
 
   get progress() {
@@ -50,15 +50,14 @@ export default class TimedProgressBarComponent extends Component {
   }
 
   get options() {
-    let { strokeWidth, strokeColor, trailColor, easing, animationDuration, useStep } = this;
     let options = {
-      strokeWidth,
-      color: strokeColor,
-      trailColor,
-      easing,
-      duration: animationDuration
+      strokeWidth: this.strokeWidth,
+      color: this.strokeColor,
+      trailColor: this.trailColor,
+      easing: this.easing,
+      duration: this.animationDuration
     };
-    if (useStep) {
+    if (this.useStep) {
       // Pass in the whole function
       options.step = this.step;
     }
@@ -76,12 +75,11 @@ export default class TimedProgressBarComponent extends Component {
 
   startTiming() {
     let now = Date.now();
-    let magnitude = parseFloat(this.duration);
+    let magnitude = parseFloat(this.args.duration);
     magnitude = magnitude <= 0 ? 1 : magnitude;
     let end = new Date(now + magnitude).getTime();
     this.startTime = now;
     this.endTime = end;
-    this.duration = magnitude;
     this.runTime = end - now;
     this.percentNow = 0.0;
     this.timingDone = false;
@@ -107,7 +105,7 @@ export default class TimedProgressBarComponent extends Component {
   @action
   restartTimer() {
     this.stopTiming();
-    if (this.active) {
+    if (this.args.isActive) {
       this.startTiming();
     }
   }

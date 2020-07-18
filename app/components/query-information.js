@@ -21,12 +21,12 @@ export default class QueryInformationComponent extends Component {
   @action
   reRunClick(event) {
     event.stopPropagation();
-    this.args.reRunClick(this.args.query);
+    this.args.reRunClick();
   }
 
   @action
   queryClick(event) {
     event.stopPropagation();
-    this.args.queryClick(this.args.query);
+    this.args.queryClick();
   }
 }

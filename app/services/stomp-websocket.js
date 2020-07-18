@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import { tracked } from '@glimmer/tracking';
 import { isEqual, isNone } from '@ember/utils';
 import { computed, get } from '@ember/object';
 import { alias } from '@ember/object/computed';
@@ -17,7 +18,7 @@ const NEW_QUERY_TYPE = 'NEW_QUERY';
 const SESSION_LENGTH = 64;
 
 export default class StompWebsocketService extends Service {
-  client = null;
+  @tracked client;
 
   @alias('settings.queryStompRequestChannel').readOnly() queryStompRequestChannel;
   @alias('settings.queryStompResponseChannel').readOnly() queryStompResponseChannel;
