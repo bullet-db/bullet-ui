@@ -32,6 +32,11 @@ export default class TimedProgressBarComponent extends Component {
   @not('args.isActive') isNotActive;
   @or('timingDone', 'isNotActive') showDone;
 
+  constructor() {
+    super(...arguments);
+    this.restartTimer();
+  }
+
   get shape() {
     return argsGet(this.args, 'shape', 'Circle');
   }

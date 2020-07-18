@@ -35,9 +35,10 @@
         {{#unless this.hasNoWindow}}
           <PowerSelect @selected={{this.selectedWindow}} @options={{@result.windows}}
                        @placeholderComponent={{component "result-window-placeholder"
-                                                        windowCount=this.numberOfWindows
-                                                        aggregateMode=this.aggregateMode}}
-                       @searchField="sequence" @searchPlaceholder="Search with your window number in the metadata..."
+                                                         windowCount=this.numberOfWindows
+                                                         aggregateMode=this.aggregateMode}}
+                       @searchEnabled={{true}} @searchField="sequence"
+                       @searchPlaceholder="Search with your window number in the metadata..."
                        @onChange={{this.changeWindow}} @disabled={{this.aggregateMode}} as |window|>
             <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
             <span class="window-size">{{window.records.length}}</span> records at
