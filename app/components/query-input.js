@@ -175,8 +175,6 @@ export default class QueryInputComponent extends Component {
     return sql.sql;
   }
 
-  // Render Modifiers and Modifier Helpers
-
   get filterClause() {
     let rules = this.filterChangeset && this.filterChangeset.get('clause');
     if (rules && !$.isEmptyObject(rules)) {
@@ -190,19 +188,6 @@ export default class QueryInputComponent extends Component {
     options.filters = this.columns;
     options.rules = this.filterClause;
     return options;
-  }
-
-  // Render modifier on did-insert for adding the QueryBuilder
-  addQueryBuilder(element, [options, onChange]) {
-    $(element).queryBuilder(options);
-    $(element).on('rulesChanged.queryBuilder', () => {
-      onChange();
-    });
-  }
-
-  // Render modifier on did-insert for scrolling into the validation container
-  scrollIntoView(element) {
-    element.scrollIntoView(false);
   }
 
   // Helpers
@@ -347,9 +332,17 @@ export default class QueryInputComponent extends Component {
   // Actions
 
   @action
-  changeFilter() {
-    this.filterChanged = true;
-    this.args.onDirty();
+  addQueryBuilder(element) {
+    $(element).queryBuilder(this.queryBuilderOptions);
+    $(element).on('rulesChanged.queryBuilder', () => {
+      this.filterChanged = true;
+      this.args.onDirty();
+    });
+  }
+
+  @action
+  scrollIntoView(element) {
+    element.scrollIntoView(false);
   }
 
   @action
