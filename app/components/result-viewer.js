@@ -111,6 +111,13 @@ export default class ResultViewerComponent extends Component {
   }
 
   @action
+  reset() {
+    this.selectedWindow = null;
+    this.autoUpdate = true;
+    this.timeSeriesMode = false;
+  }
+
+  @action
   changeWindow(selectedWindow) {
     this.selectedWindow = selectedWindow;
     this.autoUpdate = false;
