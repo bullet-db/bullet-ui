@@ -3,23 +3,27 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Component from '@ember/component';
+import $ from 'jquery';
 import JSONFormatterModule from 'json-formatter-js';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import argsGet from 'bullet-ui/utils/args-get';
+
 const JSONFormatter = JSONFormatterModule.default;
 
-export default Component.extend({
-  classNames: ['pretty-json-container'],
-  tagName: 'pre',
-  data: null,
-  defaultLevels: 2,
+export default class PrettyJsonComponent extends Component {
+  get defaultLevels() {
+    return argsGet(this.args, 'defaultLevels', 2);
+  }
 
-  didRender() {
-    this._super(...arguments);
-    this.$().empty().append(this.getRenderData());
-  },
-
-  getRenderData() {
-    let formatter = new JSONFormatter(this.data, this.defaultLevels, { hoverPreviewEnabled: true });
+  get data() {
+    let formatter = new JSONFormatter(this.args.data, this.defaultLevels, { hoverPreviewEnabled: true });
     return formatter.render();
   }
-});
+
+  @action
+  onInsert(element) {
+    $(element).empty().append(this.data);
+  }
+}

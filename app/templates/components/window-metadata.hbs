@@ -3,9 +3,11 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-{{#if expanded}}
-  <PrettyJson @data={{metadata}} @defaultLevels={{4}} />
-{{/if}}
-<div class="expand-bar" onclick={{action "toggleExpanded" bubbles=false}}>
-  <i class="{{expansionIconClasses}}"></i>
+<div class="window-metadata {{if this.expanded "is-expanded"}}">
+  {{#if this.expanded}}
+    <PrettyJson @data={{@metadata}} @defaultLevels={{4}} />
+  {{/if}}
+  <div role="button" class="expand-bar" {{on "click" this.onToggleExpanded}}>
+    <i class="{{if this.expanded "fa fa-chevron-up" "fa fa-chevron-down"}}"></i>
+  </div>
 </div>
