@@ -6,7 +6,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
-import { action } from '@ember/object';
+import { action, get } from '@ember/object';
 import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
@@ -84,7 +84,8 @@ export default class ResultViewerComponent extends Component {
   }
 
   getSelectedWindow(property, autoUpdate) {
-    let windowProperty = this.args.result.get(`windows.lastObject.${property}`);
+    // Using get because this can also be called when this component is destroying and result might not exist
+    let windowProperty = get(this.args, `result.windows.lastObject.${property}`);
     if (!autoUpdate && !isNone(this.selectedWindow)) {
       windowProperty = this.selectedWindow[property];
     }
@@ -96,12 +97,12 @@ export default class ResultViewerComponent extends Component {
   }
 
   getAllWindowRecords() {
-    let windows = this.args.result.get('windows');
+    let windows = get(this.args, 'result.windows');
     return this.cache.getAllRecordsFrom(windows);
   }
 
   getTimeSeriesRecords() {
-    let windows = this.args.result.get('windows');
+    let windows = get(this.args, 'result.windows');
     return this.cache.getAllTimeSeriesRecordsFrom(windows);
   }
 
