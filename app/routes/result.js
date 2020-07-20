@@ -7,9 +7,8 @@ import { hash } from 'rsvp';
 import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import QueryableRoute from 'bullet-ui/routes/queryable-route';
 
-export default class ResultRoute extends QueryableRoute {
+export default class ResultRoute extends Route {
   @service querier;
   @service queryManager;
   @service store;
@@ -31,6 +30,21 @@ export default class ResultRoute extends QueryableRoute {
     }
   }
 
+  lateSubmitQuery(query) {
+    let handlers = {
+      success() {
+      },
+      error(error, route) {
+        console.error(error); // eslint-disable-line no-console
+        route.transitionTo('errored');
+      },
+      message(message, route) {
+        route.queryManager.addSegment(route.controller.get('model.result'), message);
+      }
+    };
+    this.querier.send(query, handlers, this);
+  }
+
   @action
   queryClick() {
     let query = this.controller.get('model.query');
@@ -39,12 +53,12 @@ export default class ResultRoute extends QueryableRoute {
 
   @action
   async reRunClick() {
-    let query = this.controller.get('model.query');
+    let controller = this.controller;
+    let query = controller.get('model.query');
     let result = await this.queryManager.addResult(query.get('id'));
-    this.hasPendingSubmit = true;
-    this.savedResult = result;
+    controller.hasPendingSubmit = true;
     // Sends us to a new result page but don't want to start the new query till we finish transitioning.
-    this.resultHandler(this);
+    this.transitionTo('result', result.get('id'));
   }
 
   @action
@@ -60,11 +74,10 @@ export default class ResultRoute extends QueryableRoute {
 
   @action
   didTransition() {
-    if (this.hasPendingSubmit) {
-      let pendingQuery = this.controller.get('model.query');
-      this.lateSubmitQuery(pendingQuery, this);
-      this.hasPendingSubmit =  false;
-      this.pendingQuery = null;
+    let controller = this.controller;
+    if (controller.hasPendingSubmit) {
+      this.lateSubmitQuery(controller.get('model.query'));
+      controller.hasPendingSubmit = false;
     }
     return true;
   }

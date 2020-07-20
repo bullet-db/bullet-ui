@@ -12,6 +12,9 @@ import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
 import WindowCache from 'bullet-ui/utils/window-cache';
 
+// Tweaks the time for the window duration by this to adjust for Ember scheduling delays
+const JITTER = -300;
+
 export default class ResultViewerComponent extends Component {
   @service querier;
 
@@ -21,8 +24,6 @@ export default class ResultViewerComponent extends Component {
   // Cache for windows to not recompute stuff if in the same mode
   cache;
   settings;
-  // Tweaks the time for the window duration by this to adjust for Ember scheduling delays
-  jitter = -300;
 
   // Computed Properties
   @alias('querier.isRunningQuery') isRunningQuery;
@@ -55,7 +56,7 @@ export default class ResultViewerComponent extends Component {
   }
 
   get windowDuration() {
-    return this.jitter + (this.args.query.get('window.emitEvery') * 1000);
+    return JITTER + (this.args.query.get('window.emitEvery') * 1000);
   }
 
   get config() {

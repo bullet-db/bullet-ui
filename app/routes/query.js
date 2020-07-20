@@ -9,9 +9,8 @@ import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
 import Route from '@ember/routing/route';
-import QueryableRoute from 'bullet-ui/routes/queryable-route';
 
-export default class QueryRoute extends QueryableRoute {
+export default class QueryRoute extends Route {
   @service querier;
   @service queryManager;
   @service store;
@@ -96,6 +95,24 @@ export default class QueryRoute extends QueryableRoute {
     });
   }
 
+  submitQuery(query, result) {
+    let handlers = {
+      success(route) {
+        route.transitionTo('result', route.savedResult.get('id'));
+      },
+      error(error, route) {
+        console.error(error); // eslint-disable-line no-console
+        route.transitionTo('errored');
+      },
+      message(message, route) {
+        route.queryManager.addSegment(route.savedResult, message);
+      }
+    };
+    // Needs to be on the route not the controller since it gets wiped and controller is changed once we transition
+    this.savedResult = result;
+    this.querier.send(query, handlers, this);
+  }
+
   @action
   forceDirty() {
     this.controller.set('forcedDirty', true);
@@ -119,7 +136,7 @@ export default class QueryRoute extends QueryableRoute {
   sendQuery() {
     this.queryManager.addResult(this.paramsFor('query').query_id).then(result => {
       this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
-        this.submitQuery(query, result, this);
+        this.submitQuery(query, result);
       });
     });
   }
