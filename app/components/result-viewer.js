@@ -10,9 +10,7 @@ import { action, computed } from '@ember/object';
 import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
-
-export const WINDOW_NUMBER_KEY = 'Window Number';
-export const WINDOW_CREATED_KEY = 'Window Created';
+import WindowCache from 'bullet-ui/utils/window-cache';
 
 export default class ResultViewerComponent extends Component {
   @service querier;
@@ -20,9 +18,11 @@ export default class ResultViewerComponent extends Component {
   @tracked selectedWindow;
   @tracked autoUpdate = true;
   @tracked timeSeriesMode = false;
+  // Cache for windows to not recompute stuff if in the same mode
+  cache;
+  settings;
   // Tweaks the time for the window duration by this to adjust for Ember scheduling delays
   jitter = -300;
-  settings;
 
   // Computed Properties
   @alias('querier.isRunningQuery') isRunningQuery;
@@ -47,6 +47,7 @@ export default class ResultViewerComponent extends Component {
   constructor() {
     super(...arguments);
     this.settings = getOwner(this).lookup('settings:main');
+    this.cache = new WindowCache();
   }
 
   get queryDuration() {
@@ -75,7 +76,10 @@ export default class ResultViewerComponent extends Component {
     if (this.appendRecordsMode) {
       return this.getAllWindowRecords();
     }
-    return this.timeSeriesMode ? this.getTimeSeriesRecords() : this.getSelectedWindow('records', this.autoUpdate);
+    if (this.timeSeriesMode) {
+      return this.autoUpdate ? this.getTimeSeriesRecords() : this.getAllAvailableRecords();
+    }
+    return this.getSelectedWindow('records', this.autoUpdate);
   }
 
   getSelectedWindow(property, autoUpdate) {
@@ -86,28 +90,18 @@ export default class ResultViewerComponent extends Component {
     return windowProperty;
   }
 
+  getAllAvailableRecords() {
+    return this.cache.getAllAvailableRecords();
+  }
+
   getAllWindowRecords() {
-    let records = [];
     let windows = this.args.result.get('windows');
-    for (let i = 0; i < windows.length; ++i) {
-      records.push(...windows[i].records);
-    }
-    return records;
+    return this.cache.getAllRecordsFrom(windows);
   }
 
   getTimeSeriesRecords() {
-    let records = [];
     let windows = this.args.result.get('windows');
-    for (let i = 0; i < windows.length; ++i) {
-      let windowEntry = windows[i];
-      let extraColumns = {
-        [WINDOW_NUMBER_KEY]: windowEntry.sequence ? windowEntry.sequence : windowEntry.position,
-        [WINDOW_CREATED_KEY]: windowEntry.created
-      };
-      // Copy the extra columns and the columns from the record into a new object
-      windowEntry.records.forEach(record => records.push(Object.assign({ }, extraColumns, record)));
-    }
-    return records;
+    return this.cache.getAllTimeSeriesRecordsFrom(windows);
   }
 
   @action
@@ -115,6 +109,7 @@ export default class ResultViewerComponent extends Component {
     this.selectedWindow = null;
     this.autoUpdate = true;
     this.timeSeriesMode = false;
+    this.cache.reset();
   }
 
   @action
@@ -133,6 +128,10 @@ export default class ResultViewerComponent extends Component {
 
   @action
   changeTimeSeriesMode(timeSeriesMode) {
+    // Reset the cache if we don't have autoupdate on in timeSeriesMode to avoid confusion and pull the latest data
+    if (timeSeriesMode && !this.autoUpdate) {
+      this.cache.reset();
+    }
     this.timeSeriesMode = timeSeriesMode;
     this.selectedWindow = timeSeriesMode || this.autoUpdate ? null : this.args.result.get('windows.lastObject');
   }
