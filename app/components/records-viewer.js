@@ -8,7 +8,7 @@ import { tracked } from '@glimmer/tracking';
 import { assign } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
-import { action, computed } from '@ember/object';
+import { action } from '@ember/object';
 import { alias, not, or } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 
@@ -33,12 +33,10 @@ export default class RecordsViewerComponent extends Component {
     }
   }
 
-  @computed('args.records.[]')
   get columns() {
     return A(this.extractUniqueColumns(this.args.records));
   }
 
-  @computed('args.records.[]', 'columns')
   get rows() {
     return A(this.extractRows(this.args.records, this.columns));
   }

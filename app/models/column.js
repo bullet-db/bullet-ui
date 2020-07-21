@@ -6,7 +6,7 @@
 import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
 
 export const SUBFIELD_SEPARATOR = '.';
 
@@ -17,7 +17,6 @@ export default class ColumnModel extends Model {
   @attr('string') description;
   @attr() enumerations;
 
-  @computed('type', 'subtype')
   get qualifiedType() {
     let type = this.type;
     let subType = this.subtype;
@@ -28,17 +27,14 @@ export default class ColumnModel extends Model {
     return qualifiedType;
   }
 
-  @computed('enumerations')
   get hasEnumerations() {
     return !isEmpty(this.enumerations);
   }
 
-  @computed('type', 'subtype', 'enumerations')
   get hasFreeformField() {
     return this.type === 'MAP' && !isEmpty(this.subtype) && isEmpty(this.enumerations);
   }
 
-  @computed('name', 'type', 'subtype', 'description', 'enumerations')
   get enumeratedColumns() {
     let subColumns = A(this.enumerations);
     if (isEmpty(subColumns)) {
@@ -57,7 +53,6 @@ export default class ColumnModel extends Model {
     }, this);
   }
 
-  @computed('name', 'type', 'subtype', 'description', 'hasFreeformField', 'enumeratedColumns')
   get flattenedColumns() {
     let simplifiedColumns = A();
     // The main column

@@ -4,15 +4,13 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import JSONAPIAdapter from '@ember-data/adapter/json-api';
-import { computed, get } from '@ember/object';
+import { get } from '@ember/object';
 
 export default class ColumnAdapter extends JSONAPIAdapter {
-  @computed('settings')
   get host() {
     return get(this.settings, 'schemaHost');
   }
 
-  @computed('settings')
   get namespace() {
     return get(this.settings, 'schemaNamespace');
   }

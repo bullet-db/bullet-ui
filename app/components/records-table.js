@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { tracked } from '@glimmer/tracking';
-import EmberObject, { action, computed } from '@ember/object';
+import EmberObject, { action } from '@ember/object';
 import Table from 'ember-light-table';
 import PaginatedTable from 'bullet-ui/components/paginated-table';
 import { isNone } from '@ember/utils';
@@ -26,7 +26,6 @@ export default class RecordsTableComponent extends PaginatedTable {
     this.recomputeTable();
   }
 
-  @computed('args.columnNames')
   get columns() {
     let names = this.args.columnNames;
     return names.map(item => EmberObject.create({

@@ -5,7 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import EmberObject, { action, computed } from '@ember/object';
+import EmberObject, { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
 
 export default class ColumnFieldComponent extends Component {
@@ -26,7 +26,6 @@ export default class ColumnFieldComponent extends Component {
   }
 
   // Reverse mapping from ids back to the columns for easy lookup
-  @computed('args.columns.[]')
   get columnMapping() {
     return this.args.columns.reduce((previous, current) => {
       previous[current.id] = current;
@@ -34,7 +33,6 @@ export default class ColumnFieldComponent extends Component {
     }, {});
   }
 
-  @computed('selectedColumn', 'subfield')
   get compositeField() {
     let top = this.selectedColumn.id;
     let sub = this.subfield;

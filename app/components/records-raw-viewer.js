@@ -6,11 +6,11 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { isEmpty } from '@ember/utils';
-import { action, computed } from '@ember/object';
+import { action } from '@ember/object';
 
 const SPACING = 4;
 const MAX_LEVELS = 3;
-// For each multiple of this in rows, we want to decrease that many default expansions from MAX_LEVELS 
+// For each multiple of this in rows, we want to decrease that many default expansions from MAX_LEVELS
 const ROW_COUNT_LEVEL_BREAK = 20;
 
 export default class RecordsRawViewerComponent extends Component {
@@ -21,7 +21,6 @@ export default class RecordsRawViewerComponent extends Component {
     return Math.max(1, parseInt((MAX_LEVELS - (rows / ROW_COUNT_LEVEL_BREAK))));
   }
 
-  @computed('args.data')
   get formattedData() {
     let data = this.args.data;
     if (isEmpty(data)) {

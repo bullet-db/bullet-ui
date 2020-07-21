@@ -14,6 +14,11 @@ export default class ModeToggleComponent extends Component {
 
   constructor() {
     super(...arguments);
+    this.reset();
+  }
+
+  @action
+  reset() {
     this.isToggled = this.args.isToggled;
   }
 

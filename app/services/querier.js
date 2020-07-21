@@ -6,7 +6,7 @@
 import { A } from '@ember/array';
 import $ from 'jquery';
 import { isNone, isEqual } from '@ember/utils';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import isEmpty from 'bullet-ui/utils/is-empty';
@@ -27,7 +27,6 @@ export default class QuerierService extends Service {
     this.filterizer = new Filterizer(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode);
   }
 
-  @computed('defaultAPIAggregation').readOnly()
   get defaultAggregation() {
     let aggregation = this.defaultAPIAggregation;
     aggregation.type = AGGREGATIONS.get(aggregation.type);

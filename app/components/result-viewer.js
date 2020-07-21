@@ -6,7 +6,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
-import { action, computed, get } from '@ember/object';
+import { action, get } from '@ember/object';
 import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
@@ -19,8 +19,8 @@ export default class ResultViewerComponent extends Component {
   @service querier;
 
   @tracked selectedWindow;
-  @tracked autoUpdate = true;
-  @tracked timeSeriesMode = false;
+  @tracked autoUpdate;
+  @tracked timeSeriesMode;
   // Cache for windows to not recompute stuff if in the same mode
   cache;
   settings;
@@ -49,6 +49,7 @@ export default class ResultViewerComponent extends Component {
     super(...arguments);
     this.settings = getOwner(this).lookup('settings:main');
     this.cache = new WindowCache();
+    this.reset();
   }
 
   get queryDuration() {
@@ -69,12 +70,10 @@ export default class ResultViewerComponent extends Component {
     };
   }
 
-  @computed('args.result.windows.[]', 'selectedWindow', 'hasError')
   get metadata() {
     return this.hasError ? this.errorWindow : this.getSelectedWindow('metadata', this.autoUpdate);
   }
 
-  @computed('args.result.windows.[]', 'selectedWindow', 'hasError', 'timeSeriesMode')
   get records() {
     if (this.appendRecordsMode) {
       return this.getAllWindowRecords();
@@ -86,7 +85,6 @@ export default class ResultViewerComponent extends Component {
   }
 
   getSelectedWindow(property, autoUpdate) {
-    // Using get because this can also be called when this component is destroying and result might not exist
     let windowProperty = get(this.args, `result.windows.lastObject.${property}`);
     if (!autoUpdate && !isNone(this.selectedWindow)) {
       windowProperty = this.selectedWindow[property];

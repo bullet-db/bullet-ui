@@ -9,7 +9,7 @@ import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import EmberObject, { action, computed, get } from '@ember/object';
+import EmberObject, { action, get } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
@@ -120,8 +120,6 @@ export default class QueryInputComponent extends Component {
 
   // Getters
 
-  // This is computed since it shouldn't change and we want to cache it for large schemas
-  @computed('args.schema')
   get columns() {
     return this.builderAdapter.builderFilters(this.args.schema);
   }
