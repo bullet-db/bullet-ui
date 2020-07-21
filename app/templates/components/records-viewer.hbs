@@ -58,10 +58,8 @@
     {{#if this.showRawData}}
       <RecordsRawViewer @data={{@records}}/>
     {{else if this.showTable}}
-      {{!--
       <RecordsTable @appendMode={{@appendMode}} @timeSeriesMode={{@timeSeriesMode}}
                     @columnNames={{this.columns}} @rawRows={{@records}}/>
-      --}}
     {{else if this.enableCharting}}
       {{!--
       <RecordsCharter @timeSeriesMode={{@timeSeriesMode}} @config={{@config}} @columns={{this.columns}}

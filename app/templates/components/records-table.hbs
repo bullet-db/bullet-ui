@@ -3,8 +3,11 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<LightTable @table={{this.table}} @height="inherit" as |t|>
-  <t.head @onColumnClick={{action "onColumnClick"}} @iconAscending="fa fa-chevron-up" @iconDescending="fa fa-chevron-down" @fixed={{true}} />
+<div class="records-table" {{did-update this.recomputeTable @rawRows}}>
+  <LightTable @table={{this.table}} @height="inherit" as |t|>
+    <t.head @onColumnClick={{fn this.onColumnClick}} @iconAscending="fa fa-chevron-up"
+            @iconDescending="fa fa-chevron-down" @fixed={{true}}/>
 
-  <t.body @canSelect={{false}} @onScrolledToBottom={{action "onScrolledToBottom"}} />
-</LightTable>
+    <t.body @canSelect={{false}} @onScrolledToBottom={{fn this.onScrolledToBottom}}/>
+  </LightTable>
+</div>

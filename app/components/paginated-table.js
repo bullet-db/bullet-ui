@@ -12,9 +12,14 @@ export default class PaginatedTable extends Component {
   @tracked pageSize = 15;
   @tracked firstNewRow = 0;
   @tracked sortColumn = null;
-  extractors = null;
   useDefaultStringExtractor = true;
   appendMode = false;
+  /* These should be defined by the child table components
+  rows;
+  table;
+  // Optional if per column sorting customization is needed
+  extractors;
+  */
 
   get numberOfRows() {
     return this.rows.length;

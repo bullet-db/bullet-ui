@@ -4,7 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="info-popover-wrapper">
-  <a tabindex="0" class="info-popover-link {{if this.isButton "fa fa-info-circle"}}">
+  <a href="#" tabindex="0" class="info-popover-link {{if this.isButton "fa fa-info-circle"}}">
     <span class="info-link-text">{{this.additionalText}}</span>
     <EmberPopover @tooltipClass="info-popover" @event="focus" @side={{this.side}}
                   @innerClass="info-popover-inner" @arrowClass="info-popover-arrow"

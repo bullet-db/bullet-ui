@@ -6,7 +6,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
-import { action, get } from '@ember/object';
+import { action, computed, get } from '@ember/object';
 import { alias, and, or, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { isNone } from '@ember/utils';
@@ -69,11 +69,14 @@ export default class ResultViewerComponent extends Component {
     };
   }
 
+  @computed('args.result.windows.[]', 'selectedWindow', 'hasError')
   get metadata() {
     return this.hasError ? this.errorWindow : this.getSelectedWindow('metadata', this.autoUpdate);
   }
 
+  @computed('args.result.windows.[]', 'selectedWindow', 'hasError', 'timeSeriesMode')
   get records() {
+    console.log('calculating records');
     if (this.appendRecordsMode) {
       return this.getAllWindowRecords();
     }
@@ -93,6 +96,7 @@ export default class ResultViewerComponent extends Component {
   }
 
   getAllAvailableRecords() {
+    console.log('hitting cache');
     return this.cache.getAllAvailableRecords();
   }
 

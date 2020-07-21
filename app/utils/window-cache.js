@@ -24,17 +24,17 @@ export default class WindowCache {
   }
 
   getAllTimeSeriesRecordsFrom(windows) {
-    return this.getRecordsFromWindows(this.asTimeSeries(WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY));
+    return this.getRecordsFromWindows(windows, this.asTimeSeries(WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY));
   }
 
   asTimeSeries(numberKey, createdKey) {
-    return (cache, windowEntry) => {
+    return (windowEntry) => {
       let extraColumns = {
         [numberKey]: windowEntry.sequence ? windowEntry.sequence : windowEntry.position,
         [createdKey]: windowEntry.created
       };
       // Copy the extra columns and the columns from the record into a new object
-      windowEntry.records.map(record => Object.assign({ }, extraColumns, record));
+      return windowEntry.records.map(record => Object.assign({ }, extraColumns, record));
     };
   }
 
@@ -42,7 +42,7 @@ export default class WindowCache {
     let numberOfWindows = windows.length;
     if (this.windowsInCache < numberOfWindows) {
       // Start at X in windows if there are X windows in cache (at positions 0 - X-1)
-      for (let i = windowsInCache; i < numberOfWindows; ++i) {
+      for (let i = this.windowsInCache; i < numberOfWindows; ++i) {
         let records = windowToRecordsMapper(windows[i]);
         this.cache.push(...records);
       }

@@ -33,26 +33,24 @@ export default class RecordsViewerComponent extends Component {
     }
   }
 
+  @computed('args.records.[]')
   get columns() {
     return A(this.extractUniqueColumns(this.args.records));
   }
 
-  @computed('args.records', 'columns')
+  @computed('args.records.[]', 'columns')
   get rows() {
     return A(this.extractRows(this.args.records, this.columns));
   }
 
-  @computed('args.records')
   get asJSON() {
     return JSON.stringify(this.args.records, null, 2);
   }
 
-  @computed('columns', 'rows')
   get asCSV() {
     return this.makeCSVString(this.columns, this.rows);
   }
 
-  @computed('records')
   get asFlatCSV() {
     let records = this.args.records;
     let flattenedRows = records.map(item => this.flatten(item), this);

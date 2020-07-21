@@ -12,9 +12,11 @@
                                    queryClick=(fn this.queryClick)
                                    deleteQueryClick=(fn this.deleteQueryClick)}}
     as |t|>
-    <t.head @onColumnClick={{fn this.onColumnClick}} @iconAscending="fa fa-chevron-up" @iconDescending="fa fa-chevron-down" @fixed={{true}} />
+    <t.head @onColumnClick={{fn this.onColumnClick}} @iconAscending="fa fa-chevron-up"
+            @iconDescending="fa fa-chevron-down" @fixed={{true}} />
 
-    <t.body @canSelect={{false}} @canExpand={{true}} @expandOnClick={{false}} @scrollBuffer={{1000}} @onScrolledToBottom={{fn this.onScrolledToBottom}} as |b|>
+    <t.body @canSelect={{false}} @canExpand={{true}} @expandOnClick={{false}} @scrollBuffer={{1000}}
+            @onScrolledToBottom={{fn this.onScrolledToBottom}} as |b|>
 
       <b.expanded-row as |e|>
         <QueryShareableLink @row={{e}} />

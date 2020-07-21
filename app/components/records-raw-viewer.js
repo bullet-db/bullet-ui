@@ -10,13 +10,15 @@ import { action, computed } from '@ember/object';
 
 const SPACING = 4;
 const MAX_LEVELS = 3;
+// For each multiple of this in rows, we want to decrease that many default expansions from MAX_LEVELS 
+const ROW_COUNT_LEVEL_BREAK = 20;
 
 export default class RecordsRawViewerComponent extends Component {
   @tracked isToggled = true;
 
   get numberOflevels() {
     let rows = this.args.data.length;
-    return Math.max(1, parseInt((MAX_LEVELS - (rows / 20))));
+    return Math.max(1, parseInt((MAX_LEVELS - (rows / ROW_COUNT_LEVEL_BREAK))));
   }
 
   @computed('args.data')
