@@ -6,14 +6,9 @@
 .record-entry-popover-wrapper {
   max-width: 500px;
   max-height: 350px;
+  padding: 5;
   font-family: $font-family-regular;
   border: 2px solid $primary-button-color;
-  .arrow {
-    border-bottom-color: $primary-button-color;
-    &:after {
-      top: 2px;
-    }
-  }
 
   .record-entry-popover-inner {
     .record-entry-popover-title {
@@ -36,7 +31,8 @@
       }
       padding: 15px 15px 0px 15px;
       overflow: auto;
-      max-height: 300px;
+      max-width: 300px;
+      max-height: 240px;
 
       pre {
         color: $heading-text-color;
@@ -47,5 +43,12 @@
         border: none;
       }
     }
+  }
+
+  &[x-placement^="top"] .record-entry-popover-arrow {
+    border-top-color: $primary-button-color;
+  }
+  &[x-placement^="bottom"] .record-entry-popover-arrow {
+    border-bottom-color: $primary-button-color;
   }
 }

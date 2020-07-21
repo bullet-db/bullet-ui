@@ -5,7 +5,7 @@
  */
 import { tracked } from '@glimmer/tracking';
 import { isEqual, isNone } from '@ember/utils';
-import { get } from '@ember/object';
+import { computed, get } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service from '@ember/service';
 import SockJS from 'sockjs-client';
@@ -23,10 +23,12 @@ export default class StompWebsocketService extends Service {
   @alias('settings.queryStompRequestChannel').readOnly() queryStompRequestChannel;
   @alias('settings.queryStompResponseChannel').readOnly() queryStompResponseChannel;
 
+  @computed('client')
   get isConnected() {
     return !isNone(this.client);
   }
 
+  @computed('settings')
   get url() {
     let settings = this.settings;
     return `${get(settings, 'queryHost')}/${get(settings, 'queryNamespace')}/${get(settings, 'queryPath')}`;

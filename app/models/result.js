@@ -6,6 +6,7 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
 import { equal, or } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
+import { computed } from '@ember/object';
 import { A } from '@ember/array';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 
@@ -24,26 +25,32 @@ export default class ResultModel extends Model{
   @equal('querySnapshot.type', AGGREGATIONS.get('TOP_K')) isTopK;
   @or('isCountDistinct', 'isGroupAll') isSingleRow;
 
+  @computed('isRaw', 'querySnapshot.projectionsSize')
   get isReallyRaw() {
     return this.isRaw && this.get('querySnapshot.projectionsSize') === 0;
   }
 
+  @computed('isGroup', 'querySnapshot.groupsSize')
   get isGroupAll() {
     return this.isGroup && this.get('querySnapshot.groupsSize') === 0;
   }
 
+  @computed('isGroup', 'querySnapshot.{metricsSize,groupsSize}')
   get isGroupBy() {
     return this.isGroup && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
   }
 
+  @computed('windows.[]')
   get hasError() {
     return !isNone(this.windows.find(window => !isNone(window.metadata.errors)));
   }
 
+  @computed('windows.[]')
   get errorWindow() {
     return this.windows.find(window => !isNone(window.metadata.errors));
   }
 
+  @computed('windows.[]')
   get hasData() {
     return !isEmpty(this.windows);
   }

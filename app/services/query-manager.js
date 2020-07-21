@@ -5,7 +5,7 @@
  */
 import { pluralize } from 'ember-inflector';
 import { Base64 } from 'js-base64';
-import EmberObject, { get, getProperties } from '@ember/object';
+import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
@@ -29,6 +29,7 @@ export default class QueryManagerService extends Service {
   saveSegmentDebounceInterval = 100;
   debounceSegmentSaves = config.APP.SETTINGS.debounceSegmentSaves;
 
+  @computed('settings').readOnly()
   get windowNumberProperty() {
     let mapping = get(this.settings, 'defaultValues.metadataKeyMapping');
     let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');

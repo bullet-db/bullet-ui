@@ -6,6 +6,7 @@
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
+import { computed } from '@ember/object';
 import { pluralize } from 'ember-inflector';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
@@ -21,29 +22,35 @@ export default class QueryModel extends Model {
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
+  @computed('window')
   get isWindowless() {
     return isEmpty(this.get('window.id'));
   }
 
+  @computed('projections.@each.name', 'aggregation.groups.@each.name')
   get hasUnsavedFields() {
     let projections = this.getWithDefault('projections', A());
     let groups = this.getWithDefault('aggregation.groups', A());
     return this.hasNoName(projections) || this.hasNoName(groups);
   }
 
+  @computed('filter.summary')
   get filterSummary() {
     let summary = this.get('filter.summary');
     return isEmpty(summary) ? 'None' : summary;
   }
 
+  @computed('projections.@each.name')
   get projectionsSummary() {
     return this.summarizeFieldLike(this.projections);
   }
 
+  @computed('aggregation.groups.@each.name')
   get groupsSummary() {
     return this.summarizeFieldLike(this.get('aggregation.groups'));
   }
 
+  @computed('aggregation.metrics.@each.{type,name}')
   get metricsSummary() {
     let metrics = this.getWithDefault('aggregation.metrics', A());
     return metrics.map(m => {
@@ -57,6 +64,7 @@ export default class QueryModel extends Model {
     }).join(', ');
   }
 
+  @computed('aggregation.{type,size}', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary')
   get aggregationSummary() {
     let type = this.get('aggregation.type');
     if (type === AGGREGATIONS.get('RAW')) {
@@ -89,6 +97,7 @@ export default class QueryModel extends Model {
   }
 
 
+  @computed('projectionsSummary', 'aggregationSummary')
   get fieldsSummary() {
     let projectionsSummary = this.projectionsSummary;
     let aggregationSummary = this.aggregationSummary;
@@ -99,6 +108,7 @@ export default class QueryModel extends Model {
     return this.aggregationSummary;
   }
 
+  @computed('isWindowless', 'window.{emitType,emitEvery,includeType}')
   get windowSummary() {
     if (this.isWindowless) {
       return 'None';
@@ -109,6 +119,7 @@ export default class QueryModel extends Model {
     return `Every ${emitEvery} ${this.getEmitUnit(emitType, emitEvery)}${this.getIncludeType(includeType)}`;
   }
 
+  @computed('results.[]')
   get latestResult() {
     let results = this.results;
     if (isEmpty(results)) {
