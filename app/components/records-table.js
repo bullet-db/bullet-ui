@@ -48,7 +48,7 @@ export default class RecordsTableComponent extends PaginatedTable {
 
   @action
   recomputeTable() {
-    this.rows = this.args.rawRows.map(row => EmberObject.create(row));
+    this.rows = [].concat(this.args.rows);
     let sortColumn = this.sortColumn;
     let hasSortedColumn = !isNone(sortColumn);
     let alreadyReset = this.alreadyReset;

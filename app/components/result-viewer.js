@@ -13,7 +13,7 @@ import { isNone } from '@ember/utils';
 import WindowCache from 'bullet-ui/utils/window-cache';
 
 // Tweaks the time for the window duration by this to adjust for Ember scheduling delays
-const JITTER = -300;
+const JITTER = -400;
 
 export default class ResultViewerComponent extends Component {
   @service querier;

@@ -39,7 +39,7 @@ export default class WindowCache {
   }
 
   getRecordsFromWindows(windows, windowToRecordsMapper) {
-    let numberOfWindows = windows.length;
+    let numberOfWindows = windows ? windows.length : 0;
     if (this.windowsInCache < numberOfWindows) {
       // Start at X in windows if there are X windows in cache (at positions 0 - X-1)
       for (let i = this.windowsInCache; i < numberOfWindows; ++i) {
