@@ -3,15 +3,21 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<p class="plain-entry">{{textValue}}</p>
-{{#if isActive}}
-  <div class="record-popover-title hidden">
-    <span class="record-label">{{column.label}}</span>
+<div role="button" class="record-entry {{if this.hasPopover "has-popover"}}" {{on "click" this.showPopover}}>
+  <p class="plain-entry">{{this.textValue}}</p>
+  <div class="record-entry-popover">
+    <EmberPopover @event="none" @isShown={{this.showingPopover}} @tooltipClass="record-entry-popover-wrapper"
+                  @innerClass="record-entry-popover-inner" @arrowClass="record-entry-popover-arrow"
+                  @side="bottom" @popperOptions={{this.popperOptions}}>
+      <div class="record-entry-popover-title">
+        <span class="record-label">{{this.label}}</span>
+      </div>
+      <div class="record-entry-popover-body">
+        <button class="btn btn-xs close-button" aria-label="Close" {{on "click" this.closePopover}}>
+          {{fa-icon "close" tagName="span"}}
+        </button>
+        <pre>{{this.formattedValue}}</pre>
+      </div>
+    </EmberPopover>
   </div>
-  <div class="record-popover-body hidden">
-    <button class="btn btn-xs close-button" aria-label="Close" {{action "closePopover"}}>
-      {{fa-icon "close" tagName="span"}}
-    </button>
-    <pre>{{formattedValue}}</pre>
-  </div>
-{{/if}}
+</div>
