@@ -76,7 +76,6 @@ export default class ResultViewerComponent extends Component {
 
   @computed('args.result.windows.[]', 'selectedWindow', 'hasError', 'timeSeriesMode')
   get records() {
-    console.log('calculating records');
     if (this.appendRecordsMode) {
       return this.getAllWindowRecords();
     }
@@ -96,7 +95,6 @@ export default class ResultViewerComponent extends Component {
   }
 
   getAllAvailableRecords() {
-    console.log('hitting cache');
     return this.cache.getAllAvailableRecords();
   }
 
