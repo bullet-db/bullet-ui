@@ -9,13 +9,13 @@
       <QueryInformation @querySnapshot={{@model.result.querySnapshot}}
                         @reRunClick={{fn (route-action "reRunClick")}}
                         @cancelClick={{fn (route-action "cancelClick")}}
-                        @queryClick={{fn (route-action "queryClick")}} />
+                        @queryClick={{fn (route-action "queryClick")}}/>
     </div>
   </div>
 
   <div class="section result-section">
     <div class="result-viewer-container">
-      <ResultViewer @result={{@model.result}} @query={{@model.query}} />
+      <ResultViewer @result={{@model.result}} @query={{@model.query}}/>
     </div>
   </div>
 </div>

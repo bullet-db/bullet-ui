@@ -62,10 +62,10 @@ export default class ResultViewerComponent extends Component {
   get config() {
     return {
       isRaw: this.args.result.get('isRaw'),
-      isReallyRaw: this.args.result.get('result.isReallyRaw'),
-      isDistribution: this.args.result.get('result.isDistribution'),
-      isSingleRow: this.args.result.get('result.isSingleRow'),
-      pivotOptions: this.args.result.get('result.pivotOptions')
+      isReallyRaw: this.args.result.get('isReallyRaw'),
+      isDistribution: this.args.result.get('isDistribution'),
+      isSingleRow: this.args.result.get('isSingleRow'),
+      pivotOptions: this.args.result.get('pivotOptions')
     };
   }
 

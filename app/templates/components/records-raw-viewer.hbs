@@ -3,17 +3,18 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
+<div class="records-raw-viewer">
+  <div class="collapse-control">
+    <span>Collapsible</span>
+    <ModeToggle @isToggled={{this.isToggled}} @onToggle={{this.onToggle}}/>
+    <EmberTooltip @side="left">Prettify and make your JSON collapsible</EmberTooltip>
+  </div>
 
-<div class="collapse-control">
-  <span>Collapsible</span>
-  <ModeToggle @isToggled={{isToggled}} @onToggled={{action (mut isToggled)}} />
-  <EmberTooltip @side="left">Prettify and make your JSON collapsible</EmberTooltip>
-</div>
-
- <div class="raw-display">
-   {{#if isToggled}}
-     <PrettyJson @data={{data}} @defaultLevels={{numberOflevels}} />
-   {{else}}
-     <pre class="raw-json-display">{{formattedData}}</pre>
-   {{/if}}
+   <div class="raw-display">
+     {{#if this.isToggled}}
+       <PrettyJson @data={{@data}} @defaultLevels={{this.numberOflevels}}/>
+     {{else}}
+       <pre class="raw-json-display">{{this.formattedData}}</pre>
+     {{/if}}
+   </div>
  </div>

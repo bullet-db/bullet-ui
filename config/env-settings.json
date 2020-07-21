@@ -18,69 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": {
-       "filters":[
-          {
-             "clauses":[
-                {
-                   "field":"bcookie",
-                   "values":[
-                      "foo"
-                   ],
-                   "operation":"=="
-                },
-                {
-                   "field":"ptyid",
-                   "values":[
-                      "bar"
-                   ],
-                   "operation":"!="
-                }
-             ],
-             "operation":"AND"
-          }
-       ],
-       "projection" : {
-          "fields": {
-              "view_id": "pid",
-              "event_tag": "tags",
-              "demog_info.age": "age"
-          }
-       },
-       "aggregation":{
-          "size":1,
-          "type":"GROUP",
-          "fields":{
-             "demog_info.country":"country",
-             "bcookie":"bid"
-          },
-          "attributes":{
-             "operations":[
-                {
-                   "type":"COUNT",
-                   "newName":"count"
-                },
-                {
-                   "type":"AVG",
-                   "field":"click_info.foo",
-                   "newName":"averageAge"
-                },
-                {
-                   "type":"AVG",
-                   "field":"session_info.duration",
-                   "newName":"averageTimespent"
-                }
-             ]
-          }
-       },
-       "window":{
-          "emit":{
-             "type":"RECORD",
-             "every":1
-          }
-       },
-       "duration":20000
-    },
+    "defaultQuery": null,
     "defaultValues": {
       "aggregationMaxSize": 512,
       "rawMaxSize": 100,

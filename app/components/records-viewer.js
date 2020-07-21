@@ -3,75 +3,63 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { assign } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
+import { action, computed } from '@ember/object';
+import { alias, not, or } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 
-export default Component.extend({
-  fileSaver: service(),
-  classNames: ['records-viewer'],
-  showRawData: false,
-  showTable: false,
-  showChart: false,
-  config: null,
-  metadata: null,
-  records: null,
-  fileName: 'results',
-  model: null,
-  appendMode: false,
-  timeSeriesMode: false,
+const FILE_NAME = 'results';
+export default class RecordsViewerComponent extends Component {
+  @service fileSaver;
+  @tracked showRawData = false;
+  @tracked showTable = false;
+  @tracked showChart = false;
 
-  enableCharting: computed('config.isSingleRow', 'timeSeriesMode', function() {
-    return !this.get('config.isSingleRow') || this.timeSeriesMode;
-  }),
+  @alias('args.config.isSingleRow') isSingleRow;
+  @not('isSingleRow') isNotSingleRow;
+  @or('isNotSingleRow', 'args.timeSeriesMode') enableCharting;
+  @alias('showChart') isShowingChart;
 
-  isShowingChart: alias('showChart').readOnly(),
+  constructor() {
+    super(...arguments);
+    if (this.args.config.isReallyRaw) {
+      this.showRawData = true;
+    } else {
+      this.showTable = true;
+    }
+  }
 
-  columns: computed('records', function() {
-    return A(this.extractUniqueColumns(this.records));
-  }).readOnly(),
+  get columns() {
+    return A(this.extractUniqueColumns(this.args.records));
+  }
 
-  rows: computed('records', 'columns', function() {
-    return A(this.extractRows(this.records, this.columns));
-  }).readOnly(),
+  @computed('args.records', 'columns')
+  get rows() {
+    return A(this.extractRows(this.args.records, this.columns));
+  }
 
-  asJSON: computed('records', function() {
-    let records = this.records;
-    return JSON.stringify(records, null, 2);
-  }).readOnly(),
+  @computed('args.records')
+  get asJSON() {
+    return JSON.stringify(this.args.records, null, 2);
+  }
 
-  asCSV: computed('columns', 'rows', function() {
+  @computed('columns', 'rows')
+  get asCSV() {
     return this.makeCSVString(this.columns, this.rows);
-  }).readOnly(),
+  }
 
-  asFlatCSV: computed('records', function() {
-    let records = this.records;
+  @computed('records')
+  get asFlatCSV() {
+    let records = this.args.records;
     let flattenedRows = records.map(item => this.flatten(item), this);
     let columns = this.extractUniqueColumns(flattenedRows);
     let rows = this.extractRows(flattenedRows, columns);
     return this.makeCSVString(columns, rows);
-  }).readOnly(),
-
-  init() {
-    this._super(...arguments);
-    if (this.get('config.isReallyRaw')) {
-      this.set('showRawData', true);
-    } else {
-      this.set('showTable', true);
-    }
-  },
-
-  didReceiveAttrs() {
-    this._super(...arguments);
-    // If we should suddenly stop showing charts but we were showing a chart, go back to table
-    if (this.isShowingChart && !this.enableCharting) {
-      this.flipTo('showTable');
-    }
-  },
+  }
 
   extractUniqueColumns(records) {
     let columns = new Set();
@@ -85,7 +73,7 @@ export default Component.extend({
     let columnArray = Array.from(columns);
     columnArray.sort();
     return columnArray;
-  },
+  }
 
   extractRows(records, columns) {
     let rows = [];
@@ -97,13 +85,13 @@ export default Component.extend({
       rows.push(row);
     });
     return rows;
-  },
+  }
 
   makeCSVString(columns, rows) {
     let header = columns.join(',');
     let body = rows.map(row => row.join(','));
     return header + '\r\n' + body.join('\r\n');
-  },
+  }
 
   cleanItem(item) {
     let type = typeOf(item);
@@ -111,7 +99,7 @@ export default Component.extend({
       return JSON.stringify(item);
     }
     return item;
-  },
+  }
 
   /* Takes a JSON object and recursively flattens arrays and objects in it to from a single JSON object with just primitives.
    * @param  {Object} json   The JSON object.
@@ -132,38 +120,50 @@ export default Component.extend({
       assign(flattened, nested);
     }
     return flattened;
-  },
+  }
 
   flipTo(field) {
-    this.set('showRawData', false);
-    this.set('showTable', false);
-    this.set('showChart', false);
-    this.set(field, true);
-  },
+    this.showRawData = false;
+    this.showTable = false;
+    this.showChart = false;
+    this[field] = true;
+  }
 
-  actions: {
-    rawDataMode() {
-      this.flipTo('showRawData');
-    },
-
-    tableMode() {
+  @action
+  reset() {
+    // If we should suddenly stop showing charts but we were showing a chart, go back to table
+    if (this.isShowingChart && !this.enableCharting) {
       this.flipTo('showTable');
-    },
-
-    chartMode() {
-      this.flipTo('showChart');
-    },
-
-    downloadAsJSON() {
-      this.fileSaver.save(this.asJSON, 'application/json', `${this.fileName}.json`);
-    },
-
-    downloadAsCSV() {
-      this.fileSaver.save(this.asCSV, 'text/csv', `${this.fileName}.csv`);
-    },
-
-    downloadAsFlatCSV() {
-      this.fileSaver.save(this.asFlatCSV, 'text/csv', `${this.fileName}_flat.csv`);
     }
   }
-});
+
+  @action
+  rawDataMode() {
+    this.flipTo('showRawData');
+  }
+
+  @action
+  tableMode() {
+    this.flipTo('showTable');
+  }
+
+  @action
+  chartMode() {
+    this.flipTo('showChart');
+  }
+
+  @action
+  downloadAsJSON() {
+    this.fileSaver.save(this.asJSON, 'application/json', `${FILE_NAME}.json`);
+  }
+
+  @action
+  downloadAsCSV() {
+    this.fileSaver.save(this.asCSV, 'text/csv', `${FILE_NAME}.csv`);
+  }
+
+  @action
+  downloadAsFlatCSV() {
+    this.fileSaver.save(this.asFlatCSV, 'text/csv', `${FILE_NAME}_flat.csv`);
+  }
+}

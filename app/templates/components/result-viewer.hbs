@@ -75,11 +75,9 @@
     {{#if this.hasError}}
       <QueryKilled/>
     {{else if this.hasData}}
-      {{!--
       <RecordsViewer @records={{this.records}} @metadata={{this.metadata}} @config={{this.config}}
                      @appendMode={{this.aggregateMode}} @timeSeriesMode={{this.timeSeriesMode}}
                      @model={{@result}} @settings={{this.settings}}/>
-      --}}
     {{else if this.isRunningQuery}}
       <RunningQuery/>
     {{else}}
