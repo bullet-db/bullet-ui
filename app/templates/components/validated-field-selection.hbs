@@ -28,7 +28,7 @@
 
   {{#if this.enableRenaming}}
     <div class="{{@nameClasses}} field-name">
-      <LabeledInput @label="Display Name" @value={{get @changeset "name"}}
+      <LabeledInput @label="Display Name" @value={{@changeset.name}}
                     @onChange={{this.onModifyName}}
                     @type="text" @placeholder="Optional" @disabled={{@disabled}} />
     </div>

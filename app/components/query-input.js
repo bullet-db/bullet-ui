@@ -227,13 +227,7 @@ export default class QueryInputComponent extends Component {
     // Reset the aggregation changeset
     this.aggregationChangeset.set('type', type);
     this.aggregationChangeset.set('size', 1);
-    let attributes = this.aggregationChangeset.get('attributes');
-    if (attributes) {
-      let fields = Object.getOwnPropertyNames(attributes);
-      for (const field of fields) {
-        delete attributes[field];
-      }
-    }
+    this.queryManager.wipeAggregationAttributes(this.aggregationChangeset);
     // Wipe projections, groups and metrics
     let promises = [
       this.queryManager.deleteMultipleCollection(this.projections, 'query'),

@@ -18,8 +18,8 @@ import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 export default class QuerierService extends Service {
   @service stompWebsocket;
   filterizer;
-  @alias('stompWebsocket.isConnected').readOnly() isRunningQuery;
-  @alias('settings.defaultAggregation').readOnly() defaultAPIAggregation;
+  @alias('stompWebsocket.isConnected') isRunningQuery;
+  @alias('settings.defaultAggregation') defaultAPIAggregation;
 
   constructor() {
     super(...arguments);

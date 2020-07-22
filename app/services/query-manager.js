@@ -268,7 +268,14 @@ export default class QueryManagerService extends Service {
     this.fixFieldLikes(groups);
   }
 
-  fixDistributionPointType(aggregation) {
+  wipeAggregationAttributes(aggregation) {
+    const fields = ['type', 'pointType', 'newName', 'threshold', 'pointType', 'numberOfPoints', 'start', 'end', 'increment'];
+    for (const field of fields) {
+      aggregation.set(`attributes.${field}`, undefined);
+    }
+  }
+
+  fixAggregationAttributes(aggregation) {
     let pointType = aggregation.get('attributes.pointType');
     if (isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
       this.removeAttributes(aggregation, 'numberOfPoints', 'points');
@@ -282,7 +289,7 @@ export default class QueryManagerService extends Service {
   cleanup(aggregation, projections, groups) {
     this.autoFill(projections, groups),
     this.fixAggregationSize(aggregation),
-    this.fixDistributionPointType(aggregation)
+    this.fixAggregationAttributes(aggregation)
   }
 
   // Saving

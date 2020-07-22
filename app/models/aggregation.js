@@ -89,6 +89,6 @@ export default class AggregationModel extends Model {
   @attr('number') size;
   @hasMany('group', { dependent: 'destroy' }) groups;
   @hasMany('metric', { dependent: 'destroy' }) metrics;
-  @attr({ defaultValue: () => { } }) attributes;
+  @attr({ defaultValue: () => EmberObject.create() }) attributes;
   @belongsTo('query', { autoSave: true }) query;
 }
