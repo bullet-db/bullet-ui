@@ -104,6 +104,7 @@ export default class RecordsCharterComponent extends Component {
         scales: { yAxes: [{ position: 'left', id: '0' }, { position: 'right', id: '1' }] }
       };
     }
+    return { };
   }
 
   get regularData() {

@@ -5,6 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import argsGet from 'bullet-ui/utils/args-get';
 
 export default class InfoPopoverComponent extends Component {
@@ -22,5 +23,10 @@ export default class InfoPopoverComponent extends Component {
 
   get additionalText() {
     return argsGet(this.args, 'additionalText', '');
+  }
+
+  @action
+  onClick(event) {
+    event.preventDefault();
   }
 }
