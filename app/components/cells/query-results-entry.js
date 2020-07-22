@@ -18,13 +18,7 @@ export default class QueryResultsEntryComponent extends Component {
   }
 
   get popperOptions() {
-    return {
-      modifiers: {
-        preventOverflow: {
-          escapeWithReference: false
-        }
-      }
-    };
+    return { modifiers: { preventOverflow: { escapeWithReference: false } } };
   }
 
   @action

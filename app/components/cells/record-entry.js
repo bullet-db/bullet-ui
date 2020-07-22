@@ -19,18 +19,8 @@ export default class RecordEntryComponent extends Component {
     this.showingPopover = false;
   }
 
-  willDestroy() {
-    this.showingPopover = false;
-  }
-
   get popperOptions() {
-    return {
-      modifiers: {
-        preventOverflow: {
-          escapeWithReference: false
-        }
-      }
-    };
+    return { modifiers: { preventOverflow: { escapeWithReference: false } } };
   }
 
   get label() {

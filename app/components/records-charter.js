@@ -3,17 +3,17 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import {
-  WINDOW_CREATED_KEY,
-  WINDOW_NUMBER_KEY
-} from 'bullet-ui/components/result-viewer';
-
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { A } from '@ember/array';
 import { isEmpty, isEqual, typeOf } from '@ember/utils';
-import { computed } from '@ember/object';
+import { action } from '@ember/object';
 import { not, alias, or } from '@ember/object/computed';
-import Component from '@ember/component';
+import { WINDOW_CREATED_KEY, WINDOW_NUMBER_KEY } from 'bullet-ui/utils/window-cache';
+import argsGet from 'bullet-ui/utils/args-get';
 
+const TIME_SERIES_INDEPENDENT_COLUMN = WINDOW_CREATED_KEY;
+const TIME_SERIES_WINDOW_COLUMN = WINDOW_NUMBER_KEY;
 const TIME_SERIES_OPTIONS = {
   scales: { xAxes: [{ type: 'time' }] },
   animation: { duration: 0 },
@@ -23,42 +23,23 @@ const TIME_SERIES_OPTIONS = {
     line: { tension: 0 }
   }
 };
+export default class RecordsCharterComponent extends Component {
+  @tracked showLineChart = true;
+  @tracked showBarChart = false;
+  @tracked showPieChart = false;
+  @tracked showPivotMode = false;
 
-export default Component.extend({
-  classNames: ['records-charter'],
-  model: null,
-  columns: null,
-  rows: null,
-  config: null,
-  // Can't use to pass to ember-chart the type because it only uses the type on creation
+  @alias('args.config.isDistribution') isDistribution;
+  @not('args.timeSeriesMode') regularMode;
+  @not('timeSeriesMode') canShowPieChart;
+  @alias('showPieChart') needsColorArray;
+  @alias('config.isRaw') canOnlyPivot;
+  @or('showPivotMode', 'canOnlyPivot') pivotMode;
 
-  showLineChart: true,
-  showBarChart: false,
-  showPieChart: false,
-  showPivotMode: false,
-
-  timeSeriesMode: false,
-  regularMode: not('timeSeriesMode').readOnly(),
-  canShowPieChart: not('timeSeriesMode').readOnly(),
-  needsColorArray: alias('showPieChart').readOnly(),
-  canOnlyPivot: alias('config.isRaw').readOnly(),
-  pivotMode: or('showPivotMode', 'canOnlyPivot').readOnly(),
-  pivotOptions: computed('config.pivotOptions', function() {
-    return JSON.parse(this.get('config.pivotOptions') || '{}');
-  }).readOnly(),
-
-  didReceiveAttrs() {
-    this._super(...arguments);
-    // If we were in pie chart mode and switched to time series, reset to line
-    if (this.timeSeriesMode && this.showPieChart) {
-      this.changeChart('showLineChart');
-    }
-  },
-
-  sampleRow: computed('rows', 'columns', function() {
+  get sampleRow() {
     let typicalRow = { };
-    let rows = this.rows;
-    this.columns.forEach(column => {
+    let rows = this.args.rows;
+    this.args.columns.forEach(column => {
       for (let row of rows) {
         let value = row[column];
         if (!isEmpty(value)) {
@@ -68,114 +49,120 @@ export default Component.extend({
       }
     });
     return typicalRow;
-  }).readOnly(),
+  }
+
+  get pivotOptions() {
+    let options = argsGet(this.args, 'config', {});
+    return JSON.parse(options.pivotOptions || '{}');
+  }
 
   //////////////////////////////////////////////// Regular Chart Items  //////////////////////////////////////////////
 
-  regularIndependentColumns: computed('config', 'sampleRow', 'columns', function() {
-    let columns = this.columns;
-    if (this.get('config.isDistribution')) {
+  get regularIndependentColumns() {
+    let columns = this.args.columns;
+    if (this.isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
     // Pick all string columns
     let sampleRow = this.sampleRow;
     return A(columns.filter(c => this.isType(sampleRow, c, 'string')));
-  }).readOnly(),
+  }
 
-  regularDependentColumns: computed('config', 'sampleRow', 'columns', function() {
-    let columns = this.columns;
-    if (this.get('config.isDistribution')) {
+  get regularDependentColumns() {
+    let columns = this.args.columns;
+    if (this.isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
     }
     // Pick all number columns
     let sampleRow = this.sampleRow;
     return A(columns.filter(c => this.isType(sampleRow, c, 'number')));
-  }).readOnly(),
+  }
 
-  regularLabels: computed('regularIndependentColumns', 'rows', function() {
+  get regularLabels() {
     // Only one independent column for now
-    let rows = this.rows;
+    let rows = this.args.rows;
     let columns = this.regularIndependentColumns;
     // [ [column1 values...], [column2 values...], ...]
     let valuesList = columns.map(column => this.getColumnValues(column, rows));
     // valuesList won't be empty because all non-Raw aggregations will have at least one string field
     return this.zip(valuesList);
-  }).readOnly(),
+  }
 
-  regularColors: computed('needsColorArray', 'regularLabels', function() {
+  get regularColors() {
     return this.needsColorArray ? this.fixedColors(this.regularLabels) : undefined;
-  }).readOnly(),
+  }
 
-  regularDatasets: computed('regularDependentColumns', 'regularColors', 'rows', function() {
-    let rows = this.rows;
+  get regularDatasets() {
+    let rows = this.args.rows;
     let colors = this.regularColors;
     return this.regularDependentColumns.map((column, i) => this.columnarDataset(column, rows, colors, i));
-  }).readOnly(),
+  }
 
-  regularOptions: computed('regularDependentColumns', function() {
-    if (this.get('regularDependentColumns.length') > 1) {
+  get regularOptions() {
+    if (this.regularDependentColumns.length > 1) {
       return {
         scales: { yAxes: [{ position: 'left', id: '0' }, { position: 'right', id: '1' }] }
       };
     }
-  }).readOnly(),
+  }
 
-  regularData: computed('regularLabels', 'regularDatasets', function() {
+  get regularData() {
     return { labels: this.regularLabels, datasets: this.regularDatasets };
-  }).readOnly(),
+  }
 
   /////////////////////////////////////////////// TimeSeries Chart Items  //////////////////////////////////////////////
 
-  timeSeriesIndependentColumn: WINDOW_CREATED_KEY,
-  timeSeriesWindowColumn: WINDOW_NUMBER_KEY,
-  timeSeriesOptions: TIME_SERIES_OPTIONS,
+  get timeSeriesOptions() {
+    return TIME_SERIES_OPTIONS;
+  }
 
-  timeSeriesMetric: computed('config', 'sampleRow', 'columns', function() {
-    let { sampleRow, columns } = this;
+  get timeSeriesMetric() {
+    let columns = this.args.columns;
     let fieldIndex;
-    if (this.get('config.isDistribution')) {
+    if (this.isDistribution) {
       fieldIndex = columns.findIndex(c => isEqual(c, 'Count') || isEqual(c, 'Value'));
     } else {
       // Find the first numeric field
-      fieldIndex = columns.findIndex(c => this.isType(sampleRow, c, 'number'));
+      fieldIndex = columns.findIndex(c => this.isType(this.sampleRow, c, 'number'));
     }
     return columns.get(fieldIndex);
-  }).readOnly(),
+  }
 
-  timeSeriesDependentColumns: computed('config', 'columns', 'sampleRow', 'timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'timeSeriesMetric', function() {
-    let columns = this.columns;
+  get timeSeriesDependentColumns() {
+    let columns = this.args.columns;
     let sampleRow = this.sampleRow;
-    let independentColumn = this.timeSeriesIndependentColumn;
-    let windowColumn = this.timeSeriesWindowColumn;
+    let independentColumn = TIME_SERIES_INDEPENDENT_COLUMN;
+    let windowColumn = TIME_SERIES_WINDOW_COLUMN;
     let metricColumn = this.timeSeriesMetric;
-    if (this.get('config.isDistribution')) {
+    if (this.isDistribution) {
       return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
     }
     // For other time series data, all other string columns besides the metric and the injected window keys make up
     // unique time lines. If there are no such columns, this is empty.
     return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn) && this.isType(sampleRow, c, 'string')));
-  }),
+  }
 
-  timeSeriesLabels: computed('timeSeriesIndependentColumn', 'timeSeriesWindowColumn', 'rows', function() {
-    let labelColumn = this.timeSeriesIndependentColumn;
-    let windowColumn = this.timeSeriesWindowColumn;
+  get timeSeriesLabels() {
+    let labelColumn = TIME_SERIES_INDEPENDENT_COLUMN;
+    let windowColumn = TIME_SERIES_WINDOW_COLUMN;
     // Map preserves insertion order
     let labels = [];
     let windows = new Map();
-    this.rows.forEach(row => windows.set(row[windowColumn], row[labelColumn]));
+    this.args.rows.forEach(row => windows.set(row[windowColumn], row[labelColumn]));
     windows.forEach(v => labels.push(v));
     return labels;
-  }).readOnly(),
+  }
 
-  timeSeriesDatasets: computed('timeSeriesMetric', 'timeSeriesWindowColumn', 'timeSeriesDependentColumns', 'rows', function() {
+  get timeSeriesDatasets() {
     let metricColumn = this.timeSeriesMetric;
+    let windowColumn = TIME_SERIES_WINDOW_COLUMN;
     let columns = this.timeSeriesDependentColumns;
-    let rows = this.rows;
+    let rows = this.args.rows;
     // If no columns, then the metricColumn is the only dataset.
     if (isEmpty(columns)) {
       return [this.timeSeriesDataset(metricColumn, rows.map(row => row[metricColumn]))];
     }
-    let windows = this.groupTimeSeriesData(rows, columns, this.timeSeriesWindowColumn, metricColumn);
+    let windows = this.groupTimeSeriesData(rows, columns, windowColumn, metricColumn);
     let datasets = { };
     // If a dataset (a unique set of values for the columns) does not have a timeseries already. Generate one by
     // scanning all rows. This is n*w (rows * windows). However, if all or most windows contain the dataset in its
@@ -193,17 +180,17 @@ export default Component.extend({
       datasets[dataset] = this.timeSeriesDataset(dataset, values);
     });
     return Object.keys(datasets).map(dataset => datasets[dataset]);
-  }).readOnly(),
+  }
 
-  timeSeriesData: computed('timeSeriesLabels', 'timeSeriesDatasets', function() {
+  get timeSeriesData() {
     return { labels: this.timeSeriesLabels, datasets: this.timeSeriesDatasets };
-  }).readOnly(),
+  }
 
-  //////////////////////////////////////////////////// Helpers //////////////////////////////////////////////////
+  ////////////////////////////////////////////////// Static Helpers ////////////////////////////////////////////////
 
   // This goes over the rows and builds a Map of Maps where each first level contains all the unique groupKeys
   // and each second level contains all the unique dataset names and its one metric value (per group)
-  groupTimeSeriesData(rows, columns, groupKey, metricKey) {
+  static groupTimeSeriesData(rows, columns, groupKey, metricKey) {
     let grouped = new Map();
     // Since rows are sorted by groupKey, we will insert in groupKey order
     rows.forEach(row => {
@@ -220,9 +207,9 @@ export default Component.extend({
       group.set(dataset, metricValue);
     });
     return grouped;
-  },
+  }
 
-  timeSeriesDataset(datasetName, values) {
+  static timeSeriesDataset(datasetName, values) {
     // Picks the same color deterministically for a datasetName
     let color = this.fixedColor(datasetName);
     return {
@@ -232,9 +219,9 @@ export default Component.extend({
       borderColor: color,
       fill: false
     };
-  },
+  }
 
-  columnarDataset(column, rows, color, index) {
+  static columnarDataset(column, rows, color, index) {
     let values = this.getColumnValues(column, rows);
     let colorValue = color ? color : this.randomColor();
     let dataset = {
@@ -251,34 +238,34 @@ export default Component.extend({
       dataset.yAxisID = '0';
     }
     return dataset;
-  },
+  }
 
   zip(arrayOfArrays, delimiter = '/') {
     let zipped = arrayOfArrays[0].map((_, i) => arrayOfArrays.map(a => a[i]));
     return zipped.map(a => this.join(a, delimiter));
-  },
+  }
 
-  join(array, delimiter) {
+  static join(array, delimiter) {
     return array.reduce((p, c) => `${p}${delimiter}${c}`);
-  },
+  }
 
-  getColumnValues(column, rows) {
+  static getColumnValues(column, rows) {
     return rows.map(row => row[column]);
-  },
+  }
 
-  getJoinedRowValues(columns, row, delimiter = '/') {
+  static getJoinedRowValues(columns, row, delimiter = '/') {
     return this.join(columns.map(column => row[column]), delimiter);
-  },
+  }
 
-  fixedColors(names) {
+  static fixedColors(names) {
     let colors = [];
     for (let i = 0; i < names.length; ++i) {
       colors.push(this.fixedColor(names[i]));
     }
     return colors;
-  },
+  }
 
-  fixedColor(atom) {
+  static fixedColor(atom) {
     // Multiply by a large prime if number. Then stick the result into a string regardless.
     let string = `${isEqual(typeOf(atom), 'number') ? atom * 104729 : atom}`;
     let hash = this.hash(string);
@@ -287,67 +274,75 @@ export default Component.extend({
       colors.push(hash & 0xFF);
     }
     return `rgb(${colors[0]},${colors[1]},${colors[2]})`;
-  },
+  }
 
-  randomColor() {
+  static randomColor() {
     let red = this.randomUpto(255);
     let green = this.randomUpto(255);
     let blue = this.randomUpto(255);
     return `rgb(${red},${green},${blue})`;
-  },
+  }
 
-  randomUpto(size) {
+  static randomUpto(size) {
     return Math.floor(Math.random() * size);
-  },
+  }
 
-  isType(row, field, type) {
+  static isType(row, field, type) {
     return isEqual(typeOf(row[field]), type);
-  },
+  }
 
-  isAny(field, ...values) {
+  static isAny(field, ...values) {
     for (let value of values) {
       if (isEqual(field, value)) {
         return true;
       }
     }
     return false;
-  },
+  }
 
   // A modified version of https://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
-  hash(s) {
+  static hash(s) {
     let hash = 0;
     for (let i = 0; i < s.length; ++i) {
       hash = ((hash << 5) - hash) + s.charCodeAt(i);
     }
     return hash;
-  },
+  }
 
   turnOffAllCharts() {
-    this.set('showBarChart', false);
-    this.set('showLineChart', false);
-    this.set('showPieChart', false);
-  },
+    this.showBarChart = false;
+    this.showLineChart = false;
+    this.showPieChart = false;
+  }
 
   changeChart(fieldToSet) {
     this.turnOffAllCharts();
-    this.set(fieldToSet, true);
-  },
+    this[fieldToSet] = true;
+  }
 
-  actions: {
-    saveOptions(options) {
-      let model = this.model;
-      model.set('pivotOptions', JSON.stringify(options));
-      model.save();
-    },
-
-    togglePivot() {
-      this.turnOffAllCharts();
-      this.toggleProperty('showPivotMode');
-    },
-
-    changeChart(field) {
-      this.set('showPivotMode', false);
-      this.changeChart(field);
+  @action
+  reset() {
+    if (this.args.timeSeriesMode && this.showPieChart) {
+      this.changeChart('showLineChart');
     }
   }
-});
+
+  @action
+  saveOptions(options) {
+    let model = this.args.model;
+    model.set('pivotOptions', JSON.stringify(options));
+    model.save();
+  }
+
+  @action
+  togglePivot() {
+    this.turnOffAllCharts();
+    this.showPivotMode = !this.showPivotMode;
+  }
+
+  @action
+  changeChart(field) {
+    this.showPivotMode = false;
+    this.changeChart(field);
+  }
+}

@@ -9,13 +9,7 @@ import argsGet from 'bullet-ui/utils/args-get';
 
 export default class InfoPopoverComponent extends Component {
   get popperOptions() {
-    return {
-      modifiers: {
-        preventOverflow: {
-          escapeWithReference: false
-        }
-      } 
-    };
+    return { modifiers: { preventOverflow: { escapeWithReference: false } } };
   }
 
   get isButton() {
