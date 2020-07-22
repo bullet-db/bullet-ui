@@ -15,6 +15,7 @@ export default class RecordsTableComponent extends PaginatedTable {
   sortedByColumn;
   alreadyReset;
   @tracked table;
+  rows;
 
   constructor() {
     super(...arguments);

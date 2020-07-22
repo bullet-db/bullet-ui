@@ -24,14 +24,12 @@ export default class ResultsTableComponent extends PaginatedTable {
     { label: 'Date', valuePath: 'created', width: '150px', cellComponent: 'cells/result-date-entry' },
     { label: '# Windows', valuePath: 'windows', width: '80px', cellComponent: 'cells/result-number-entry' }
   ]);
+  rows;
 
   constructor() {
     super(...arguments);
     this.table = Table.create({ columns: this.columns });
+    this.rows = this.args.results.toArray();
     this.addPages(1);
-  }
-
-  get rows() {
-    return this.args.results.toArray();
   }
 }

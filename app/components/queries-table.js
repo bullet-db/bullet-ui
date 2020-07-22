@@ -36,17 +36,15 @@ export default class QueriesTableComponent extends PaginatedTable {
     { label: 'Last Result', valuePath: 'latestResult', cellComponent: 'cells/query-date-entry', width: '20%' },
     { label: 'Historical Results', valuePath: 'results', cellComponent: 'cells/query-results-entry', width: '15%' }
   ]);
+  rows;
 
   constructor() {
     super(...arguments);
     this.pageSize = 10;
+    this.rows = this.args.queries.toArray();
     this.table = Table.create({ columns: this.columns });
     this.sortBy('name', 'ascending');
     this.addPages(1);
-  }
-
-  get rows() {
-    return this.args.queries.toArray();
   }
 
   insertNewRowAfter(currentRow) {

@@ -15,17 +15,18 @@ export default class SchemaTableComponent extends PaginatedTable {
     { label: 'Type', width: '250px', valuePath: 'qualifiedType', cellComponent: 'cells/schema-type-entry' },
     { label: 'Description', valuePath: 'description', cellComponent: 'cells/schema-description-entry' }
   ]);
+  rows;
 
   constructor() {
     super(...arguments);
     this.pageSize = 10;
+    this.rows = this.fieldsToRows(this.args.fields);
     this.table = Table.create({ columns: this.columns });
     this.sortBy('name', 'ascending');
     this.addPages(2);
   }
 
-  get rows() {
-    let fields = this.args.fields;
+  fieldsToRows(fields) {
     // This needs to handle arrays (for enumeratedColumns) and the model result collection
     return typeOf(fields) === 'array' ? fields : fields.toArray();
   }
