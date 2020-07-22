@@ -61,10 +61,8 @@
       <RecordsTable @appendMode={{@appendMode}} @timeSeriesMode={{@timeSeriesMode}}
                     @columnNames={{this.columns}} @rows={{@records}}/>
     {{else if this.enableCharting}}
-      {{!--
       <RecordsCharter @timeSeriesMode={{@timeSeriesMode}} @config={{@config}} @columns={{this.columns}}
-                      @rows={{this.records}} @model={{this.model}}/>
-      --}}
+                      @rows={{@records}} @model={{@model}}/>
     {{/if}}
   </div>
 </div>

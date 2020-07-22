@@ -34,7 +34,7 @@ export default class RecordsViewerComponent extends Component {
   }
 
   get columns() {
-    return A(this.extractUniqueColumns(this.args.records));
+    return A(RecordsViewerComponent.extractUniqueColumns(this.args.records));
   }
 
   get rows() {
@@ -46,18 +46,18 @@ export default class RecordsViewerComponent extends Component {
   }
 
   get asCSV() {
-    return this.makeCSVString(this.columns, this.rows);
+    return RecordsViewerComponent.makeCSVString(this.columns, this.rows);
   }
 
   get asFlatCSV() {
     let records = this.args.records;
     let flattenedRows = records.map(item => this.flatten(item), this);
-    let columns = this.extractUniqueColumns(flattenedRows);
-    let rows = this.extractRows(flattenedRows, columns);
-    return this.makeCSVString(columns, rows);
+    let columns = RecordsViewerComponent.extractUniqueColumns(flattenedRows);
+    let rows = RecordsViewerComponent.extractRows(flattenedRows, columns);
+    return RecordsViewerComponent.makeCSVString(columns, rows);
   }
 
-  extractUniqueColumns(records) {
+  static extractUniqueColumns(records) {
     let columns = new Set();
     records.forEach(record => {
       for (let item in record) {
@@ -71,25 +71,25 @@ export default class RecordsViewerComponent extends Component {
     return columnArray;
   }
 
-  extractRows(records, columns) {
+  static extractRows(records, columns) {
     let rows = [];
     records.forEach(record => {
       let row = [];
       columns.forEach(column => {
-        row.push(this.cleanItem(record[column]));
+        row.push(RecordsViewerComponent.cleanItem(record[column]));
       });
       rows.push(row);
     });
     return rows;
   }
 
-  makeCSVString(columns, rows) {
+  static makeCSVString(columns, rows) {
     let header = columns.join(',');
     let body = rows.map(row => row.join(','));
     return header + '\r\n' + body.join('\r\n');
   }
 
-  cleanItem(item) {
+  static cleanItem(item) {
     let type = typeOf(item);
     if (type === 'object' || type === 'array') {
       return JSON.stringify(item);
@@ -102,7 +102,7 @@ export default class RecordsViewerComponent extends Component {
    * @param  {String} prefix Internal use only.
    * @return {String}        The flattened JSON object.
    */
-  flatten(json, prefix) {
+  static flatten(json, prefix) {
     let flattened = {};
     let type = typeOf(json);
     if (type !== 'array' && type !== 'object') {
@@ -112,7 +112,7 @@ export default class RecordsViewerComponent extends Component {
     // It's a complex type, recursively flatten with the current prefix
     prefix = prefix === undefined ? '' : `${prefix}:`;
     for (let item in json) {
-      let nested = this.flatten(json[item], `${prefix}${item}`);
+      let nested = RecordsViewerComponent.flatten(json[item], `${prefix}${item}`);
       assign(flattened, nested);
     }
     return flattened;

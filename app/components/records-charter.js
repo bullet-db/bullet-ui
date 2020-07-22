@@ -61,21 +61,21 @@ export default class RecordsCharterComponent extends Component {
   get regularIndependentColumns() {
     let columns = this.args.columns;
     if (this.isDistribution) {
-      return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
+      return A(columns.filter(c => RecordsCharterComponent.isAny(c, 'Quantile', 'Range')));
     }
     // Pick all string columns
     let sampleRow = this.sampleRow;
-    return A(columns.filter(c => this.isType(sampleRow, c, 'string')));
+    return A(columns.filter(c => RecordsCharterComponent.isType(sampleRow, c, 'string')));
   }
 
   get regularDependentColumns() {
     let columns = this.args.columns;
     if (this.isDistribution) {
-      return A(columns.filter(c => this.isAny(c, 'Count', 'Value', 'Probability')));
+      return A(columns.filter(c => RecordsCharterComponent.isAny(c, 'Count', 'Value', 'Probability')));
     }
     // Pick all number columns
     let sampleRow = this.sampleRow;
-    return A(columns.filter(c => this.isType(sampleRow, c, 'number')));
+    return A(columns.filter(c => RecordsCharterComponent.isType(sampleRow, c, 'number')));
   }
 
   get regularLabels() {
@@ -83,19 +83,19 @@ export default class RecordsCharterComponent extends Component {
     let rows = this.args.rows;
     let columns = this.regularIndependentColumns;
     // [ [column1 values...], [column2 values...], ...]
-    let valuesList = columns.map(column => this.getColumnValues(column, rows));
+    let valuesList = columns.map(column => RecordsCharterComponent.getColumnValues(column, rows));
     // valuesList won't be empty because all non-Raw aggregations will have at least one string field
-    return this.zip(valuesList);
+    return RecordsCharterComponent.zip(valuesList);
   }
 
   get regularColors() {
-    return this.needsColorArray ? this.fixedColors(this.regularLabels) : undefined;
+    return this.needsColorArray ? RecordsCharterComponent.fixedColors(this.regularLabels) : undefined;
   }
 
   get regularDatasets() {
     let rows = this.args.rows;
     let colors = this.regularColors;
-    return this.regularDependentColumns.map((column, i) => this.columnarDataset(column, rows, colors, i));
+    return this.regularDependentColumns.map((column, i) => RecordsCharterComponent.columnarDataset(column, rows, colors, i));
   }
 
   get regularOptions() {
@@ -123,7 +123,7 @@ export default class RecordsCharterComponent extends Component {
       fieldIndex = columns.findIndex(c => isEqual(c, 'Count') || isEqual(c, 'Value'));
     } else {
       // Find the first numeric field
-      fieldIndex = columns.findIndex(c => this.isType(this.sampleRow, c, 'number'));
+      fieldIndex = columns.findIndex(c => RecordsCharterComponent.isType(this.sampleRow, c, 'number'));
     }
     return columns.get(fieldIndex);
   }
@@ -135,11 +135,12 @@ export default class RecordsCharterComponent extends Component {
     let windowColumn = TIME_SERIES_WINDOW_COLUMN;
     let metricColumn = this.timeSeriesMetric;
     if (this.isDistribution) {
-      return A(columns.filter(c => this.isAny(c, 'Quantile', 'Range')));
+      return A(columns.filter(c => RecordsCharterComponent.isAny(c, 'Quantile', 'Range')));
     }
     // For other time series data, all other string columns besides the metric and the injected window keys make up
     // unique time lines. If there are no such columns, this is empty.
-    return A(columns.filter(c => !this.isAny(c, independentColumn, windowColumn, metricColumn) && this.isType(sampleRow, c, 'string')));
+    return A(columns.filter(c => !RecordsCharterComponent.isAny(c, independentColumn, windowColumn, metricColumn)
+                                 && RecordsCharterComponent.isType(sampleRow, c, 'string')));
   }
 
   get timeSeriesLabels() {
@@ -160,9 +161,9 @@ export default class RecordsCharterComponent extends Component {
     let rows = this.args.rows;
     // If no columns, then the metricColumn is the only dataset.
     if (isEmpty(columns)) {
-      return [this.timeSeriesDataset(metricColumn, rows.map(row => row[metricColumn]))];
+      return [RecordsCharterComponent.timeSeriesDataset(metricColumn, rows.map(row => row[metricColumn]))];
     }
-    let windows = this.groupTimeSeriesData(rows, columns, windowColumn, metricColumn);
+    let windows = RecordsCharterComponent.groupTimeSeriesData(rows, columns, windowColumn, metricColumn);
     let datasets = { };
     // If a dataset (a unique set of values for the columns) does not have a timeseries already. Generate one by
     // scanning all rows. This is n*w (rows * windows). However, if all or most windows contain the dataset in its
@@ -171,13 +172,13 @@ export default class RecordsCharterComponent extends Component {
     // dataset. Values per dataset look like: [ 13, null, -2, null, ...], where its length === number of windows
     rows.forEach(row => {
       // Generate a name using all the row values in column order. Nothing to do if this dataset has already been populated
-      let dataset = this.getJoinedRowValues(columns, row);
+      let dataset = RecordsCharterComponent.getJoinedRowValues(columns, row);
       if (!isEmpty(datasets[dataset])) {
         return;
       }
       let values = [];
       windows.forEach(valueMap => values.push(valueMap.has(dataset) ? valueMap.get(dataset) : null));
-      datasets[dataset] = this.timeSeriesDataset(dataset, values);
+      datasets[dataset] = RecordsCharterComponent.timeSeriesDataset(dataset, values);
     });
     return Object.keys(datasets).map(dataset => datasets[dataset]);
   }
@@ -195,7 +196,7 @@ export default class RecordsCharterComponent extends Component {
     // Since rows are sorted by groupKey, we will insert in groupKey order
     rows.forEach(row => {
       let groupName = row[groupKey];
-      let dataset = this.getJoinedRowValues(columns, row);
+      let dataset = RecordsCharterComponent.getJoinedRowValues(columns, row);
       let metricValue = row[metricKey];
       let group = grouped.get(groupName);
       // No definition for nested Map, create and insert now to keep insertion order
@@ -211,7 +212,7 @@ export default class RecordsCharterComponent extends Component {
 
   static timeSeriesDataset(datasetName, values) {
     // Picks the same color deterministically for a datasetName
-    let color = this.fixedColor(datasetName);
+    let color = RecordsCharterComponent.fixedColor(datasetName);
     return {
       label: datasetName,
       data: values,
@@ -222,8 +223,8 @@ export default class RecordsCharterComponent extends Component {
   }
 
   static columnarDataset(column, rows, color, index) {
-    let values = this.getColumnValues(column, rows);
-    let colorValue = color ? color : this.randomColor();
+    let values = RecordsCharterComponent.getColumnValues(column, rows);
+    let colorValue = color ? color : RecordsCharterComponent.randomColor();
     let dataset = {
       label: column,
       data: values,
@@ -240,9 +241,9 @@ export default class RecordsCharterComponent extends Component {
     return dataset;
   }
 
-  zip(arrayOfArrays, delimiter = '/') {
+  static zip(arrayOfArrays, delimiter = '/') {
     let zipped = arrayOfArrays[0].map((_, i) => arrayOfArrays.map(a => a[i]));
-    return zipped.map(a => this.join(a, delimiter));
+    return zipped.map(a => RecordsCharterComponent.join(a, delimiter));
   }
 
   static join(array, delimiter) {
@@ -254,13 +255,13 @@ export default class RecordsCharterComponent extends Component {
   }
 
   static getJoinedRowValues(columns, row, delimiter = '/') {
-    return this.join(columns.map(column => row[column]), delimiter);
+    return RecordsCharterComponent.join(columns.map(column => row[column]), delimiter);
   }
 
   static fixedColors(names) {
     let colors = [];
     for (let i = 0; i < names.length; ++i) {
-      colors.push(this.fixedColor(names[i]));
+      colors.push(RecordsCharterComponent.fixedColor(names[i]));
     }
     return colors;
   }
@@ -268,7 +269,7 @@ export default class RecordsCharterComponent extends Component {
   static fixedColor(atom) {
     // Multiply by a large prime if number. Then stick the result into a string regardless.
     let string = `${isEqual(typeOf(atom), 'number') ? atom * 104729 : atom}`;
-    let hash = this.hash(string);
+    let hash = RecordsCharterComponent.hash(string);
     let colors = [];
     for (let i = 0; i <= 2; ++i, hash = hash >> 8) {
       colors.push(hash & 0xFF);
@@ -277,9 +278,9 @@ export default class RecordsCharterComponent extends Component {
   }
 
   static randomColor() {
-    let red = this.randomUpto(255);
-    let green = this.randomUpto(255);
-    let blue = this.randomUpto(255);
+    let red = RecordsCharterComponent.randomUpto(255);
+    let green = RecordsCharterComponent.randomUpto(255);
+    let blue = RecordsCharterComponent.randomUpto(255);
     return `rgb(${red},${green},${blue})`;
   }
 
@@ -315,9 +316,9 @@ export default class RecordsCharterComponent extends Component {
     this.showPieChart = false;
   }
 
-  changeChart(fieldToSet) {
+  flipTo(chart) {
     this.turnOffAllCharts();
-    this[fieldToSet] = true;
+    this[chart] = true;
   }
 
   @action
@@ -341,8 +342,8 @@ export default class RecordsCharterComponent extends Component {
   }
 
   @action
-  changeChart(field) {
+  changeChart(chart) {
     this.showPivotMode = false;
-    this.changeChart(field);
+    this.flipTo(chart);
   }
 }
