@@ -58,6 +58,8 @@ export function validateWindowEmitFrequency(settings, query, window) {
   let emitEvery = window.get('emitEvery');
   let duration = query.get('duration');
   if (isEqual(emitType, EMIT_TYPES.get('TIME'))) {
+    emitEvery = Number.parseFloat(emitEvery);
+    duration = Number.parseFloat(duration);
     let windowEmitFrequencyMinSecs = settings.get('defaultValues.windowEmitFrequencyMinSecs');
     if (emitEvery > duration) {
       return `The window emit frequency should not be longer than the query duration (${duration} seconds)`;
