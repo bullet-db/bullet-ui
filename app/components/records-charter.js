@@ -15,7 +15,7 @@ import argsGet from 'bullet-ui/utils/args-get';
 const TIME_SERIES_INDEPENDENT_COLUMN = WINDOW_CREATED_KEY;
 const TIME_SERIES_WINDOW_COLUMN = WINDOW_NUMBER_KEY;
 const TIME_SERIES_OPTIONS = {
-  scales: { xAxes: [{ type: 'time' }] },
+  scales: { xAxes: [{ type: 'time', ticks: { source: 'labels' } }] },
   animation: { duration: 0 },
   hover: { animationDuration: 0 },
   responsiveAnimationDuration: 0,
@@ -31,7 +31,7 @@ export default class RecordsCharterComponent extends Component {
 
   @alias('args.config.isDistribution') isDistribution;
   @not('args.timeSeriesMode') regularMode;
-  @not('timeSeriesMode') canShowPieChart;
+  @not('args.timeSeriesMode') canShowPieChart;
   @alias('showPieChart') needsColorArray;
   @alias('config.isRaw') canOnlyPivot;
   @or('showPivotMode', 'canOnlyPivot') pivotMode;
@@ -119,12 +119,16 @@ export default class RecordsCharterComponent extends Component {
 
   get timeSeriesMetric() {
     let columns = this.args.columns;
+    let sampleRow = this.sampleRow;
+    let independentColumn = TIME_SERIES_INDEPENDENT_COLUMN;
+    let windowColumn = TIME_SERIES_WINDOW_COLUMN;
     let fieldIndex;
     if (this.isDistribution) {
       fieldIndex = columns.findIndex(c => isEqual(c, 'Count') || isEqual(c, 'Value'));
     } else {
       // Find the first numeric field
-      fieldIndex = columns.findIndex(c => RecordsCharterComponent.isType(this.sampleRow, c, 'number'));
+      fieldIndex = columns.findIndex(c => !RecordsCharterComponent.isAny(c, independentColumn, windowColumn) &&
+                                          RecordsCharterComponent.isType(sampleRow, c, 'number'));
     }
     return columns.get(fieldIndex);
   }
@@ -140,8 +144,8 @@ export default class RecordsCharterComponent extends Component {
     }
     // For other time series data, all other string columns besides the metric and the injected window keys make up
     // unique time lines. If there are no such columns, this is empty.
-    return A(columns.filter(c => !RecordsCharterComponent.isAny(c, independentColumn, windowColumn, metricColumn)
-                                 && RecordsCharterComponent.isType(sampleRow, c, 'string')));
+    return A(columns.filter(c => !RecordsCharterComponent.isAny(c, independentColumn, windowColumn, metricColumn) &&
+                                 RecordsCharterComponent.isType(sampleRow, c, 'string')));
   }
 
   get timeSeriesLabels() {
