@@ -14,15 +14,6 @@ import argsGet from 'bullet-ui/utils/args-get';
 
 const TIME_SERIES_INDEPENDENT_COLUMN = WINDOW_CREATED_KEY;
 const TIME_SERIES_WINDOW_COLUMN = WINDOW_NUMBER_KEY;
-const TIME_SERIES_OPTIONS = {
-  scales: { xAxes: [{ type: 'time', ticks: { source: 'labels' } }] },
-  animation: { duration: 0 },
-  hover: { animationDuration: 0 },
-  responsiveAnimationDuration: 0,
-  elements: {
-    line: { tension: 0 }
-  }
-};
 export default class RecordsCharterComponent extends Component {
   @tracked showLineChart = true;
   @tracked showBarChart = false;
@@ -114,7 +105,23 @@ export default class RecordsCharterComponent extends Component {
   /////////////////////////////////////////////// TimeSeries Chart Items  //////////////////////////////////////////////
 
   get timeSeriesOptions() {
-    return TIME_SERIES_OPTIONS;
+    return {
+      scales: {
+        xAxes: [{
+          type: 'time',
+          ticks: {
+            source: 'labels'
+          },
+          offset: this.showBarChart
+        }]
+      },
+      animation: { duration: 0 },
+      hover: { animationDuration: 0 },
+      responsiveAnimationDuration: 0,
+      elements: {
+        line: { tension: 0 }
+      }
+    };
   }
 
   get timeSeriesMetric() {
