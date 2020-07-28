@@ -5,6 +5,8 @@
  */
 import { helper } from '@ember/component/helper';
 
-export default helper(function eq([first, second]) {
+export function eq([first, second]) {
   return first === second;
-});
+}
+
+export default helper(eq);

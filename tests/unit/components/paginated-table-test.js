@@ -4,14 +4,13 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject from '@ember/object';
-import PaginatedTableMixin from 'bullet-ui/mixins/paginated-table';
+import PaginatedTable from 'bullet-ui/components/paginated-table';
 import { module, test } from 'qunit';
 
-module('Unit | Mixin | paginated table', function() {
+module('Unit | Component | paginated table', function() {
   test('it uses the default string extractor for unknown objects', function(assert) {
-    let PaginatedTableObject = EmberObject.extend(PaginatedTableMixin);
-    let subject = PaginatedTableObject.create();
-    subject.set('useDefaultStringExtractor', false);
+    let subject = new PaginatedTable();
+    subject.useDefaultStringExtractor = false;
 
     let extractor = subject.getExtractor('foo');
     let row = EmberObject.create({ foo: [1, 2, 3] });
@@ -20,14 +19,14 @@ module('Unit | Mixin | paginated table', function() {
   });
 
   test('it sorts by direction', function(assert) {
-    let PaginatedTableObject = EmberObject.extend(PaginatedTableMixin);
+    let subject = new PaginatedTable();
     let rows = [
       EmberObject.create({ a: 4, b: 'foo', c: false, d: [1, 2] }),
       EmberObject.create({ a: 2, b: 'bar', c: true, d: [2, 1] }),
       EmberObject.create({ a: -1, b: 'baz', c: null })
     ];
-    let subject = PaginatedTableObject.create({ rows });
-    subject.set('useDefaultStringExtractor', false);
+    subject.rows = rows;
+    subject.useDefaultStringExtractor = false;
 
     subject.sortBy('a', 'ascending');
     assert.equal(rows[0].get('a'), -1);
@@ -47,7 +46,7 @@ module('Unit | Mixin | paginated table', function() {
   });
 
   test('it can paginate a table', function(assert) {
-    let PaginatedTableObject = EmberObject.extend(PaginatedTableMixin);
+    let subject = new PaginatedTable();
     let rows = Array(100).fill().map((_, i) => i + 1);
     let table = EmberObject.create({
       setRows(rows) {
@@ -58,9 +57,9 @@ module('Unit | Mixin | paginated table', function() {
         this.setRows(rows);
       }
     });
-    let pageSize = 10;
-
-    let subject = PaginatedTableObject.create({ rows, table, pageSize });
+    subject.rows = rows;
+    subject.table = table;
+    subject.pageSize = 10;
 
     assert.equal(subject.get('firstNewRow'), 0);
 

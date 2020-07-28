@@ -8,7 +8,7 @@ import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import isEmpty from 'bullet-ui/utils/is-empty';
-import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
+import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 
 export default class QueriesNewRoute extends Route {
   @service('cors-request') corsRequest;

@@ -129,15 +129,7 @@ export default EmberObject.extend({
   },
 
   addWindow(emitType, emitEvery, includeType) {
-    this.set('_window', EmberObject.create({
-      emit: {
-        type: emitType,
-        every: emitEvery
-      },
-      include: {
-        type: includeType
-      }
-    }));
+    this.set('_window', EmberObject.create({ emitType, emitEvery, includeType }));
     this.topLevelPropertyAsPromise('window');
   },
 

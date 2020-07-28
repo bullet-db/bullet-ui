@@ -1,34 +1,32 @@
 /*
- *  Copyright 2016, Yahoo Inc.
+ *  Copyright 2020, Yahoo Inc.
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
-import EmberObject from '@ember/object';
-import BuilderAdapterMixin from 'bullet-ui/mixins/builder-adapter';
+import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
 import { module, test } from 'qunit';
 import MockColumn from '../../helpers/mocked-column';
 
-module('Unit | Mixin | builder adapter', function() {
+const [SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR] = [ '.*', '.', ','];
+
+module('Unit | Utility | builder adapter', function() {
   test('it sets default builder options with the right operators', function(assert) {
-    let BuilderAdapterObject = EmberObject.extend(BuilderAdapterMixin);
-    let subject = BuilderAdapterObject.create();
+    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     assert.equal(subject.builderOptions().operators.length, 13);
     assert.ok(subject.builderOptions().sqlOperators.rlike);
   });
 
   test('it works fine if there are no columns', function(assert) {
-    let BuilderAdapterObject = EmberObject.extend(BuilderAdapterMixin);
-    let subject = BuilderAdapterObject.create();
+    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     assert.ok(isEmpty(subject.builderFilters()));
     assert.ok(isEmpty(subject.builderFilters(null)));
     assert.ok(isEmpty(subject.builderFilters(A())));
   });
 
   test('it converts unknown types to simple builder filters', function(assert) {
-    let BuilderAdapterObject = EmberObject.extend(BuilderAdapterMixin);
-    let subject = BuilderAdapterObject.create();
+    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumns = A();
     mockColumns.push(MockColumn.create({ name: 'foo', type: 'BIGINTEGER' }));
     mockColumns.push(MockColumn.create({ name: 'bar', type: 'MAP' }));
@@ -51,8 +49,7 @@ module('Unit | Mixin | builder adapter', function() {
   });
 
   test('it converts all the base type columns to the proper builder filters', function(assert) {
-    let BuilderAdapterObject = EmberObject.extend(BuilderAdapterMixin);
-    let subject = BuilderAdapterObject.create();
+    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumns = A();
     mockColumns.push(MockColumn.create({ name: 'foo', type: 'STRING' }));
     mockColumns.push(MockColumn.create({ name: 'bar', type: 'LONG' }));
@@ -82,7 +79,6 @@ module('Unit | Mixin | builder adapter', function() {
   });
 
   test('it converts a freeform map type column to a simple filter and filters for subfields', function(assert) {
-    let BuilderAdapterObject = EmberObject.extend(BuilderAdapterMixin);
     let subject = BuilderAdapterObject.create({ subfieldSuffix: '.*' });
     let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'STRING', hasFreeformField: true });
 
@@ -103,7 +99,6 @@ module('Unit | Mixin | builder adapter', function() {
   });
 
   test('it converts an enumerated map type column to a simple filter and filters for subfields', function(assert) {
-    let BuilderAdapterObject = EmberObject.extend(BuilderAdapterMixin);
     let subject = BuilderAdapterObject.create({ subfieldSuffix: '.*' });
     let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'DOUBLE' });
     mockColumn.addEnumeration('bar', '');

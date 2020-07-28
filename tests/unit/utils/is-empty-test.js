@@ -6,7 +6,7 @@
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { module, test } from 'qunit';
 
-module('Unit | Utility | is-empty', function() {
+module('Unit | Utility | is empty', function() {
   test('it matches Ember isEmpty', function(assert) {
     assert.ok(isEmpty());
     assert.ok(isEmpty(null));

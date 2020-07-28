@@ -18,7 +18,8 @@
           <button type="button" class="btn btn-xs close-button" aria-label="Close" {{on "click" this.closePopover}}>
             {{fa-icon "close" tagName="span"}}
           </button>
-          <ResultsTable @results={{@value}} @resultClick={{fn this.resultClick}} @deleteResultsClick={{fn this.deleteResultsClick}} />
+          <ResultsTable @results={{@value}} @resultClick={{fn this.resultClick}}
+                        @deleteResultsClick={{fn this.deleteResultsClick}} />
         </div>
       </EmberPopover>
     </div>

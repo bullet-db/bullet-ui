@@ -4,6 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .section-header {
+  display: flex;
+  align-items: baseline;
   .section-title {
     display: inline-block;
     margin: 0;
