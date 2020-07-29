@@ -18,19 +18,19 @@ module('Unit | Validator | metric field', function(hooks) {
       type: METRICS.get('SUM')
     });
     let expected = `All metrics but ${METRICS.get('COUNT')} require a field`;
-    assert.equal(validate('field', null, null, mockModel, undefined), expected);
+    assert.equal(validate('field', null, null, mockModel, { }), expected);
 
     mockModel.set('type', METRICS.get('MIN'));
-    assert.equal(validate('field', null, null, undefined, mockModel), expected);
+    assert.equal(validate('field', null, null, { }, mockModel), expected);
 
     mockModel.set('type', METRICS.get('AVG'));
-    assert.equal(validate('field', null, null, mockModel, undefined), expected);
+    assert.equal(validate('field', null, null, mockModel, { }), expected);
 
-    mockModel.set('field', METRICS.get('MAX'));
-    assert.equal(validate('field', null, null, undefined, mockModel), expected);
+    mockModel.set('type', METRICS.get('MAX'));
+    assert.equal(validate('field', null, null, { }, mockModel), expected);
 
     mockModel.set('type', METRICS.get('COUNT'));
-    assert.ok(validator.validate('type', null, null, mockModel, undefined));
-    assert.ok(validator.validate('type', null, null, undefined, mockModel));
+    assert.ok(validate('type', null, null, mockModel, { }));
+    assert.ok(validate('type', null, null, { }, mockModel));
   });
 });

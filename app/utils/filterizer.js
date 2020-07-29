@@ -33,10 +33,14 @@ export default class Filterizer {
                               with some operations.
    */
   constructor(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode) {
-    this.subfieldSuffix = subfieldSuffix || '';
-    this.subfieldSeparator = subfieldSeparator || '';
-    this.multipleValueSeparator = multipleValueSeparator || ',';
-    this.apiMode = apiMode || true;
+    this.subfieldSuffix = subfieldSuffix;
+    this.subfieldSeparator = subfieldSeparator;
+    this.multipleValueSeparator = multipleValueSeparator;
+    this.apiMode = apiMode;
+  }
+
+  setAPIMode(mode) {
+    this.apiMode = mode;
   }
 
   /**

@@ -6,7 +6,6 @@
 import { isPresent } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-
 import { run } from '@ember/runloop';
 
 module('Unit | Model | projection', function(hooks) {

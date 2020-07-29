@@ -79,7 +79,7 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts a freeform map type column to a simple filter and filters for subfields', function(assert) {
-    let subject = BuilderAdapterObject.create({ subfieldSuffix: '.*' });
+    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'STRING', hasFreeformField: true });
 
     let mockColumns = A([mockColumn]);
@@ -99,7 +99,7 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts an enumerated map type column to a simple filter and filters for subfields', function(assert) {
-    let subject = BuilderAdapterObject.create({ subfieldSuffix: '.*' });
+    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'DOUBLE' });
     mockColumn.addEnumeration('bar', '');
     mockColumn.addEnumeration('baz', '');

@@ -13,7 +13,8 @@ module('Unit | Utility | is empty', function() {
     assert.ok(isEmpty(undefined));
     assert.ok(isEmpty(''));
     assert.ok(isEmpty([]));
-    assert.ok(isEmpty({ size: 0}));
+    assert.ok(isEmpty({ size: 0 }));
+    assert.ok(isEmpty({ length: 0 }));
     assert.notOk(isEmpty({ }));
     assert.notOk(isEmpty('foo'));
     assert.notOk(isEmpty([0,1,2]));
@@ -21,5 +22,6 @@ module('Unit | Utility | is empty', function() {
     assert.notOk(isEmpty('  '));
     assert.notOk(isEmpty({ size: 1 }));
     assert.notOk(isEmpty({ size: () => 0 }));
+    assert.notOk(isEmpty({ length: 1 }));
   });
 });

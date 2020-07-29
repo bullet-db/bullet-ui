@@ -43,7 +43,7 @@ export default {
     let names = new Set();
     originalLinks.forEach(link => names.add(link.name));
     if (overrides) {
-      overrides.filter(link => !names.has(link.name)).forEach(helpLinks.push);
+      overrides.filter(link => !names.has(link.name)).forEach(link => helpLinks.push(link));
     }
     return helpLinks;
   }

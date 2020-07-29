@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-
 export const WINDOW_NUMBER_KEY = 'Window Number';
 export const WINDOW_CREATED_KEY = 'Window Created';
 
@@ -30,7 +29,7 @@ export default class WindowCache {
   asTimeSeries(numberKey, createdKey) {
     return (windowEntry) => {
       let extraColumns = {
-        [numberKey]: windowEntry.sequence ? windowEntry.sequence : windowEntry.position,
+        [numberKey]: windowEntry.sequence ? windowEntry.sequence : windowEntry.index,
         [createdKey]: windowEntry.created
       };
       // Copy the extra columns and the columns from the record into a new object

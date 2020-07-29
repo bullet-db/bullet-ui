@@ -18,6 +18,7 @@ import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 export default class QuerierService extends Service {
   @service stompWebsocket;
   filterizer;
+  apiMode;
   @alias('stompWebsocket.isConnected') isRunningQuery;
   @alias('settings.defaultAggregation') defaultAPIAggregation;
 
@@ -25,6 +26,12 @@ export default class QuerierService extends Service {
     super(...arguments);
     const [ subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode ] = [ '.*', '.', ',', true ];
     this.filterizer = new Filterizer(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode);
+    this.apiMode = apiMode;
+  }
+
+  setAPIMode(mode) {
+    this.apiMode = mode;
+    this.filterizer.setAPIMode(mode);
   }
 
   @computed('defaultAPIAggregation').readOnly()
@@ -233,7 +240,7 @@ export default class QuerierService extends Service {
 
   makeAttributes(json) {
     if (isEmpty(json)) {
-      return { };
+      return EmberObject.create();
     }
 
     let attributes = { };
@@ -254,7 +261,7 @@ export default class QuerierService extends Service {
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
-    return attributes;
+    return EmberObject.create(attributes);
   }
 
   getAttributes(aggregation) {

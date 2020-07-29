@@ -6,7 +6,6 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { METRICS } from 'bullet-ui/models/metric';
-
 import { run } from '@ember/runloop';
 
 module('Unit | Model | metric', function(hooks) {

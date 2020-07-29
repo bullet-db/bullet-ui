@@ -5,11 +5,12 @@
  */
 import { A } from '@ember/array';
 import EmberObject from '@ember/object';
+import { isEmpty } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import validateMultiModelRelationships,
-       { validateWindowAggregation, validateGroupMetricPresence, validateWindowAggregation }
-       from 'bullet-ui/validators/aggregation-max-size';
+       { validateWindowAggregation, validateGroupMetricPresence, validateWindowEmitFrequency }
+       from 'bullet-ui/validators/multi-model';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 
@@ -82,7 +83,7 @@ module('Unit | Validator | multi model', function(hooks) {
     });
     let window = EmberObject.create({
       emitType: EMIT_TYPES.get('TIME'),
-      emitEvery: 11,
+      emitEvery: 9,
     });
     let settings = EmberObject.create({
       defaultValues: {
@@ -92,7 +93,7 @@ module('Unit | Validator | multi model', function(hooks) {
     let expected = 'The maintainer has configured Bullet to support a minimum of 10s for emit frequency';
     assert.equal(validate(settings, query, window), expected);
     window.set('emitEvery', 10);
-    assert.ok(validate(10, null, mockModel));
+    assert.ok(validate(settings, query, window));
   });
 
   test('it successfully validates when it is record based window', function(assert) {
@@ -120,7 +121,7 @@ module('Unit | Validator | multi model', function(hooks) {
     });
     let window = EmberObject.create({
       emitType: EMIT_TYPES.get('TIME'),
-      emitEvery: 11,
+      emitEvery: 9,
       includeType: INCLUDE_TYPES.get('ALL')
     });
     let metrics = A();
@@ -139,6 +140,7 @@ module('Unit | Validator | multi model', function(hooks) {
 
     groups = A([1])
     window.set('emitEvery', 10);
-    assert.ok(validate(settings, { query, window, aggregation, groups, metrics }));
+    result = validate(settings, { query, window, aggregation, groups, metrics });
+    assert.ok(isEmpty(result));
   });
 });

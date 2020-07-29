@@ -114,9 +114,9 @@ export default class QueryManagerService extends Service {
 
   encodeQuery(query) {
     let querier = this.querier;
-    querier.set('apiMode', false);
+    querier.setAPIMode(false);
     let json = querier.reformat(query);
-    querier.set('apiMode', true);
+    querier.setAPIMode(true);
     let string = JSON.stringify(json);
     return new Promise(resolve => {
       resolve(Base64.encodeURI(string));

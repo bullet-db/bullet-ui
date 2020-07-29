@@ -13,7 +13,7 @@ export default class CORSRequestService extends Service {
       if (response.ok) {
         return response.json();
       }
-      reject(`Unable to get ${url}: ${response.statusText}`);
+      return reject(`Unable to get ${url}: ${response.statusText}`);
     });
   }
 }

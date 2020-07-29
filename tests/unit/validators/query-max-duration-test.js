@@ -22,8 +22,8 @@ module('Unit | Validator | query max duration', function(hooks) {
       }
     });
     let expected = 'The maintainer has configured Bullet to support a maximum of 120s for maximum duration';
-    assert.equal(validator.validate('duration', 121, 120, undefined, mockModel), expected);
+    assert.equal(validate('duration', 121, 120, { }, mockModel), expected);
     mockModel.set('duration', null);
-    assert.ok(validator.validate('duration', 120, 120, undefined, mockModel));
+    assert.ok(validate('duration', 120, 120, { }, mockModel));
   });
 });

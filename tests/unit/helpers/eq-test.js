@@ -8,10 +8,10 @@ import { module, test } from 'qunit';
 
 module('Unit | Helper | eq', function() {
   test('it compares two things for equality', function(assert) {
-    assert.false(eq([42, undefined]))
-    assert.true(eq([42, 42]))
-    assert.true(eq(['', '']))
-    assert.true(eq(['foo', 'foo']))
-    assert.false(eq(['foo', 'bar']))
+    assert.notOk(eq([42, undefined]))
+    assert.ok(eq([42, 42]))
+    assert.ok(eq(['', '']))
+    assert.ok(eq(['foo', 'foo']))
+    assert.notOk(eq(['foo', 'bar']))
   });
 });

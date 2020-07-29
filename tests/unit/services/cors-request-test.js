@@ -5,21 +5,44 @@
  */
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import Pretender from 'pretender';
 
 module('Unit | Service | cors request', function(hooks) {
   setupTest(hooks);
+
+  hooks.beforeEach(function() {
+    this.pretender = new Pretender(function() {
+      this.get('/api/pass', function(request) {
+        return [200, { 'Content-Type': 'application/json' }, JSON.stringify({ creds: request.withCredentials })];
+      });
+      this.get('/api/fail', function() {
+        return [404, { }, ''];
+      });
+    });
+  });
+
+  hooks.afterEach(function() {
+    this.pretender.shutdown();
+  });
 
   test('it turns on', function(assert) {
     let service = this.owner.lookup('service:cors-request');
     assert.ok(service);
   });
 
-  test('it defaults options correctly', function(assert) {
+  test('it defaults options correctly', async function(assert) {
     let service = this.owner.lookup('service:cors-request');
-    let options = service.options('http://localhost/foo');
-    assert.equal(options.url, 'http://localhost/foo');
-    assert.equal(options.type, 'GET');
-    assert.equal(options.crossDomain, true);
-    assert.deepEqual(options.xhrFields, { withCredentials: true });
+    let result = await service.get('/api/pass');
+    assert.deepEqual(result, { creds: true });
+  });
+
+  test('it rejects if the request cannot be made', async function(assert) {
+    assert.expect(0);
+    let service = this.owner.lookup('service:cors-request');
+    try {
+      await service.get('/api/fail');
+      assert.ok(false, 'Expected the call to fail but it passed instead');
+    } catch (error) {
+    }
   });
 });

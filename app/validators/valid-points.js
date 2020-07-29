@@ -11,17 +11,18 @@ export default function validatePoints() {
   return (key, newValue, oldValue, changes, content) => {
     let {
       'type': type,
+      'attributes.type' : distributionType,
       'attributes.pointType' : pointType
-    } = currentValue(changes, content, ['type', 'attributes.pointType']);
+    } = currentValue(changes, content, ['type', 'attributes.type', 'attributes.pointType']);
     if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
       return true;
     }
     if (isEqual(pointType, DISTRIBUTION_POINTS.get('POINTS'))) {
-      return validateFreeFormPoints(type, changes, content);
+      return validateFreeFormPoints(distributionType, changes, content);
     } else if (isEqual(pointType, DISTRIBUTION_POINTS.get('NUMBER'))) {
       return validateNumberOfPoints(changes, content);
     } else if (isEqual(pointType, DISTRIBUTION_POINTS.get('GENERATED'))) {
-      return validateGeneratedPoints(type, changes, content);
+      return validateGeneratedPoints(distributionType, changes, content);
     }
   }
 }

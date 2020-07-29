@@ -16,9 +16,10 @@ export default function isEmpty(obj) {
   if (obj === null || obj === undefined) {
     return true;
   }
-  let size = get(obj, 'size') || get(obj, 'length');
-  if (typeof size === 'number') {
-    return size === 0;
+  let size = get(obj, 'size');
+  let length = get(obj, 'length');
+  if (typeof size === 'number' || typeof length === 'number') {
+    return size === 0 || length === 0;
   }
   return false;
 }

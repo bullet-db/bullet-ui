@@ -14,7 +14,7 @@ module('Unit | Validator | aggregation max size', function(hooks) {
 
   test('it does not let you exceed the maximum aggregation size', function(assert) {
     var validate = validateAggregationMaxSize();
-    let mockChanges = EmberObject.create({
+    let mockModel = EmberObject.create({
       type: AGGREGATIONS.get('GROUP'),
       settings: {
         defaultValues: {
@@ -24,8 +24,8 @@ module('Unit | Validator | aggregation max size', function(hooks) {
       }
     });
     let expected = 'The maintainer has configured Bullet to support a maximum of 500 for result count';
-    assert.equal(validate('size', 501, 20, undefined, mockModel), expected);
-    assert.ok(validate('size', 500, 20, undefined, mockModel));
+    assert.equal(validate('size', 501, 20, { }, mockModel), expected);
+    assert.ok(validate('size', 500, 20, { }, mockModel));
   });
 
   test('it does not let you exceed the maximum size for the Raw aggregation', function(assert) {
@@ -40,7 +40,7 @@ module('Unit | Validator | aggregation max size', function(hooks) {
       }
     });
     let expected = 'The maintainer has set the Raw type to support a maximum of 100 for result count';
-    assert.equal(validate('size', 101, 20, undefined, mockModel), expected);
-    assert.ok(validate('size', 100, 20, undefined, mockModel));
+    assert.equal(validate('size', 101, 20, { }, mockModel), expected);
+    assert.ok(validate('size', 100, 20, { }, mockModel));
   });
 });
