@@ -18,7 +18,7 @@ module('Integration | Component | Cell | query date entry', function(hooks) {
         assert.equal(value, 'foo');
       }
     });
-    await render(hbs`{{cells/query-date-entry tableActions=mockTableActions value='foo'}}`);
+    await render(hbs`<Cells::QueryDateEntry @tableActions={{this.mockTableActions}} @value='foo'/>`);
     await click('span');
   });
 
@@ -29,7 +29,7 @@ module('Integration | Component | Cell | query date entry', function(hooks) {
         assert.ok(false);
       }
     });
-    await render(hbs`{{cells/query-date-entry tableActions=mockTableActions}}`);
+    await render(hbs`<Cells::QueryDateEntry @tableActions={{this.mockTableActions}}/>`);
     return click('span');
   });
 });

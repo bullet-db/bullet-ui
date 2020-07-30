@@ -4,7 +4,10 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
+import argsGet from 'bullet-ui/utils/args-get';
 
 export default class DateEntryComponent extends Component {
-  format = 'DD MMM hh:mm A';
+  get format() {
+    return argsGet(this.args, 'format', 'DD MMM hh:mm A');
+  }
 }

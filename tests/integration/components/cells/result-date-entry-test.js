@@ -19,7 +19,7 @@ module('Integration | Component | Cell | result date entry', function(hooks) {
         assert.equal(value, 'foo');
       }
     });
-    await render(hbs`{{cells/result-date-entry tableActions=mockTableActions row='foo'}}`);
-    await click('span');
+    await render(hbs`<Cells::ResultDateEntry @tableActions={{this.mockTableActions}} @row='foo'/>`);
+    await click('.result-date-entry');
   });
 });

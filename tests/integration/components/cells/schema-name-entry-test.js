@@ -16,7 +16,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     this.set('mockRow', EmberObject.create({
       name: 'foo'
     }));
-    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+    await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
     assert.dom(this.element).hasText('foo');
     assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
@@ -27,7 +27,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
       name: 'foo.bar',
       isSubfield: true
     }));
-    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+    await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
     assert.dom(this.element).hasText('bar');
     assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
@@ -39,7 +39,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
       isSubfield: true,
       hasEnumerations: true
     }));
-    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+    await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
     assert.equal(this.element.querySelectorAll('.schema-enumeration-caret > .expand-caret').length, 1);
   });
@@ -51,7 +51,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
       hasEnumerations: true,
       expanded: true
     }));
-    await render(hbs`{{cells/schema-name-entry row=mockRow}}`);
+    await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
     assert.equal(this.element.querySelectorAll('.schema-enumeration-caret > .expanded-caret').length, 1);
   });

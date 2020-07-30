@@ -12,30 +12,27 @@ module('Integration | Component | Cell | date entry', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders an empty date text when there is no date provided', async function(assert) {
-    await render(hbs`{{cells/date-entry}}`);
-
+    await render(hbs`<Cells::DateEntry/>`);
     assert.dom(this.element).hasText('--');
 
     await render(hbs`
-      {{#cells/date-entry}}
+      <Cells::DateEntry>
         template block text
-      {{/cells/date-entry}}
+      </Cells::DateEntry>
     `);
-
     assert.dom(this.element).hasText('--');
   });
 
   test('it renders a date in the default format', async function(assert) {
     this.set('date', new Date(2016, 8, 1, 3, 16));
-    await render(hbs`{{cells/date-entry value=date}}`);
-
+    await render(hbs`<Cells::DateEntry @value={{this.date}}/>`);
     assert.dom(this.element).hasText('01 Sep 03:16 AM');
   });
 
 
   test('it renders a date in the given format', async function(assert) {
     this.set('date', new Date(2016, 8, 1, 3, 16));
-    await render(hbs`{{cells/date-entry value=date format='D/M HH:m'}}`);
+    await render(hbs`<Cells::DateEntry @value={{this.date}} @format='D/M HH:m'/>`);
 
     assert.dom(this.element).hasText('1/9 03:16');
   });

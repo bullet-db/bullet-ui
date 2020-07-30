@@ -5,7 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
+import { action, get } from '@ember/object';
 import { next } from '@ember/runloop';
 import { isEmpty, typeOf } from '@ember/utils';
 
@@ -24,12 +24,12 @@ export default class RecordEntryComponent extends Component {
   }
 
   get label() {
-    return this.args.column.get('label');
+    return get(this.args.column, 'label');
   }
 
   get data() {
     // Deliberately not using Ember get to prevent '.' expansion
-    return this.args.row.get('content')[this.label];
+    return get(this.args.row, 'content')[this.label];
   }
 
   get isComplex() {

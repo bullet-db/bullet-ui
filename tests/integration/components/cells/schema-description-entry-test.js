@@ -12,13 +12,13 @@ module('Integration | Component | Cell | schema description entry', function(hoo
   setupRenderingTest(hooks);
 
   test('it renders', async function(assert) {
-    await render(hbs`{{cells/schema-description-entry value='foo'}}`);
+    await render(hbs`<Cells::SchemaDescriptionEntry @value='foo'/>`);
 
     assert.dom(this.element).hasText('foo');
   });
 
   test('it renders html', async function(assert) {
-    await render(hbs`{{cells/schema-description-entry value='<div><p>foo</p></div>'}}`);
+    await render(hbs`<Cells::SchemaDescriptionEntry @value='<div><p>foo</p></div>'/>`);
 
     assert.dom(this.element).hasText('foo');
     assert.equal(this.element.querySelectorAll('div > p').length, 1);

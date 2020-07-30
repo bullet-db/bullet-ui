@@ -19,7 +19,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
 
   test('it displays the real name if it is available', async function(assert) {
     this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
     assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
     assert.ok(this.element.textContent, 'foo');
   });
@@ -31,7 +31,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('bar', 'b');
     this.set('mockRow', wrap(query));
 
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
     assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
     assert.ok(this.element.textContent, 'Filters: An Actual Filter Summary Columns: f,b');
   });
@@ -47,7 +47,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     });
     this.set('mockRow', wrap(query));
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.query-name-entry');
   });
 
@@ -55,8 +55,8 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     assert.expect(1);
     this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
 
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    await triggerEvent('.query-name-entry', 'mouseover');
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
+    await triggerEvent('.query-name-entry', 'mouseenter');
     assert.dom(this.element.querySelector('.query-name-actions')).hasClass('is-visible');
   });
 
@@ -64,10 +64,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     assert.expect(2);
     this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
 
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    await triggerEvent('.query-name-entry', 'mouseover');
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
+    await triggerEvent('.query-name-entry', 'mouseenter');
     assert.dom(this.element.querySelector('.query-name-actions')).hasClass('is-visible');
-    await triggerEvent('.query-name-entry', 'mouseout');
+    await triggerEvent('.query-name-entry', 'mouseleave');
     assert.dom(this.element.querySelector('.query-name-actions')).hasNoClass('is-visible');
   });
 
@@ -82,7 +82,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     });
     this.set('mockRow', wrap(query));
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.edit-icon');
   });
 
@@ -97,7 +97,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     });
     this.set('mockRow', wrap(query));
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.delete-icon');
   });
 
@@ -112,7 +112,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     });
     this.set('mockRow', wrap(query));
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.copy-icon');
   });
 
@@ -127,46 +127,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     });
     this.set('mockRow', wrap(query));
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.link-icon');
-  });
-
-  test('it displays an unsaved icon if the query is dirty', async function(assert) {
-    let query = MockQuery.create({ duration: 1 });
-    query.set('hasDirtyAttributes', true);
-    query.set('hasUnsavedFields', false);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
-  });
-
-  test('it displays an unsaved icon if the query has unsaved fields', async function(assert) {
-    let query = MockQuery.create({ duration: 1 });
-    query.set('hasDirtyAttributes', false);
-    query.set('hasUnsavedFields', true);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
-  });
-
-  test('it displays an unsaved icon if the query is invalid', async function(assert) {
-    let query = MockQuery.create({ duration: 1, shouldValidate: false });
-    query.set('hasDirtyAttributes', false);
-    query.set('hasUnsavedFields', false);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
-  });
-
-  test('it does not display an unsaved icon if the query is valid', async function(assert) {
-    let query = MockQuery.create({ duration: 1 });
-    query.set('hasDirtyAttributes', false);
-    query.set('hasUnsavedFields', false);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
   });
 });
