@@ -19,7 +19,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
     assert.dom(this.element).hasText('foo');
-    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
+    assert.dom('.schema-enumeration-caret').doesNotExist();
   });
 
   test('it displays an subfield column', async function(assert) {
@@ -30,7 +30,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
     assert.dom(this.element).hasText('bar');
-    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret').length, 0);
+    assert.dom('.schema-enumeration-caret').doesNotExist();
   });
 
   test('it displays an expand caret if the row has enumerations', async function(assert) {
@@ -40,8 +40,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
       hasEnumerations: true
     }));
     await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
-
-    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret > .expand-caret').length, 1);
+    assert.dom('.schema-enumeration-caret > .expand-caret').exists({ count: 1 });
   });
 
   test('it displays an expanded caret if the row is expanded', async function(assert) {
@@ -52,7 +51,6 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
       expanded: true
     }));
     await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
-
-    assert.equal(this.element.querySelectorAll('.schema-enumeration-caret > .expanded-caret').length, 1);
+    assert.dom('.schema-enumeration-caret > .expanded-caret').exists({ count: 1 });
   });
 });

@@ -5,13 +5,9 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, settled, click } from '@ember/test-helpers';
+import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import {
-  assertTooltipNotRendered,
-  assertTooltipRendered,
-  findTooltip
-} from 'ember-tooltips/test-support/dom';
+import { assertTooltipNotRendered, assertTooltipRendered, findTooltip } from 'ember-tooltips/test-support/dom';
 
 module('Integration | Component | Cell | record entry', function(hooks) {
   setupRenderingTest(hooks);
@@ -20,15 +16,15 @@ module('Integration | Component | Cell | record entry', function(hooks) {
     this.set('mockRow', { content: { value: 'foo' } });
     this.set('mockColumn', { label: 'value' });
     await render(hbs`<Cells::RecordEntry @row={{this.mockRow}} @column={{this.mockColumn}}/>`);
-    assert.ok(this.element.textContent, 'foo');
-    assert.equal(this.element.querySelectorAll('.record-popover-body').length, 0);
+    assert.dom(this.element).hasText('foo');
+    assert.dom('.record-popover-body').doesNotExist();
   });
 
   test('it renders a complex array as text', async function(assert) {
     this.set('mockRow', { content: { bar: ['foo'] } });
     this.set('mockColumn', { label: 'bar' });
     await render(hbs`<Cells::RecordEntry @row={{this.mockRow}} @column={{this.mockColumn}}/>`);
-    assert.dom(this.element.querySelector('.plain-entry')).hasText('["foo"]');
+    assert.dom('.plain-entry').hasText('["foo"]');
   });
 
   test('it adds a popover on click', async function(assert) {

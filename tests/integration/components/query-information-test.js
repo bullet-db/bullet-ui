@@ -8,41 +8,23 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import Service from '@ember/service';
 
 module('Integration | Component | query information', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it displays a query summary', async function(assert) {
     this.set('mockSnapshot', EmberObject.create({ filterSummary: 'foo', fieldsSummary: 'bar', windowSummary: 'baz' }));
-    await render(hbs`{{query-information querySnapshot=mockSnapshot}}`);
-    let textContent = this.element.textContent.trim();
-    assert.ok(textContent.indexOf('foo') !== -1);
-    assert.ok(textContent.indexOf('bar') !== -1);
-    assert.ok(textContent.indexOf('baz') !== -1);
+    await render(hbs`<QueryInformation @querySnapshot={{this.mockSnapshot}}/>`);
+    assert.dom(this.element).includesText('foo');
+    assert.dom(this.element).includesText('bar');
+    assert.dom(this.element).includesText('baz');
   });
 
   test('it displays an edit and a rerun button', async function(assert) {
-    await render(hbs`{{query-information}}`);
-    assert.equal(this.element.querySelectorAll('.link-button').length, 1);
-    assert.equal(this.element.querySelectorAll('.rerun-button').length, 1);
-  });
-
-  test('it displays an edit and a cancel button when running a query', async function(assert) {
-    this.set('mockQuerier', EmberObject.create({ isRunningQuery: true }));
-    await render(hbs`{{query-information querier=mockQuerier}}`);
-    assert.equal(this.element.querySelectorAll('.link-button').length, 1);
-    assert.equal(this.element.querySelectorAll('.cancel-button').length, 1);
-  });
-
-  test('it cancels a query', async function(assert) {
-    assert.expect(2);
-    this.set('mockCancelClick', () => {
-      assert.ok(true);
-    });
-    this.set('mockQuerier', EmberObject.create({ isRunningQuery: true }));
-    await render(hbs`{{query-information querier=mockQuerier cancelClick=(action mockCancelClick)}}`);
-    assert.equal(this.element.querySelectorAll('.cancel-button').length, 1);
-    await click('button.cancel-button');
+    await render(hbs`<QueryInformation/>`);
+    assert.dom('.link-button').exists({ count: 1 });
+    assert.dom('.rerun-button').exists({ count: 1 });
   });
 
   test('it reruns a query', async function(assert) {
@@ -50,8 +32,8 @@ module('Integration | Component | query information', function(hooks) {
     this.set('mockReRunClick', () => {
       assert.ok(true);
     });
-    await render(hbs`{{query-information reRunClick=(action mockReRunClick)}}`);
-    assert.equal(this.element.querySelectorAll('.rerun-button').length, 1);
+    await render(hbs`<QueryInformation @reRunClick={{this.mockReRunClick}}/>`);
+    assert.dom('.rerun-button').exists({ count: 1 });
     await click('button.rerun-button');
   });
 
@@ -60,8 +42,8 @@ module('Integration | Component | query information', function(hooks) {
     this.set('mockQueryClick', () => {
       assert.ok(true);
     });
-    await render(hbs`{{query-information queryClick=(action mockQueryClick)}}`);
-    assert.equal(this.element.querySelectorAll('.link-button').length, 1);
+    await render(hbs`<QueryInformation @queryClick={{this.mockQueryClick}}/>`);
+    assert.dom('.link-button').exists({ count: 1 });
     await click('button.link-button');
   });
 
@@ -70,8 +52,33 @@ module('Integration | Component | query information', function(hooks) {
     this.set('mockQueryClick', () => {
       assert.ok(true);
     });
-    await render(hbs`{{query-information queryClick=(action mockQueryClick)}}`);
-    assert.equal(this.element.querySelectorAll('.query-blurb-wrapper').length, 1);
+    await render(hbs`<QueryInformation @queryClick={{this.mockQueryClick}}/>`);
+    assert.dom('.query-blurb-wrapper').exists({ count: 1 });
     await click('div.query-blurb-wrapper');
+  });
+
+  // Nested module for stubbing running
+  module('running', function(hooks) {
+    const QuerierStub = Service.extend({ isRunningQuery: true });
+
+    hooks.beforeEach(function(assert) {
+      this.owner.register('service:querier', QuerierStub);
+    });
+
+    test('it displays an edit and a cancel button when running a query', async function(assert) {
+      await render(hbs`<QueryInformation/>`);
+      assert.dom('.link-button').exists({ count: 1 });
+      assert.dom('.cancel-button').exists({ count: 1 });
+    });
+
+    test('it cancels a query', async function(assert) {
+      assert.expect(2);
+      this.set('mockCancelClick', () => {
+        assert.ok(true);
+      });
+      await render(hbs`<QueryInformation @cancelClick={{this.mockCancelClick}}/>`);
+      assert.dom('.cancel-button').exists({ count: 1 });
+      await click('button.cancel-button');
+    });
   });
 });

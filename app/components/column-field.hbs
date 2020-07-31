@@ -11,8 +11,8 @@
     </div>
     <div class="column-subfield col-xs-4">
       <label>Subfield</label>
-      <Input @value={{this.subfield}} @type="text" @focusOut={{this.onFocusOut}}
-             placeholder="Optional" class="form-control" disabled={{@disabled}} />
+      <Input {{on "change" (fn this.onFocusOut)}} @value={{this.subfield}} @type="text" 
+             placeholder="Optional" class="form-control" disabled={{@disabled}}/>
     </div>
   {{else}}
     <div class="column-onlyfield col-xs-12">

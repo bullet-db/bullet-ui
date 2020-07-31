@@ -4,7 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <label class="radio-button {{if this.checked "checked"}}" for={{@id}}>
-  <input type="radio" checked={{this.checked}} {{on "change" this.onChange}}
+  <input id={{@id}} type="radio" checked={{this.checked}} {{on "change" this.onChange}}
          value={{@value}} disabled={{@disabled}} ...attributes>
   {{yield}}
 </label>

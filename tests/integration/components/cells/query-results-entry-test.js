@@ -23,7 +23,7 @@ module('Integration | Component | Cell | query results entry', function(hooks) {
   test('it renders the run count if there were results', async function(assert) {
     this.set('mockValue', A([EmberObject.create({ foo: 2 })]));
     await render(hbs`<Cells::QueryResultsEntry @value={{this.mockValue}}/>`);
-    assert.dom(this.element.querySelector('.length-entry')).hasText('1 Results');
+    assert.dom('.length-entry').hasText('1 Results');
   });
 
   test('it shows a popover on click if there were results', async function(assert) {

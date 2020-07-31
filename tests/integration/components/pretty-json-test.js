@@ -5,54 +5,50 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | pretty json', function(hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders edge cases', async function(assert) {
-    await render(hbs`{{pretty-json}}`);
+  test('it renders edge cases and rerenders on change', async function(assert) {
+    this.set('mockData', null);
+    await render(hbs`<PrettyJson @data={{this.mockData}}/>`);
     assert.dom(this.element).hasText('null');
 
-    await render(hbs`
-      {{#pretty-json}}
-        template block text
-      {{/pretty-json}}
-    `);
+    await render(hbs`<PrettyJson @data={{this.mockData}}>template block text</PrettyJson>`);
     assert.dom(this.element).hasText('null');
 
-    this.set('json', undefined);
-    await render(hbs`{{pretty-json data=json}}`);
+    this.set('mockData', undefined);
+    await render(hbs`<PrettyJson @data={{this.mockData}}/>`);
+    await settled();
     assert.dom(this.element).hasText('undefined');
 
-    this.set('json', []);
-    await render(hbs`{{pretty-json data=json}}`);
+    this.set('mockData', []);
+    await render(hbs`<PrettyJson @data={{this.mockData}}/>`);
     assert.dom(this.element).hasText('Array[0][]');
 
-    this.set('json', { });
-    await render(hbs`{{pretty-json data=json}}`);
+    this.set('mockData', { });
+    await render(hbs`<PrettyJson @data={{this.mockData}}/>`);
     assert.dom(this.element).hasText('Object{}');
   });
 
   test('it wraps content in a pre tag', async function(assert) {
-    await render(hbs`{{pretty-json}}`);
-    assert.equal(this.element.querySelectorAll('pre.pretty-json-container').length, 1);
+    await render(hbs`<PrettyJson/>`);
+    assert.dom('pre.pretty-json-container').exists({ count: 1 });
   });
 
   test('it formats json and opens to two levels by default', async function(assert) {
-    let json = { foo: { bar: 'baz', test: 'foo' } };
-    this.set('json', json);
-    await render(hbs`{{pretty-json data=json}}`);
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 2);
-    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 4);
+    this.set('mockData', { foo: { bar: 'baz', test: 'foo' } });
+    await render(hbs`<PrettyJson @data={{this.mockData}}/>`);
+    assert.dom('.json-formatter-open').exists({ count: 2 });
+    assert.dom('.json-formatter-row').exists({ count: 4 });
   });
 
   test('it collapses json to the given levels', async function(assert) {
-    let json = { foo: { bar: 'baz', test: 'foo' } };
-    this.set('json', json);
+    this.set('mockData', { foo: { bar: 'baz', test: 'foo' } });
     this.set('mockLevels', 1);
-    await render(hbs`{{pretty-json data=json defaultLevels=mockLevels}}`);
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 1);
+    await render(hbs`<PrettyJson @data={{this.mockData}} @defaultLevels={{this.mockLevels}}/>`);
+    assert.dom('.json-formatter-open').exists({ count: 1 });
   });
 });

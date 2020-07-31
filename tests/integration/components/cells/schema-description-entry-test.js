@@ -21,6 +21,6 @@ module('Integration | Component | Cell | schema description entry', function(hoo
     await render(hbs`<Cells::SchemaDescriptionEntry @value='<div><p>foo</p></div>'/>`);
 
     assert.dom(this.element).hasText('foo');
-    assert.equal(this.element.querySelectorAll('div > p').length, 1);
+    assert.dom('div > p').exists({ count: 1 });
   });
 });

@@ -13,15 +13,10 @@ import MockQuery from '../../../helpers/mocked-query';
 module('Integration | Component | Cell | query name entry', function(hooks) {
   setupRenderingTest(hooks);
 
-  function wrap(query) {
-    return EmberObject.create({ content: query });
-  }
-
   test('it displays the real name if it is available', async function(assert) {
-    this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
+    this.set('mockRow', MockQuery.create({ name: 'foo' }));
     await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
-    assert.ok(this.element.textContent, 'foo');
+    assert.dom(this.element).hasText('foo');
   });
 
   test('it displays the summary if the name is not available', async function(assert) {
@@ -29,11 +24,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addFilter({ }, 'An Actual Filter Summary');
     query.addProjection('foo', 'f');
     query.addProjection('bar', 'b');
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
-    assert.ok(this.element.textContent, 'Filters: An Actual Filter Summary Columns: f,b');
+    assert.dom(this.element).hasText('Filters: An Actual Filter Summary Fields: fb Window: None');
   });
 
   test('it calls the table action queryClick on click with a given query', async function(assert) {
@@ -42,10 +36,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       queryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.query-name-entry');
@@ -53,7 +47,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
 
   test('it adds a hasHover class on mouse enter', async function(assert) {
     assert.expect(1);
-    this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
+    this.set('mockRow', MockQuery.create({ name: 'foo' }));
 
     await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
     await triggerEvent('.query-name-entry', 'mouseenter');
@@ -62,7 +56,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
 
   test('it removes the hasHover class on mouse leave', async function(assert) {
     assert.expect(2);
-    this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
+    this.set('mockRow', MockQuery.create({ name: 'foo' }));
 
     await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
     await triggerEvent('.query-name-entry', 'mouseenter');
@@ -77,10 +71,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       queryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.edit-icon');
@@ -92,10 +86,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       deleteQueryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.delete-icon');
@@ -107,10 +101,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       copyQueryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.copy-icon');
@@ -122,10 +116,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       linkQueryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.link-icon');

@@ -1,26 +1,43 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, click, triggerEvent } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
-module('Integration | Component | radio-button', function(hooks) {
+module('Integration | Component | radio button', function(hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders', async function(assert) {
-    // Set any properties with this.set('myProperty', 'value');
-    // Handle any actions with this.set('myAction', function(val) { ... });
-
-    await render(hbs`<RadioButton />`);
-
-    assert.equal(this.element.textContent.trim(), '');
-
-    // Template block usage:
+  test('it can add additional content in block form', async function(assert) {
     await render(hbs`
-      <RadioButton>
-        template block text
-      </RadioButton>
-    `);
+      <RadioButton @id='radio-id' @value='bar' @checkedValue='foo'>
+        Test Value
+      </RadioButton>`);
+    assert.dom('label').includesText('Test Value');
+  });
 
-    assert.equal(this.element.textContent.trim(), 'template block text');
+  test('it renders a radio button with the given id and checks if the value is the same', async function(assert) {
+    await render(hbs`<RadioButton @id='radio-id' @value='foo' @checkedValue='foo'/>`);
+
+    assert.dom('label').hasClass('checked');
+    assert.dom('label').hasAttribute('for', 'radio-id');
+    assert.dom('label input').isChecked();
+  });
+
+  test('it calls the changed action and the updated action with the value on change', async function(assert) {
+    assert.expect(6);
+    this.set('mockCheckedValue', 'bar')
+    this.set('mockUpdated', (value) => {
+      assert.equal(value, 'foo')
+      this.set('mockCheckedValue', value);
+    });
+    this.set('mockChanged', () => {
+      assert.ok(true);
+    });
+    await render(hbs`<RadioButton @id='radio-id' @value='foo' @checkedValue={{this.mockCheckedValue}}
+                                  @updated={{this.mockUpdated}} @changed={{this.mockChanged}}/>`);
+    assert.dom('label').doesNotHaveClass('checked');
+    assert.dom('label input').isNotChecked();
+    await click('#radio-id');
+    assert.dom('label').hasClass('checked');
+    assert.dom('label input').isChecked();
   });
 });

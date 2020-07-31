@@ -8,6 +8,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import { assertTooltipNotRendered, assertTooltipRendered } from 'ember-tooltips/test-support/dom';
 import MockQuery from '../../helpers/mocked-query';
 
 module('Integration | Component | queries table', function(hooks) {
@@ -23,47 +24,42 @@ module('Integration | Component | queries table', function(hooks) {
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
 
-    await render(hbs`{{queries-table queries=mockQueries}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
+    assertTooltipNotRendered(assert);
     assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[0]).hasText('Query');
     assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[1]).hasText('Last Result');
     assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[2]).hasText('Historical Results');
-    assert.equal(this.element.querySelectorAll('.lt-body .lt-row').length, 1);
+    assert.dom('.lt-body .lt-row').exists({ count: 1 });
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).hasText('foo');
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('03 Jan 12:00 AM');
     assert.dom(this.element.querySelector('.lt-body .lt-row .lt-cell .length-entry')).hasText('2 Results');
   });
 
   test('it has a default sort by name and can manually sort on click', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
 
     let queryA = MockQuery.create({ duration: 1 });
     queryA.addFilter({ }, 'An Actual Filter Summary');
     queryA.addProjection('foo', 'f');
     queryA.addProjection('bar', 'b');
-
     let queryB = MockQuery.create({ duration: 1 });
     queryB.set('name', 'foo');
-
     this.set('mockQueries', A([queryA, queryB]));
-    await render(hbs`{{queries-table queries=mockQueries}}`);
 
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 3);
-    let text = this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent;
-    let spaceLess = text.replace(/\s/g, '');
-
-    assert.equal(spaceLess, 'foo');
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
+    assertTooltipNotRendered(assert);
+    assert.dom('.lt-head .lt-column.is-sortable').exists({ count: 3 });
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).includesText('foo');
 
     // Click twice for descending
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
-
-    text = this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0].textContent;
-    spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, 'Filters:AnActualFilterSummaryFields:fbWindow:None');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0])
+                           .includesText('Filters: An Actual Filter Summary Fields: fb Window: None');
   });
 
   test('it sorts by the latest result column on click', async function(assert) {
-    assert.expect(2);
+    assert.expect(3);
 
     let queryA = MockQuery.create({ duration: 1 });
     queryA.set('name', 'bar');
@@ -71,46 +67,37 @@ module('Integration | Component | queries table', function(hooks) {
     queryA.addResult([]);
     queryA.addResult([]);
     queryA.addResult([]);
-
     let queryB = MockQuery.create({ duration: 1 });
     queryB.set('name', 'foo');
     // Will be Jan 2
     queryB.addResult([]);
 
     this.set('mockQueries', A([queryA, queryB]));
-    await render(hbs`{{queries-table queries=mockQueries}}`);
-
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
+    assertTooltipNotRendered(assert);
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('04 Jan 12:00 AM');
-
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('02 Jan 12:00 AM');
   });
 
   test('it sorts by the number of results column on click', async function(assert) {
-    assert.expect(2);
+    assert.expect(3);
 
     let queryA = MockQuery.create({ duration: 1 });
     queryA.set('name', 'bar');
     queryA.addResult([]);
     queryA.addResult([]);
     queryA.addResult([]);
-
     let queryB = MockQuery.create({ duration: 1 });
     queryB.set('name', 'foo');
     queryB.addResult([]);
 
     this.set('mockQueries', A([queryA, queryB]));
-    await render(hbs`{{queries-table queries=mockQueries}}`);
-
-    assert.dom(
-      this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0]
-    ).hasText('3 Results');
-
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
+    assertTooltipNotRendered(assert);
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0]).hasText('3 Results');
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[2]);
-
-    assert.dom(
-      this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0]
-    ).hasText('1 Results');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .length-entry')[0]).hasText('1 Results');
   });
 
   test('it calls the queryClick action on clicking the query name', async function(assert) {
@@ -120,12 +107,11 @@ module('Integration | Component | queries table', function(hooks) {
     query.addResult([]);
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
-
     this.set('mockQueryClick', value => {
       assert.equal(value.get('name'), 'foo');
     });
 
-    await render(hbs`{{queries-table queries=mockQueries queryClick=(action mockQueryClick)}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}} @queryClick={{this.mockQueryClick}}/>`);
     await click('.query-name-entry');
   });
 
@@ -136,28 +122,29 @@ module('Integration | Component | queries table', function(hooks) {
     query.addResult([]);
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
-
     this.set('mockDeleteQueryClick', value => {
       assert.equal(value.get('name'), 'foo');
     });
 
-    await render(hbs`{{queries-table queries=mockQueries deleteQueryClick=(action mockDeleteQueryClick)}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}} @deleteQueryClick={{this.mockDeleteQueryClick}}/>`);
     await click('.query-name-entry .delete-icon');
   });
 
   test('it calls the deleteResultsClick action on clicking the clear results', async function(assert) {
-    assert.expect(1);
+    assert.expect(3);
 
     let query = MockQuery.create({ duration: 1 });
     query.addResult([]);
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
-
     this.set('mockDeleteResultsClick', value => {
       assert.equal(value.get('name'), 'foo');
     });
 
-    await render(hbs`{{queries-table queries=mockQueries deleteResultsClick=(action mockDeleteResultsClick)}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}} @deleteResultsClick={{this.mockDeleteResultsClick}}/>`);
+    assertTooltipNotRendered(assert);
+    await click('.query-results-entry');
+    assertTooltipRendered(assert);
     await click('.query-results-entry .clear-history');
   });
 
@@ -170,13 +157,12 @@ module('Integration | Component | queries table', function(hooks) {
     query.addResult([]);
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
-
     this.set('mockResultClick', value => {
       // Will be 4 since we added 3 results
       assert.equal(value.get('created').getDate(), 4);
     });
 
-    await render(hbs`{{queries-table queries=mockQueries resultClick=(action mockResultClick)}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}} @resultClick={{this.mockResultClick}}/>`);
     await click('.query-date-entry');
   });
 
@@ -187,12 +173,11 @@ module('Integration | Component | queries table', function(hooks) {
     query.addResult([]);
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
-
     this.set('mockCopyQueryClick', value => {
       assert.equal(value.get('name'), 'foo');
     });
 
-    await render(hbs`{{queries-table queries=mockQueries copyQueryClick=(action mockCopyQueryClick)}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}} @copyQueryClick={{this.mockCopyQueryClick}}/>`);
     await click('.query-name-entry .copy-icon');
   });
 
@@ -203,12 +188,11 @@ module('Integration | Component | queries table', function(hooks) {
     query.addResult([]);
     query.set('name', 'foo');
     this.set('mockQueries', A([query]));
-
     this.set('mockLinkQueryClick', value => {
       assert.equal(value.get('name'), 'foo');
     });
 
-    await render(hbs`{{queries-table queries=mockQueries linkQueryClick=(action mockLinkQueryClick)}}`);
+    await render(hbs`<QueriesTable @queries={{this.mockQueries}} @linkQueryClick={{this.mockLinkQueryClick}}/>`);
     await click('.query-name-entry .link-icon');
   });
 });
