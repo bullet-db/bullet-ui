@@ -19,7 +19,6 @@ export default class RecordsTableComponent extends PaginatedTable {
 
   constructor() {
     super(...arguments);
-    this.pageSize = 15;
     this.alreadyReset = false;
     // Use natural types in the results
     this.useDefaultStringExtractor = false;

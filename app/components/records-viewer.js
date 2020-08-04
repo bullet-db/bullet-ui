@@ -38,7 +38,7 @@ export default class RecordsViewerComponent extends Component {
   }
 
   get rows() {
-    return A(this.extractRows(this.args.records, this.columns));
+    return A(RecordsViewerComponent.extractRows(this.args.records, this.columns));
   }
 
   get asJSON() {
@@ -51,7 +51,7 @@ export default class RecordsViewerComponent extends Component {
 
   get asFlatCSV() {
     let records = this.args.records;
-    let flattenedRows = records.map(item => this.flatten(item), this);
+    let flattenedRows = records.map(item => RecordsViewerComponent.flatten(item), this);
     let columns = RecordsViewerComponent.extractUniqueColumns(flattenedRows);
     let rows = RecordsViewerComponent.extractRows(flattenedRows, columns);
     return RecordsViewerComponent.makeCSVString(columns, rows);

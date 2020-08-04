@@ -18,6 +18,9 @@ export default class ResultModel extends Model {
   @attr('string') pivotOptions;
   @attr() querySnapshot;
 
+  // Cache exists to not dump all the records into windows at once. Use syncCache to consolidate cache and windows.
+  cache = [];
+
   @equal('querySnapshot.type', AGGREGATIONS.get('RAW')) isRaw;
   @equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')) isCountDistinct;
   @equal('querySnapshot.type', AGGREGATIONS.get('GROUP')) isGroup;
@@ -53,5 +56,14 @@ export default class ResultModel extends Model {
   @computed('windows.[]')
   get hasData() {
     return !isEmpty(this.windows);
+  }
+
+  syncCache() {
+    let length = this.cache.length;
+    let numberOfWindows = this.windows.length;
+    for (let i = numberOfWindows; i < length; ++i) {
+      this.windows.pushObject(this.cache[i]);
+    }
+    this.save();
   }
 }

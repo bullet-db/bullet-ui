@@ -26,7 +26,7 @@ import Changeset from 'ember-changeset';
 export default class QueryManagerService extends Service {
   @service store;
   @service querier;
-  saveSegmentDebounceInterval = 100;
+  saveSegmentDebounceInterval = 10;
   debounceSegmentSaves = config.APP.SETTINGS.debounceSegmentSaves;
 
   @computed('settings').readOnly()
@@ -155,18 +155,18 @@ export default class QueryManagerService extends Service {
   }
 
   addSegment(result, data) {
-    let position = result.get('windows.length');
-    result.get('windows').pushObject({
+    let position = result.get('cache.length');
+    result.get('cache').push({
       metadata: data.meta,
       records: data.records,
       sequence: get(data.meta, this.windowNumberProperty),
       index: position,
       created: new Date(Date.now())
     });
-    if (!this.debounceSegmentSaves) {
-      debounce(result, result.save, this.saveSegmentDebounceInterval);
+    if (this.debounceSegmentSaves) {
+      debounce(result, result.syncCache, this.saveSegmentDebounceInterval);
     } else {
-      result.save();
+      result.syncCache();
     }
   }
 

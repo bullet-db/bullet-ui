@@ -9,7 +9,7 @@
 const INTERNAL_APP_SETTINGS = {
   // Use the IndexedDB Local Forage adapater
   adapter: 'indexeddb',
-  // Enable debouncing saving of windows
+  // Enable debounce saving of windows
   debounceSegmentSaves: true,
   // Only used if defaultQuery does not provide an aggregation
   defaultAggregation: { type: 'RAW', size: 1 }

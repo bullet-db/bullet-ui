@@ -23,8 +23,8 @@ export default class RecordsCharterComponent extends Component {
   @alias('args.config.isDistribution') isDistribution;
   @not('args.timeSeriesMode') regularMode;
   @not('args.timeSeriesMode') canShowPieChart;
+  @alias('args.config.isRaw') canOnlyPivot;
   @alias('showPieChart') needsColorArray;
-  @alias('config.isRaw') canOnlyPivot;
   @or('showPivotMode', 'canOnlyPivot') pivotMode;
 
   get sampleRow() {

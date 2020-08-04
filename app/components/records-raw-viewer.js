@@ -17,7 +17,8 @@ export default class RecordsRawViewerComponent extends Component {
   @tracked isToggled = true;
 
   get numberOflevels() {
-    let rows = this.args.data.length;
+    let data = this.args.data;
+    let rows = isEmpty(data) ? 0 : data.length;
     return Math.max(1, parseInt((MAX_LEVELS - (rows / ROW_COUNT_LEVEL_BREAK))));
   }
 
