@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
   export default class MockChangeset {
-    type;
     field;
     name = null;
     isInvalid = false;
@@ -12,10 +11,12 @@
     shouldError;
     modifications = [];
 
-    constructor(field, shouldError, errors) {
-      this.field = field;
+    constructor(fields, shouldError, error) {
+      fields.forEach(field => {
+        this[field.name] = field.value;
+      })
       this.shouldError = shouldError;
-      this.error = errors;
+      this.error = error;
     }
 
     set(path, value) {
@@ -23,9 +24,9 @@
     }
 
     get(path) {
-      // If there's a dot, it's accessing this.error
+      // If there's a dot, we can go one deep
       let last = path.lastIndexOf('.');
-      return last !== -1 ? this.error[path.slice(last + 1)] : this[path];
+      return last !== -1 ? this[path.slice(0, last)][path.slice(last + 1)] : this[path];
     }
 
     validate() {

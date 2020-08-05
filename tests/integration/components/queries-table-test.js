@@ -9,7 +9,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { assertTooltipNotRendered, assertTooltipRendered } from 'ember-tooltips/test-support/dom';
-import MockQuery from '../../helpers/mocked-query';
+import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 
 module('Integration | Component | queries table', function(hooks) {
   setupRenderingTest(hooks);

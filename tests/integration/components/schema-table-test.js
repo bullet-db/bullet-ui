@@ -8,7 +8,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import MockColumn from '../../helpers/mocked-column';
+import MockColumn from 'bullet-ui/tests/helpers/mocked-column';
 
 module('Integration | Component | schema table', function(hooks) {
   setupRenderingTest(hooks);

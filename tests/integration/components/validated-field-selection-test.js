@@ -22,8 +22,10 @@ module('Integration | Component | validated field selection', function(hooks) {
     { id: 'baz.norf' }
   ];
 
-  function mockChangeset(shouldError = () => false, errors = { field: 'Field bad', name: 'Name bad' }) {
-    return new MockChangeset('foo', shouldError, errors);
+  function mockChangeset(fields = [{ name: 'field', value: 'foo' }, { name: 'name', value: null }],
+                         shouldError = () => false,
+                         error = { field: 'Field bad', name: 'Name bad' }) {
+    return new MockChangeset(fields, shouldError, error);
   }
 
   test('it does not show a error tooltip if there are no errors', async function(assert) {
@@ -46,7 +48,7 @@ module('Integration | Component | validated field selection', function(hooks) {
   });
 
   test('it shows a validation error tooltip for changes that makes the changeset invalid', async function(assert) {
-    let changeset = mockChangeset(() => true);
+    let changeset = mockChangeset(undefined, () => true, undefined);
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`
@@ -64,8 +66,8 @@ module('Integration | Component | validated field selection', function(hooks) {
   });
 
   test('it displays additional options if configured', async function(assert) {
-    let changeset = mockChangeset();
-    changeset.type = 'A';
+    let changeset = mockChangeset([{ name: 'field', value: 'foo' }, { name: 'name', value: null },
+                                   { name: 'type', value: 'A' }]);
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])

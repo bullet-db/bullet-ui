@@ -8,7 +8,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import MockQuery from '../../helpers/mocked-query';
+import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 
 module('Integration | Component | query blurb', function(hooks) {
   setupRenderingTest(hooks);

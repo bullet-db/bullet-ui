@@ -8,7 +8,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import RESULTS from '../../fixtures/results';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
 
 let originalSave;
 

@@ -8,7 +8,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click, triggerEvent } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import MockQuery from '../../../helpers/mocked-query';
+import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 
 module('Integration | Component | Cell | query name entry', function(hooks) {
   setupRenderingTest(hooks);

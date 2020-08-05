@@ -1,4 +1,4 @@
-import FILTERS from '../fixtures/filters';
+import FILTERS from 'bullet-ui/tests/fixtures/filters';
 
 const QUERIES = {
   AND_ENUMERATED_COUNT_DISTINCT: {

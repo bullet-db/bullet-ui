@@ -7,7 +7,7 @@ import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
 import { module, test } from 'qunit';
-import MockColumn from '../../helpers/mocked-column';
+import MockColumn from 'bullet-ui/tests/helpers/mocked-column';
 
 const [SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR] = [ '.*', '.', ','];
 

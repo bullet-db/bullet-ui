@@ -9,7 +9,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click, settled, triggerEvent } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import RESULTS from '../../fixtures/results';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
 
 module('Integration | Component | records charter', function(hooks) {
   setupRenderingTest(hooks);

@@ -4,15 +4,15 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { module, test } from 'qunit';
-import RESULTS from '../fixtures/results';
-import COLUMNS from '../fixtures/columns';
-import QUERIES from '../fixtures/queries';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
+import COLUMNS from 'bullet-ui/tests/fixtures/columns';
+import QUERIES from 'bullet-ui/tests/fixtures/queries';
 import {
   setupForAcceptanceTest,
   setupForMockSettings
-} from '../helpers/setup-for-acceptance-test';
+} from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { visit, find, findAll } from '@ember/test-helpers';
-import { findIn, findAllIn } from '../helpers/find-helpers';
+import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
 module('Acceptance | query default query', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);

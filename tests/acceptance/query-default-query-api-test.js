@@ -4,19 +4,19 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { module, test } from 'qunit';
-import RESULTS from '../fixtures/results';
-import COLUMNS from '../fixtures/columns';
-import QUERIES from '../fixtures/queries';
-import { jsonWrap } from '../helpers/pretender';
-import mockedAPI from '../helpers/mocked-api';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
+import COLUMNS from 'bullet-ui/tests/fixtures/columns';
+import QUERIES from 'bullet-ui/tests/fixtures/queries';
+import { jsonWrap } from 'bullet-ui/tests/helpers/pretender';
+import mockedAPI from 'bullet-ui/tests/helpers/mocked-api';
 import sinon from 'sinon';
 import Stomp from '@stomp/stompjs';
 import {
   basicSetupForAcceptanceTest,
   setupForMockSettings
-} from '../helpers/setup-for-acceptance-test';
+} from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { visit, find, findAll } from '@ember/test-helpers';
-import { findIn } from '../helpers/find-helpers';
+import { findIn } from 'bullet-ui/tests/helpers/find-helpers';
 
 let url = 'http://foo.bar.com/api/custom-query';
 let hit = 0;
