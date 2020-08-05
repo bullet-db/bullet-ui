@@ -6,8 +6,10 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, click, fillIn } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import { selectChoose } from 'ember-power-select/test-support/helpers'
+import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 
 module('Integration | Component | validated field selection', function(hooks) {
   setupRenderingTest(hooks);
@@ -15,125 +17,138 @@ module('Integration | Component | validated field selection', function(hooks) {
   const MOCK_COLUMNS = [
     { id: 'foo' },
     { id: 'bar' },
-    { id: 'bar.*', hasFreeformField: true },
+    { id: 'bar.*', 'show_subfield': true },
     { id: 'baz.qux' },
     { id: 'baz.norf' }
   ];
 
-  function mockModel(isValid, isValidating, isDirty, field = 'foo', message = null) {
-    return EmberObject.create({
-      field: field,
-      name: null,
-
-      validations: {
-        isValid: isValid,
-        isInvalid: !isValid,
-        attrs: {
-          field: {
-            isValid: isValid,
-            isInvalid: !isValid,
-            isValidating: isValidating,
-            isDirty: isDirty,
-            message: message
-          }
-        }
-      }
-    });
+  function mockChangeset(shouldError = () => false, errors = { field: 'Field bad', name: 'Name bad' }) {
+    return new MockChangeset('foo', shouldError, errors);
   }
 
-  test('it shows a validation error tooltip if there are errors and the field is dirty', async function(assert) {
-    let model = mockModel(false, false, true);
-    this.set('mockModel', model);
-    this.set('mockColumns', MOCK_COLUMNS);
-    await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel}}`);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
-  });
-
-  test('it does not show a error tooltip if there are errors and but the field is not dirty', async function(assert) {
-    let model = mockModel(false, false, false);
-    this.set('mockModel', model);
-    this.set('mockColumns', MOCK_COLUMNS);
-    await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel}}`);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-  });
-
-  test('it does not show a error tooltip if the field is still validating', async function(assert) {
-    let model = mockModel(false, true, false);
-    this.set('mockModel', model);
-    this.set('mockColumns', MOCK_COLUMNS);
-    await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel}}`);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-  });
-
-  test('it does not show a error tooltip if there are errors but the field is forced dirty even if it is not dirty', async function(assert) {
-    let model = mockModel(false, false, false);
-    this.set('mockModel', model);
-    this.set('mockColumns', MOCK_COLUMNS);
-    await render(hbs`{{validated-field-selection columns=mockColumns model=mockModel forceDirty=true}}`);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
-  });
-
-  test('it displays a field, a name and a delete button with yieldable contents', async function(assert) {
-    let model = mockModel(true, false, true);
-    this.set('mockModel', model);
+  test('it does not show a error tooltip if there are no errors', async function(assert) {
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`
-      {{#validated-field-selection columns=mockColumns model=mockModel nameClasses="custom-name" fieldClasses="custom-field"}}
-        <span class="custom-input">foo</span>
-      {{/validated-field-selection}}
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @fieldClasses='custom-field' @nameClasses='custom-name'
+      />
     `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-    assert.equal(this.element.querySelectorAll('.custom-input').length, 1);
-    assert.dom(this.element.querySelector('.custom-input')).hasText('foo');
-    assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
-    assert.dom(this.element.querySelector('.field-selection')).hasClass('custom-field');
-    assert.equal(this.element.querySelectorAll('.field-name').length, 1);
-    assert.dom(this.element.querySelector('.field-name')).hasClass('custom-name');
-    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-selection').hasClass('custom-field');
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('foo');
+    await selectChoose('.field-selection', 'bar');
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('bar');
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-name').hasClass('custom-name');
+  });
+
+  test('it shows a validation error tooltip for changes that makes the changeset invalid', async function(assert) {
+    let changeset = mockChangeset(() => true);
+    this.set('mockChangeset', changeset);
+    this.set('mockColumns', MOCK_COLUMNS);
+    await render(hbs`
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+      />
+    `);
+    assert.dom('.error-tooltip-link').exists({ count:  1 });
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('foo');
+    await selectChoose('.field-selection', 'bar');
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('bar');
+    assert.dom('.error-tooltip-link').exists({ count: 1 });
+    await fillIn('.field-name input', 'newName');
+    assert.deepEqual(changeset.modifications, [{ field: 'bar' }, { name: '' }, { name: 'newName' }]);
+  });
+
+  test('it displays additional options if configured', async function(assert) {
+    let changeset = mockChangeset();
+    changeset.type = 'A';
+    this.set('mockChangeset', changeset);
+    this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
+    await render(hbs`
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
+                               @additionalClasses='type-selection' @additionalOptions={{this.mockAdditionalOptions}}
+      />
+    `);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('foo');
+    assert.dom('.additional-selection').hasClass('type-selection');
+    assert.dom('.additional-selection .ember-power-select-trigger').hasText('A');
+    assert.dom('.additional-selection label').hasText('Type Label');
+    await selectChoose('.additional-selection', 'B');
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.deepEqual(changeset.modifications, [{ type: 'B' }]);
   });
 
   test('it can disable field selection', async function(assert) {
-    let model = mockModel(true, false, true);
-    this.set('mockModel', model);
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
-    this.set('disableField', true);
     await render(hbs`
-      {{validated-field-selection columns=mockColumns model=mockModel nameClasses="custom-name" disableField=disableField}}
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @disableField={{true}}
+      />
     `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-    assert.equal(this.element.querySelectorAll('.field-selection').length, 0);
-    assert.equal(this.element.querySelectorAll('.field-name').length, 1);
-    assert.dom(this.element.querySelector('.field-name')).hasClass('custom-name');
-    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-selection').doesNotExist();
+    assert.dom('.field-name').exists({ count:  1 });
+    assert.dom('.delete-button').exists({ count:  1 });
   });
 
   test('it can disable renaming', async function(assert) {
-    let model = mockModel(true, false, true);
-    this.set('mockModel', model);
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
-    this.set('enableRenaming', false);
     await render(hbs`
-      {{validated-field-selection columns=mockColumns model=mockModel fieldClasses="custom-field" enableRenaming=enableRenaming}}
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @enableRenaming={{false}}
+      />
     `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-    assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
-    assert.dom(this.element.querySelector('.field-selection')).hasClass('custom-field');
-    assert.equal(this.element.querySelectorAll('.field-name').length, 0);
-    assert.equal(this.element.querySelectorAll('.delete-button').length, 1);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-selection').exists({ count:  1 });
+    assert.dom('.field-name').doesNotExist();
+    assert.dom('.delete-button').exists({ count:  1 });
   });
 
   test('it can disable deleting', async function(assert) {
-    let model = mockModel(true, false, true);
-    this.set('mockModel', model);
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
-    this.set('enableDeleting', false);
     await render(hbs`
-      {{validated-field-selection columns=mockColumns model=mockModel fieldClasses="custom-field" enableDeleting=enableDeleting}}
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @enableDeleting={{false}}
+      />
     `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-    assert.equal(this.element.querySelectorAll('.field-selection').length, 1);
-    assert.dom(this.element.querySelector('.field-selection')).hasClass('custom-field');
-    assert.equal(this.element.querySelectorAll('.field-name').length, 1);
-    assert.equal(this.element.querySelectorAll('.delete-button').length, 0);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-selection').exists({ count:  1 });
+    assert.dom('.field-name').exists({ count:  1 });
+    assert.dom('.delete-button').doesNotExist();
+  });
+
+  test('it calls the onDelete hook when deleting', async function(assert) {
+    assert.expect(2);
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
+    this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnDelete', () => {
+      assert.ok(true);
+    });
+    await render(hbs`
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @onDelete={{this.mockOnDelete}}
+      />
+    `);
+    assert.dom('.delete-button').exists({ count:  1 });
+    await click('.delete-button');
   });
 });

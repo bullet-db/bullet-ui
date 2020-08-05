@@ -8,44 +8,38 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
-
 module('Integration | Component | simple alert', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders a message in block form', async function(assert) {
-    await render(hbs`{{simple-alert}}`);
+    await render(hbs`<SimpleAlert/>`);
     assert.dom(this.element).hasText('');
-
-    await render(hbs`
-      {{#simple-alert}}
-        template block text
-      {{/simple-alert}}
-    `);
+    await render(hbs`<SimpleAlert>template block text</SimpleAlert>`);
     assert.dom(this.element).hasText('template block text');
   });
 
   test('it shows a dismiss button', async function(assert) {
-    await render(hbs`{{simple-alert}}`);
-    assert.dom(this.element.querySelector('.alert > button i')).hasClass('fa-close');
+    await render(hbs`<SimpleAlert/>`);
+    assert.dom('.alert > button i').hasClass('fa-close');
   });
 
   test('it maps an empty alert type to the proper bootstrap css class', async function(assert) {
-    await render(hbs`{{simple-alert}}`);
-    assert.equal(this.element.querySelector('.alert').getAttribute('class'), 'alert  alert-dismissible');
+    await render(hbs`<SimpleAlert/>`);
+    assert.dom('.alert').hasClass('alert-dismissible');
   });
 
   test('it maps an warning alert type to the proper bootstrap css class', async function(assert) {
-    await render(hbs`{{simple-alert type='warning'}}`);
-    assert.ok(this.element.querySelector('.alert').getAttribute('class').indexOf('alert-warning') >= 0);
+    await render(hbs`<SimpleAlert @type="warning"/>`);
+    assert.dom('.alert').hasClass('alert-warning');
   });
 
   test('it maps an error alert type to the proper bootstrap css class', async function(assert) {
-    await render(hbs`{{simple-alert type='error'}}`);
-    assert.ok(this.element.querySelector('.alert').getAttribute('class').indexOf('alert-danger') >= 0);
+    await render(hbs`<SimpleAlert @type="error"/>`);
+    assert.dom('.alert').hasClass('alert-danger');
   });
 
   test('it maps a success alert type to the proper bootstrap css class', async function(assert) {
-    await render(hbs`{{simple-alert type='success'}}`);
-    assert.ok(this.element.querySelector('.alert').getAttribute('class').indexOf('alert-success') >= 0);
+    await render(hbs`<SimpleAlert @type="success"/>`);
+    assert.dom('.alert').hasClass('alert-success');
   });
 });

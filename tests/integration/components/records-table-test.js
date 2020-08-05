@@ -56,18 +56,18 @@ module('Integration | Component | records table', function(hooks) {
     this.set('mockTimeSeriesMode', false);
     await render(hbs`<RecordsTable @columnNames={{this.columns}} @rows={{this.rows}}
                                    @timeSeriesMode={{this.mockTimeSeriesMode}}/>`);
-    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'foo');
+    assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
     // Does not update
     this.set('columns', A(['bar']));
-    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'foo');
+    assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
     //  Now it updates
     this.set('mockTimeSeriesMode', true);
-    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'bar');
+    assert.dom(this.element.querySelector('.lt-head')).hasText('bar');
     // Does not update
     this.set('columns', A(['foo']));
-    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'bar');
+    assert.dom(this.element.querySelector('.lt-head')).hasText('bar');
     //  Now it updates
     this.set('mockTimeSeriesMode', false);
-    assert.equal(this.element.querySelector('.lt-head').textContent.replace(/\s/g, ''), 'foo');
+    assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
   });
 });

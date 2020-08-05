@@ -18,7 +18,8 @@ module('Integration | Component | results table', function(hooks) {
     this.set('mockResults', A([
       EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
-    await render(hbs`{{results-table results=mockResults}}`);
+    this.set('mockResultClick', () => { });
+    await render(hbs`<ResultsTable @results={{this.mockResults}} @resultClick={{this.mockResultClick}}/>`);
     assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[0]).hasText('Date');
     assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[1]).hasText('# Windows');
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).hasText('31 Dec 12:00 AM');
@@ -26,31 +27,31 @@ module('Integration | Component | results table', function(hooks) {
   });
 
   test('it sorts by the number of windows column on click', async function(assert) {
-    assert.expect(2);
+    assert.expect(3);
     this.set('mockResults', A([
       EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) }),
       EmberObject.create({ created: new Date(2015, 1, 1), windows: A() })
     ]));
-    await render(hbs`{{results-table results=mockResults}}`);
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
+    this.set('mockResultClick', () => { });
+    await render(hbs`<ResultsTable @results={{this.mockResults}} @resultClick={{this.mockResultClick}}/>`);
+    assert.dom('.lt-head .lt-column.is-sortable').exists({ count:  2 });
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
-    let text = this.element.querySelector('.lt-body').textContent;
-    let spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, '01Feb12:00AM031Dec12:00AM3');
+    assert.dom(this.element.querySelectorAll('.lt-row')[0]).hasText('01 Feb 12:00 AM 0');
+    assert.dom(this.element.querySelectorAll('.lt-row')[1]).hasText('31 Dec 12:00 AM 3');
   });
 
   test('it sorts by the date column on click', async function(assert) {
-    assert.expect(2);
+    assert.expect(3);
     this.set('mockResults', A([
       EmberObject.create({ created: new Date(2015, 1, 1), windows: A() }),
       EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
-    await render(hbs`{{results-table results=mockResults}}`);
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
+    this.set('mockResultClick', () => { });
+    await render(hbs`<ResultsTable @results={{this.mockResults}} @resultClick={{this.mockResultClick}}/>`);
+    assert.dom('.lt-head .lt-column.is-sortable').exists({ count: 2 });
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
-    let text = this.element.querySelector('.lt-body').textContent;
-    let spaceLess = text.replace(/\s/g, '');
-    assert.equal(spaceLess, '31Dec12:00AM301Feb12:00AM0');
+    assert.dom(this.element.querySelectorAll('.lt-row')[0]).hasText('31 Dec 12:00 AM 3');
+    assert.dom(this.element.querySelectorAll('.lt-row')[1]).hasText('01 Feb 12:00 AM 0');
   });
 
   test('it sends the resultClick action on click', async function(assert) {
@@ -62,8 +63,8 @@ module('Integration | Component | results table', function(hooks) {
       EmberObject.create({ created: new Date(2015, 1, 1), windows: A() }),
       EmberObject.create({ created: new Date(2014, 11, 31), windows: A([{ }, { }, { }]) })
     ]));
-    await render(hbs`{{results-table results=mockResults resultClick=(action mockResultClick)}}`);
-    assert.equal(this.element.querySelectorAll('.lt-head .lt-column.is-sortable').length, 2);
+    await render(hbs`<ResultsTable @results={{this.mockResults}} @resultClick={{this.mockResultClick}}/>`);
+    assert.dom('.lt-head .lt-column.is-sortable').exists({ count: 2 });
     await click(this.element.querySelectorAll('.lt-body .lt-row .lt-cell .result-date-entry')[1]);
   });
 });

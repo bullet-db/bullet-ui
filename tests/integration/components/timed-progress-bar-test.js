@@ -12,32 +12,19 @@ module('Integration | Component | timed progress bar', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders', async function(assert) {
-    await render(hbs`{{timed-progress-bar}}`);
+    await render(hbs`<TimedProgressBar/>`);
     assert.dom(this.element).hasText('100%');
-
-    await render(hbs`
-      {{#timed-progress-bar}}
-        template block text
-      {{/timed-progress-bar}}
-    `);
+    await render(hbs`<TimedProgressBar>template block text</TimedProgressBar>`);
     assert.ok(this.element.textContent.trim().match('100%'));
   });
 
   test('it can be made active', async function(assert) {
-    await render(hbs`{{timed-progress-bar active=true duration=100 updateInterval=100}}`);
+    await render(hbs`<TimedProgressBar @active={{true}} @duration={{100}} @updateInterval={{100}}/>`);
     assert.dom(this.element).hasText('100%');
   });
 
-  test('it calls the finished action', async function(assert) {
-    assert.expect(1);
-    this.set('finishedAction', () => {
-      assert.ok(true, 'finished was called');
-    });
-    await render(hbs`{{timed-progress-bar active=true duration=100 finished=(action finishedAction)}}`);
-  });
-
   test('it can skip displaying a percentage', async function(assert) {
-    await render(hbs`{{timed-progress-bar useStep=false}}`);
+    await render(hbs`<TimedProgressBar @useStep={{false}}/>`);
     assert.dom(this.element).hasText('');
   });
 });

@@ -11,7 +11,6 @@ import { cancel, later } from '@ember/runloop';
 import argsGet from 'bullet-ui/utils/args-get';
 
 export default class TimedProgressBarComponent extends Component {
-  @tracked finished;
   @tracked startTime;
   @tracked endTime;
   @tracked runTime;

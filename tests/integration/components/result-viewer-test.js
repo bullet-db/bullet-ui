@@ -353,7 +353,6 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Aggregating across your windows...');
     assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
-    await settled();
     assert.dom('.records-title .records-header').hasText('3 records in this view');
   });
 });

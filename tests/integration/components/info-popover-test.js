@@ -17,11 +17,7 @@ module('Integration | Component | info popover', function(hooks) {
     assert.dom('.info-popover-link').hasClass('fa-info-circle');
     assert.dom(this.element).hasText('');
     assertTooltipNotRendered(assert);
-    await render(hbs`
-      <InfoPopover>
-        template block text
-      </InfoPopover>
-    `);
+    await render(hbs`<InfoPopover>template block text</InfoPopover>`);
     assert.dom('.info-popover-link').hasClass('fa-info-circle');
     assertTooltipNotRendered(assert);
     await click('a');
