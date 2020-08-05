@@ -30,7 +30,6 @@ export default class ValidatedInputComponent extends Component {
       let errors = changeset.get(`error.${path}`);
       this.isInvalid = !isEmpty(errors);
       this.errors = errors;
-      console.log(errors);
     });
   }
 }
