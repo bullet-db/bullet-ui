@@ -6,87 +6,44 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, click, fillIn } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
+import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 
 module('Integration | Component | validated input', function(hooks) {
   setupRenderingTest(hooks);
 
-  function mockModel(isValid, isValidating, isDirty) {
-    return EmberObject.create({
-      bar: 15,
-      validations: {
-        isValid: isValid,
-        isInvalid: !isValid,
-        attrs: {
-          bar: {
-            isValid: isValid,
-            isInvalid: !isValid,
-            isValidating: isValidating,
-            isDirty: isDirty,
-            message: null
-          }
-        }
-      }
-    });
+  function mockChangeset(fields = [{ name: 'bar', value: 15 }], shouldError = () => false,
+                         error = { bar: { validation: ['Bar bad'] } }) {
+    return new MockChangeset(fields, shouldError, error);
   }
 
-  test('it does not block render', async function(assert) {
-    await render(hbs`{{validated-input}}`);
-
-    assert.dom(this.element).hasText('');
+  test('it renders a labeled-input component as input-field and shows no error if valid', async function(assert) {
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
     await render(hbs`
-      {{#validated-input}}
-        template block text
-      {{/validated-input}}
+      <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+      />
     `);
-
-    assert.dom(this.element).hasText('');
+    assert.dom('label').hasText('label');
+    assert.dom('input').hasValue('15');
+    await fillIn('input', 30);
+    assert.dom('.error-tooltip-link').doesNotExist();
   });
 
-  test('it renders a labeled-input component as input-field', async function(assert) {
-    let model = mockModel(true, false, false);
-    this.set('mockModel', model);
+  test('it shows a validation error tooltip if there are errors', async function(assert) {
+    let changeset = mockChangeset(undefined, () => true, undefined);
+    this.set('mockChangeset', changeset);
     await render(hbs`
-      {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
+      <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+      />
     `);
-    assert.equal(this.element.querySelector('label').innerHTML, 'label');
-    assert.equal(this.element.querySelector('input').value, '15');
-  });
-
-  test('it shows a validation error tooltip if there are errors and the field is dirty', async function(assert) {
-    let model = mockModel(false, false, true);
-    this.set('mockModel', model);
-    await render(hbs`
-      {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
-    `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
-  });
-
-  test('it does not show a error tooltip if there are errors and but the field is not dirty', async function(assert) {
-    let model = mockModel(false, false, false);
-    this.set('mockModel', model);
-    await render(hbs`
-      {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
-    `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-  });
-
-  test('it does not show a error tooltip if the field is still validating', async function(assert) {
-    let model = mockModel(false, true, false);
-    this.set('mockModel', model);
-    await render(hbs`
-      {{validated-input model=mockModel valuePath='bar' fieldName='label' fieldValue='test'}}
-    `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 0);
-  });
-
-  test('it does not show a error tooltip if there are errors but the field is forced dirty even if it is not dirty', async function(assert) {
-    let model = mockModel(false, false, false);
-    this.set('mockModel', model);
-    await render(hbs`
-      {{validated-input model=mockModel forceDirty=true valuePath='bar' fieldName='label' fieldValue='test'}}
-    `);
-    assert.equal(this.element.querySelectorAll('.error-tooltip-link').length, 1);
+    await fillIn('input', 30);
+    assert.dom('.error-tooltip-link').exists({ count: 1 });
+    await click('.error-tooltip-link');
+    assertTooltipRendered(assert);
+    assert.dom('.ember-tooltip p').hasText('Bar bad');
+    assert.deepEqual(changeset.modifications, [{ bar: '30' }]);
   });
 });

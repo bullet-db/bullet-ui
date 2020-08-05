@@ -12,13 +12,9 @@ module('Integration | Component | window metadata', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it does not block render', async function(assert) {
-    await render(hbs`{{window-metadata}}`);
+    await render(hbs`<WindowMetadata/>`);
     assert.dom(this.element).hasText('');
-    await render(hbs`
-      {{#window-metadata}}
-        template block text
-      {{/window-metadata}}
-    `);
+    await render(hbs`<WindowMetadata>template block text</WindowMetadata>`);
     assert.dom(this.element).hasText('');
   });
 
@@ -26,7 +22,7 @@ module('Integration | Component | window metadata', function(hooks) {
     assert.expect(3);
 
     this.set('mockMetadata', 'custom metadata');
-    await render(hbs`{{window-metadata metadata=mockMetadata}}`);
+    await render(hbs`<WindowMetadata @metadata={{this.mockMetadata}}/>`);
     assert.dom(this.element.querySelector('.window-metadata')).hasNoClass('is-expanded');
     await click('.expand-bar');
     assert.dom(this.element.querySelector('.window-metadata')).hasClass('is-expanded');

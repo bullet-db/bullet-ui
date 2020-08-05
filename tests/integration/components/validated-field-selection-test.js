@@ -9,6 +9,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, click, fillIn } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { selectChoose } from 'ember-power-select/test-support/helpers'
+import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
 import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 
 module('Integration | Component | validated field selection', function(hooks) {
@@ -24,7 +25,7 @@ module('Integration | Component | validated field selection', function(hooks) {
 
   function mockChangeset(fields = [{ name: 'field', value: 'foo' }, { name: 'name', value: null }],
                          shouldError = () => false,
-                         error = { field: 'Field bad', name: 'Name bad' }) {
+                         error = { field: { validation: ['Field bad'] }, name: { validation:  ['Name bad'] } }) {
     return new MockChangeset(fields, shouldError, error);
   }
 
@@ -61,7 +62,13 @@ module('Integration | Component | validated field selection', function(hooks) {
     await selectChoose('.field-selection', 'bar');
     assert.dom('.field-selection .ember-power-select-trigger').hasText('bar');
     assert.dom('.error-tooltip-link').exists({ count: 1 });
+    await click('.error-tooltip-link');
+    assertTooltipRendered(assert);
+    assert.dom('.ember-tooltip p').hasText('Field bad');
     await fillIn('.field-name input', 'newName');
+    await click('.error-tooltip-link');
+    assertTooltipRendered(assert);
+    assert.dom('.ember-tooltip p').hasText('Name bad');
     assert.deepEqual(changeset.modifications, [{ field: 'bar' }, { name: '' }, { name: 'newName' }]);
   });
 
