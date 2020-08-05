@@ -133,6 +133,7 @@ export default class ResultViewerComponent extends Component {
     // Reset the cache if we don't have autoupdate on in timeSeriesMode to avoid confusion and pull the latest data
     if (timeSeriesMode && !this.autoUpdate) {
       this.cache.reset();
+      this.getTimeSeriesRecords();
     }
     this.timeSeriesMode = timeSeriesMode;
     this.selectedWindow = timeSeriesMode || this.autoUpdate ? null : this.args.result.get('windows.lastObject');

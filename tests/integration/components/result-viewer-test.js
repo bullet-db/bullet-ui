@@ -24,9 +24,7 @@ module('Integration | Component | result viewer', function(hooks) {
 
   function makeResult(errorWindow, isRaw, hasData, windows) {
     windows.forEach((window, i) => window.index = i);
-    return EmberObject.create({
-      hasError: !isNone(errorWindow), errorWindow, isRaw, hasData, windows: A(windows)
-    });
+    return EmberObject.create({ errorWindow, hasError: !isNone(errorWindow), isRaw, hasData, windows: A(windows) });
   }
 
   function makeWindow(sequence, meta = { }, records = [{ }]) {
@@ -90,7 +88,7 @@ module('Integration | Component | result viewer', function(hooks) {
     await render(hbs`<ResultViewer @query={{this.mockQuery}} @result={{this.mockResult}}/>`);
     assert.dom('.time-series-wrapper').hasNoClass('no-visibility');
     assert.dom('.time-series-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
-    assert.ok('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden');
+    assert.dom('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden');
 
     // Not Raw and Time Based
     this.set('mockQuery', makeQuery(true));
@@ -126,14 +124,14 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockQuery', makeQuery(false));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
     await render(hbs`<ResultViewer @query={{this.mockQuery}} @result={{this.mockResult}}/>`);
-    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled');
+    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
 
     // Timeseries mode -> aggregate mode
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, false, true, [{ records: [] }]));
     await render(hbs`<ResultViewer @query={{this.mockQuery}} @result={{this.mockResult}}/>`);
     await click('.time-series-wrapper .mode-toggle .off-view');
-    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled');
+    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
   });
 
   test('it only shows window timing progress if it is a time window', async function(assert) {
@@ -147,7 +145,7 @@ module('Integration | Component | result viewer', function(hooks) {
     this.set('mockQuery', makeQuery(true));
     this.set('mockResult', makeResult(null, true, true, [{ records: [] }]));
     await render(hbs`<ResultViewer @query={{this.mockQuery}} @result={{this.mockResult}}/>`);
-    assert.equal('.window-selector .ember-power-select-trigger').exists({ count: 1 });
+    assert.dom('.window-selector .ember-power-select-trigger').exists({ count: 1 });
   });
 
   test('it only shows query timing progress if there is no error', async function(assert) {
@@ -199,7 +197,7 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden');
     assert.dom('.time-series-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Aggregating across your windows...');
-    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled');
+    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
   });
 
   test('it lets you choose a window', async function(assert) {
@@ -233,7 +231,7 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden');
     assert.dom('.time-series-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Aggregating across your windows...');
-    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled');
+    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
     await click('.view-controls .raw-view');
     assert.dom('.records-title .records-header').hasText('2 records in this view');
 
@@ -259,7 +257,7 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden');
     assert.dom('.time-series-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Aggregating across your windows...');
-    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled');
+    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
     await settled();
     assert.dom('.records-title .records-header').hasText('2 records in this view');
 
@@ -282,8 +280,8 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
     assert.dom('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden');
     // Starts on
-    assert.dom('.auto-update-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
-    assert.dom('.auto-update-wrapper .mode-toggle .off-view').hasAttribute('hidden');
+    assert.dom('.auto-update-wrapper .mode-toggle .on-view').hasAttribute('hidden');
+    assert.dom('.auto-update-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Switch between 2 windows...');
     assert.dom('.window-selector .ember-power-select-trigger').doesNotHaveAria('disabled');
 
@@ -295,8 +293,8 @@ module('Integration | Component | result viewer', function(hooks) {
 
     // Turn off
     await click('.time-series-wrapper .mode-toggle .off-view');
-    assert.dom('.auto-update-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
-    assert.dom('.auto-update-wrapper .mode-toggle .off-view').hasAttribute('hidden');
+    assert.dom('.time-series-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
+    assert.dom('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Switch between 2 windows...');
     assert.dom('.window-selector .ember-power-select-trigger').doesNotHaveAria('disabled');
   });
@@ -310,8 +308,8 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
     assert.dom('.time-series-wrapper .mode-toggle .off-view').hasAttribute('hidden');
     // Starts on
-    assert.dom('.auto-update-wrapper .mode-toggle .on-view').doesNotHaveAttribute('hidden');
-    assert.dom('.auto-update-wrapper .mode-toggle .off-view').hasAttribute('hidden');
+    assert.dom('.auto-update-wrapper .mode-toggle .on-view').hasAttribute('hidden');
+    assert.dom('.auto-update-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Switch between 2 windows...');
     assert.dom('.window-selector .ember-power-select-trigger').doesNotHaveAria('disabled');
 
@@ -354,7 +352,7 @@ module('Integration | Component | result viewer', function(hooks) {
     assert.dom('.time-series-wrapper .mode-toggle .on-view').hasAttribute('hidden');
     assert.dom('.time-series-wrapper .mode-toggle .off-view').doesNotHaveAttribute('hidden');
     assert.dom('.window-selector .result-window-placeholder').includesText('Aggregating across your windows...');
-    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled');
+    assert.dom('.window-selector .ember-power-select-trigger').hasAria('disabled', 'true');
     await settled();
     assert.dom('.records-title .records-header').hasText('3 records in this view');
   });
