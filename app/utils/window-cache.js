@@ -15,7 +15,7 @@ export default class WindowCache {
   }
 
   getAllAvailableRecords() {
-    return this.copyCache();
+    return this.cache;
   }
 
   getAllRecordsFrom(windows) {
@@ -47,11 +47,7 @@ export default class WindowCache {
       }
       this.windowsInCache = numberOfWindows;
     }
-    return this.copyCache();
-  }
-
-  copyCache() {
-    return [].concat(this.cache);
+    return this.cache;
   }
 
   reset() {
