@@ -8,13 +8,10 @@ import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import QUERIES from 'bullet-ui/tests/fixtures/queries';
 import { jsonWrap } from 'bullet-ui/tests/helpers/pretender';
-import mockedAPI from 'bullet-ui/tests/helpers/mocked-api';
+import MockedAPI from 'bullet-ui/tests/helpers/mocked-api';
 import sinon from 'sinon';
 import Stomp from '@stomp/stompjs';
-import {
-  basicSetupForAcceptanceTest,
-  setupForMockSettings
-} from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
+import { basicSetupForAcceptanceTest, setupForMockSettings } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { visit, find, findAll } from '@ember/test-helpers';
 import { findIn } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -26,12 +23,12 @@ module('Acceptance | query default query api', function(hooks) {
   setupForMockSettings(hooks, url);
 
   hooks.beforeEach(function() {
-    this.mockedAPI = mockedAPI.create();
+    this.mockedAPI = new MockedAPI();
     this.stub = sinon.stub(Stomp, 'over').returns(this.mockedAPI);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     // Extend regular API with a filter endpoint
     hit = 0;
-    this.mockedAPI.get('server').map(function() {
+    this.mockedAPI.server.map(function() {
       this.get(url, () => {
         hit++;
         return jsonWrap(200, QUERIES.AND_ENUMERATED_COUNT_DISTINCT);
@@ -47,17 +44,19 @@ module('Acceptance | query default query api', function(hooks) {
   test('it creates new queries with two default filters and the count distinct aggregation', async function(assert) {
     assert.expect(10);
     await visit('/queries/new');
+
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
-    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
-      'enumerated_map_column.nested_1');
-    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'not_in');
-    assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, '1,2,3');
-    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
-    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
-    assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
-    assert.dom(
-      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0])
-    ).hasText('simple_column');
+
+    let rules = findAll('.filter-container .builder .rules-list .rule-container');
+    assert.dom(findIn('.rule-filter-container select', rules[0])).hasValue('enumerated_map_column.nested_1');
+    assert.dom(findIn('.rule-operator-container select', rules[0])).hasValue('not_in');
+    assert.dom(findIn('.rule-value-container input', rules[0])).hasValue('1,2,3');
+    assert.dom(findIn('.rule-filter-container select', rules[1])).hasValue('simple_column');
+    assert.dom(findIn('.rule-operator-container select', rules[1])).hasValue('in');
+    assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('foo,bar');
+
+    let field = findAll('.output-container .field-selection-container')[0];
+    assert.dom(findIn('.column-onlyfield .ember-power-select-selected-item', field)).hasText('simple_column');
     assert.dom('.output-container .count-distinct-display-name input').hasValue('');
     assert.dom('.options-container .query-duration input').hasValue('50');
   });

@@ -9,7 +9,7 @@ import { computed, get } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service from '@ember/service';
 import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import Stomp from '@stomp/stompjs';
 
 const ACK_TYPE = 'ACK';
 const COMPLETE_TYPE = 'COMPLETE';

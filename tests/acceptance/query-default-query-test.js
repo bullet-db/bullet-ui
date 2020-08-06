@@ -7,10 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import QUERIES from 'bullet-ui/tests/fixtures/queries';
-import {
-  setupForAcceptanceTest,
-  setupForMockSettings
-} from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
+import { setupForAcceptanceTest, setupForMockSettings } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { visit, find, findAll } from '@ember/test-helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -23,13 +20,14 @@ module('Acceptance | query default query', function(hooks) {
     await visit('/queries/new');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
-    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value,
-      'complex_list_column');
-    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[0]).value, 'is_not_null');
-    assert.equal(findAllIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[0]).length, 0);
-    assert.equal(findIn('.rule-filter-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'simple_column');
-    assert.equal(findIn('.rule-operator-container select', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'in');
-    assert.equal(findIn('.rule-value-container input', findAll('.filter-container .builder .rules-list .rule-container')[1]).value, 'foo,bar');
+
+    let rules = findAll('.filter-container .builder .rules-list .rule-container');
+    assert.dom(findIn('.rule-filter-container select', rules[0])).hasValue('complex_list_column');
+    assert.dom(findIn('.rule-operator-container select', rules[0])).hasValue('is_not_null');
+    assert.equal(findAllIn('.rule-value-container input', rules[0]).length, 0);
+    assert.dom(findIn('.rule-filter-container select', rules[1])).hasValue('simple_column');
+    assert.dom(findIn('.rule-operator-container select', rules[1])).hasValue('in');
+    assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('foo,bar');
     assert.dom('.window-container .window-emit-every input').hasValue('2');
     assert.dom('.window-container .window-size input').hasValue('1');
     assert.dom('.options-container .query-duration input').hasValue('20');

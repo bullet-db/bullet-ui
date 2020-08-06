@@ -68,7 +68,7 @@ module('Acceptance | query summarization', function(hooks) {
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0])
     );
     await fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
@@ -81,7 +81,7 @@ module('Acceptance | query summarization', function(hooks) {
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[2]),
       'bar'
     );
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[2])
     );
 
@@ -119,7 +119,7 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.groups-container .add-group');
     await selectChoose(findIn('.field-selection', findAll('.groups-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0])
     );
 
@@ -141,27 +141,27 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.output-options #grouped-data');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
     await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_s');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'Average');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'Average');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[2]), 'simple_column');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'Sum');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'Sum');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[3]), 'simple_column');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'Minimum');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'Minimum');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[4]), 'simple_column');
 
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'Maximum');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'Maximum');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[5]), 'simple_column');
 
     await click('.submit-button');
@@ -181,7 +181,7 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.groups-container .add-group');
     await selectChoose(findIn('.field-selection', findAll('.groups-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.groups-container .field-selection-container')[0])
     );
 
@@ -191,8 +191,8 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
-    await selectChoose(findAll('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findAll('.output-container .metrics-container .metric-selection')[1], 'Average');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
     await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
@@ -211,7 +211,7 @@ module('Acceptance | query summarization', function(hooks) {
 
     await selectChoose('.output-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.output-container .field-selection-container .field-selection .column-subfield input', 'foo');
-    await await blur(
+    await blur(
       '.output-container .field-selection-container .field-selection .column-subfield input'
     );
 
@@ -279,7 +279,7 @@ module('Acceptance | query summarization', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
     );
 
@@ -300,7 +300,7 @@ module('Acceptance | query summarization', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
     );
 
@@ -326,7 +326,7 @@ module('Acceptance | query summarization', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
     );
 

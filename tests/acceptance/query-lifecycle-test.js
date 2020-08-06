@@ -7,16 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  click,
-  fillIn,
-  triggerEvent,
-  currentURL,
-  find,
-  findAll,
-  blur
-} from '@ember/test-helpers';
+import { visit, click, fillIn, triggerEvent, currentURL, find, findAll, blur } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -53,19 +44,6 @@ module('Acceptance | query lifecycle', function(hooks) {
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
     await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
     assert.dom('.query-description').exists({ count: 2 });
-  });
-
-  test('creating an invalid query and failing to copy it', async function(assert) {
-    assert.expect(2);
-
-    await visit('/queries/new');
-    await click('.output-container .raw-sub-options #select');
-    await click('.output-container .projections-container .add-projection');
-    await visit('queries');
-    assert.dom('.query-description').exists({ count: 1 });
-    await triggerEvent('.queries-table .query-name-entry', 'mouseover');
-    await click('.queries-table .query-name-entry .query-name-actions .copy-icon');
-    assert.dom('.query-description').exists({ count: 1 });
   });
 
   test('creating multiple queries and deleting them', async function(assert) {
@@ -160,10 +138,11 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.output-container .raw-sub-options #select');
     await click('.output-container .projections-container .add-projection');
-    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'simple_column');
-    await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
+    let fields = findAll('.projections-container .field-selection-container');
+    await selectChoose(findIn('.field-selection', fields[0]), 'simple_column');
+    await fillIn(findIn('.field-name input', fields[0]), 'new_name');
     assert.dom('.projections-container .column-onlyfield').exists({ count: 2 });
-    await click(findIn('.delete-button', findAll('.projections-container .field-selection-container')[1]));
+    await click(findIn('.delete-button', fields[1]));
     assert.dom('.projections-container .field-selection-container').exists({ count: 1 });
     // The last one cannot be removed
     assert.dom('.projections-container .field-selection-container .delete-button').doesNotExist();
@@ -190,20 +169,12 @@ module('Acceptance | query lifecycle', function(hooks) {
     await selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
     assert.dom('.projections-container .field-selection .column-mainfield').exists({ count: 1 });
-    await await blur(
-      '.projections-container .field-selection-container .field-selection .column-subfield input'
-    );
-    assert.dom(
-      '.projections-container .column-mainfield .ember-power-select-selected-item'
-    ).hasText('complex_map_column.*');
+    await blur('.projections-container .field-selection-container .field-selection .column-subfield input');
+    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
     assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('');
     await fillIn('.projections-container .field-selection-container .field-selection .column-subfield input', 'foo');
-    await await blur(
-      '.projections-container .field-selection-container .field-selection .column-subfield input'
-    );
-    assert.dom(
-      '.projections-container .column-mainfield .ember-power-select-selected-item'
-    ).hasText('complex_map_column.*');
+    await blur('.projections-container .field-selection-container .field-selection .column-subfield input');
+    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
     assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
   });
 
@@ -217,18 +188,14 @@ module('Acceptance | query lifecycle', function(hooks) {
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await await blur(
-      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0])
-    );
+    await blur(findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]));
     await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
     await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
     await click('.save-button');
     assert.dom('.projections-container .field-selection-container').exists({ count: 2 });
-    assert.dom(
-      '.projections-container .column-mainfield .ember-power-select-selected-item'
-    ).hasText('complex_map_column.*');
+    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
     assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
     assert.dom('.projections-container .field-selection-container .field-name input').hasValue('new_name');
     // This means that save was also successful
@@ -274,9 +241,7 @@ module('Acceptance | query lifecycle', function(hooks) {
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await await blur(
-      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0])
-    );
+    await blur(findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]));
     await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
@@ -295,8 +260,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findAll('.queries-table .query-name-entry .query-description')[1]).hasText('test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom('.filter-container .rule-filter-container select').hasValue('complex_list_column');
-    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]).value, 'new_name');
-    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0])).hasValue('new_name');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
     assert.dom('.options-container .aggregation-size input').hasValue('40');
   });
 
@@ -317,8 +282,8 @@ module('Acceptance | query lifecycle', function(hooks) {
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
-    await selectChoose(findAll('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findAll('.output-container .metrics-container .metric-selection')[1], 'Average');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
     await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
@@ -341,12 +306,12 @@ module('Acceptance | query lifecycle', function(hooks) {
     ).hasText('simple_column');
     assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
     assert.dom(
-      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
+      findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
     ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
     assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
     assert.dom(
-      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
+      findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('Average');
     assert.dom(
       findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
@@ -484,7 +449,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
     );
     await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
@@ -608,74 +573,5 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '');
     assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '');
     assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '');
-  });
-
-  test('creating a valid query and checking if it is indicated as needing attention', async function(assert) {
-    assert.expect(2);
-
-    await visit('/queries/new');
-    await click('.save-button');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').doesNotExist();
-  });
-
-  test('editing a query field and checking if it is indicated as needing attention', async function(assert) {
-    assert.expect(4);
-
-    await visit('/queries/new');
-    await click('.save-button');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').doesNotExist();
-    await click('.queries-table .query-name-entry .query-description');
-    await fillIn('.name-container input', 'test query');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').exists({ count: 1 });
-  });
-
-  test('adding a projection field and checking if it is indicated as needing attention', async function(assert) {
-    assert.expect(4);
-
-    await visit('/queries/new');
-    await click('.save-button');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').doesNotExist();
-    await click('.queries-table .query-name-entry .query-description');
-    await click('.output-container .raw-sub-options #select');
-    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'simple_column');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').exists({ count: 1 });
-  });
-
-  test('adding a group field and checking if it is indicated as needing attention', async function(assert) {
-    assert.expect(4);
-
-    await visit('/queries/new');
-    await click('.save-button');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').doesNotExist();
-    await click('.queries-table .query-name-entry .query-description');
-    await click('.output-options #grouped-data');
-    await click('.output-container .groups-container .add-group');
-    await selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'simple_column');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').exists({ count: 1 });
-  });
-
-  test('creating an invalid query and checking if it is indicated as needing attention', async function(assert) {
-    assert.expect(2);
-
-    await visit('/queries/new');
-    await click('.output-container .raw-sub-options #select');
-    await click('.output-container .projections-container .add-projection');
-    await visit('queries');
-    assert.dom('.query-name-entry').exists({ count: 1 });
-    assert.dom('.query-unsaved').exists({ count: 1 });
   });
 });

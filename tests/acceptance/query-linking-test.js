@@ -93,7 +93,7 @@ module('Acceptance | query linking', function(hooks) {
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0])
     );
     await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
@@ -141,8 +141,8 @@ module('Acceptance | query linking', function(hooks) {
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
-    await selectChoose(findAll('.output-container .metrics-container .metrics-selection')[1], 'Average');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findAll('.output-container .metrics-container .metric-selection')[1], 'Average');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
     await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
@@ -170,12 +170,12 @@ module('Acceptance | query linking', function(hooks) {
     ).hasText('simple_column');
     assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
     assert.dom(
-      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
+      findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
     ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
     assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
     assert.dom(
-      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
+      findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('Average');
     assert.dom(
       findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
@@ -311,7 +311,7 @@ module('Acceptance | query linking', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
     );
     await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');

@@ -14,20 +14,16 @@ export default class ResultRoute extends Route {
   @service store;
 
   async model(params) {
-    try {
-      let result = await this.store.findRecord('result', params.result_id);
-      let query = await result.query;
-      // Fetch all the things
-      await query.filter;
-      await query.projections;
-      await query.window;
-      let aggregation = await query.aggregation;
-      await aggregation.groups;
-      await aggregation.metrics;
-      return { result, query };
-    } catch(error) {
-      this.transitionTo('missing', 'not-found');
-    }
+    let result = await this.store.findRecord('result', params.result_id);
+    let query = await result.query;
+    // Fetch all the things
+    await query.filter;
+    await query.projections;
+    await query.window;
+    let aggregation = await query.aggregation;
+    await aggregation.groups;
+    await aggregation.metrics;
+    return { result, query };
   }
 
   lateSubmitQuery(query) {
@@ -80,5 +76,10 @@ export default class ResultRoute extends Route {
       controller.hasPendingSubmit = false;
     }
     return true;
+  }
+
+  @action
+  error() {
+    this.replaceWith('missing', 'not-found');
   }
 }

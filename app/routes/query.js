@@ -150,4 +150,9 @@ export default class QueryRoute extends Route {
       return true;
     }
   }
+
+  @action
+  error(error, transition) {
+    this.replaceWith('missing', 'not-found');
+  }
 }

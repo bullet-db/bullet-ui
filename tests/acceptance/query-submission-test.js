@@ -7,23 +7,14 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  click,
-  fillIn,
-  triggerEvent,
-  currentRouteName,
-  find,
-  findAll,
-  blur
-} from '@ember/test-helpers';
+import { visit, click, fillIn, triggerEvent, currentRouteName, find, findAll, blur } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
-module('Acceptance | query firing', function(hooks) {
+module('Acceptance | query submission', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
 
-  test('query firing and redirecting to result', async function(assert) {
+  test('query submission and redirecting to result', async function(assert) {
     assert.expect(1);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
@@ -32,7 +23,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.equal(currentRouteName(), 'result');
   });
 
-  test('query firing and result accessible through historical queries', async function(assert) {
+  test('query submission and result accessible through historical queries', async function(assert) {
     let data;
 
     assert.expect(6);
@@ -52,7 +43,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.dom('pre').hasText(data);
   });
 
-  test('query firing and redirecting to error', async function(assert) {
+  test('query submission and redirecting to error', async function(assert) {
     assert.expect(1);
     this.mockedAPI.fail(COLUMNS.BASIC);
     await visit('queries/new');
@@ -83,9 +74,7 @@ module('Acceptance | query firing', function(hooks) {
     assert.dom('.filter-container .rule-filter-container select').hasValue('simple_column');
     assert.dom('.filter-container .rule-operator-container select').hasValue('equal');
     assert.dom('.filter-container .rule-value-container input').hasValue('foo,bar');
-    assert.dom(
-      '.projections-container .column-onlyfield .ember-power-select-selected-item'
-    ).hasText('simple_column');
+    assert.dom('.projections-container .column-onlyfield .ember-power-select-selected-item').hasText('simple_column');
     // Test that the projection name was autofilled
     assert.dom('.projections-container .field-name input').hasValue('simple_column');
     // Size field shown
@@ -104,18 +93,14 @@ module('Acceptance | query firing', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.projections-container .field-selection-container .field-selection .column-subfield input', 'foo');
-    await await blur(
-      '.projections-container .field-selection-container .field-selection .column-subfield input'
-    );
+    await blur('.projections-container .field-selection-container .field-selection .column-subfield input');
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry');
     assert.dom('.filter-container .rule-filter-container select').hasValue('simple_column');
     assert.dom('.filter-container .rule-operator-container select').hasValue('equal');
     assert.dom('.filter-container .rule-value-container input').hasValue('foo,bar');
-    assert.dom(
-      '.projections-container .column-mainfield .ember-power-select-selected-item'
-    ).hasText('complex_map_column.*');
+    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
     assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
     // Test that the projection name was autofilled
     assert.dom('.projections-container .field-name input').hasValue('complex_map_column.foo');
@@ -200,8 +185,8 @@ module('Acceptance | query firing', function(hooks) {
 
     await click('.output-container .metrics-container .add-metric');
     await click('.output-container .metrics-container .add-metric');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
-    await selectChoose(findIn('.metrics-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'Average');
     await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
     await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
 
@@ -220,13 +205,13 @@ module('Acceptance | query firing', function(hooks) {
 
     // No field and name for count
     assert.dom(
-      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
+      findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
     ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
     assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
 
     assert.dom(
-      findIn('.metrics-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
+      findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('Average');
     assert.dom(
       findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
@@ -277,7 +262,7 @@ module('Acceptance | query firing', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await await blur(
+    await blur(
       findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
     );
     await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
