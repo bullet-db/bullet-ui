@@ -199,7 +199,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
     assert.dom('.projections-container .field-selection-container .field-name input').hasValue('new_name');
     // This means that save was also successful
-    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
     await click('.output-options #count-distinct');
     await click('.output-options #raw');
     await click('.output-container .raw-sub-options #select');
@@ -300,23 +300,23 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(
       findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0])
     ).hasText('complex_map_column');
-    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
+    assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0])).hasValue('complex_map_column');
     assert.dom(
       findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1])
     ).hasText('simple_column');
-    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
+    assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1])).hasValue('bar');
     assert.dom(
       findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
     ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
-    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
+    assert.dom(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0])).hasValue('');
     assert.dom(
       findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('Average');
     assert.dom(
       findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('simple_column');
-    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
+    assert.dom(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1])).hasValue('avg_bar');
   });
 
   test('distribution output selects quantiles and number of points by default', async function(assert) {
@@ -325,12 +325,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.output-options #distribution');
     assert.dom(find('.output-options #distribution').parentElement).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-type-options #quantile').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #number-points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #quantile').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #number-points').parentElement).hasClass('checked');
     assert.dom('.output-container .fields-selection-container .add-field').doesNotExist();
     assert.dom('.fields-selection-container .field-selection-container').exists({ count: 1 });
     assert.dom('.fields-selection-container .field-selection-container .delete-button').doesNotExist();
@@ -357,12 +353,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findAll('.queries-table .query-name-entry .query-description')[1]).hasText('test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom(find('.output-options #distribution').parentElement).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-type-options #cumulative').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #number-points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #cumulative').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #number-points').parentElement).hasClass('checked');
     assert.dom(
       '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
     ).hasText('simple_column');
@@ -392,18 +384,14 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findAll('.queries-table .query-name-entry .query-description')[1]).hasText('test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom(find('.output-options #distribution').parentElement).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-type-options #frequency').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #generate-points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #frequency').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #generate-points').parentElement).hasClass('checked');
     assert.dom(
       '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
     ).hasText('simple_column');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '1.5');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '2.5');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '0.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[0]).hasValue('1.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('2.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[2]).hasValue('0.5');
   });
 
   test('copying a distribution query with points works', async function(assert) {
@@ -426,12 +414,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findAll('.queries-table .query-name-entry .query-description')[1]).hasText('test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom(find('.output-options #distribution').parentElement).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-type-options #quantile').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #quantile').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #points').parentElement).hasClass('checked');
     assert.dom(
       '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
     ).hasText('simple_column');
@@ -449,11 +433,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
     await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await blur(
-      findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1])
-    );
+    await blur(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]));
     await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
-
     await fillIn('.output-container .top-k-size input', '15');
     await fillIn('.output-container .top-k-min-count input', '1500');
     await fillIn('.output-container .top-k-display-name input', 'cnt');
@@ -474,8 +455,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(
       findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
     ).hasText('complex_map_column.*');
-    assert.equal(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
-    assert.equal(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
+    assert.dom(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1])).hasValue('foo');
+    assert.dom(findIn('.field-name input', findAll('.output-container .field-selection-container')[1])).hasValue('new_name');
     assert.dom('.output-container .top-k-size input').hasValue('15');
     assert.dom('.output-container .top-k-min-count input').hasValue('1500');
     assert.dom('.output-container .top-k-display-name input').hasValue('cnt');
@@ -491,24 +472,16 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .distribution-point-options #number-points');
     await fillIn('.output-container .distribution-type-number-of-points input', '15');
     await click('.distribution-type-options #frequency');
-    assert.dom(
-      find('.output-container .distribution-type-options #frequency').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #number-points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #frequency').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #number-points').parentElement).hasClass('checked');
     assert.dom('.output-container .distribution-type-number-of-points input').hasValue('15');
 
     await click('.distribution-type-options #frequency');
     await click('.output-container .distribution-point-options #points');
     await fillIn('.output-container .distribution-type-points input', '1,4,51,5');
     await click('.distribution-type-options #cumulative');
-    assert.dom(
-      find('.output-container .distribution-type-options #cumulative').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #cumulative').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #points').parentElement).hasClass('checked');
     assert.dom('.output-container .distribution-type-points input').hasValue('1,4,51,5');
 
     await click('.distribution-type-options #frequency');
@@ -517,15 +490,11 @@ module('Acceptance | query lifecycle', function(hooks) {
     await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '2.5');
     await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.5');
     await click('.distribution-type-options #cumulative');
-    assert.dom(
-      find('.output-container .distribution-type-options #cumulative').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #generate-points').parentElement
-    ).hasClass('checked');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '1.5');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '2.5');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '0.5');
+    assert.dom(find('.output-container .distribution-type-options #cumulative').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #generate-points').parentElement).hasClass('checked');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[0]).hasValue('1.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('2.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[2]).hasValue('0.5');
   });
 
   test('quantile query point value fields are not sticky when switching to another distribution', async function(assert) {
@@ -538,24 +507,16 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .distribution-point-options #number-points');
     await fillIn('.output-container .distribution-type-number-of-points input', '15');
     await click('.distribution-type-options #frequency');
-    assert.dom(
-      find('.output-container .distribution-type-options #frequency').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #number-points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #frequency').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #number-points').parentElement).hasClass('checked');
     assert.dom('.output-container .distribution-type-number-of-points input').hasValue('11');
 
     await click('.distribution-type-options #quantile');
     await click('.output-container .distribution-point-options #points');
     await fillIn('.output-container .distribution-type-points input', '0,0.5,0.4');
     await click('.distribution-type-options #cumulative');
-    assert.dom(
-      find('.output-container .distribution-type-options #cumulative').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #points').parentElement
-    ).hasClass('checked');
+    assert.dom(find('.output-container .distribution-type-options #cumulative').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #points').parentElement).hasClass('checked');
     assert.dom('.output-container .distribution-type-points input').hasValue('');
 
     await click('.distribution-type-options #quantile');
@@ -564,14 +525,10 @@ module('Acceptance | query lifecycle', function(hooks) {
     await fillIn(findAll('.output-container .distribution-type-point-range input')[1], '0.75');
     await fillIn(findAll('.output-container .distribution-type-point-range input')[2], '0.5');
     await click('.distribution-type-options #cumulative');
-    assert.dom(
-      find('.output-container .distribution-type-options #cumulative').parentElement
-    ).hasClass('checked');
-    assert.dom(
-      find('.output-container .distribution-point-options #generate-points').parentElement
-    ).hasClass('checked');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '');
+    assert.dom(find('.output-container .distribution-type-options #cumulative').parentElement).hasClass('checked');
+    assert.dom(find('.output-container .distribution-point-options #generate-points').parentElement).hasClass('checked');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[0]).hasValue('');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[2]).hasValue('');
   });
 });
