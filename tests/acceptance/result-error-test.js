@@ -7,20 +7,13 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  currentURL,
-  click,
-  currentRouteName,
-  findAll
-} from '@ember/test-helpers';
+import { visit, currentURL, click, currentRouteName, findAll } from '@ember/test-helpers';
 
 module('Acceptance | result error', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
 
   test('visiting a non-existant result', async function(assert) {
     await visit('/result/foo');
-
     assert.equal(currentURL(), '/not-found');
   });
 
@@ -34,7 +27,7 @@ module('Acceptance | result error', function(hooks) {
     assert.dom('.records-container .killed').exists({ count: 1 });
   });
 
-  test('it handles a fail response from the client by still display the result', async function(assert) {
+  test('it handles a fail response from the client by still displaying the result', async function(assert) {
     assert.expect(2);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     this.mockedAPI.sendFailMessageAt(0);

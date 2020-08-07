@@ -8,18 +8,10 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  click,
-  fillIn,
-  currentRouteName,
-  currentURL,
-  find,
-  findAll,
-  triggerEvent
-} from '@ember/test-helpers';
+import { visit, click, fillIn, currentRouteName, currentURL, find, findAll, triggerEvent, settled } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import { findContains } from 'bullet-ui/tests/helpers/find-helpers';
+import { assertTooltipNotRendered, assertTooltipVisible, assertTooltipNotVisible } from 'ember-tooltips/test-support/dom';
+import { findContains, findIn } from 'bullet-ui/tests/helpers/find-helpers';
 
 module('Acceptance | result lifecycle', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -70,20 +62,21 @@ module('Acceptance | result lifecycle', function(hooks) {
   });
 
   test('it lets you expand result entries in a popover', async function(assert) {
-    assert.expect(4);
+    assert.expect(5);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
     await visit('/queries/new');
     await click('.submit-button');
     await click('.table-view');
     assert.dom('.lt-body .lt-row .lt-cell').exists({ count: 3 });
-    await click(findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'test'));
-    assert.dom('.record-entry-popover').exists({ count: 1 });
-    assert.dom('.record-entry-popover .record-popover-body pre').hasText('test');
-    await click('.record-entry-popover .close-button');
-    later(() => {
-      assert.dom('.record-entry-popover').doesNotExist();
-    }, 500);
+    // Need to specify this because table-view tooltip is rendered
+    assertTooltipNotRendered(assert, { selector: '.ember-popover' });
+    let cell = findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'test');
+    await click(cell);
+    assertTooltipVisible(assert, { selector: '.ember-popover' });
+    assert.dom(findIn('.record-entry-popover-wrapper .record-entry-popover-body pre', cell.parentNode)).hasText('test');
+    await click(findIn('.record-entry-popover-wrapper .close-button', cell.parentNode));
+    assertTooltipNotVisible(assert, { selector: '.ember-popover' });
   });
 
   test('it lets swap between a row, tabular and pivot chart views when it is a raw query', async function(assert) {
@@ -147,7 +140,7 @@ module('Acceptance | result lifecycle', function(hooks) {
   });
 
   test('it saves and restores pivot table options', async function(assert) {
-    assert.expect(7);
+    assert.expect(9);
 
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
@@ -168,10 +161,14 @@ module('Acceptance | result lifecycle', function(hooks) {
     await triggerEvent('.pivot-table-container select.pvtRenderer', 'change');
     find('.pivot-table-container select.pvtAggregator').value = 'Sum';
     await triggerEvent('.pivot-table-container select.pvtAggregator', 'change');
+    await settled();
+    await settled();
     await visit('queries');
     assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
+    assertTooltipNotRendered(assert);
     await click('.queries-table .query-results-entry');
-    await click('.query-results-entry-popover .results-table .result-date-entry');
+    assertTooltipVisible(assert);
+    await click('.query-results-entry-popover-body .results-table .result-date-entry');
     await click('.chart-view');
     await click('.records-charter .pivot-control');
     assert.dom('.pvtUi select.pvtRenderer').hasValue('Bar Chart');

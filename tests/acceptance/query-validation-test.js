@@ -30,7 +30,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.submit-button');
     assert.dom('.validation-container .alert-message > span').hasText('OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
-    assert.dom('.validation-container .simple-alert .alert-message .error-list li').hasText('Maximum results must be a positive integer');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list li').hasText(
+      'Maximum results must be a positive integer'
+    );
     assert.equal(findSiblings(find('.aggregation-size'), 'error-tooltip-link').length, 1);
   });
 
@@ -41,7 +43,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.submit-button');
     assert.dom('.validation-container .alert-message > span').hasText('OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
-    assert.dom('.validation-container .simple-alert .alert-message .error-list li').hasText('Duration must be a positive integer');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list li').hasText(
+      'Duration must be a positive integer'
+    );
     assert.equal(findSiblings(find('.query-duration'), 'error-tooltip-link').length, 1);
   });
 
@@ -75,8 +79,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .alert-message > span').hasText('OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Duration must be a positive integer');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'Duration must be a positive integer'
+    );
     assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
   });
 
@@ -88,16 +93,16 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '');
     await click('.save-button');
-    await this.pauseTest();
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('You must specify the Number of Points you want to generate');
     assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'You must specify the Number of Points you want to generate'
+    );
   });
 
   test('selecting distributions with a non-positive number of points is a validation error', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
 
     await visit('/queries/new');
     await click('.output-options #distribution');
@@ -106,8 +111,10 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('You must specify a positive Number of Points'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'You must specify a positive Number of Points'
+    );
   });
 
   test('selecting distributions with too many points is a validation error', async function(assert) {
@@ -120,8 +127,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('The maintainer has set the maximum number of points you can generate to be 100'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'The maintainer has set the maximum number of points you can generate to be 100'
+    );
   });
 
   test('selecting distributions without a field and no generated points show validation messages', async function(assert) {
@@ -137,13 +145,14 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('Please fix the fields'));
-    assert.ok(text.includes('You must specify the Start, End and Increment for the points you want to generate'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'You must specify the Start, End and Increment for the points you want to generate'
+    );
   });
 
   test('selecting distributions with incorrectly generated points is an error', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
 
     await visit('/queries/new');
     await click('.output-options #distribution');
@@ -155,12 +164,14 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('You must specify Start less than End'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'You must specify Start less than End'
+    );
   });
 
   test('selecting distributions with non positive increment is a validation error', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
 
     await visit('/queries/new');
     await click('.output-options #distribution');
@@ -172,12 +183,14 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('You must specify a positive Increment'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'You must specify a positive Increment'
+    );
   });
 
   test('selecting quantiles with incorrectly generated points is an error', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
 
     await visit('/queries/new');
     await click('.output-options #distribution');
@@ -189,8 +202,10 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('Quantiles requires that you specify a Start and End between 0 and 1'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'Quantiles requires that you specify a Start and End between 0 and 1'
+    );
   });
 
   test('selecting distributions without a field and no points show validation messages', async function(assert) {
@@ -204,13 +219,14 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('Please fix the fields'));
-    assert.ok(text.includes('You must specify a comma separated list of points for this option'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'You must specify a comma separated list of points for this option'
+    );
   });
 
   test('selecting distributions with bad points is a validation error', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
 
     await visit('/queries/new');
     await click('.output-options #distribution');
@@ -220,8 +236,10 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('These are not valid points: a,foo,n'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'These are not valid points: a,foo,n'
+    );
   });
 
   test('selecting quantiles with bad points is a validation error', async function(assert) {
@@ -236,8 +254,9 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('Quantiles requires points between 0 and 1. These are not: 1.5,-1'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText(
+      'Quantiles requires points between 0 and 1. These are not: 1.5,-1'
+    );
   });
 
   test('selecting top k without fields is a validation error', async function(assert) {
@@ -248,7 +267,6 @@ module('Acceptance | query validation', function(hooks) {
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
-    let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('Please fix the fields'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
   });
 });

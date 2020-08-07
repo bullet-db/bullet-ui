@@ -16,7 +16,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it starts off in line chart mode and allows you to switch to pivot mode', async function(assert) {
     assert.expect(5);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.DISTRIBUTION.records);
     this.set('mockColumns', A(['Probability', 'Count', 'Range']));
@@ -33,7 +33,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it charts a single dependent column', async function(assert) {
     assert.expect(2);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', A(['foo', 'timestamp', 'domain']));
@@ -45,8 +45,8 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it charts multiple dependent columns', async function(assert) {
     assert.expect(2);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
-    this.set('mockModel', EmberObject.create({ save() { } }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false }));
+    this.set('mockModel', EmberObject.create({ pivotOptions: null, save() { } }));
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
     await render(hbs`<RecordsCharter @rows={{this.mockRows}} @columns={{this.mockColumns}} @model={{this.mockModel}}
@@ -57,7 +57,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it lets you swap to a bar chart', async function(assert) {
     assert.expect(6);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
@@ -74,7 +74,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it lets you swap to a pie chart', async function(assert) {
     assert.expect(6);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
@@ -91,7 +91,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it enables only the pivot mode if the results are raw', async function(assert) {
     assert.expect(4);
-    this.set('mockConfig', EmberObject.create({ isRaw: true, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: true }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.SINGLE.records);
     this.set('mockColumns', A(['foo', 'timestamp', 'domain']));
@@ -105,7 +105,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it saves pivot table configurations', async function(assert) {
     assert.expect(8);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true }));
     this.set('mockModel', EmberObject.create({
       save() {
         // Called twice
@@ -133,7 +133,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it shows timeseries data without pie charting options', async function(assert) {
     assert.expect(2);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.WINDOWED_GROUP_MULTIPLE_METRICS.records);
     this.set('mockColumns', A(['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']));
@@ -145,7 +145,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it shows timeseries data for distribution data', async function(assert) {
     assert.expect(2);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.WINDOWED_DISTRIBUTION.records);
     this.set('mockColumns', A(['Probability', 'Count', 'Range']));
@@ -157,7 +157,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it shows timeseries data for only metric data', async function(assert) {
     assert.expect(2);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.WINDOWED_COUNT_DISTINCT.records);
     this.set('mockColumns', A(['foo']));
@@ -169,7 +169,7 @@ module('Integration | Component | records charter', function(hooks) {
 
   test('it shows timeseries data for numeric non-metric data', async function(assert) {
     assert.expect(2);
-    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true, pivotOptions: null }));
+    this.set('mockConfig', EmberObject.create({ isRaw: false, isDistribution: true }));
     this.set('mockModel', EmberObject.create({ save() { } }));
     this.set('mockRows', RESULTS.WINDOWED_QUANTILE.records);
     this.set('mockColumns', A(['Quantile', 'Value']));

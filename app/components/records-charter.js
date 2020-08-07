@@ -43,8 +43,8 @@ export default class RecordsCharterComponent extends Component {
   }
 
   get pivotOptions() {
-    let options = argsGet(this.args, 'config', {});
-    return JSON.parse(options.pivotOptions || '{}');
+    let options = this.args.model.get('pivotOptions');
+    return JSON.parse(options || '{}');
   }
 
   //////////////////////////////////////////////// Regular Chart Items  //////////////////////////////////////////////
@@ -343,8 +343,11 @@ export default class RecordsCharterComponent extends Component {
   @action
   saveOptions(options) {
     let model = this.args.model;
-    model.set('pivotOptions', JSON.stringify(options));
-    model.save();
+    // This check is needed because the pivottable can fire onRefresh after destroy because of the debounce timer
+    if (model) {
+      model.set('pivotOptions', JSON.stringify(options));
+      model.save();
+    }
   }
 
   @action
