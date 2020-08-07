@@ -13,15 +13,19 @@ export default class ValidatedInputComponent extends Component {
   @tracked isInvalid = false;
   @tracked errors;
 
+  constructor() {
+    super(...arguments);
+    this.validate();
+  }
+
   get tooltipPosition() {
     return argsGet(this.args, 'tooltipPosition', 'right');
   }
 
   @action
-  onChange(value) {
+  validate() {
     let changeset = this.args.changeset;
     let path = this.args.valuePath;
-    changeset.set(path, value);
     changeset.validate(path).then(() => {
       if (!changeset.get('isInvalid')) {
         this.isInvalid = false;
@@ -31,5 +35,11 @@ export default class ValidatedInputComponent extends Component {
       this.isInvalid = !isEmpty(errors);
       this.errors = errors;
     });
+  }
+
+  @action
+  onChange(value) {
+    this.args.changeset.set(this.args.valuePath, value);
+    this.validate();
   }
 }

@@ -24,7 +24,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
     assertTooltipNotRendered(assert);
     await click('.queries-table .query-results-entry');
-    assertTooltipRendered(assert);
+    assertTooltipVisible(assert);
     await click('.query-results-entry-popover-body .results-table .result-date-entry');
     assert.equal(currentRouteName(), 'result');
     assert.dom('pre').exists({ count: 1 });

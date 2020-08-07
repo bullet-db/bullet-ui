@@ -7,13 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  click,
-  fillIn,
-  find,
-  findAll
-} from '@ember/test-helpers';
+import { visit, click, fillIn, find, findAll } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findSiblings } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -25,7 +19,6 @@ module('Acceptance | query validation', function(hooks) {
     await visit('/queries/new');
     await click('.filter-container button[data-add=\'rule\']');
     await click('.save-button');
-
     assert.dom('.filter-container .rules-list .rule-container').hasClass('has-error');
     assert.dom('.filter-container .rules-list .error-container').hasAttribute('data-original-title', 'No filter selected');
   });
@@ -54,18 +47,16 @@ module('Acceptance | query validation', function(hooks) {
 
   test('selecting count distinct without adding fields is an error', async function(assert) {
     assert.expect(3);
-
     await visit('/queries/new');
     await click('.output-options #count-distinct');
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
-    assert.dom('.validation-container .simple-alert .alert-message .error-list li').hasText('A field needs to be selected first');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list li').hasText('Please fix the fields');
   });
 
   test('selecting grouped data without adding fields or metrics is an error', async function(assert) {
     assert.expect(3);
-
     await visit('/queries/new');
     await click('.output-options #grouped-data');
     await click('.save-button');
@@ -82,12 +73,11 @@ module('Acceptance | query validation', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await fillIn('.options-container .query-duration input', '-1');
     await click('.save-button');
-
     assert.dom('.validation-container .alert-message > span').hasText('OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
     let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('Duration must be a positive integer'));
-    assert.ok(text.includes('No field selected'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Duration must be a positive integer');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
   });
 
   test('selecting distributions without a field and no number of points show validation messages', async function(assert) {
@@ -98,11 +88,12 @@ module('Acceptance | query validation', function(hooks) {
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '');
     await click('.save-button');
+    await this.pauseTest();
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
     let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('A field needs to be selected first'));
-    assert.ok(text.includes('You must specify the Number of Points you want to generate'));
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('You must specify the Number of Points you want to generate');
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
   });
 
   test('selecting distributions with a non-positive number of points is a validation error', async function(assert) {
@@ -147,7 +138,7 @@ module('Acceptance | query validation', function(hooks) {
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
     let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('A field needs to be selected first'));
+    assert.ok(text.includes('Please fix the fields'));
     assert.ok(text.includes('You must specify the Start, End and Increment for the points you want to generate'));
   });
 
@@ -214,7 +205,7 @@ module('Acceptance | query validation', function(hooks) {
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 2 });
     let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('A field needs to be selected first'));
+    assert.ok(text.includes('Please fix the fields'));
     assert.ok(text.includes('You must specify a comma separated list of points for this option'));
   });
 
@@ -258,6 +249,6 @@ module('Acceptance | query validation', function(hooks) {
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
     let text = find('.validation-container .simple-alert .alert-message .error-list').textContent.trim();
-    assert.ok(text.includes('A field needs to be selected first'));
+    assert.ok(text.includes('Please fix the fields'));
   });
 });

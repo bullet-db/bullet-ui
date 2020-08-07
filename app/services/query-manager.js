@@ -196,12 +196,28 @@ export default class QueryManagerService extends Service {
     return { 'validation' : messages };
   }
 
+  dedupErrors(errors) {
+    let messages = new Set();
+    let deduped = [];
+    errors.forEach(error => {
+      let hasAllMessages = true;
+      error.validation.forEach(message => {
+        hasAllMessages = hasAllMessages && messages.has(message);
+        messages.add(message);
+      });
+      if (!hasAllMessages) {
+        deduped.push(error);
+      }
+    });
+    return deduped;
+  }
+
   async validateChangeset(changeset) {
     if (isNone(changeset)) {
       return [];
     }
     await changeset.validate();
-    return changeset.get('isInvalid') ? changeset.errors : [];
+    return changeset.get('isInvalid') ? this.dedupErrors(changeset.errors) : [];
   }
 
   validateMultiModels(settings, changesets) {
@@ -269,7 +285,7 @@ export default class QueryManagerService extends Service {
   }
 
   wipeAggregationAttributes(aggregation) {
-    const fields = ['type', 'pointType', 'newName', 'threshold', 'pointType', 'numberOfPoints', 'start', 'end', 'increment'];
+    const fields = ['type', 'pointType', 'newName', 'threshold', 'numberOfPoints', 'start', 'end', 'increment', 'points'];
     for (const field of fields) {
       aggregation.set(`attributes.${field}`, undefined);
     }
