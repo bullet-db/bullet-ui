@@ -13,8 +13,9 @@
         <span class="record-label">{{this.label}}</span>
       </div>
       <div class="record-entry-popover-body">
+        {{!-- This calls hide on popover which is the only reliable way it closes with race conditions without hacks --}}
         <button type="button" class="btn btn-xs close-button" aria-label="Close"
-                {{on "click" (fn this.closePopover popover)}}>
+                {{on "click" (fn this.closePopover popover)}} {{action "hide" target=popover}}>
           {{fa-icon "close" tagName="span"}}
         </button>
         <pre>{{this.formattedValue}}</pre>

@@ -25,10 +25,7 @@ export default class CloseablePopoverComponent extends Component {
   }
 
   @action
-  closePopover(popover) {
-    // HACK: Popover doesn't update isShown internally and if mouse is inside (which it will be since the delete button
-    // is inside), it won't close. Forcing the mouse to not be inside
-    popover.set('_isMouseInside', false);
+  closePopover() {
     this.showingPopover = false;
   }
 }

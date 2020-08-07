@@ -10,21 +10,22 @@ import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { visit, click, currentRouteName, find, findAll, triggerEvent } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
-import { assertTooltipNotRendered, assertTooltipRendered } from 'ember-tooltips/test-support/dom';
+import { assertTooltipNotRendered, assertTooltipNotVisible, assertTooltipVisible } from 'ember-tooltips/test-support/dom';
 
 module('Acceptance | query results lifecycle', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
 
   test('query submission and result navigation', async function(assert) {
-    assert.expect(3);
+    assert.expect(5);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     await visit('queries/new');
     await click('.submit-button');
-
     await visit('queries');
     assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
+    assertTooltipNotRendered(assert);
     await click('.queries-table .query-results-entry');
-    await click('.query-results-entry-popover .results-table .result-date-entry');
+    assertTooltipRendered(assert);
+    await click('.query-results-entry-popover-body .results-table .result-date-entry');
     assert.equal(currentRouteName(), 'result');
     assert.dom('pre').exists({ count: 1 });
   });
@@ -64,10 +65,9 @@ module('Acceptance | query results lifecycle', function(hooks) {
     assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
     assertTooltipNotRendered(assert);
     await click('.queries-table .query-results-entry');
-    assertTooltipRendered(assert);
-    await click('.query-results-entry-popover-body .close-button');
-    await triggerEvent('.query-results-entry-popover', 'mouseleave')
-    assertTooltipNotRendered(assert);
+    assertTooltipVisible(assert);
+    await click('.query-results-entry-popover-wrapper .close-button');
+    assertTooltipNotVisible(assert);
   });
 
   test('query multiple submissions and results clearing', async function(assert) {

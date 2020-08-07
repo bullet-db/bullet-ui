@@ -15,8 +15,9 @@
           <span role="button" class="clear-history" {{on "click" this.deleteResultsClick}}>Clear</span>
         </div>
         <div class="query-results-entry-popover-body">
+          {{!-- This calls hide on popover which is the only reliable way it closes with race conditions without hacks --}}
           <button type="button" class="btn btn-xs close-button" aria-label="Close"
-                  {{on "click" (fn this.closePopover popover)}}>
+                  {{on "click" this.closePopover}} {{action "hide" target=popover}}>
             {{fa-icon "close" tagName="span"}}
           </button>
           <ResultsTable @results={{@value}} @resultClick={{fn this.resultClick}}
