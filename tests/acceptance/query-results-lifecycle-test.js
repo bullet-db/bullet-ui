@@ -8,14 +8,9 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  click,
-  currentRouteName,
-  find,
-  findAll
-} from '@ember/test-helpers';
+import { visit, click, currentRouteName, find, findAll, triggerEvent } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
+import { assertTooltipNotRendered, assertTooltipRendered } from 'ember-tooltips/test-support/dom';
 
 module('Acceptance | query results lifecycle', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -60,20 +55,19 @@ module('Acceptance | query results lifecycle', function(hooks) {
   });
 
   test('result table popover open and close', async function(assert) {
-    assert.expect(3);
+    assert.expect(4);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     await visit('queries/new');
     await click('.submit-button');
 
     await visit('queries');
     assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
+    assertTooltipNotRendered(assert);
     await click('.queries-table .query-results-entry');
-    assert.dom('.query-results-entry-popover').exists({ count: 1 });
-    await click('.query-results-entry-popover .close-button');
-    // Bootstrap popovers hiding is async but andThen doesn't catch it (May need to wrap closePopover in a run loop)...
-    later(() => {
-      assert.dom('.query-results-entry-popover .results-table .result-date-entry').doesNotExist();
-    }, 500);
+    assertTooltipRendered(assert);
+    await click('.query-results-entry-popover-body .close-button');
+    await triggerEvent('.query-results-entry-popover', 'mouseleave')
+    assertTooltipNotRendered(assert);
   });
 
   test('query multiple submissions and results clearing', async function(assert) {

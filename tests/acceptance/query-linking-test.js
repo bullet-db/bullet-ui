@@ -7,15 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import {
-  visit,
-  click,
-  fillIn,
-  triggerEvent,
-  find,
-  findAll,
-  blur
-} from '@ember/test-helpers';
+import { visit, click, fillIn, triggerEvent, find, findAll, blur } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -65,20 +57,6 @@ module('Acceptance | query linking', function(hooks) {
     assert.dom('.queries-table .lt-expanded-row .query-shareable-link input').doesNotExist();
   });
 
-  test('linking an invalid query fails', async function(assert) {
-    assert.expect(3);
-
-    await visit('/queries/new');
-    await click('.output-container .raw-sub-options #select');
-    await click('.output-container .projections-container .add-projection');
-    await visit('queries');
-    assert.dom('.query-description').exists({ count: 1 });
-    await triggerEvent('.queries-table .query-name-entry', 'mouseover');
-    await click('.queries-table .query-name-entry .query-name-actions .link-icon');
-    assert.dom('.queries-table .lt-expanded-row .query-shareable-link input').doesNotExist();
-    assert.dom('.query-description').exists({ count: 1 });
-  });
-
   test('linking a full query with filters, raw data output with projections and a name works', async function(assert) {
     assert.expect(11);
 
@@ -93,9 +71,7 @@ module('Acceptance | query linking', function(hooks) {
       findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await blur(
-      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0])
-    );
+    await blur(findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]));
     await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
@@ -119,8 +95,8 @@ module('Acceptance | query linking', function(hooks) {
     assert.dom(findAll('.queries-table .query-name-entry .query-description')[1]).hasText('test query');
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom('.filter-container .rule-filter-container select').hasValue('complex_list_column');
-    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]).value, 'new_name');
-    assert.equal(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1]).value, 'simple_column');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0])).hasValue('new_name');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
     assert.dom('.options-container .aggregation-size input').hasValue('40');
   });
 
@@ -164,23 +140,23 @@ module('Acceptance | query linking', function(hooks) {
     assert.dom(
       findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0])
     ).hasText('complex_map_column');
-    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
+    assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0])).hasValue('complex_map_column');
     assert.dom(
       findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1])
     ).hasText('simple_column');
-    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
+    assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1])).hasValue('bar');
     assert.dom(
       findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
     ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
-    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
+    assert.dom(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0])).hasValue('');
     assert.dom(
       findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('Average');
     assert.dom(
       findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('simple_column');
-    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
+    assert.dom(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1])).hasValue('avg_bar');
   });
 
   test('linking a distribution query with number of points works', async function(assert) {
@@ -258,9 +234,9 @@ module('Acceptance | query linking', function(hooks) {
     assert.dom(
       '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
     ).hasText('simple_column');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[0].value, '1.5');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[1].value, '2.5');
-    assert.equal(findAll('.output-container .distribution-type-point-range input')[2].value, '0.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[0]).hasValue('1.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('2.5');
+    assert.dom(findAll('.output-container .distribution-type-point-range input')[2]).hasValue('0.5');
   });
 
   test('linking a distribution query with points works', async function(assert) {
@@ -342,8 +318,8 @@ module('Acceptance | query linking', function(hooks) {
     assert.dom(
       findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
     ).hasText('complex_map_column.*');
-    assert.equal(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
-    assert.equal(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
+    assert.dom(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1])).hasValue('foo');
+    assert.dom(findIn('.field-name input', findAll('.output-container .field-selection-container')[1])).hasValue('new_name');
     assert.dom('.output-container .top-k-size input').hasValue('15');
     assert.dom('.output-container .top-k-min-count input').hasValue('1500');
     assert.dom('.output-container .top-k-display-name input').hasValue('cnt');

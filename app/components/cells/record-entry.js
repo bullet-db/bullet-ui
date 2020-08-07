@@ -6,21 +6,15 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action, get } from '@ember/object';
-import { next } from '@ember/runloop';
 import { isEmpty, typeOf } from '@ember/utils';
+import CloseablePopoverComponent from 'bullet-ui/components/closeable-popover';
 
-export default class RecordEntryComponent extends Component {
+export default class RecordEntryComponent extends CloseablePopoverComponent {
   @tracked hasPopover;
-  @tracked showingPopover;
 
   constructor() {
     super(...arguments);
     this.hasPopover = !isEmpty(this.data);
-    this.showingPopover = false;
-  }
-
-  get popperOptions() {
-    return { modifiers: { preventOverflow: { escapeWithReference: false } } };
   }
 
   get label() {
@@ -45,15 +39,5 @@ export default class RecordEntryComponent extends Component {
   get formattedValue() {
     let data = this.data;
     return this.isComplex ? JSON.stringify(data, null, 2) : data;
-  }
-
-  @action
-  closePopover() {
-    this.showingPopover = false;
-  }
-
-  @action
-  showPopover() {
-    this.showingPopover = true;
   }
 }

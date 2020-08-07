@@ -6,29 +6,14 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import CloseablePopoverComponent from 'bullet-ui/components/closeable-popover';
 
-export default class QueryResultsEntryComponent extends Component {
+export default class QueryResultsEntryComponent extends CloseablePopoverComponent {
   @tracked hasPopover;
-  @tracked showingPopover;
 
   constructor() {
     super(...arguments);
     this.hasPopover = this.args.value.length > 0;
-    this.showingPopover = false;
-  }
-
-  get popperOptions() {
-    return { modifiers: { preventOverflow: { escapeWithReference: false } } };
-  }
-
-  @action
-  showPopover() {
-    this.showingPopover = true;
-  }
-
-  @action
-  closePopover() {
-    this.showingPopover = false;
   }
 
   @action

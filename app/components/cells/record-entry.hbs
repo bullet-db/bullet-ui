@@ -8,12 +8,13 @@
   <div class="record-entry-popover">
     <EmberPopover @event="none" @isShown={{this.showingPopover}} @tooltipClass="record-entry-popover-wrapper"
                   @innerClass="record-entry-popover-inner" @arrowClass="record-entry-popover-arrow"
-                  @side="bottom" @popperOptions={{this.popperOptions}}>
+                  @side="bottom" @popperOptions={{this.popperOptions}} as |popover|>
       <div class="record-entry-popover-title">
         <span class="record-label">{{this.label}}</span>
       </div>
       <div class="record-entry-popover-body">
-        <button type="button" class="btn btn-xs close-button" aria-label="Close" {{on "click" this.closePopover}}>
+        <button type="button" class="btn btn-xs close-button" aria-label="Close"
+                {{on "click" (fn this.closePopover popover)}}>
           {{fa-icon "close" tagName="span"}}
         </button>
         <pre>{{this.formattedValue}}</pre>
