@@ -197,18 +197,18 @@ module('Acceptance | query submission', function(hooks) {
     assert.dom(
       findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0])
     ).hasText('complex_map_column');
-    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0]).value, 'complex_map_column');
+    assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0])).hasValue('complex_map_column');
     assert.dom(
       findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1])
     ).hasText('simple_column');
-    assert.equal(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1]).value, 'bar');
+    assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1])).hasValue('bar');
 
     // No field and name for count
     assert.dom(
       findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[0])
     ).hasText('Count');
     assert.equal(findAllIn('.field-selection', findAll('.metrics-container .field-selection-container')[0]).length, 0);
-    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0]).value, '');
+    assert.dom(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[0])).hasValue('');
 
     assert.dom(
       findIn('.metric-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
@@ -216,7 +216,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.dom(
       findIn('.field-selection .ember-power-select-selected-item', findAll('.metrics-container .field-selection-container')[1])
     ).hasText('simple_column');
-    assert.equal(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1]).value, 'avg_bar');
+    assert.dom(findIn('.field-name input', findAll('.metrics-container .field-selection-container')[1])).hasValue('avg_bar');
 
     // No size field shown
     assert.dom('.aggregation-size').doesNotExist();
@@ -282,8 +282,8 @@ module('Acceptance | query submission', function(hooks) {
     assert.dom(
       findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
     ).hasText('complex_map_column.*');
-    assert.equal(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1]).value, 'foo');
-    assert.equal(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]).value, 'new_name');
+    assert.dom(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1])).hasValue('foo');
+    assert.dom(findIn('.field-name input', findAll('.output-container .field-selection-container')[1])).hasValue('new_name');
     assert.dom('.output-container .top-k-size input').hasValue('20');
     assert.dom('.output-container .top-k-min-count input').hasValue('2000');
     assert.dom('.output-container .top-k-display-name input').hasValue('cnt');
