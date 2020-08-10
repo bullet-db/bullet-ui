@@ -7126,6 +7126,13 @@ ember-concurrency@^1.1.0:
     ember-compatibility-helpers "^1.2.0"
     ember-maybe-import-regenerator "^0.1.6"
 
+ember-copy@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ember-copy/-/ember-copy-1.0.0.tgz#426554ba6cf65920f31d24d0a3ca2cb1be16e4aa"
+  integrity sha512-aiZNAvOmdemHdvZNn0b5b/0d9g3JFpcOsrDgfhYEbfd7SzE0b69YiaVK2y3wjqfjuuiA54vOllGN4pjSzECNSw==
+  dependencies:
+    ember-cli-babel "^6.6.0"
+
 ember-data@~3.16.0:
   version "3.16.8"
   resolved "https://registry.yarnpkg.com/ember-data/-/ember-data-3.16.8.tgz#2d25a2cd37f4952ea92df464a5b10c70cd0b20e1"
@@ -7280,10 +7287,10 @@ ember-load-initializers@~2.1.1:
     ember-cli-babel "^7.11.0"
     ember-cli-typescript "^2.0.2"
 
-ember-localforage@1.5.8:
-  version "1.5.8"
-  resolved "https://registry.yarnpkg.com/ember-localforage/-/ember-localforage-1.5.8.tgz#190f58d1a463704903cc6f132f14bf9bda12f081"
-  integrity sha512-32CbYDHSsa3LbliWo/1LnXgcG9i1wsO/jGvb/grhOYbTxOU9kM8MdWDMtB+AjGgfqS0K2rHXPBob1iUyGlKAxw==
+ember-localforage@1.5.9:
+  version "1.5.9"
+  resolved "https://registry.yarnpkg.com/ember-localforage/-/ember-localforage-1.5.9.tgz#85e35ef7d375484946a9b1357179c231da14aa6d"
+  integrity sha512-RyCUsZWpW50IOX8fFzwDeY9aL0IBj8awVjSe0RFcj345GhmoKUTpOKTOfGwqO3aHao/rW+VSFvAIgGnoi3mvgw==
   dependencies:
     blob-polyfill "^2.0.20171115"
     broccoli-funnel "^2.0.1"
@@ -7293,6 +7300,7 @@ ember-localforage@1.5.8:
     ember-cli-babel "^6.6.0"
     ember-cli-string-utils "^1.1.0"
     ember-cli-version-checker "^2.1.0"
+    ember-copy "^1.0.0"
     localforage "~1.7.1"
     localforage-sessionstoragewrapper "~1.2.0"
 
