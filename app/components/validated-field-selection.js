@@ -15,11 +15,6 @@ export default class ValidatedFieldSelectionComponent extends Component {
   fieldPath = 'field';
   namePath = 'name';
 
-  constructor() {
-    super(...arguments);
-    this.validate(this.args.changeset, this.fieldPath);
-  }
-
   get tooltipPosition() {
     return argsGet(this.args, 'tooltipPosition', 'right');
   }
@@ -40,19 +35,32 @@ export default class ValidatedFieldSelectionComponent extends Component {
     return argsGet(this.args, 'enableDeleting', true);
   }
 
-  validate(changeset, path) {
-    changeset.validate().then(() => {
-      if (!changeset.get('isInvalid')) {
-        this.isInvalid = false;
-        // This save is here for a weird bug. If we change a value and change back, no further changes apply.
-        // Saving it helps and it should be fine since we're saving to copied fields anyway
-        changeset.save();
-        return;
-      }
-      let errors = changeset.get(`error.${path}`);
-      this.isInvalid = !isEmpty(errors);
-      this.errors = errors;
-    });
+  async validate(changeset, path) {
+    await changeset.validate();
+    if (!changeset.get('isInvalid')) {
+      this.isInvalid = false;
+      // This save is here for a weird bug. If we change a value and change back, no further changes apply.
+      // Saving it helps and it should be fine since we're saving to copied fields anyway
+      changeset.save();
+      return;
+    }
+    let errors = changeset.get(`error.${path}`);
+    this.isInvalid = !isEmpty(errors);
+    this.errors = errors;
+  }
+
+  @action
+  async validateAll() {
+    let changeset = this.args.changeset;
+    await changeset.validate();
+    if (!changeset.get('isInvalid')) {
+      this.isInvalid = false;
+      return;
+    }
+    let paths = [this.args.additionalPath, this.fieldPath, this.namePath];
+    let errors = paths.filter(path => !isEmpty(path)).flatMap(path => changeset.get(`error.${path}.validation`));
+    this.isInvalid = !isEmpty(errors);
+    this.errors = { validation: errors };
   }
 
   @action

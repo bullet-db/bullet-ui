@@ -13,28 +13,22 @@ export default class ValidatedInputComponent extends Component {
   @tracked isInvalid = false;
   @tracked errors;
 
-  constructor() {
-    super(...arguments);
-    this.validate();
-  }
-
   get tooltipPosition() {
     return argsGet(this.args, 'tooltipPosition', 'right');
   }
 
   @action
-  validate() {
+  async validate() {
     let changeset = this.args.changeset;
     let path = this.args.valuePath;
-    changeset.validate(path).then(() => {
-      if (!changeset.get('isInvalid')) {
-        this.isInvalid = false;
-        return;
-      }
-      let errors = changeset.get(`error.${path}`);
-      this.isInvalid = !isEmpty(errors);
-      this.errors = errors;
-    });
+    await changeset.validate(path);
+    if (!changeset.get('isInvalid')) {
+      this.isInvalid = false;
+      return;
+    }
+    let errors = changeset.get(`error.${path}`);
+    this.isInvalid = !isEmpty(errors);
+    this.errors = errors;
   }
 
   @action

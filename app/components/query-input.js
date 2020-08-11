@@ -53,6 +53,7 @@ export default class QueryInputComponent extends Component {
   @tracked metrics;
   // State and errors
   @tracked isListening = false;
+  @tracked isValidating = false;
   @tracked hasError = false;
   @tracked errors;
   @tracked hasSaved = false;
@@ -155,11 +156,6 @@ export default class QueryInputComponent extends Component {
   get queryBuilderInputs() {
     let element = this.queryBuilderElement;
     return `${element} input, ${element} select, ${element} button`;
-  }
-
-  get isCurrentFilterValid() {
-    let element = this.queryBuilderElement;
-    return $(element).queryBuilder('validate');
   }
 
   get currentFilterClause() {
@@ -283,6 +279,7 @@ export default class QueryInputComponent extends Component {
 
   reset() {
     this.isListening = false;
+    this.isValidating = false;
     this.hasError = false;
     this.hasSaved = false;
     this.filterChanged = false;
@@ -290,8 +287,14 @@ export default class QueryInputComponent extends Component {
     $(this.queryBuilderInputs).removeAttr('disabled');
   }
 
+  validateFilter() {
+    let element = this.queryBuilderElement;
+    return $(element).queryBuilder('validate');
+  }
+
   async validate() {
     this.reset();
+    this.isValidating = true;
     await this.queryManager.cleanup(this.aggregationChangeset, this.projections, this.groups);
     let changesets = {
       query: this.queryChangeset,
@@ -302,7 +305,7 @@ export default class QueryInputComponent extends Component {
       metrics: this.metrics
     };
     let validations = await this.queryManager.validate(changesets);
-    if (!this.isCurrentFilterValid) {
+    if (!this.validateFilter()) {
       validations.push(this.queryManager.createValidationError('There is an issue with the filters'));
     }
     if (!isEmpty(validations)) {
@@ -332,6 +335,19 @@ export default class QueryInputComponent extends Component {
       this.filterChanged = true;
       this.args.onDirty();
     });
+    $(element).on('afterUpdateRuleFilter.queryBuilder', () => {
+      this.validateFilter();
+    });
+    $(element).on('afterUpdateRuleOperator.queryBuilder', () => {
+      this.validateFilter();
+    });
+    $(element).on('afterUpdateRuleSubfield.queryBuilder', () => {
+      this.validateFilter();
+    });
+    $(element).on('afterUpdateRuleValue.queryBuilder', () => {
+      this.validateFilter();
+    });
+
   }
 
   @action

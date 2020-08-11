@@ -110,8 +110,8 @@
                     <ValidatedFieldSelection
                         @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteProjections}}
                         @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                        @onDelete={{fn this.deleteFieldLike changeset this.projections}}
-                        @fieldClasses="col-xs-6" @nameClasses="col-xs-4" @disabled={{this.isListening}}/>
+                        @onDelete={{fn this.deleteFieldLike changeset this.projections}} @fieldClasses="col-xs-6"
+                        @nameClasses="col-xs-4" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                   {{/each}}
                   <button type="button" {{on "click" (fn this.addFieldLike "projection" this.projections)}}
                           disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
@@ -130,8 +130,8 @@
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
-                      @fieldClasses="col-xs-6" @nameClasses="col-xs-5" @disabled={{this.isListening}}/>
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-6"
+                      @nameClasses="col-xs-5" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 {{/each}}
                 <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
                         disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
@@ -150,8 +150,8 @@
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.metrics}}
                       @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="type"
-                      @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection"
-                      @fieldClasses="col-xs-5" @nameClasses="col-xs-3" @disabled={{this.isListening}}>
+                      @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection" @fieldClasses="col-xs-5"
+                      @nameClasses="col-xs-3" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}>
                   </ValidatedFieldSelection>
                 {{/each}}
                 <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}}
@@ -171,8 +171,8 @@
                       @changeset={{changeset}} @columns={{this.columns}}
                       @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
-                      @fieldClasses="col-xs-10" @disabled={{this.isListening}}/>
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-10"
+                      @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 {{/each}}
                 <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
                         disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
@@ -221,8 +221,8 @@
                       @changeset={{changeset}} @columns={{this.columns}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @enableRenaming={{false}} @enableDeleting={{false}}
-                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
-                      @disabled={{this.isListening}} @fieldClasses="col-xs-10"/>
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-10"
+                      @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 {{/each}}
               </div>
 
@@ -252,25 +252,26 @@
                 <div class="row narrow-row distribution-type-number-of-points">
                   <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.numberOfPoints"
                                   @label="Number of Points" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                  @disabled={{this.isListening}}/>
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 </div>
               {{else if this.isPoints}}
                 <div class="row narrow-row distribution-type-points">
                   <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.points"
                                   @label="Points" @classNames="col-xs-4" @maxlength={{131072}}
-                                  @placeholder="Comma separated numbers" @disabled={{this.isListening}}/>
+                                  @placeholder="Comma separated numbers" @disabled={{this.isListening}}
+                                  @forceValidate={{this.isValidating}}/>
                 </div>
               {{else if this.isGeneratedPoints}}
                 <div class="row narrow-row distribution-type-point-range">
                   <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.start"
                                   @label="Start" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                  @disabled={{this.isListening}}/>
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                   <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.end"
                                   @label="End" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                  @disabled={{this.isListening}}/>
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                   <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.increment"
                                   @label="Increment" @classNames="col-xs-2" @type="number" @placeholder="Number"
-                                  @disabled={{this.isListening}}/>
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 </div>
               {{/if}}
             </div>
@@ -284,8 +285,8 @@
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteField}}
                       @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
-                      @onDelete={{fn this.deleteFieldLike changeset this.groups}}
-                      @disabled={{this.isListening}} @fieldClasses="col-xs-6" @nameClasses="col-xs-5"/>
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-6"
+                      @nameClasses="col-xs-5" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 {{/each}}
                 <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
                         disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
@@ -295,7 +296,8 @@
               <div class="subsection-header">Select the maximum number of results</div>
               <div class="row narrow-row top-k-size">
                 <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="K"
-                                @classNames="col-xs-2" @type="number" @placeholder="Number" @disabled={{this.isListening}}/>
+                                @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
               </div>
               <div class="subsection-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
@@ -388,7 +390,7 @@
             <div class="row">
               <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label={{this.everyFieldName}}
                               @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
-                              @disabled={{this.everyDisabled}}/>
+                              @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
             </div>
 
             {{#if this.isTimeBasedWindow}}
@@ -411,7 +413,7 @@
                 <div class="row">
                   <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="Maximum Rows in Window"
                                   @classNames="col-xs-3 window-size" @type="number" @placeholder="Number"
-                                  @disabled={{this.isListening}}/>
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 </div>
               {{/if}}
             {{/if}}
@@ -437,11 +439,11 @@
         {{#if this.showAggregationSize}}
           <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="Maximum Result Count"
                           @classNames="col-xs-2 aggregation-size" @type="number" @placeholder="Number"
-                          @disabled={{this.isListening}}/>
+                          @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
         {{/if}}
         <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
                         @classNames="col-xs-2 query-duration" @type="number" @placeholder="Number"
-                        @disabled={{this.isListening}}/>
+                        @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
       </div>
     </div>
     {{!-- End Options Section --}}
