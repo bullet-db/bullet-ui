@@ -57,7 +57,7 @@ module('Integration | Component | validated field selection', function(hooks) {
                                @subfieldSeparator="." @subfieldSuffix='.*'
       />
     `);
-    assert.dom('.error-tooltip-link').exists({ count:  1 });
+    assert.dom('.error-tooltip-link').doesNotExist();
     assert.dom('.field-selection .ember-power-select-trigger').hasText('foo');
     await selectChoose('.field-selection', 'bar');
     assert.dom('.field-selection .ember-power-select-trigger').hasText('bar');
