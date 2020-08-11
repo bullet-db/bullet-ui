@@ -23,7 +23,7 @@ module.exports = {
     node: true
   },
   rules: {
-    'ember/no-jquery': 'error'
+    'ember/no-jquery': 'off'
   },
   overrides: [
     // node files
@@ -54,4 +54,5 @@ module.exports = {
         'node/no-unpublished-require': 'off'
       })
     }
+  ]
 };

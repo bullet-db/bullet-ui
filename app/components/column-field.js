@@ -5,7 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import EmberObject, { action } from '@ember/object';
+import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
 
 export default class ColumnFieldComponent extends Component {

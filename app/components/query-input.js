@@ -9,9 +9,10 @@ import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import EmberObject, { action, get } from '@ember/object';
+import { action } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
+import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
@@ -322,7 +323,7 @@ export default class QueryInputComponent extends Component {
     } catch(errors) {
       this.hasError = true;
       this.errors = A(errors);
-      throw error;
+      throw errors;
     }
   }
 
@@ -331,23 +332,20 @@ export default class QueryInputComponent extends Component {
   @action
   addQueryBuilder(element) {
     $(element).queryBuilder(this.queryBuilderOptions);
-    $(element).on('rulesChanged.queryBuilder', () => {
+    // Need to use bind to put it in the ember run loop for linting
+    $(element).on('rulesChanged.queryBuilder', bind(this, () => {
       this.filterChanged = true;
       this.args.onDirty();
-    });
-    $(element).on('afterUpdateRuleFilter.queryBuilder', () => {
+    }));
+    let event = [
+      'afterUpdateRuleFilter.queryBuilder',
+      'afterUpdateRuleOperator.queryBuilder',
+      'afterUpdateRuleSubfield.queryBuilder',
+      'afterUpdateRuleValue.queryBuilder'
+    ];
+    $(element).on(event.join(' '), bind(this, () => {
       this.validateFilter();
-    });
-    $(element).on('afterUpdateRuleOperator.queryBuilder', () => {
-      this.validateFilter();
-    });
-    $(element).on('afterUpdateRuleSubfield.queryBuilder', () => {
-      this.validateFilter();
-    });
-    $(element).on('afterUpdateRuleValue.queryBuilder', () => {
-      this.validateFilter();
-    });
-
+    }));
   }
 
   @action
@@ -461,7 +459,9 @@ export default class QueryInputComponent extends Component {
   async save() {
     try {
       await this.doSave();
-    } catch(error) { }
+    } catch(error) {
+      // empty
+    }
   }
 
   @action
@@ -471,6 +471,8 @@ export default class QueryInputComponent extends Component {
       this.isListening = true;
       $(this.queryBuilderInputs).attr('disabled', true);
       this.args.onSubmitQuery();
-    } catch(error) { }
+    } catch(error) {
+      // empty
+    }
   }
 }

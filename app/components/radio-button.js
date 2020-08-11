@@ -4,9 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action, computed, get } from '@ember/object';
-import { equal, or, not } from '@ember/object/computed';
+import { action } from '@ember/object';
 import { isEqual } from '@ember/utils';
 
 export default class RadioButtonComponent extends Component {

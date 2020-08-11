@@ -6,7 +6,6 @@
 import $ from 'jquery';
 import JSONFormatterModule from 'json-formatter-js';
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import argsGet from 'bullet-ui/utils/args-get';
 

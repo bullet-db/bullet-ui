@@ -38,8 +38,8 @@ module('Integration | Component | query shareable link', function(hooks) {
     this.set('mockRow', row);
 
     await render(hbs`<QueryShareableLink @row={{this.mockRow}}/>`);
-    assert.ok(this.get('mockRow.expanded'));
+    assert.ok(this.mockRow.expanded);
     await click('.collapse-icon');
-    assert.notOk(this.get('mockRow.expanded'));
+    assert.notOk(this.mockRow.expanded);
   });
 });

@@ -3,6 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+/* eslint-disable ember/no-get */
+// Need to disable since gets are needed here for ObjectProxy
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
@@ -22,7 +24,7 @@ export default class QueryModel extends Model {
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
-  @computed('window')
+  @computed('window.id')
   get isWindowless() {
     return isEmpty(this.get('window.id'));
   }
@@ -45,7 +47,7 @@ export default class QueryModel extends Model {
 
   @computed('aggregation.metrics.@each.{type,name}')
   get metricsSummary() {
-    let metrics = this.getWithDefault('aggregation.metrics', A());
+    let metrics = (this.get('aggregation.metrics') === undefined ? A() : this.get('aggregation.metrics'));
     return metrics.map(m => {
       let type = m.get('type');
       let field = m.get('field');
@@ -73,7 +75,7 @@ export default class QueryModel extends Model {
     }
     if (type === AGGREGATIONS.get('TOP_K')) {
       let k = this.get('aggregation.size');
-      let countField = this.getWithDefault('aggregation.attributes.newName', 'Count');
+      let countField = (this.get('aggregation.attributes.newName') === undefined ? 'Count' : this.get('aggregation.attributes.newName'));
       let summary = `TOP ${k} OF (${groupsSummary})`;
       let threshold = this.get('aggregation.attributes.threshold');
       return isEmpty(threshold) ? summary : `${summary} HAVING ${countField} >= ${threshold}`;

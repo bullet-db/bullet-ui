@@ -7,7 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import { visit, currentURL, click, currentRouteName, findAll } from '@ember/test-helpers';
+import { visit, currentURL, click, currentRouteName } from '@ember/test-helpers';
 
 module('Acceptance | result error', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);

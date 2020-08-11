@@ -8,7 +8,7 @@ import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import QUERIES from 'bullet-ui/tests/fixtures/queries';
 import { setupForAcceptanceTest, setupForMockSettings } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import { visit, find, findAll } from '@ember/test-helpers';
+import { visit, findAll } from '@ember/test-helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
 module('Acceptance | query default query', function(hooks) {

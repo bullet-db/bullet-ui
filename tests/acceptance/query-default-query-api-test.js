@@ -12,7 +12,7 @@ import MockedAPI from 'bullet-ui/tests/helpers/mocked-api';
 import sinon from 'sinon';
 import Stomp from '@stomp/stompjs';
 import { basicSetupForAcceptanceTest, setupForMockSettings } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import { visit, find, findAll } from '@ember/test-helpers';
+import { visit, findAll } from '@ember/test-helpers';
 import { findIn } from 'bullet-ui/tests/helpers/find-helpers';
 
 let url = 'http://foo.bar.com/api/custom-query';

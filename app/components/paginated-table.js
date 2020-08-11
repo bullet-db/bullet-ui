@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { typeOf } from '@ember/utils';
-import { action, computed, get } from '@ember/object';
+import { action, get } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 

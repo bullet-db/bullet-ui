@@ -10,7 +10,6 @@ import { isEmpty, isEqual, typeOf } from '@ember/utils';
 import { action } from '@ember/object';
 import { not, alias, or } from '@ember/object/computed';
 import { WINDOW_CREATED_KEY, WINDOW_NUMBER_KEY } from 'bullet-ui/utils/window-cache';
-import argsGet from 'bullet-ui/utils/args-get';
 
 const TIME_SERIES_INDEPENDENT_COLUMN = WINDOW_CREATED_KEY;
 const TIME_SERIES_WINDOW_COLUMN = WINDOW_NUMBER_KEY;

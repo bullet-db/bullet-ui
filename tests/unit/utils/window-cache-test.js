@@ -3,7 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty, isEqual } from '@ember/utils';
+import { isEmpty } from '@ember/utils';
 import { module, test } from 'qunit';
 import WindowCache, { WINDOW_NUMBER_KEY, WINDOW_CREATED_KEY } from 'bullet-ui/utils/window-cache';
 

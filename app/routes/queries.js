@@ -6,7 +6,6 @@
 import EmberObject, { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import { isNone } from '@ember/utils';
 
 export default class QueriesRoute extends Route {
   @service queryManager;
@@ -43,7 +42,7 @@ export default class QueriesRoute extends Route {
 
   @action
   queryClick(query) {
-    // Force the model hook to fire in query. This is needed since that uses a RSVP hash.
+    // Force the model hook to fire in query. 
     this.transitionTo('query', query.get('id'));
   }
 

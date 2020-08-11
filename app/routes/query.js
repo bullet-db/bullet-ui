@@ -152,7 +152,7 @@ export default class QueryRoute extends Route {
   }
 
   @action
-  error(error, transition) {
+  error() {
     this.replaceWith('missing', 'not-found');
   }
 }

@@ -17,7 +17,8 @@ import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
  * @return {array}             An array containing string error messages or empty if there were no errors.
  */
 export default function validateMultiModelRelationships(settings, changesets) {
-  let { query, aggregation, window, projections, groups, metrics } = changesets;
+  // Also has projections but currently unused
+  let { query, aggregation, window, groups, metrics } = changesets;
   let validations = [
     validateWindowAggregation(window, aggregation),
     validateGroupMetricPresence(aggregation, groups, metrics),

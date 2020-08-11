@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual, isEmpty } from '@ember/utils';
-import EmberObject from '@ember/object';
 import { mockAPI, failAPI } from 'bullet-ui/tests/helpers/pretender';
 import { next } from '@ember/runloop';
 

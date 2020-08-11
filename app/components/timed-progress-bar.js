@@ -5,7 +5,7 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action, computed } from '@ember/object';
+import { action } from '@ember/object';
 import { not, or } from '@ember/object/computed';
 import { cancel, later } from '@ember/runloop';
 import argsGet from 'bullet-ui/utils/args-get';

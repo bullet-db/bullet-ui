@@ -3,9 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action, get } from '@ember/object';
+import { get } from '@ember/object';
 import { isEmpty, typeOf } from '@ember/utils';
 import CloseablePopoverComponent from 'bullet-ui/components/closeable-popover';
 

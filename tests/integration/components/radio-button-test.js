@@ -1,6 +1,11 @@
+/*
+ *  Copyright 2020, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, triggerEvent } from '@ember/test-helpers';
+import { render, click } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | radio button', function(hooks) {

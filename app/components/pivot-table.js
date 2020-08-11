@@ -5,13 +5,11 @@
  */
 import $ from 'jquery';
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { debounce, cancel } from '@ember/runloop';
+import { debounce } from '@ember/runloop';
 
 export default class PivotTableComponent extends Component {
   defaultOptions;
-  timer;
 
   constructor() {
     super(...arguments);

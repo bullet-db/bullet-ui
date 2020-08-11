@@ -148,12 +148,12 @@ export default EmberObject.extend({
 
   filterSummary: oneWay('_filter.summary'),
 
-  fieldsSummary: computed('_projections.[]', '_aggregation.{_groups.[],_metrics.[]}', function() {
+  fieldsSummary: computed('_aggregation.{_groups.[],_metrics.[],attributes}', '_projections.[]', function() {
     let projections = this.concatFieldLikes(this._projections);
-    let groups = this.concatFieldLikes(this.get('_aggregation._groups'));
-    let metrics = this.concatFieldLikes(this.get('_aggregation._metrics'));
+    let groups = this.concatFieldLikes(this._aggregation?._groups);
+    let metrics = this.concatFieldLikes(this._aggregation?._metrics);
     let fields = ['newName', 'points', 'numberOfPoints', 'start', 'end', 'increment'];
-    let attributes = this.concatProperties(this.get('_aggregation.attributes'), fields);
+    let attributes = this.concatProperties(this._aggregation?.attributes, fields);
     return `${projections}${groups}${metrics}${attributes}`;
   }),
 
@@ -161,11 +161,11 @@ export default EmberObject.extend({
     if (isEmpty(this._window)) {
       return 'None';
     }
-    return `${this.get('_window.emitType')}${this.get('_window.emitEvery')}${this.get('_window.includeType')}`;
+    return `${this._window?.emitType}${this._window?.emitEvery}${this._window?.includeType}`;
   }),
 
   latestResult: computed('_results.[]', function() {
-    let length = this.get('_results.length');
+    let length = this._results?.length;
     return EmberObject.create({ created: new Date(2016, 0, (length + 1) % 30) });
   }),
 

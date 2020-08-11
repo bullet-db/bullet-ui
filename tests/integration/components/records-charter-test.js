@@ -127,7 +127,7 @@ module('Integration | Component | records charter', function(hooks) {
     await triggerEvent('.pivot-table-container select.pvtRenderer', 'change');
     await settled();
     await settled();
-    let options = JSON.parse(this.get('mockModel.pivotOptions'));
+    let options = JSON.parse(this.mockModel.pivotOptions);
     assert.equal(options.rendererName, 'Bar Chart');
   });
 

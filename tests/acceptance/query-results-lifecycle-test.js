@@ -3,12 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { later } from '@ember/runloop';
 import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import { visit, click, currentRouteName, find, findAll, triggerEvent } from '@ember/test-helpers';
+import { visit, click, currentRouteName } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { assertTooltipNotRendered, assertTooltipNotVisible, assertTooltipVisible } from 'ember-tooltips/test-support/dom';
 

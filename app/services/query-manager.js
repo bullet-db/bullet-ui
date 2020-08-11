@@ -5,7 +5,7 @@
  */
 import { pluralize } from 'ember-inflector';
 import { Base64 } from 'js-base64';
-import EmberObject, { computed, get, getProperties } from '@ember/object';
+import { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
@@ -83,7 +83,7 @@ export default class QueryManagerService extends Service {
       duration: query.get('duration')
     });
     // Assume prefetched
-    let [copiedFilter, copiedAggregation, copiedWindow] = await Promise.all([
+    let [, copiedAggregation, ] = await Promise.all([
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
       query.get('isWindowless') ? Promise.resolve() :
@@ -275,7 +275,7 @@ export default class QueryManagerService extends Service {
   fixAggregationSize(aggregation) {
     let type = aggregation.get('type');
     if (!(isEqual(type, AGGREGATIONS.get('RAW')) || isEqual(type, AGGREGATIONS.get('TOP_K')))) {
-      aggregation.set('size', this.get('settings.defaultValues.aggregationMaxSize'));
+      aggregation.set('size', this.settings.defaultValues?.aggregationMaxSize);
     }
   }
 
@@ -316,7 +316,6 @@ export default class QueryManagerService extends Service {
       await this.deleteSingle(belongsToPath, parentModel, inverseName);
       return;
     }
-    let model = await parentModel.get(belongsToPath);
     let relation = await changeset.save();
     let inverse = await relation.get(inverseName);
     // If no inverse, this is a copied changeset model. Delete the original in the parent

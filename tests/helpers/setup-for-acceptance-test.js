@@ -36,7 +36,6 @@ export function basicSetupForAcceptanceTest(hooks) {
   });
 }
 
-
 export function setupForAcceptanceTest(hooks, results, columns) {
   basicSetupForAcceptanceTest(hooks);
 

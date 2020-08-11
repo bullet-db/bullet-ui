@@ -3,6 +3,8 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+/* eslint-disable ember/no-get */
+// Need to disable since gets are needed here for ObjectProxy
 import Model, { attr, belongsTo } from '@ember-data/model';
 import { equal, or } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
@@ -55,7 +57,7 @@ export default class ResultModel extends Model {
 
   @computed('errorWindow')
   get hasError() {
-    return !isNone(this.get('errorWindow'));
+    return !isNone(this.errorWindow);
   }
 
   syncCache() {

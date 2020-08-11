@@ -8,18 +8,12 @@ import EmberObject from '@ember/object';
 import { equal } from '@ember/object/computed';
 
 let EmitTypes = EmberObject.extend({
-  NAMES: {
-    TIME: 'Time Based',
-    RECORD: 'Record Based'
-  },
-
   init() {
     this._super(...arguments);
-    this.setProperties(this.get('NAMES'));
-    this.set('API', {
-      'Time Based': 'TIME',
-      'Record Based': 'RECORD'
-    });
+    let names = { TIME: 'Time Based', RECORD: 'Record Based' }
+    this.setProperties(names);
+    this.set('NAMES', names);
+    this.set('API', { 'Time Based': 'TIME', 'Record Based': 'RECORD' });
   },
 
   apiKey(key) {
@@ -28,17 +22,12 @@ let EmitTypes = EmberObject.extend({
 });
 
 let IncludeTypes = EmberObject.extend({
-  NAMES: {
-    WINDOW: 'Everything in Window',
-    ALL: 'Everything from Start of Query'
-  },
-
   init() {
     this._super(...arguments);
-    this.setProperties(this.get('NAMES'));
-    this.set('API', {
-      'Everything from Start of Query': 'ALL'
-    });
+    let names = { WINDOW: 'Everything in Window', ALL: 'Everything from Start of Query' };
+    this.setProperties(names);
+    this.set('NAMES', names);
+    this.set('API', { 'Everything from Start of Query': 'ALL' });
   },
 
   apiKey(key) {

@@ -7,17 +7,17 @@ import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
 
 let AggregationTypes = EmberObject.extend({
-  NAMES: {
-    RAW: 'Raw',
-    GROUP: 'Group',
-    COUNT_DISTINCT: 'Count Distinct',
-    DISTRIBUTION: 'Distribution',
-    TOP_K: 'Top K'
-  },
-
   init() {
     this._super(...arguments);
-    this.setProperties(this.get('NAMES'));
+    let names = {
+      RAW: 'Raw',
+      GROUP: 'Group',
+      COUNT_DISTINCT: 'Count Distinct',
+      DISTRIBUTION: 'Distribution',
+      TOP_K: 'Top K'
+    };
+    this.setProperties(names);
+    this.set('NAMES', names);
     this.set('API', {
       'Raw': 'RAW',
       'Group': 'GROUP',
@@ -33,32 +33,21 @@ let AggregationTypes = EmberObject.extend({
 });
 
 let RawTypes = EmberObject.extend({
-  NAMES: {
-    ALL: 'All',
-    SELECT: 'Select'
-  },
-
   init() {
     this._super(...arguments);
-    this.setProperties(this.get('NAMES'));
+    let names = { ALL: 'All', SELECT: 'Select' };
+    this.set('NAMES', names);
+    this.setProperties(names);
   }
 });
 
 let DistributionTypes = EmberObject.extend({
-  NAMES: {
-    QUANTILE: 'Quantile',
-    PMF: 'Frequency',
-    CDF: 'Cumulative Frequency'
-  },
-
   init() {
     this._super(...arguments);
-    this.setProperties(this.get('NAMES'));
-    this.set('API', {
-      'Quantile': 'QUANTILE',
-      'Frequency': 'PMF',
-      'Cumulative Frequency': 'CDF'
-    });
+    let names = { QUANTILE: 'Quantile', PMF: 'Frequency', CDF: 'Cumulative Frequency' };
+    this.set('NAMES', names);
+    this.setProperties(names);
+    this.set('API', { 'Quantile': 'QUANTILE', 'Frequency': 'PMF', 'Cumulative Frequency': 'CDF' });
   },
 
   apiKey(key) {
@@ -67,15 +56,11 @@ let DistributionTypes = EmberObject.extend({
 });
 
 let DistributionPointTypes = EmberObject.extend({
-  NAMES: {
-    NUMBER: 'Number',
-    POINTS: 'Points',
-    GENERATED: 'Generated'
-  },
-
   init() {
     this._super(...arguments);
-    this.setProperties(this.get('NAMES'));
+    let names = { NUMBER: 'Number', POINTS: 'Points', GENERATED: 'Generated' }
+    this.set('NAMES', names);
+    this.setProperties(names);
   }
 });
 

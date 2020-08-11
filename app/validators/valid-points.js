@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import $ from 'jquery';
 import { isEmpty, isEqual } from '@ember/utils';
 import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import currentValue from 'bullet-ui/utils/current-value';

@@ -61,7 +61,7 @@ module('Integration | Component | query information', function(hooks) {
   module('running', function(hooks) {
     const QuerierStub = Service.extend({ isRunningQuery: true });
 
-    hooks.beforeEach(function(assert) {
+    hooks.beforeEach(function() {
       this.owner.register('service:querier', QuerierStub);
     });
 

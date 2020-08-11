@@ -35,7 +35,7 @@ module('Integration | Component | mode toggle', function(hooks) {
   });
 
   test('it tracks the passed in toggled state when it changes', async function(assert) {
-    this.set('mockToggled', isToggled => { });
+    this.set('mockToggled', () => { });
     this.set('mockIsToggled', true);
 
     // isToggled => true
