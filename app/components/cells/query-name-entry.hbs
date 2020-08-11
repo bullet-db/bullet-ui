@@ -14,6 +14,7 @@
       <QueryBlurb @summary={{@row}} />
     {{/if}}
   </div>
+  {{!-- template-lint-disable no-nested-interactive --}}
   <div class="query-name-actions {{if this.hasHover "is-visible"}}">
     <i role="button" class="query-name-action-icon edit-icon fa fa-edit" {{on "click" this.onClick}}>
       <EmberTooltip @side="bottom">Edit this query</EmberTooltip>

@@ -6,6 +6,7 @@
 <div role="button" class="query-results-entry {{if this.hasPopover "has-popover"}}" {{on "click" this.showPopover}}>
   {{#if this.hasPopover}}
     <p class="length-entry"> <span><strong>{{@value.length}}</strong></span> Results</p>
+    {{!-- template-lint-disable no-nested-interactive --}}
     <div class="query-results-entry-popover">
       <EmberPopover @event="none" @isShown={{this.showingPopover}} @tooltipClass="query-results-entry-popover-wrapper"
                     @innerClass="query-results-entry-popover-inner" @arrowClass="query-results-entry-popover-arrow"
@@ -16,6 +17,7 @@
         </div>
         <div class="query-results-entry-popover-body">
           {{!-- This calls hide on popover which is the only reliable way it closes with race conditions without hacks --}}
+          {{!-- template-lint-disable no-action --}}
           <button type="button" class="btn btn-xs close-button" aria-label="Close"
                   {{on "click" this.closePopover}} {{action "hide" target=popover}}>
             {{fa-icon "close" tagName="span"}}

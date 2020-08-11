@@ -42,6 +42,7 @@
     "local-build": "ember build",
     "local-test": "ember test --server",
     "start": "ember server",
+    "verify": "yarn run -s lint:hbs && yarn run -s lint:js && yarn run -s test",
     "test": "COVERAGE=true ember test"
   },
   "dependencies": {

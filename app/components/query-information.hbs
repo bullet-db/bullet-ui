@@ -8,6 +8,7 @@
     <h4>Query Definition</h4>
     <QueryBlurb @summary={{@querySnapshot}} />
   </div>
+  {{!-- template-lint-disable no-nested-interactive --}}
   <div class="query-controls">
     <button type="button" class="btn btn-info btn-primary query-button link-button" {{on "click" this.queryClick}}>
       {{fa-icon "pencil"}}
