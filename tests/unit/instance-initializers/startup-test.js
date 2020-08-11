@@ -10,7 +10,7 @@ import StartupInitializer from 'bullet-ui/instance-initializers/startup';
 import { module, test } from 'qunit';
 import ENV from 'bullet-ui/config/environment';
 
-module('Unit | Initializer | startup', function(hooks) {
+module('Unit | Instance Initializer | startup', function(hooks) {
   hooks.beforeEach(function() {
     run(() => {
       this.application = Application.create();
