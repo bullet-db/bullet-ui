@@ -29,8 +29,6 @@ module('Integration | Component | query blurb', function(hooks) {
     query.addProjection('bar', 'b');
     this.set('mockedQuery', query);
     await render(hbs`<QueryBlurb @summary={{this.mockedQuery}}/>`);
-    let actualText = this.element.textContent;
-    let spaceLess = actualText.replace(/\s/g, '');
     assert.dom(this.element).includesText('Filters: An Actual Filter Summary Fields: fb0.1,0.2 Window: None');
   });
 });

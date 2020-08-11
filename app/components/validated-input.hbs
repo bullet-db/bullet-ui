@@ -4,7 +4,7 @@
   See the LICENSE file associated with the project for terms.
  --}}
  <div class="validated-input {{if this.isInvalid "has-error"}}"
-      {{did-update this.validate @changeset @forceValidate}}>
+      {{did-update this.validate @forceValidate @changeset}}>
   {{#if this.isInvalid}}
     <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @errors={{this.errors}}/>
   {{/if}}

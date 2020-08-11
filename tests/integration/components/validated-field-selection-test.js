@@ -6,7 +6,7 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, fillIn } from '@ember/test-helpers';
+import { render, click, fillIn, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { selectChoose } from 'ember-power-select/test-support/helpers'
 import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
@@ -23,8 +23,8 @@ module('Integration | Component | validated field selection', function(hooks) {
     { id: 'baz.norf' }
   ];
 
-  function mockChangeset(fields = [{ name: 'field', value: 'foo' }, { name: 'name', value: null }],
-                         shouldError = () => false,
+  function mockChangeset(shouldError = () => false,
+                         fields = [{ name: 'field', value: 'foo' }, { name: 'name', value: null }],
                          error = { field: { validation: ['Field bad'] }, name: { validation:  ['Name bad'] } }) {
     return new MockChangeset(fields, shouldError, error);
   }
@@ -49,7 +49,7 @@ module('Integration | Component | validated field selection', function(hooks) {
   });
 
   test('it shows a validation error tooltip for changes that makes the changeset invalid', async function(assert) {
-    let changeset = mockChangeset(undefined, () => true, undefined);
+    let changeset = mockChangeset(() => true);
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
     await render(hbs`
@@ -73,8 +73,10 @@ module('Integration | Component | validated field selection', function(hooks) {
   });
 
   test('it displays additional options if configured', async function(assert) {
-    let changeset = mockChangeset([{ name: 'field', value: 'foo' }, { name: 'name', value: null },
-                                   { name: 'type', value: 'A' }]);
+    let changeset = mockChangeset(
+      undefined,
+      [{ name: 'field', value: 'foo' }, { name: 'name', value: null }, { name: 'type', value: 'A' }]
+    );
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
@@ -159,5 +161,41 @@ module('Integration | Component | validated field selection', function(hooks) {
     `);
     assert.dom('.delete-button').exists({ count:  1 });
     await click('.delete-button');
+  });
+
+  test('it does not validate on initialization but does when forced to', async function(assert) {
+    let changeset = mockChangeset(
+      () => true,
+      [{ name: 'field', value: 'foo' }, { name: 'name', value: null }, { name: 'type', value: 'A' }],
+      { field: { validation: ['Field bad'] }, name: { validation:  ['Name bad'] }, type: { validation: ['Type bad'] } }
+    );
+    this.set('mockChangeset', changeset);
+    this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
+    this.set('mockForceValidate', false);
+    await render(hbs`
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @forceValidate={{this.mockForceValidate}} @subfieldSeparator="." @subfieldSuffix='.*'
+                               @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
+                               @additionalOptions={{this.mockAdditionalOptions}}
+      />
+    `);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('foo');
+    assert.dom('.additional-selection .ember-power-select-trigger').hasText('A');
+    this.set('mockForceValidate', true);
+    await settled();
+    assert.dom('.field-selection .ember-power-select-trigger').hasText('foo');
+    assert.dom('.error-tooltip-link').exists({ count: 1 });
+    await click('.error-tooltip-link');
+    assertTooltipRendered(assert);
+    assert.dom('.ember-tooltip').hasText('Type bad Field bad Name bad');
+
+    this.set('mockChangeset', mockChangeset());
+    this.set('mockForceValidate', false);
+    await settled();
+    assert.dom('.error-tooltip-link').doesNotExist();
+    this.set('mockForceValidate', true);
+    assert.dom('.error-tooltip-link').doesNotExist();
   });
 });

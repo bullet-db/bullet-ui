@@ -6,7 +6,7 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click, fillIn } from '@ember/test-helpers';
+import { render, click, fillIn, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
 import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
@@ -14,7 +14,7 @@ import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 module('Integration | Component | validated input', function(hooks) {
   setupRenderingTest(hooks);
 
-  function mockChangeset(fields = [{ name: 'bar', value: 15 }], shouldError = () => false,
+  function mockChangeset(shouldError = () => false, fields = [{ name: 'bar', value: 15 }],
                          error = { bar: { validation: ['Bar bad'] } }) {
     return new MockChangeset(fields, shouldError, error);
   }
@@ -33,7 +33,7 @@ module('Integration | Component | validated input', function(hooks) {
   });
 
   test('it shows a validation error tooltip if there are errors', async function(assert) {
-    let changeset = mockChangeset(undefined, () => true, undefined);
+    let changeset = mockChangeset(() => true);
     this.set('mockChangeset', changeset);
     await render(hbs`
       <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
@@ -45,5 +45,31 @@ module('Integration | Component | validated input', function(hooks) {
     assertTooltipRendered(assert);
     assert.dom('.ember-tooltip p').hasText('Bar bad');
     assert.deepEqual(changeset.modifications, [{ bar: '30' }]);
+  });
+
+  test('it does not validate on initialization but does when forced to', async function(assert) {
+    let changeset = mockChangeset(() => true);
+    this.set('mockChangeset', changeset);
+    this.set('mockForceValidate', false);
+    await render(hbs`
+      <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                      @forceValidate={{this.mockForceValidate}}
+      />
+    `);
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.dom('input').hasValue('15');
+    this.set('mockForceValidate', true);
+    await settled();
+    assert.dom('.error-tooltip-link').exists({ count: 1 });
+    await click('.error-tooltip-link');
+    assertTooltipRendered(assert);
+    assert.dom('.ember-tooltip p').hasText('Bar bad');
+
+    this.set('mockChangeset', mockChangeset());
+    this.set('mockForceValidate', false);
+    await settled();
+    assert.dom('.error-tooltip-link').doesNotExist();
+    this.set('mockForceValidate', true);
+    assert.dom('.error-tooltip-link').doesNotExist();
   });
 });
