@@ -52,7 +52,7 @@ module('Acceptance | query submission', function(hooks) {
   });
 
   test('creating, deleting query filters and raw data projections and saving', async function(assert) {
-    assert.expect(6);
+    assert.expect(12);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
     await visit('/queries/new');
@@ -79,6 +79,22 @@ module('Acceptance | query submission', function(hooks) {
     assert.dom('.projections-container .field-name input').hasValue('simple_column');
     // Size field shown
     assert.dom('.aggregation-size').exists({ count: 1 });
+
+    await visit('queries');
+    assert.dom('.queries-table .query-name-entry .query-description').exists({ count: 1 });
+    await click('.queries-table .query-name-entry');
+    assert.dom('.projections-container .column-onlyfield .ember-power-select-selected-item').hasText('simple_column');
+    assert.dom('.projections-container .field-name input').hasValue('simple_column');
+    await click('.output-container .projections-container .add-projection');
+    await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
+    await click('.save-button');
+    await visit('queries');
+    await click('.queries-table .query-name-entry');
+    assert.dom('.projections-container .field-selection-container').exists({ count: 2 });
+    await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0])).hasValue('new_name');
+    await click('.save-button');
+    assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
   });
 
   test('creating a query, adding filters and raw data projections, and save on submit', async function(assert) {
