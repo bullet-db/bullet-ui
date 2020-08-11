@@ -1,16 +1,14 @@
 import { resolve } from 'rsvp';
-import Application from '@ember/application';
 import { run } from '@ember/runloop';
-import StartupInitializer from 'bullet-ui/instance-initializers/startup';
-import { initialize, applyMigrations } from 'bullet-ui/instance-initializers/migrations';
 import { module, test } from 'qunit';
+import Application from 'bullet-ui/app';
+import { applyMigrations } from 'bullet-ui/instance-initializers/migrations';
 
 module('Unit | Instance Initializer | migrations', function(hooks) {
   hooks.beforeEach(function() {
     run(() => {
-      this.application = Application.create();
+      this.application = Application.create({ autoboot: false });
       this.appInstance = this.application.buildInstance();
-      StartupInitializer.initialize(this.appInstance);
     });
   });
 
@@ -19,8 +17,8 @@ module('Unit | Instance Initializer | migrations', function(hooks) {
     run(this.application, 'destroy');
   });
 
-  test('it initializes', function(assert) {
-    initialize(this.appInstance);
+  test('it initializes', async function(assert) {
+    await this.appInstance.boot();
     assert.ok(true);
   });
 
