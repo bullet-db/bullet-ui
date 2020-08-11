@@ -27,13 +27,6 @@ export default class QueryModel extends Model {
     return isEmpty(this.get('window.id'));
   }
 
-  @computed('projections.@each.name', 'aggregation.groups.@each.name')
-  get hasUnsavedFields() {
-    let projections = this.getWithDefault('projections', A());
-    let groups = this.getWithDefault('aggregation.groups', A());
-    return this.hasNoName(projections) || this.hasNoName(groups);
-  }
-
   @computed('filter.summary')
   get filterSummary() {
     let summary = this.get('filter.summary');
@@ -140,10 +133,6 @@ export default class QueryModel extends Model {
 
   summarizeFieldLike(fieldLike) {
     return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject(n => isEmpty(n)).join(', ');
-  }
-
-  hasNoName(fieldLike) {
-    return isEmpty(fieldLike) ? false : fieldLike.any(f => !isEmpty(f.get('field')) && isEmpty(f.get('name')));
   }
 
   getEmitUnit(emitType, emitEvery) {

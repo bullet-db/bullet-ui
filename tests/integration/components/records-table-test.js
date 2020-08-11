@@ -6,7 +6,7 @@
 import { A } from '@ember/array';
 import { module, test, skip } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, click } from '@ember/test-helpers';
+import { render, click, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | records table', function(hooks) {
@@ -59,15 +59,19 @@ module('Integration | Component | records table', function(hooks) {
     assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
     // Does not update
     this.set('columns', A(['bar']));
+    await settled();
     assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
     //  Now it updates
     this.set('mockTimeSeriesMode', true);
+    await settled();
     assert.dom(this.element.querySelector('.lt-head')).hasText('bar');
     // Does not update
     this.set('columns', A(['foo']));
+    await settled();
     assert.dom(this.element.querySelector('.lt-head')).hasText('bar');
     //  Now it updates
     this.set('mockTimeSeriesMode', false);
+    await settled();
     assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
   });
 });
