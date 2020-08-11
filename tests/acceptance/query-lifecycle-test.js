@@ -227,8 +227,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom('.aggregation-size input').doesNotExist();
   });
 
-  test('copying a full query with filters, raw data output with projections and a name works', async function(assert) {
-    assert.expect(10);
+  test('copying and deleting a query with filters, raw projections, window and a name works', async function(assert) {
+    assert.expect(13);
 
     await visit('/queries/new');
     await fillIn('.name-container input', 'test query');
@@ -247,7 +247,12 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .projections-container .add-projection');
     await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
 
+    // This gets transferred to the window
     await fillIn('.options-container .aggregation-size input', '40');
+
+    await click('.window-container .add-button');
+    await fillIn('.window-container .window-emit-every input', '1');
+
     await click('.submit-button');
     await visit('queries');
     assert.dom('.query-description').hasText('test query');
@@ -262,7 +267,15 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom('.filter-container .rule-filter-container select').hasValue('complex_list_column');
     assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0])).hasValue('new_name');
     assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
-    assert.dom('.options-container .aggregation-size input').hasValue('40');
+    assert.dom('.window-container .window-size input').hasValue('40');
+    assert.dom('.window-container .window-emit-every input').hasValue('1');
+
+    await visit('queries');
+    assert.dom('.queries-table .query-name-entry .query-description').exists({ count: 2 });
+    let first = findAll('.queries-table .query-name-entry')[0];
+    await triggerEvent(first, 'mouseover');
+    await click(findIn('.query-name-actions .delete-icon', first));
+    assert.dom('.queries-table .query-name-entry .query-description').exists({ count: 1 });
   });
 
   test('copying a full query with filters, grouped data output with groups and fields works', async function(assert) {
