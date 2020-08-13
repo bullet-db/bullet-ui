@@ -9,12 +9,11 @@
     <ModeToggle @isToggled={{this.isToggled}} @onToggle={{this.onToggle}}/>
     <EmberTooltip @side="left">Prettify and make your JSON collapsible</EmberTooltip>
   </div>
-
-   <div class="raw-display">
-     {{#if this.isToggled}}
-       <PrettyJson @data={{@data}} @defaultLevels={{this.numberOflevels}}/>
-     {{else}}
-       <pre class="raw-json-display">{{this.formattedData}}</pre>
-     {{/if}}
-   </div>
- </div>
+  <div class="raw-display">
+   {{#if this.isToggled}}
+     <PrettyJson @data={{@data}} @defaultLevels={{this.numberOflevels}}/>
+   {{else}}
+     <pre class="raw-json-display">{{this.formattedData}}</pre>
+   {{/if}}
+  </div>
+</div>
