@@ -3,11 +3,9 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-{{partial "partials/top-bar"}}
-{{partial "partials/left-bar"}}
+<TopBar @settings={{this.settings}} />
+<LeftBar />
 
 <div class="main-wrapper">
   {{outlet}}
 </div>
-
-<div class="popover-wrapper"></div>

@@ -3,47 +3,51 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
-import DS from 'ember-data';
 
 export const SUBFIELD_SEPARATOR = '.';
 
-export default DS.Model.extend({
-  name: DS.attr('string'),
-  type: DS.attr('string'),
-  subtype: DS.attr('string'),
-  description: DS.attr('string'),
-  enumerations: DS.attr(),
+export default class ColumnModel extends Model {
+  @attr('string') name;
+  @attr('string') type;
+  @attr('string') subtype;
+  @attr('string') description;
+  @attr() enumerations;
 
-  qualifiedType: computed('type', 'subtype', function() {
-    let type = this.get('type');
-    let subType = this.get('subtype');
+  @computed('type', 'subtype')
+  get qualifiedType() {
+    let type = this.type;
+    let subType = this.subtype;
     let qualifiedType = type;
     if (!isEmpty(subType)) {
       qualifiedType = type === 'MAP' ? `MAP OF STRINGS TO ${subType}S` : `${type} OF ${subType}S`;
     }
     return qualifiedType;
-  }),
+  }
 
-  hasEnumerations: computed('enumerations', function() {
-    return !isEmpty(this.get('enumerations'));
-  }).readOnly(),
+  @computed('enumerations')
+  get hasEnumerations() {
+    return !isEmpty(this.enumerations);
+  }
 
-  hasFreeformField: computed('type', 'subtype', 'enumerations', function() {
-    return this.get('type') === 'MAP' && !isEmpty(this.get('subtype')) && isEmpty(this.get('enumerations'));
-  }).readOnly(),
+  @computed('type', 'subtype', 'enumerations')
+  get hasFreeformField() {
+    return this.type === 'MAP' && !isEmpty(this.subtype) && isEmpty(this.enumerations);
+  }
 
-  enumeratedColumns: computed('name', 'subtype', 'enumerations', function() {
-    let subColumns = A(this.get('enumerations'));
+  @computed('name', 'type', 'subtype', 'description', 'enumerations')
+  get enumeratedColumns() {
+    let subColumns = A(this.enumerations);
     if (isEmpty(subColumns)) {
       return false;
     }
-    let subColumnType = this.get('subtype');
+    let subColumnType = this.subtype;
     return subColumns.map(item => {
       let subColumn = EmberObject.create(item);
-      let name = this.get('name');
+      let name = this.name;
       subColumn.set('name', `${name}${SUBFIELD_SEPARATOR}${item.name}`);
       subColumn.set('type', subColumnType);
       subColumn.set('qualifiedType', subColumnType);
@@ -51,29 +55,30 @@ export default DS.Model.extend({
       subColumn.set('isSubfield', true);
       return subColumn;
     }, this);
-  }).readOnly(),
+  }
 
-  flattenedColumns: computed('type', 'subtype', 'enumeratedColumns', function() {
+  @computed('name', 'type', 'subtype', 'description', 'hasFreeformField', 'enumeratedColumns')
+  get flattenedColumns() {
     let simplifiedColumns = A();
     // The main column
     simplifiedColumns.pushObject(EmberObject.create({
-      name: this.get('name'),
-      type: this.get('type')
+      name: this.name,
+      type: this.type
     }));
     // The free form subfield
-    let hasFreeformField = this.get('hasFreeformField');
+    let hasFreeformField = this.hasFreeformField;
     if (hasFreeformField) {
       simplifiedColumns.pushObject(EmberObject.create({
-        name: this.get('name'),
-        type: this.get('subtype'),
-        description: this.get('description'),
+        name: this.name,
+        type: this.subtype,
+        description: this.description,
         hasFreeformField: hasFreeformField
       }));
     }
-    let enumerated = this.get('enumeratedColumns');
+    let enumerated = this.enumeratedColumns;
     if (enumerated) {
       simplifiedColumns.addObjects(enumerated);
     }
     return simplifiedColumns;
-  }).readOnly()
-});
+  }
+}

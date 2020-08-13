@@ -3,28 +3,35 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { isEmpty } from '@ember/utils';
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: ['records-raw-viewer'],
-  isToggled: true,
-  spacing: 4,
-  data: null,
-  maxlevels: 3,
+const SPACING = 4;
+const MAX_LEVELS = 3;
+// For each multiple of this in rows, we want to decrease that many default expansions from MAX_LEVELS
+const ROW_COUNT_LEVEL_BREAK = 20;
 
-  numberOflevels: computed('data', 'maxLevels', function() {
-    let rows = this.get('data.length');
-    let max = this.get('maxlevels');
-    return Math.max(1, parseInt((max - (rows / 20))));
-  }).readOnly(),
+export default class RecordsRawViewerComponent extends Component {
+  @tracked isToggled = true;
 
-  formattedData: computed('data', function() {
-    let data = this.get('data');
+  get numberOflevels() {
+    let data = this.args.data;
+    let rows = isEmpty(data) ? 0 : data.length;
+    return Math.max(1, parseInt((MAX_LEVELS - (rows / ROW_COUNT_LEVEL_BREAK))));
+  }
+
+  get formattedData() {
+    let data = this.args.data;
     if (isEmpty(data)) {
       return '';
     }
-    return JSON.stringify(data, null, parseFloat(this.get('spacing')));
-  }).readOnly()
-});
+    return JSON.stringify(data, null, SPACING);
+  }
+
+  @action
+  onToggle(value) {
+    this.isToggled = value;
+  }
+}

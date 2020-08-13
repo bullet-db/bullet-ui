@@ -1,0 +1,27 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div role="button" class="record-entry {{if this.hasPopover "has-popover"}}" {{on "click" this.showPopover}}>
+  <p class="plain-entry">{{this.textValue}}</p>
+  {{!-- template-lint-disable no-nested-interactive --}}
+  <div class="record-entry-popover">
+    <EmberPopover @event="none" @isShown={{this.showingPopover}} @tooltipClass="record-entry-popover-wrapper"
+                  @innerClass="record-entry-popover-inner" @arrowClass="record-entry-popover-arrow"
+                  @side="bottom" @popperOptions={{this.popperOptions}} as |popover|>
+      <div class="record-entry-popover-title">
+        <span class="record-label">{{this.label}}</span>
+      </div>
+      <div class="record-entry-popover-body">
+        {{!-- This calls hide on popover which is the only reliable way it closes with race conditions without hacks --}}
+        {{!-- template-lint-disable no-action --}}
+        <button type="button" class="btn btn-xs close-button" aria-label="Close"
+                {{on "click" (fn this.closePopover popover)}} {{action "hide" target=popover}}>
+          {{fa-icon "close" tagName="span"}}
+        </button>
+        <pre>{{this.formattedValue}}</pre>
+      </div>
+    </EmberPopover>
+  </div>
+</div>

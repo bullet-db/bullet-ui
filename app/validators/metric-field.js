@@ -4,24 +4,16 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEmpty, isEqual } from '@ember/utils';
-import BaseValidator from 'ember-cp-validations/validators/base';
 import { METRICS } from 'bullet-ui/models/metric';
+import currentValue from 'bullet-ui/utils/current-value';
 
-const MetricField = BaseValidator.extend({
-  validate(value, options, model) {
+export default function validateMetricField() {
+  return (key, newValue, oldValue, changes, content) => {
     const COUNT = METRICS.get('COUNT');
-    let type = model.get('type');
-    if (!isEmpty(value) || isEqual(type, COUNT)) {
+    let { type, field } = currentValue(changes, content, ['type', 'field']);
+    if (!isEmpty(field) || isEqual(type, COUNT)) {
       return true;
     }
     return `All metrics but ${COUNT} require a field`;
   }
-});
-
-MetricField.reopenClass({
-  getDependentsFor() {
-    return ['model.type'];
-  }
-});
-
-export default MetricField;
+}

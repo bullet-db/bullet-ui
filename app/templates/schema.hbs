@@ -6,9 +6,9 @@
 <div class="schema-wrapper">
   <span class="section-header">
     <h3 class="section-title">Schema</h3>
-    {{#info-popover title="Schema"}}
-      {{partial "partials/schema-help"}}
-    {{/info-popover}}
+    <InfoPopover @title="Schema">
+      <Popovers::SchemaHelp/>
+    </InfoPopover>
   </span>
-  {{schema-table fields=model}}
+  <SchemaTable @fields={{@model}} />
 </div>

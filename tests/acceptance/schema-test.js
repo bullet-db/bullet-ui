@@ -4,11 +4,11 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { module, test } from 'qunit';
-import RESULTS from '../fixtures/results';
-import COLUMNS from '../fixtures/columns';
-import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
+import COLUMNS from 'bullet-ui/tests/fixtures/columns';
+import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { click, visit, findAll } from '@ember/test-helpers';
-import { findIn } from '../helpers/find-helpers';
+import { findIn } from 'bullet-ui/tests/helpers/find-helpers';
 
 module('Acceptance | schema', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
@@ -18,31 +18,45 @@ module('Acceptance | schema', function(hooks) {
 
     await visit('/schema');
 
-    assert.equal(findAll('.schema-table .lt-body .lt-row').length, 4);
-    assert.equal(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[0]).textContent.trim(), 'complex_list_column');
-    assert.equal(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[1]).textContent.trim(), 'complex_map_column');
-    assert.equal(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[2]).textContent.trim(), 'enumerated_map_column');
-    assert.equal(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[3]).textContent.trim(), 'simple_column');
-    assert.equal(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[0]).textContent.trim(), 'LIST OF MAPS');
-    assert.equal(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[1]).textContent.trim(), 'MAP OF STRINGS TO STRINGS');
-    assert.equal(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[2]).textContent.trim(), 'MAP OF STRINGS TO STRINGS');
-    assert.equal(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[3]).textContent.trim(), 'STRING');
+    assert.dom('.schema-table .lt-body .lt-row').exists({ count: 4 });
+    assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[0])).hasText('complex_list_column');
+    assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[1])).hasText('complex_map_column');
+    assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[2])).hasText('enumerated_map_column');
+    assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[3])).hasText('simple_column');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[0])).hasText('LIST OF MAPS');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[1])).hasText('MAP OF STRINGS TO STRINGS');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[2])).hasText('MAP OF STRINGS TO STRINGS');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[3])).hasText('STRING');
 
-    assert.ok(findAll('.schema-table .lt-body .lt-row')[2].classList.contains('has-enumerations'));
-    assert.ok(findIn('.schema-name-entry .schema-enumeration-caret i', findAll('.schema-table .lt-body .lt-row')[2]).classList.contains('expand-caret'));
-
-    await click(findAll('.schema-table .lt-body .lt-row')[2]);
-    assert.ok(findIn('.schema-name-entry .schema-enumeration-caret i', findAll('.schema-table .lt-body .lt-row')[2]).classList.contains('expanded-caret'));
-
-    assert.equal(findAll('.schema-table .lt-body .lt-expanded-row').length, 1);
-    assert.equal(findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row').length, 2);
-    assert.equal(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[0]).textContent.trim(), 'nested_1');
-    assert.equal(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[1]).textContent.trim(), 'nested_2');
-    assert.equal(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[0]).textContent.trim(), 'STRING');
-    assert.equal(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[1]).textContent.trim(), 'STRING');
+    assert.dom(findAll('.schema-table .lt-body .lt-row')[2]).hasClass('has-enumerations');
+    assert.dom(
+      findIn('.schema-name-entry .schema-enumeration-caret i', findAll('.schema-table .lt-body .lt-row')[2])
+    ).hasClass('expand-caret');
 
     await click(findAll('.schema-table .lt-body .lt-row')[2]);
-    assert.ok(findIn('.schema-name-entry .schema-enumeration-caret i', findAll('.schema-table .lt-body .lt-row')[2]).classList.contains('expand-caret'));
-    assert.equal(findAll('.schema-table .lt-body .lt-expanded-row').length, 0);
+    assert.dom(
+      findIn('.schema-name-entry .schema-enumeration-caret i', findAll('.schema-table .lt-body .lt-row')[2])
+    ).hasClass('expanded-caret');
+
+    assert.dom('.schema-table .lt-body .lt-expanded-row').exists({ count: 1 });
+    assert.dom('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row').exists({ count: 2 });
+    assert.dom(
+      findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[0])
+    ).hasText('nested_1');
+    assert.dom(
+      findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[1])
+    ).hasText('nested_2');
+    assert.dom(
+      findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[0])
+    ).hasText('STRING');
+    assert.dom(
+      findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-expanded-row .schema-table.is-nested .lt-row')[1])
+    ).hasText('STRING');
+
+    await click(findAll('.schema-table .lt-body .lt-row')[2]);
+    assert.dom(
+      findIn('.schema-name-entry .schema-enumeration-caret i', findAll('.schema-table .lt-body .lt-row')[2])
+    ).hasClass('expand-caret');
+    assert.dom('.schema-table .lt-body .lt-expanded-row').doesNotExist();
   });
 });

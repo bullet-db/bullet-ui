@@ -6,30 +6,26 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | window metadata', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it does not block render', async function(assert) {
-    await render(hbs`{{window-metadata}}`);
-    assert.equal(this.element.textContent.trim(), '');
-    await render(hbs`
-      {{#window-metadata}}
-        template block text
-      {{/window-metadata}}
-    `);
-    assert.equal(this.element.textContent.trim(), '');
+    await render(hbs`<WindowMetadata/>`);
+    assert.dom(this.element).hasText('');
+    await render(hbs`<WindowMetadata>template block text</WindowMetadata>`);
+    assert.dom(this.element).hasText('');
   });
 
   test('it expands metadata on clicking the expand bar', async function(assert) {
     assert.expect(3);
 
     this.set('mockMetadata', 'custom metadata');
-    await render(hbs`{{window-metadata metadata=mockMetadata}}`);
-    assert.notOk(this.element.querySelector('.window-metadata').classList.contains('is-expanded'));
+    await render(hbs`<WindowMetadata @metadata={{this.mockMetadata}}/>`);
+    assert.dom(this.element.querySelector('.window-metadata')).hasNoClass('is-expanded');
     await click('.expand-bar');
-    assert.ok(this.element.querySelector('.window-metadata').classList.contains('is-expanded'));
-    assert.equal(this.element.querySelector('pre').textContent.trim(), '"custom metadata"');
+    assert.dom(this.element.querySelector('.window-metadata')).hasClass('is-expanded');
+    assert.dom(this.element.querySelector('pre')).hasText('"custom metadata"');
   });
 });

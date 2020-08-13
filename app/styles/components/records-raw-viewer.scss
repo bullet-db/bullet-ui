@@ -12,7 +12,8 @@
     @import 'mode-toggle';
     align-self: flex-end;
     .mode-toggle {
-      float: right;
+      display: flex;
+      justify-content: flex-end;
     }
     &:focus {
       outline: none;

@@ -3,26 +3,17 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject, { computed } from '@ember/object';
-import DS from 'ember-data';
-import { validator, buildValidations } from 'ember-cp-validations';
+import Model, { attr, belongsTo } from '@ember-data/model';
+import EmberObject from '@ember/object';
 
 let Metric = EmberObject.extend({
-  SUM: 'Sum',
-  COUNT: 'Count',
-  MIN: 'Minimum',
-  MAX: 'Maximum',
-  AVG: 'Average',
 
   init() {
     this._super(...arguments);
-    this.set('INVERSE', {
-      'Sum': 'SUM',
-      'Count': 'COUNT',
-      'Minimum': 'MIN',
-      'Maximum': 'MAX',
-      'Average': 'AVG'
-    });
+    let names = { SUM: 'Sum', COUNT: 'Count', MIN: 'Minimum', MAX: 'Maximum', AVG: 'Average' };
+    this.setProperties(names);
+    this.set('NAMES', names);
+    this.set('INVERSE', { 'Sum': 'SUM', 'Count': 'COUNT', 'Minimum': 'MIN', 'Maximum': 'MAX', 'Average': 'AVG' });
   },
 
   invert(key) {
@@ -30,29 +21,15 @@ let Metric = EmberObject.extend({
   },
 
   asList() {
-    return [
-      EmberObject.create({ name: this.get('SUM') }), EmberObject.create({ name: this.get('COUNT') }),
-      EmberObject.create({ name: this.get('MIN') }), EmberObject.create({ name: this.get('MAX') }),
-      EmberObject.create({ name: this.get('AVG') })
-    ];
+    return [this.SUM, this.COUNT, this.MIN, this.MAX, this.AVG];
   }
 });
 
 export const METRICS = Metric.create();
 
-let Validations = buildValidations({
-  field: validator('metric-field'),
-  aggregation: validator('belongs-to')
-});
-
-export default DS.Model.extend(Validations, {
-  type: DS.attr('string', { defaultValue: METRICS.get('SUM') }),
-  field: DS.attr('string'),
-  name: DS.attr('string'),
-  aggregation: DS.belongsTo('aggregation', { autoSave: true }),
-
-  hasNoField: computed('type', function() {
-    let type = this.get('type');
-    return type === 'Count';
-  })
-});
+export default class MetricModel extends Model {
+  @attr('string', { defaultValue: METRICS.get('SUM') }) type;
+  @attr('string') field;
+  @attr('string') name;
+  @belongsTo('aggregation', { autoSave: true }) aggregation;
+}

@@ -3,35 +3,44 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-.info-popover.popover {
-  $info-text-color: $heading-text-color;
-  max-width: 500px;
-  padding: 20px 30px 25px 20px;
-  font-family: $font-family-regular;
+.info-popover {
+  border-radius: 6px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 
-  .popover-title {
-    font-size: $font-size-regular;
-    font-weight: $font-weight-medium;
+  .info-popover-inner {
+    $info-text-color: $heading-text-color;
+    max-width: 500px;
+    padding: 20px 20px 25px 20px;
+    font-family: $font-family-regular;
     background: $white;
     color: $info-text-color;
-    // This makes the border line flush with the rest of the text
-    padding: 8px 0;
-    margin: 0 14px;
-  }
-  .popover-content {
-    max-height: 600px;
-    overflow: auto;
-    font-size: $font-size-regular-small;
-    font-weight: $font-weight-regular;
-    color: $info-text-color;
 
-    .content-header {
-      font-weight: $font-weight-strong;
-      margin-top: 25px;
-    }
-    .content-sub-header {
+    .info-popover-title {
+      font-size: $font-size-regular;
       font-weight: $font-weight-medium;
-      margin-top: 15px;
+      background: $white;
+      color: $info-text-color;
+      border-bottom: 1px solid $background-grey;
+      // This makes the border line flush with the rest of the text
+      padding: 8px 0;
+    }
+    .info-popover-content {
+      max-height: 600px;
+      overflow: auto;
+      font-size: $font-size-regular-small;
+      font-weight: $font-weight-regular;
+      color: $info-text-color;
+      padding: 10px 15px 0 0;
+      scrollbar-width: thin;
+
+      .content-header {
+        font-weight: $font-weight-strong;
+        margin-top: 25px;
+      }
+      .content-sub-header {
+        font-weight: $font-weight-medium;
+        margin-top: 15px;
+      }
     }
   }
 }

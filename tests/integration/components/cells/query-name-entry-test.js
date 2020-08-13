@@ -3,25 +3,19 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click, triggerEvent } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
-import MockQuery from '../../../helpers/mocked-query';
+import { hbs } from 'ember-cli-htmlbars';
+import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 
 module('Integration | Component | Cell | query name entry', function(hooks) {
   setupRenderingTest(hooks);
 
-  function wrap(query) {
-    return EmberObject.create({ content: query });
-  }
-
   test('it displays the real name if it is available', async function(assert) {
-    this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
-    assert.ok(this.element.textContent, 'foo');
+    this.set('mockRow', MockQuery.create({ name: 'foo' }));
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
+    assert.dom(this.element).hasText('foo');
   });
 
   test('it displays the summary if the name is not available', async function(assert) {
@@ -29,11 +23,10 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addFilter({ }, 'An Actual Filter Summary');
     query.addProjection('foo', 'f');
     query.addProjection('bar', 'b');
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
-    assert.ok(this.element.textContent, 'Filters: An Actual Filter Summary Columns: f,b');
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
+    assert.dom(this.element).hasText('Filters: An Actual Filter Summary Fields: fb Window: None');
   });
 
   test('it calls the table action queryClick on click with a given query', async function(assert) {
@@ -42,33 +35,33 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       queryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.query-name-entry');
   });
 
   test('it adds a hasHover class on mouse enter', async function(assert) {
     assert.expect(1);
-    this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
+    this.set('mockRow', MockQuery.create({ name: 'foo' }));
 
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    await triggerEvent('.query-name-entry', 'mouseover');
-    assert.ok(this.element.querySelector('.query-name-actions').classList.contains('is-visible'));
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
+    await triggerEvent('.query-name-entry', 'mouseenter');
+    assert.dom(this.element.querySelector('.query-name-actions')).hasClass('is-visible');
   });
 
   test('it removes the hasHover class on mouse leave', async function(assert) {
     assert.expect(2);
-    this.set('mockRow', wrap(MockQuery.create({ name: 'foo' })));
+    this.set('mockRow', MockQuery.create({ name: 'foo' }));
 
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    await triggerEvent('.query-name-entry', 'mouseover');
-    assert.ok(this.element.querySelector('.query-name-actions').classList.contains('is-visible'));
-    await triggerEvent('.query-name-entry', 'mouseout');
-    assert.notOk(this.element.querySelector('.query-name-actions').classList.contains('is-visible'));
+    await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
+    await triggerEvent('.query-name-entry', 'mouseenter');
+    assert.dom(this.element.querySelector('.query-name-actions')).hasClass('is-visible');
+    await triggerEvent('.query-name-entry', 'mouseleave');
+    assert.dom(this.element.querySelector('.query-name-actions')).hasNoClass('is-visible');
   });
 
   test('it calls the table action queryClick on clicking edit', async function(assert) {
@@ -77,12 +70,12 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       queryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.edit-icon');
   });
 
@@ -92,12 +85,12 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       deleteQueryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.delete-icon');
   });
 
@@ -107,12 +100,12 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       copyQueryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.copy-icon');
   });
 
@@ -122,51 +115,12 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     query.addProjection('foo', 'f');
     this.set('mockTableActions', {
       linkQueryClick(value) {
-        assert.equal(value.get('content'), query);
+        assert.equal(value, query);
       }
     });
-    this.set('mockRow', wrap(query));
+    this.set('mockRow', query);
 
-    await render(hbs`{{cells/query-name-entry tableActions=mockTableActions row=mockRow}}`);
+    await render(hbs`<Cells::QueryNameEntry @tableActions={{this.mockTableActions}} @row={{this.mockRow}}/>`);
     await click('.link-icon');
-  });
-
-  test('it displays an unsaved icon if the query is dirty', async function(assert) {
-    let query = MockQuery.create({ duration: 1 });
-    query.set('hasDirtyAttributes', true);
-    query.set('hasUnsavedFields', false);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
-  });
-
-  test('it displays an unsaved icon if the query has unsaved fields', async function(assert) {
-    let query = MockQuery.create({ duration: 1 });
-    query.set('hasDirtyAttributes', false);
-    query.set('hasUnsavedFields', true);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
-  });
-
-  test('it displays an unsaved icon if the query is invalid', async function(assert) {
-    let query = MockQuery.create({ duration: 1, shouldValidate: false });
-    query.set('hasDirtyAttributes', false);
-    query.set('hasUnsavedFields', false);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 1);
-    assert.equal(this.element.querySelectorAll('.query-unsaved .fa-exclamation-triangle').length, 1);
-  });
-
-  test('it does not display an unsaved icon if the query is valid', async function(assert) {
-    let query = MockQuery.create({ duration: 1 });
-    query.set('hasDirtyAttributes', false);
-    query.set('hasUnsavedFields', false);
-    this.set('mockRow', wrap(query));
-    await render(hbs`{{cells/query-name-entry row=mockRow}}`);
-    assert.equal(this.element.querySelectorAll('.query-unsaved').length, 0);
   });
 });

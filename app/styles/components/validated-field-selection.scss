@@ -19,9 +19,15 @@
     margin-bottom: 10px;
   }
 
+
+  .additional-selection {
+    @import "power-select-query-field";
+  }
+
   .field-selection {
     padding-left: 0;
   }
+
   .delete-button {
     @extend %remove-button;
     margin-top: 8px;

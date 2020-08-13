@@ -1,0 +1,461 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="query-panel {{if this.isListening "query-running"}}">
+
+  {{!-- Start Validation Section --}}
+  <div class="validation-container">
+    {{#if this.hasError}}
+      <SimpleAlert @type="error">
+        <span {{did-insert this.scrollIntoView}}>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
+        <ul class="error-list">
+          {{#each this.errors as |error|}}
+            {{#each error.validation as |message|}}
+            <li>{{message}}</li>
+            {{/each}}
+          {{/each}}
+        </ul>
+      </SimpleAlert>
+    {{else if this.hasSaved}}
+      <SimpleAlert @type="success">
+        <span {{did-insert this.scrollIntoView}}>SAVED TO BROWSER CACHE!</span>
+      </SimpleAlert>
+    {{/if}}
+  </div>
+  {{!-- End Validation Section --}}
+
+  {{!-- Start Form --}}
+  <div class="scrollable-panel">
+    <div class="container-fluid name-container">
+      <div class="col-xs-12 query-name">
+        <LabeledInput @value={{this.queryChangeset.name}}
+                      @label="Name" @type="text" @placeholder="Name Your Query" @maxlength={{80}}
+                      @disabled={{this.isListening}}/>
+      </div>
+    </div>
+
+    {{!-- Start Filter Section --}}
+    <div class="container-fluid filter-container">
+      <div class="section-header">
+        <h3 class="section-title">Filters</h3>
+        <InfoPopover @title="Filters">
+          <Popovers::FilterHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </div>
+      <div class="{{this.queryBuilderClass}}" {{did-insert this.addQueryBuilder}}/>
+    </div>
+    {{!-- End Filter Section --}}
+
+
+    {{!-- Start Aggregation Section --}}
+    <div class="container-fluid output-container">
+      <div class="section-header">
+        <h3 class="section-title">Output Data</h3>
+        <InfoPopover @title="Output Data">
+          <Popovers::OutputDataHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </div>
+
+      <div class="output-data-input">
+
+        <div class="subsection-header">Select your Output Type</div>
+        <div class="output-options">
+          <RadioButton @id="raw" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addRawAggregation false}} @updated={{fn (mut this.outputDataType)}}
+                       @value={{this.AGGREGATION_TYPES.RAW}} @disabled={{this.isListening}}>
+            Raw Data
+          </RadioButton>
+          <RadioButton @id="grouped-data" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addGroupAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       @value={{this.AGGREGATION_TYPES.GROUP}} @disabled={{this.isListening}}>
+            Group Data
+          </RadioButton>
+          <RadioButton @id="count-distinct" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addCountDistinctAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       @value={{this.AGGREGATION_TYPES.COUNT_DISTINCT}} @disabled={{this.isListening}}>
+            Count Distinct
+          </RadioButton>
+          <RadioButton @id="distribution" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}} @value={{this.AGGREGATION_TYPES.DISTRIBUTION}} @disabled={{this.isListening}}>
+            Distribution
+          </RadioButton>
+          <RadioButton @id="top-k" @checkedValue={{this.outputDataType}}
+                       @changed={{fn this.addTopKAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       @value={{this.AGGREGATION_TYPES.TOP_K}} @disabled={{this.isListening}}>
+            Top K
+          </RadioButton>
+        </div>
+
+        <div class="output-container">
+          {{#if this.isRawAggregation}}
+            <div class="subsection-header">Select your Fields</div>
+            <div class="raw-sub-options inline-radio-buttons">
+              <RadioButton @id="all" @checkedValue={{this.rawType}}
+                           @changed={{fn this.deleteProjections}} @updated={{fn (mut this.rawType)}}
+                           @value={{this.RAW_TYPES.ALL}} @disabled={{this.isListening}}>
+                Show All Fields
+              </RadioButton>
+              <RadioButton @id="select" @checkedValue={{this.rawType}}
+                           @changed={{fn this.addRawAggregation true}} @updated={{fn (mut this.rawType)}}
+                           @value={{this.RAW_TYPES.SELECT}} @disabled={{this.isListening}}>
+                Select Fields
+              </RadioButton>
+            </div>
+            <div class="output-nested-container">
+              {{#if this.showRawSelections}}
+                <div class="fields-selection-container projections-container">
+                  {{#each this.projections as |changeset|}}
+                    <ValidatedFieldSelection
+                        @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteProjections}}
+                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                        @onDelete={{fn this.deleteFieldLike changeset this.projections}} @fieldClasses="col-xs-6"
+                        @nameClasses="col-xs-4" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                  {{/each}}
+                  <button type="button" {{on "click" (fn this.addFieldLike "projection" this.projections)}}
+                          disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-projection">
+                    {{fa-icon "plus"}} Field
+                  </button>
+                </div>
+              {{/if}}
+            </div>
+          {{/if}}
+
+          {{#if this.isGroupAggregation}}
+            <div class="output-nested-container">
+              <div class="fields-selection-container groups-container">
+                <div class="subsection-header">Select Group Fields</div>
+                {{#each this.groups as |changeset|}}
+                  <ValidatedFieldSelection
+                      @changeset={{changeset}} @columns={{this.columns}}
+                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-6"
+                      @nameClasses="col-xs-5" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                {{/each}}
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-group">
+                  {{fa-icon "plus"}} Group Field
+                </button>
+              </div>
+
+              <br/>
+
+              <div class="fields-selection-container metrics-container">
+                <div class="subsection-header">Select Metric Fields</div>
+                {{#each this.metrics as |changeset|}}
+                  <ValidatedFieldSelection
+                      @changeset={{changeset}} @columns={{this.columns}}
+                      @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
+                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.metrics}}
+                      @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="type"
+                      @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection" @fieldClasses="col-xs-5"
+                      @nameClasses="col-xs-3" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}>
+                  </ValidatedFieldSelection>
+                {{/each}}
+                <button type="button" {{on "click" (fn this.addFieldLike "metric" this.metrics)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-metric">
+                  {{fa-icon "plus"}} Metric Field
+                </button>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if this.isCountDistinctAggregation}}
+            <div class="output-nested-container">
+              <div class="subsection-header">Select your Fields</div>
+              <div class="fields-selection-container fields-container">
+                {{#each this.groups as |changeset|}}
+                  <ValidatedFieldSelection
+                      @changeset={{changeset}} @columns={{this.columns}}
+                      @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}}
+                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-10"
+                      @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                {{/each}}
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                  {{fa-icon "plus"}} Field
+                </button>
+              </div>
+
+              <div class="subsection-header">Rename Count Field</div>
+              <div class="row narrow-row count-distinct-display-name">
+                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
+                              @onChange={{fn this.changeAttribute "newName"}}
+                              @label="Display Name"@classNames="col-xs-2" @type="text" @placeholder="Optional"
+                              @disabled={{this.isListening}}/>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if this.isDistributionAggregation}}
+            <div class="output-nested-container">
+              <div class="subsection-header">Select Distribution</div>
+              <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
+                <RadioButton @id="quantile" @checkedValue={{this.distributionType}}
+                              @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.QUANTILE}}
+                              @updated={{fn (mut this.distributionType)}}
+                              @value={{this.DISTRIBUTION_TYPES.QUANTILE}} @disabled={{this.isListening}}>
+                  Quantiles
+                </RadioButton>
+                <RadioButton @id="frequency" @checkedValue={{this.distributionType}}
+                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.PMF}}
+                             @updated={{fn (mut this.distributionType)}}
+                             @value={{this.DISTRIBUTION_TYPES.PMF}} @disabled={{this.isListening}}>
+                  Frequencies
+                </RadioButton>
+                <RadioButton @id="cumulative" @checkedValue={{this.distributionType}}
+                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.CDF}}
+                             @updated={{fn (mut this.distributionType)}}
+                             @value={{this.DISTRIBUTION_TYPES.CDF}} @disabled={{this.isListening}}>
+                  Cumulative Frequencies
+                </RadioButton>
+              </div>
+
+              <div class="subsection-header">Select a Field</div>
+              <div class="fields-selection-container fields-container">
+                {{#each this.groups as |changeset|}}
+                  <ValidatedFieldSelection
+                      @changeset={{changeset}} @columns={{this.columns}}
+                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                      @enableRenaming={{false}} @enableDeleting={{false}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-10"
+                      @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                {{/each}}
+              </div>
+
+              <div class="subsection-header">Select how your Points are created</div>
+              <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
+                <RadioButton @id="number-points" @checkedValue={{this.pointType}}
+                             @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}}
+                             @updated={{fn (mut this.pointType)}}
+                             @value={{this.DISTRIBUTION_POINT_TYPES.NUMBER}} @disabled={{this.isListening}}>
+                  Evenly spaced points
+                </RadioButton>
+                <RadioButton @id="generate-points" @checkedValue={{this.pointType}}
+                             @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.GENERATED}}
+                             @updated={{fn (mut this.pointType)}}
+                             @value={{this.DISTRIBUTION_POINT_TYPES.GENERATED}} @disabled={{this.isListening}}>
+                  Evenly spaced points in a region
+                </RadioButton>
+                <RadioButton @id="points" @checkedValue={{this.pointType}}
+                             @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.POINTS}}
+                             @updated={{fn (mut this.pointType)}}
+                             @value={{this.DISTRIBUTION_POINT_TYPES.POINTS}} @disabled={{this.isListening}}>
+                  Define points
+                </RadioButton>
+              </div>
+
+              {{#if this.isNumberOfPoints}}
+                <div class="row narrow-row distribution-type-number-of-points">
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.numberOfPoints"
+                                  @label="Number of Points" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                </div>
+              {{else if this.isPoints}}
+                <div class="row narrow-row distribution-type-points">
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.points"
+                                  @label="Points" @classNames="col-xs-4" @maxlength={{131072}}
+                                  @placeholder="Comma separated numbers" @disabled={{this.isListening}}
+                                  @forceValidate={{this.isValidating}}/>
+                </div>
+              {{else if this.isGeneratedPoints}}
+                <div class="row narrow-row distribution-type-point-range">
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.start"
+                                  @label="Start" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.end"
+                                  @label="End" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.increment"
+                                  @label="Increment" @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                </div>
+              {{/if}}
+            </div>
+          {{/if}}
+
+          {{#if this.isTopKAggregation}}
+            <div class="output-nested-container">
+              <div class="subsection-header">Select Fields</div>
+              <div class="fields-selection-container fields-container">
+                {{#each this.groups as |changeset|}}
+                  <ValidatedFieldSelection
+                      @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteField}}
+                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
+                      @onDelete={{fn this.deleteFieldLike changeset this.groups}} @fieldClasses="col-xs-6"
+                      @nameClasses="col-xs-5" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                {{/each}}
+                <button type="button" {{on "click" (fn this.addFieldLike "group" this.groups)}}
+                        disabled={{this.isListening}} class="btn btn-primary btn-xs add-button add-field">
+                  {{fa-icon "plus"}} Field
+                </button>
+              </div>
+              <div class="subsection-header">Select the maximum number of results</div>
+              <div class="row narrow-row top-k-size">
+                <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="K"
+                                @classNames="col-xs-2" @type="number" @placeholder="Number"
+                                @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+              </div>
+              <div class="subsection-header">Having Minimum Count</div>
+              <div class="row narrow-row top-k-min-count">
+                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.threshold"}}
+                              @onChange={{fn this.changeAttribute "threshold"}}
+                              @label="Minimum Count" @classNames="col-xs-2" @type="number" @placeholder="Optional"
+                              @disabled={{this.isListening}}/>
+              </div>
+              <div class="subsection-header">Rename Count Field</div>
+              <div class="row narrow-row top-k-display-name">
+                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
+                              @onChange={{fn this.changeAttribute "newName"}}
+                              @label="Display Name" @classNames="col-xs-2" @placeholder="Optional"
+                              @disabled={{this.isListening}}/>
+              </div>
+            </div>
+          {{/if}}
+
+          <div class="help">
+            {{#if this.isRawAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Raw Data">
+                <Popovers::RawDataHelp @settings={{this.settings}}/>
+              </InfoPopover>
+            {{else if this.isGroupAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Group Data">
+                <Popovers::GroupDataHelp @settings={{this.settings}}/>
+              </InfoPopover>
+            {{else if this.isCountDistinctAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Count Distinct">
+                <Popovers::CountDistinctHelp @settings={{this.settings}}/>
+              </InfoPopover>
+            {{else if this.isDistributionAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Distribution">
+                <Popovers::DistributionHelp @settings={{this.settings}}/>
+              </InfoPopover>
+            {{else if this.isTopKAggregation}}
+              <InfoPopover @isButton={{false}} @additionalText="Need more help?" @title="Top K">
+                <Popovers::TopKHelp @settings={{this.settings}}/>
+              </InfoPopover>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{!-- End Aggregation Section --}}
+
+    {{!-- Start Window Section --}}
+    <div class="container-fluid window-container">
+      <div class="section-header">
+        <h3 class="section-title">Windowing</h3>
+        <InfoPopover @title="Window">
+          <Popovers::WindowHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </div>
+      <div class="window-input">
+
+        {{#if this.noWindow}}
+          <div class="no-window-section">
+            <button type="button" {{on "click" this.addWindow}} disabled={{this.isListening}}
+                    class="btn btn-primary btn-xs add-button">
+              {{fa-icon "plus"}} Window
+            </button>
+          </div>
+        {{else}}
+          <div class="window-section">
+            <div class="subsection-header">
+              <span>Select how your window emits</span>
+              <button type="button" {{on "click" this.deleteWindow}} disabled={{this.isListening}}
+                      class="btn btn-xs btn-danger pull-right delete-button">
+                {{fa-icon "close"}}
+              </button>
+            </div>
+
+            <div class="emit-type-options">
+              <RadioButton @id="time-based" @checkedValue={{this.emitType}}
+                           @changed={{fn this.changeEmitType this.EMIT_TYPES.TIME}}
+                           @updated={{fn (mut this.emitType)}}
+                           @value={{this.EMIT_TYPES.TIME}} @disabled={{this.isListening}}>
+                {{this.EMIT_TYPES.TIME}}
+              </RadioButton>
+              <RadioButton @id="record-based" @checkedValue={{this.emitType}}
+                           @changed={{fn this.changeEmitType this.EMIT_TYPES.RECORD}}
+                           @updated={{fn (mut this.emitType)}}
+                           @value={{this.EMIT_TYPES.RECORD}} @disabled={{this.recordBasedWindowDisabled}}>
+                {{this.EMIT_TYPES.RECORD}}
+              </RadioButton>
+            </div>
+
+            <div class="subsection-header">Emit Every</div>
+            <div class="row">
+              <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label={{this.everyFieldName}}
+                              @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
+                              @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+            </div>
+
+            {{#if this.isTimeBasedWindow}}
+              <div class="subsection-header">Select what is included in each window</div>
+              <div class="include-type-options">
+                <RadioButton @id="include-window" @checkedValue={{this.includeType}}
+                             @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}}
+                             @updated={{fn (mut this.includeType)}}
+                             @value={{this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
+                  {{this.INCLUDE_TYPES.WINDOW}}
+                </RadioButton>
+                <RadioButton @id="include-all" @checkedValue={{this.includeType}}
+                             @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}}
+                             @updated={{fn (mut this.includeType)}}
+                             @value={{this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>
+                  {{this.INCLUDE_TYPES.ALL}}
+                </RadioButton>
+              </div>
+              {{#if this.isRawAggregation}}
+                <div class="row">
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="Maximum Rows in Window"
+                                  @classNames="col-xs-3 window-size" @type="number" @placeholder="Number"
+                                  @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+                </div>
+              {{/if}}
+            {{/if}}
+
+          </div>
+        {{/if}}
+
+      </div>
+    </div>
+    {{!-- End Window Section --}}
+
+
+    {{!-- Start Options Section --}}
+    <div class="container-fluid options-container">
+      <div class="section-header">
+        <h3 class="section-title">Query Stop Criteria</h3>
+        <InfoPopover @title="Query Stop Criteria">
+          <Popovers::OptionsHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </div>
+
+      <div class="row">
+        {{#if this.showAggregationSize}}
+          <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="Maximum Result Count"
+                          @classNames="col-xs-2 aggregation-size" @type="number" @placeholder="Number"
+                          @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+        {{/if}}
+        <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
+                        @classNames="col-xs-2 query-duration" @type="number" @placeholder="Number"
+                        @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
+      </div>
+    </div>
+    {{!-- End Options Section --}}
+
+  </div>
+  {{!-- End Form --}}
+
+  <div class="container-fluid control-container">
+    <hr/>
+    <button type="submit" disabled={{this.isListening}} class="btn btn-primary btn-md submit-button" {{on "click" this.listen}}>Run Query</button>
+    <button type="button" disabled={{this.isListening}} class="btn btn-default btn-md save-button" {{on "click" this.save}}>Save Query</button>
+  </div>
+
+
+</div>

@@ -14,7 +14,7 @@
       }
     ],
     "bugLink": "https://github.com/bullet-db/bullet-ui/issues",
-    "modelVersion": 3,
+    "modelVersion": 4,
     "migrations": {
       "deletions": "query"
     },

@@ -4,12 +4,12 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberRouter from '@ember/routing/router';
-import config from './config/environment';
+import config from 'bullet-ui/config/environment';
 
-const Router = EmberRouter.extend({
-  location: config.locationType,
-  rootURL: config.rootURL
-});
+export default class Router extends EmberRouter {
+  location = config.locationType;
+  rootURL = config.rootURL;
+}
 
 Router.map(function() {
   this.route('queries', function() {
@@ -22,8 +22,6 @@ Router.map(function() {
   this.route('result', { path: 'result/:result_id' });
 
   this.route('errored');
-  this.route('missing', { path: '*path' });
+  this.route('missing', { path: '/*' });
   this.route('schema');
 });
-
-export default Router;

@@ -1,0 +1,43 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="row field-selection-container validated-field-selection {{if this.isInvalid "has-error"}}"
+     {{did-update this.validateAll @forceValidate}}>
+  {{#if this.isInvalid}}
+    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @errors={{this.errors}}/>
+  {{/if}}
+
+  {{#if this.enableAdditionalOptions}}
+    <div class="{{@additionalClasses}} additional-selection">
+      <label class="power-select-label">{{@additionalLabel}}</label>
+      <PowerSelect @selected={{get @changeset @additionalPath}} @options={{@additionalOptions}}
+                   @onChange={{this.onModifyAdditionalOption}} @disabled={{@disabled}} as |item|>
+        {{item}}
+      </PowerSelect>
+    </div>
+  {{/if}}
+
+  {{#unless this.disableField}}
+    <div class="{{@fieldClasses}} field-selection">
+      <ColumnField @columns={{@columns}} @initialValue={{@changeset.field}} @subfieldKey="show_subfield"
+                   @subfieldSeparator={{@subfieldSeparator}} @subfieldSuffix={{@subfieldSuffix}}
+                   @onDone={{this.onModifyField}} @disabled={{@disabled}} />
+    </div>
+  {{/unless}}
+
+  {{#if this.enableRenaming}}
+    <div class="{{@nameClasses}} field-name">
+      <LabeledInput @label="Display Name" @value={{@changeset.name}}
+                    @onChange={{this.onModifyName}}
+                    @type="text" @placeholder="Optional" @disabled={{@disabled}} />
+    </div>
+  {{/if}}
+  {{#if this.enableDeleting}}
+    <button type="button" {{on "click" this.onDelete}} disabled={{@disabled}}
+            class="btn btn-danger btn-xs delete-button pull-right">
+      {{fa-icon "close"}}
+    </button>
+  {{/if}}
+</div>

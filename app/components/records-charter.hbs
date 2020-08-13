@@ -1,0 +1,53 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="records-charter" {{did-update this.reset @timeSeriesMode @model}}>
+  <div class="visual-controls">
+    <button type="button" class="pivot-control {{if this.pivotMode "active"}}" disabled={{this.pivotMode}}
+            {{on "click" this.togglePivot}}>
+      {{fa-icon "sliders"}}
+      <EmberTooltip>Slice, dice and visualize your data</EmberTooltip>
+    </button>
+    {{#unless this.canOnlyPivot}}
+      {{#if this.canShowPieChart}}
+        <button type="button" class="chart-control pie-view {{if this.showPieChart "active"}}"
+                disabled={{this.showPieChart}} {{on "click" (fn this.changeChart "showPieChart")}}>
+          {{fa-icon "pie-chart"}}
+          <EmberTooltip>Show as pie chart</EmberTooltip>
+        </button>
+      {{/if}}
+      <button type="button" class="chart-control line-view {{if this.showLineChart "active"}}"
+              disabled={{this.showLineChart}} {{on "click" (fn this.changeChart "showLineChart")}}>
+        {{fa-icon "line-chart"}}
+        <EmberTooltip>Show as line chart</EmberTooltip>
+      </button>
+      <button type="button" class="chart-control bar-view {{if this.showBarChart "active"}}"
+              disabled={{this.showBarChart}} {{on "click" (fn this.changeChart "showBarChart")}}>
+        {{fa-icon "bar-chart"}}
+        <EmberTooltip @side="left">Show as bar chart</EmberTooltip>
+      </button>
+    {{/unless}}
+  </div>
+
+  <div class="visual-container">
+    {{#if this.pivotMode}}
+      <PivotTable @rows={{@rows}} @initialOptions={{this.pivotOptions}} @onRefresh={{this.saveOptions}}/>
+    {{else if @timeSeriesMode}}
+      {{#if this.showLineChart}}
+        <EmberChart @type="line" @animate={{false}} @data={{this.timeSeriesData}} @options={{this.timeSeriesOptions}}/>
+      {{else}}
+        <EmberChart @type="bar" @animate={{false}} @data={{this.timeSeriesData}} @options={{this.timeSeriesOptions}}/>
+      {{/if}}
+    {{else}}
+      {{#if this.showPieChart}}
+        <EmberChart @type="doughnut" @animate={{true}} @data={{this.regularData}} @options={{this.regularOptions}}/>
+      {{else if this.showLineChart}}
+        <EmberChart @type="line" @animate={{true}} @data={{this.regularData}} @options={{this.regularOptions}}/>
+      {{else}}
+        <EmberChart @type="bar" @animate={{true}} @data={{this.regularData}} @options={{this.regularOptions}}/>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>

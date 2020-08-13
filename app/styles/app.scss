@@ -11,6 +11,7 @@ $ember-power-select-focus-box-shadow: none;
 @import "ember-power-select";
 @import "variables";
 @import "common-buttons";
+@import "tooltips";
 @import "top-bar";
 @import "left-bar";
 @import "queries";
@@ -19,19 +20,6 @@ $ember-power-select-focus-box-shadow: none;
 @import "schema";
 @import "errored";
 @import "missing";
-// @import "scrollbar-styling";
-
-%tooltip {
-  font-size: $font-size-regular-small;
-  font-family: $font-family-regular;
-  font-weight: $font-weight-regular;
-  color: $white !important;
-  background-color: $inactive-grey;
-  border-radius: 1px;
-  padding: 6px 12px;
-  z-index: 100;
-  text-shadow: none;
-}
 
 .main-wrapper {
   padding-left: $left-bar-width;
@@ -46,16 +34,5 @@ body {
   }
   .modal-backdrop {
     background-color: $white;
-  }
-
-  .tooltip, .ember-tooltip {
-    @extend %tooltip;
-  }
-
-  .popover-wrapper {
-    // Popovers are attached to the body
-    @import "components/popovers/record-entry-popover";
-    @import "components/popovers/query-results-entry-popover";
-    @import "components/popovers/info-popover";
   }
 }

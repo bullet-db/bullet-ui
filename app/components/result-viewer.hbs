@@ -1,0 +1,87 @@
+{{!--
+  Copyright 2018, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+--}}
+
+{{!-- This did-update is here to reset state when the query is rerun and model changes but the components don't --}}
+<div class="result-viewer" {{did-update this.reset @result}}>
+  <div class="control-container">
+
+    <div class="mode-control-wrapper">
+        <div class="mode-control auto-update-wrapper {{unless this.showAutoUpdate "no-visibility"}}">
+          <span>AutoUpdate</span>
+          <ModeToggle @isToggled={{this.autoUpdate}} @onToggle={{fn this.changeAutoUpdate}}/>
+          <EmberTooltip @side="right" @text="Automatically show the latest data when it arrives"/>
+        </div>
+        <div class="mode-control time-series-wrapper {{unless this.showTimeSeries "no-visibility"}}">
+          <span>TimeSeries</span>
+          <ModeToggle @isToggled={{this.timeSeriesMode}} @onToggle={{fn this.changeTimeSeriesMode}}/>
+          <EmberTooltip @side="right" @text="Compare data across your windows against the first numeric column in your data"/>
+        </div>
+    </div>
+
+    {{#unless this.hasError}}
+
+      <div class="window-selector">
+        {{#unless this.appendRecordsMode}}
+          {{#if this.isTimeWindow}}
+            <div class="progress-indicator window-progress-indicator">
+              <TimedProgressBar @shape="Line" @isActive={{this.isRunningQuery}} @duration={{this.windowDuration}}
+                                @retriggerOnChangeIn={{this.numberOfWindows}} @useStep={{false}}/>
+              <EmberTooltip @side="top" @text="Your next estimated window arrival time"/>
+            </div>
+          {{/if}}
+        {{/unless}}
+
+        {{#unless this.hasNoWindow}}
+          <PowerSelect @selected={{this.selectedWindow}} @options={{@result.windows}}
+                       @placeholderComponent={{component "result-window-placeholder"
+                                                         windowCount=this.numberOfWindows
+                                                         aggregateMode=this.aggregateMode}}
+                       @searchEnabled={{true}} @searchField="sequence"
+                       @searchPlaceholder="Search with your window number in the metadata..."
+                       @onChange={{this.changeWindow}} @disabled={{this.aggregateMode}} as |window|>
+            <span class="window-number"><strong>#{{window.sequence}}:</strong></span>
+            <span class="window-size">{{window.records.length}}</span> records at
+            <span class="window-time">{{moment-format window.created "dddd, hh:mm:ss a"}}</span>
+          </PowerSelect>
+        {{/unless}}
+
+      </div>
+
+      <div class="progress-indicator query-progress-indicator">
+        <TimedProgressBar @shape="Circle" @isActive={{this.isRunningQuery}} @duration={{this.queryDuration}}
+                          @retriggerOnChangeIn={{this.isRunningQuery}}/>
+        <EmberTooltip @side="left" @text="How long your query has been running compared to its total duration"/>
+      </div>
+
+    {{/unless}}
+  </div>
+
+  {{#if this.hasData}}
+    <div class="information-container window-information">
+      <span class="section-header">
+        <h3 class="section-title">Results</h3>
+        <InfoPopover @title="Results">
+          <Popovers::ResultsHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </span>
+      <WindowMetadata @metadata={{this.metadata}}/>
+    </div>
+  {{/if}}
+
+  <div class="records-container">
+    {{#if this.hasError}}
+      <QueryKilled/>
+    {{else if this.hasData}}
+      <RecordsViewer @records={{this.records}} @metadata={{this.metadata}} @config={{this.config}}
+                     @appendMode={{this.aggregateMode}} @timeSeriesMode={{this.timeSeriesMode}}
+                     @model={{@result}} @settings={{this.settings}}/>
+    {{else if this.isRunningQuery}}
+      <RunningQuery/>
+    {{else}}
+      <NoData/>
+    {{/if}}
+  </div>
+</div>

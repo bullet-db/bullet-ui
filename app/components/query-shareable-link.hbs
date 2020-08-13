@@ -1,0 +1,17 @@
+{{!--
+  Copyright 2017, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="query-shareable-link">
+  <div class="link-wrapper">
+    <Input @id={{this.queryID}} @value={{this.queryLink}} @type="text" @readonly={{true}} @maxlength={{16384}} />
+    {{#if (is-clipboard-supported)}}
+      <CopyButton @clipboardTarget={{this.queryIDSelector}}>
+          {{fa-icon "clipboard" class="copy-icon"}}
+          <EmberTooltip @side="bottom">Copy to your clipboard</EmberTooltip>
+      </CopyButton>
+    {{/if}}
+  </div>
+  {{fa-icon "chevron-up" class="collapse-icon" click=(fn this.collapse)}}
+</div>

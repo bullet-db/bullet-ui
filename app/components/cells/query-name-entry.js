@@ -3,50 +3,44 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { resolve } from 'rsvp';
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: ['query-name-entry'],
-  tagName: 'div',
-  hasHover: false,
+export default class QueryNameEntryComponent extends Component {
+  @tracked hasHover = false;
 
-  isUnsaved: computed('row', function() {
-    let query = this.get('row.content');
-    if (query.get('hasDirtyAttributes') || query.get('hasUnsavedFields')) {
-      return resolve(true);
-    }
-    return query.validate().then(hash => !hash.validations.get('isValid'));
-  }),
-
-  click() {
-    this.get('tableActions.queryClick')(this.get('row'));
-  },
-
-  mouseEnter() {
-    this.set('hasHover', true);
-  },
-
-  mouseLeave() {
-    this.set('hasHover', false);
-  },
-
-  actions: {
-    editClick() {
-      this.get('tableActions.queryClick')(this.get('row'));
-    },
-
-    copyClick() {
-      this.get('tableActions.copyQueryClick')(this.get('row'));
-    },
-
-    linkClick() {
-      this.get('tableActions.linkQueryClick')(this.get('row'));
-    },
-
-    deleteClick() {
-      this.get('tableActions.deleteQueryClick')(this.get('row'));
-    }
+  @action
+  onMouseEnter() {
+    this.hasHover = true;
   }
-});
+
+  @action
+  onMouseLeave() {
+    this.hasHover = false;
+  }
+
+  @action
+  onClick(event) {
+    event.stopPropagation();
+    this.args.tableActions.queryClick(this.args.row);
+  }
+
+  @action
+  onCopyClick(event) {
+    event.stopPropagation();
+    this.args.tableActions.copyQueryClick(this.args.row);
+  }
+
+  @action
+  onLinkClick() {
+    event.stopPropagation();
+    this.args.tableActions.linkQueryClick(this.args.row);
+  }
+
+  @action
+  onDeleteClick(event) {
+    event.stopPropagation();
+    this.args.tableActions.deleteQueryClick(this.args.row);
+  }
+}

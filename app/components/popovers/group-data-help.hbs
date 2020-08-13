@@ -1,0 +1,42 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<p>
+  If selected, you can group the data that matches your filters by certain fields. You group by these fields and perform metrics per each unique combination of these. Note that this automatically causes the Result Page to show your results in the table view.
+</p>
+<h6 class="content-sub-header">Group Fields</h6>
+<p>
+  Here you can select fields to group by. Each distinct combination of values in all the fields you add here will show up as rows in your result. You can get all the <strong>distinct</strong> values for your fields by simply not adding any metric fields. You can also  optionally rename the fields you select here. Note that when you are performing a Count Distinct operation, the new names you choose for the fields are ignored as there is only a single field in the result representing the Count Distinct value. You have to rename that field in the metric
+  fields section.
+</p>
+<h6 class="content-sub-header">Metric Fields</h6>
+<p>
+  Here you can select operations to apply per each distinct combination of values in the fields you have added as your group fields. If you have not added any group fields, you will be performing these metrics over <strong>all</strong> the data that matches your filters.
+</p>
+  These are the metric types supported currently. You are allowed to perform some of these metrics (Sum, Minimum, Maximum, Average) on non-numeric fields. The system will attempt to coerce the value to a number if possible or ignore the value if it cannot. Note that all numeric
+  metric values in the outputs will be <strong>decimal values</strong> except for the result of the Count metric.
+<p>
+  <ul>
+    <li>
+      <strong>Sum</strong>: Performs a Sum operation across the field you select per group or across your data if there were no group fields added.
+    </li>
+    <li>
+      <strong>Count</strong>: Counts the records per group or across your data. Note that you cannot select a field because you will be getting a count per group or across your data if there were no group fields. Null values for a field will also be counted.
+    </li>
+    <li>
+      <strong>Minimum</strong>: Finds the minimum value for the field you select per group or across your data if there were no groups.
+    </li>
+    <li>
+      <strong>Maximum</strong>: Finds the maximum value for the field you select per group or across your data if there were no groups.
+    </li>
+    <li>
+      <strong>Average</strong>: Finds the average value for the field you select per group or across your data if there were no groups.
+    </li>
+  </ul>
+</p>
+<h5 class="content-header">Constraints</h5>
+<p>
+  As a result, the maximum number of groups that Bullet will can track for the data is <strong>{{@settings.defaultValues.sketches.groupByMaxEntries}}</strong>. If your group fields have more unique combinations than this, you will get a <strong>uniform</strong> sample across these unique values. In other words, if there are more groups than can be returned, there is no guarantee of which of your group values and metrics (i.e. your result rows) will be returned. You should reach out to the maintainer if you do find practical queries that cannot be performed adequately because of the limits chosen here.
+</p>

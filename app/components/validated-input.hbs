@@ -1,0 +1,18 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+ <div class="validated-input {{if this.isInvalid "has-error"}}"
+      {{did-update this.validate @forceValidate @changeset}}>
+  {{#if this.isInvalid}}
+    <ValidationTooltip @tooltipPosition={{this.tooltipPosition}} @errors={{this.errors}}/>
+  {{/if}}
+  {{!-- Unlike passing in @value bound to our changeset directly for Input, we need the onChange action to update it
+        since we are going through the LabeledInput --}}
+  <LabeledInput @label={{@label}} @value={{changeset-get @changeset @valuePath}}
+                @onChange={{this.onChange}} @classNames={{@classNames}}
+                @maxlength={{@maxlength}} @disabled={{@disabled}} @type={{@type}} @placeholder={{@placeholder}}
+                ...attributes/>
+
+</div>

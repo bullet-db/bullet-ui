@@ -3,20 +3,16 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  classNames: ['window-metadata'],
-  classNameBindings: ['expanded:is-expanded'],
-  expanded: false,
-  expansionIconClasses: computed('expanded', function() {
-    return this.get('expanded') ? 'fa fa-chevron-up' : 'fa fa-chevron-down';
-  }),
+export default class WindowMetadataComponent extends Component {
+  @tracked expanded = false;
 
-  actions: {
-    toggleExpanded() {
-      this.toggleProperty('expanded');
-    }
+  @action
+  onToggleExpanded(event) {
+    event.stopPropagation();
+    this.expanded = !this.expanded;
   }
-});
+}

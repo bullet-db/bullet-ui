@@ -1,0 +1,33 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div role="button" class="query-results-entry {{if this.hasPopover "has-popover"}}" {{on "click" this.showPopover}}>
+  {{#if this.hasPopover}}
+    <p class="length-entry"> <span><strong>{{@value.length}}</strong></span> Results</p>
+    {{!-- template-lint-disable no-nested-interactive --}}
+    <div class="query-results-entry-popover">
+      <EmberPopover @event="none" @isShown={{this.showingPopover}} @tooltipClass="query-results-entry-popover-wrapper"
+                    @innerClass="query-results-entry-popover-inner" @arrowClass="query-results-entry-popover-arrow"
+                    @side="left" @popperOptions={{this.popperOptions}} as |popover|>
+        <div class="query-results-entry-popover-title">
+          <span class="heading">Result History ({{@value.length}})</span>
+          <span role="button" class="clear-history" {{on "click" this.deleteResultsClick}}>Clear</span>
+        </div>
+        <div class="query-results-entry-popover-body">
+          {{!-- This calls hide on popover which is the only reliable way it closes with race conditions without hacks --}}
+          {{!-- template-lint-disable no-action --}}
+          <button type="button" class="btn btn-xs close-button" aria-label="Close"
+                  {{on "click" this.closePopover}} {{action "hide" target=popover}}>
+            {{fa-icon "close" tagName="span"}}
+          </button>
+          <ResultsTable @results={{@value}} @resultClick={{fn this.resultClick}}
+                        @deleteResultsClick={{fn this.deleteResultsClick}} />
+        </div>
+      </EmberPopover>
+    </div>
+  {{else}}
+    <p><strong>--</strong></p>
+  {{/if}}
+</div>

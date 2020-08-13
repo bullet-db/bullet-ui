@@ -6,16 +6,16 @@
 <div class="results-container">
   <div class="section query-section">
     <div class="information-container query-information">
-      {{query-information query=model.query querySnapshot=model.querySnapshot
-                          reRunClick=(route-action "reRunClick" model.query)
-                          cancelClick=(route-action "cancelClick")
-                          queryClick=(route-action "queryClick" model.query)}}
+      <QueryInformation @querySnapshot={{@model.result.querySnapshot}}
+                        @reRunClick={{fn (route-action "reRunClick")}}
+                        @cancelClick={{fn (route-action "cancelClick")}}
+                        @queryClick={{fn (route-action "queryClick")}}/>
     </div>
   </div>
 
   <div class="section result-section">
     <div class="result-viewer-container">
-      {{result-viewer result=model query=model.query}}
+      <ResultViewer @result={{@model.result}} @query={{@model.query}}/>
     </div>
   </div>
 </div>

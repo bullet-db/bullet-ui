@@ -3,21 +3,17 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
-import DS from 'ember-data';
-import { validator, buildValidations } from 'ember-cp-validations';
 import { equal } from '@ember/object/computed';
 
 let EmitTypes = EmberObject.extend({
-  TIME: 'Time Based',
-  RECORD: 'Record Based',
-
   init() {
     this._super(...arguments);
-    this.set('API', {
-      'Time Based': 'TIME',
-      'Record Based': 'RECORD'
-    });
+    let names = { TIME: 'Time Based', RECORD: 'Record Based' }
+    this.setProperties(names);
+    this.set('NAMES', names);
+    this.set('API', { 'Time Based': 'TIME', 'Record Based': 'RECORD' });
   },
 
   apiKey(key) {
@@ -26,14 +22,12 @@ let EmitTypes = EmberObject.extend({
 });
 
 let IncludeTypes = EmberObject.extend({
-  WINDOW: 'Everything in Window',
-  ALL: 'Everything from Start of Query',
-
   init() {
     this._super(...arguments);
-    this.set('API', {
-      'Everything from Start of Query': 'ALL'
-    });
+    let names = { WINDOW: 'Everything in Window', ALL: 'Everything from Start of Query' };
+    this.setProperties(names);
+    this.set('NAMES', names);
+    this.set('API', { 'Everything from Start of Query': 'ALL' });
   },
 
   apiKey(key) {
@@ -44,39 +38,11 @@ let IncludeTypes = EmberObject.extend({
 export const EMIT_TYPES = EmitTypes.create();
 export const INCLUDE_TYPES = IncludeTypes.create();
 
-let Validations = buildValidations({
-  'emit.every': {
-    description: 'Emit frequency', validators: [
-      validator('presence', true),
-      validator('number', {
-        integer: true,
-        allowString: true,
-        gte: 1,
-        message: 'Emit frequency must be a positive integer'
-      }),
-      validator('window-emit-frequency')
-    ]
-  },
-  query: validator('belongs-to')
-});
+export default class WindowModel extends Model {
+  @attr('string', { defaultValue: EMIT_TYPES.get('TIME') }) emitType;
+  @attr('number', { defaultValue: 2 }) emitEvery;
+  @attr('string', { defaultValue: INCLUDE_TYPES.get('WINDOW') }) includeType;
+  @belongsTo('query', { autoSave: true }) query;
 
-export default DS.Model.extend(Validations, {
-  emit: DS.attr({
-    defaultValue() {
-      return EmberObject.create({
-        type: EMIT_TYPES.get('TIME'),
-        every: 2
-      });
-    }
-  }),
-  include: DS.attr({
-    defaultValue() {
-      return EmberObject.create({
-        type: INCLUDE_TYPES.get('WINDOW')
-      });
-    }
-  }),
-  query: DS.belongsTo('query', { autoSave: true }),
-
-  isTimeBased: equal('emit.type', EMIT_TYPES.get('TIME'))
-});
+  @equal('emitType', EMIT_TYPES.get('TIME')) isTimeBased;
+}

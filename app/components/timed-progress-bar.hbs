@@ -1,0 +1,14 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+
+{{!-- The did-update on isActive is in here to KILL the timer and stop progress from increasing when the timing is done --}}
+<div class="progress-container" {{did-update this.restartTimer @retriggerOnChangeIn @isActive}}>
+  {{#if this.showDone}}
+    <EmberProgressBar @shape={{this.shape}} @useDefaultStep={{false}} @setProgress={{this.progress}} @options={{this.options}}/>
+  {{else}}
+    <EmberProgressBar @shape={{this.shape}} @useDefaultStep={{false}} @progress={{this.progress}} @options={{this.options}}/>
+  {{/if}}
+</div>

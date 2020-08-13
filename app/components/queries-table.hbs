@@ -1,0 +1,33 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+ <div class="queries-table">
+  <LightTable @table={{this.table}} @height="inherit"
+              @tableActions={{hash resultClick=(fn this.resultClick)
+                                   deleteResultsClick=(fn this.deleteResultsClick)
+                                   copyQueryClick=(fn this.copyQueryClick)
+                                   linkQueryClick=(fn this.linkQueryClick)
+                                   queryClick=(fn this.queryClick)
+                                   deleteQueryClick=(fn this.deleteQueryClick)}}
+    as |t|>
+    <t.head @onColumnClick={{fn this.onColumnClick}} @iconAscending="fa fa-chevron-up"
+            @iconDescending="fa fa-chevron-down" @fixed={{true}} />
+
+    <t.body @canSelect={{false}} @canExpand={{true}} @expandOnClick={{false}} @scrollBuffer={{1000}}
+            @onScrolledToBottom={{fn this.onScrolledToBottom}} as |b|>
+
+      <b.expanded-row as |e|>
+        <QueryShareableLink @row={{e}} />
+      </b.expanded-row>
+
+      {{#if this.table.isEmpty}}
+        <b.no-data>
+          <Cells::NoQueries/>
+        </b.no-data>
+      {{/if}}
+
+    </t.body>
+  </LightTable>
+</div>

@@ -13,9 +13,9 @@ module('Unit | Model | window', function(hooks) {
 
   test('it sets its default values right', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('window'));
-    assert.equal(model.get('emit.type'), EMIT_TYPES.get('TIME'));
-    assert.equal(model.get('emit.every'), 2);
-    assert.equal(model.get('include.type'), INCLUDE_TYPES.get('WINDOW'));
+    assert.equal(model.get('emitType'), EMIT_TYPES.get('TIME'));
+    assert.equal(model.get('emitEvery'), 2);
+    assert.equal(model.get('includeType'), INCLUDE_TYPES.get('WINDOW'));
   });
 
   test('it maps the api types for the emit types properly', function(assert) {

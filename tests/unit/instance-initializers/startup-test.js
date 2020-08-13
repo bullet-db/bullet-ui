@@ -4,18 +4,17 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEmpty, isBlank } from '@ember/utils';
-import Application from '@ember/application';
 import { run } from '@ember/runloop';
-import StartupInitializer from 'bullet-ui/instance-initializers/startup';
 import { module, test } from 'qunit';
+import Application from 'bullet-ui/app';
+import StartupInitializer from 'bullet-ui/instance-initializers/startup';
 import ENV from 'bullet-ui/config/environment';
 
-module('Unit | Initializer | startup', function(hooks) {
+module('Unit | Instance Initializer | startup', function(hooks) {
   hooks.beforeEach(function() {
     run(() => {
-      this.application = Application.create();
+      this.application = Application.create({ autoboot: false });
       this.appInstance = this.application.buildInstance();
-      StartupInitializer.initialize(this.appInstance);
     });
   });
 
@@ -84,11 +83,13 @@ module('Unit | Initializer | startup', function(hooks) {
     assert.deepEqual(merged, expected);
   });
 
-  test('it registers the settings factory', function(assert) {
+  test('it registers the settings factory', async function(assert) {
+    await this.appInstance.boot();
     assert.ok(this.appInstance.hasRegistration('settings:main'));
   });
 
-  test('the application instance has the settings injected', function(assert) {
+  test('the application instance has the settings injected', async function(assert) {
+    await this.appInstance.boot();
     let settings = this.appInstance.lookup('settings:main');
     assert.notOk(isEmpty(settings));
     assert.notOk(isBlank(settings.get('queryNamespace')));

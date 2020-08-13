@@ -4,11 +4,11 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { module, test } from 'qunit';
-import RESULTS from '../fixtures/results';
-import COLUMNS from '../fixtures/columns';
-import { setupForAcceptanceTest } from '../helpers/setup-for-acceptance-test';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
+import COLUMNS from 'bullet-ui/tests/fixtures/columns';
+import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
 import { click, visit, currentRouteName, currentURL } from '@ember/test-helpers';
-import { findContains } from '../helpers/find-helpers';
+import { findContains } from 'bullet-ui/tests/helpers/find-helpers';
 
 module('Acceptance | navigation', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
@@ -20,7 +20,7 @@ module('Acceptance | navigation', function(hooks) {
 
   test('visiting a non-existant query', async function(assert) {
     await visit('/query/foo');
-    assert.equal(currentURL(), '/errored');
+    assert.equal(currentURL(), '/not-found');
   });
 
   test('visiting a page and click past queries and results', async function(assert) {

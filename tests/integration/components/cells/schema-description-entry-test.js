@@ -6,21 +6,21 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | Cell | schema description entry', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders', async function(assert) {
-    await render(hbs`{{cells/schema-description-entry value='foo'}}`);
+    await render(hbs`<Cells::SchemaDescriptionEntry @value='foo'/>`);
 
-    assert.equal(this.element.textContent.trim(), 'foo');
+    assert.dom(this.element).hasText('foo');
   });
 
   test('it renders html', async function(assert) {
-    await render(hbs`{{cells/schema-description-entry value='<div><p>foo</p></div>'}}`);
+    await render(hbs`<Cells::SchemaDescriptionEntry @value='<div><p>foo</p></div>'/>`);
 
-    assert.equal(this.element.textContent.trim(), 'foo');
-    assert.equal(this.element.querySelectorAll('div > p').length, 1);
+    assert.dom(this.element).hasText('foo');
+    assert.dom('div > p').exists({ count: 1 });
   });
 });

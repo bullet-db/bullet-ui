@@ -3,47 +3,52 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-.record-entry-popover {
-  max-width: 500px;
+.record-entry-popover-wrapper {
+  max-width: 400px;
   max-height: 350px;
+  padding: 5px;
   font-family: $font-family-regular;
   border: 2px solid $primary-button-color;
-  .arrow {
-    border-bottom-color: $primary-button-color;
-    &:after {
-      top: 2px;
-    }
-  }
 
-  .popover-title {
-    background-color: $white;
-    margin: 0 15px;
-    padding: 15px 0;
-    font-weight: $font-weight-strong;
-    font-size: $font-size-regular-small;
-    color: $heading-text-color;
-    border-bottom: 1px solid $table-header-background-color;
-  }
-
-  .popover-content {
-    .close-button {
-      @extend %close-button;
-      position: absolute;
-      top: 10px;
-      right: -12px;
-      font-size: $font-size-regular-large;
-    }
-    padding: 15px 15px 0px 15px;
-    overflow: auto;
-    max-height: 300px;
-
-    pre {
-      color: $heading-text-color;
+  .record-entry-popover-inner {
+    .record-entry-popover-title {
       background-color: $white;
-      font-family: $font-family-regular;
-      font-weight: $font-weight-regular;
-      font-size: $font-size-small;
-      border: none;
+      margin: 0 15px;
+      padding: 15px 0;
+      font-weight: $font-weight-strong;
+      font-size: $font-size-regular-small;
+      color: $heading-text-color;
+      border-bottom: 1px solid $table-header-background-color;
     }
+
+    .record-entry-popover-body {
+      .close-button {
+        @extend %close-button;
+        position: absolute;
+        top: 10px;
+        right: -12px;
+        font-size: $font-size-regular-large;
+      }
+      padding: 15px 15px 0px 15px;
+      overflow: auto;
+      max-width: 300px;
+      max-height: 240px;
+
+      pre {
+        color: $heading-text-color;
+        background-color: $white;
+        font-family: $font-family-regular;
+        font-weight: $font-weight-regular;
+        font-size: $font-size-small;
+        border: none;
+      }
+    }
+  }
+
+  &[x-placement^="top"] .record-entry-popover-arrow {
+    border-top-color: $primary-button-color;
+  }
+  &[x-placement^="bottom"] .record-entry-popover-arrow {
+    border-bottom-color: $primary-button-color;
   }
 }

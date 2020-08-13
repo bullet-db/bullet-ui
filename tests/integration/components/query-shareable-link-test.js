@@ -7,7 +7,7 @@ import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | query shareable link', function(hooks) {
   setupRenderingTest(hooks);
@@ -16,33 +16,30 @@ module('Integration | Component | query shareable link', function(hooks) {
     let row = EmberObject.create({ content: { id: 'foo' }, queryLink: '/bar/as3FDS3dx' });
     this.set('mockRow', row);
 
-    await render(hbs`{{query-shareable-link row=mockRow}}`);
-
-    assert.equal(this.element.querySelectorAll('input').length, 1);
-    assert.equal(this.element.querySelector('input').getAttribute('id'), 'query-foo');
-    assert.equal(this.element.querySelector('input').value, '/bar/as3FDS3dx');
-    assert.equal(this.element.querySelectorAll('i.collapse-icon').length, 1);
+    await render(hbs`<QueryShareableLink @row={{this.mockRow}}/>`);
+    assert.dom('input').exists({ count: 1 });
+    assert.dom('input').hasAttribute('id', 'query-foo');
+    assert.dom('input').hasValue('/bar/as3FDS3dx');
+    assert.dom('i.collapse-icon').exists({ count: 1 });
   });
 
   test('it displays an button that points to the input for clipboard copying', async function(assert) {
     let row = EmberObject.create({ content: { id: 'foo' }, queryLink: '/bar/as3FDS3dx' });
     this.set('mockRow', row);
 
-    await render(hbs`{{query-shareable-link row=mockRow}}`);
-
-    assert.equal(this.element.querySelectorAll('button.copy-btn').length, 1);
-    assert.equal(this.element.querySelector('button.copy-btn').getAttribute('data-clipboard-target'), '#query-foo');
-    assert.equal(this.element.querySelectorAll('button.copy-btn .copy-icon').length, 1);
+    await render(hbs`<QueryShareableLink @row={{this.mockRow}}/>`);
+    assert.dom('button.copy-btn').exists({ count: 1 });
+    assert.dom('button.copy-btn').hasAttribute('data-clipboard-target', '#query-foo');
+    assert.dom('button.copy-btn .copy-icon').exists({ count: 1 });
   });
 
   test('it unsets the expanded property when the collapse icon is clicked', async function(assert) {
     let row = EmberObject.create({ content: { id: 'foo' }, expanded: true, queryLink: '/bar/as3FDS3dx' });
     this.set('mockRow', row);
 
-    await render(hbs`{{query-shareable-link row=mockRow}}`);
-
-    assert.ok(this.get('mockRow.expanded'));
+    await render(hbs`<QueryShareableLink @row={{this.mockRow}}/>`);
+    assert.ok(this.mockRow.expanded);
     await click('.collapse-icon');
-    assert.notOk(this.get('mockRow.expanded'));
+    assert.notOk(this.mockRow.expanded);
   });
 });

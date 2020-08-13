@@ -1,0 +1,32 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div role="button" class="query-name-entry"
+    {{on "click" this.onClick}}
+    {{on "mouseenter" this.onMouseEnter}}
+    {{on "mouseleave" this.onMouseLeave}}>
+  <div class="query-description">
+    {{#if @row.name}}
+      <p class="query-real-name"><strong>{{@row.name}}</strong></p>
+    {{else}}
+      <QueryBlurb @summary={{@row}} />
+    {{/if}}
+  </div>
+  {{!-- template-lint-disable no-nested-interactive --}}
+  <div class="query-name-actions {{if this.hasHover "is-visible"}}">
+    <i role="button" class="query-name-action-icon edit-icon fa fa-edit" {{on "click" this.onClick}}>
+      <EmberTooltip @side="bottom">Edit this query</EmberTooltip>
+    </i>
+    <i role="button" class="query-name-action-icon link-icon fa fa-share-square-o" {{on "click" this.onLinkClick}}>
+      <EmberTooltip @side="bottom">Create a link to this query that you can share</EmberTooltip>
+    </i>
+    <i role="button" class="query-name-action-icon copy-icon fa fa-clone" {{on "click" this.onCopyClick}}>
+      <EmberTooltip @side="bottom">Make a copy of this query without results</EmberTooltip>
+    </i>
+    <i role="button" class="query-name-action-icon delete-icon fa fa-trash-o" {{on "click" this.onDeleteClick}}>
+      <EmberTooltip @side="bottom">Delete this query and all results</EmberTooltip>
+    </i>
+  </div>
+</div>

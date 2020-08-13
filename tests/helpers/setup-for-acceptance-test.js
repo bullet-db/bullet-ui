@@ -5,10 +5,9 @@
  */
 import EmberObject from '@ember/object';
 import { setupApplicationTest } from 'ember-qunit';
-import MockedAPI from './mocked-api';
+import MockedAPI from 'bullet-ui/tests/helpers/mocked-api';
 import sinon from 'sinon';
-import Stomp from 'npm:@stomp/stompjs';
-import registerPowerSelectHelpers from 'ember-power-select/test-support/helpers';
+import Stomp from '@stomp/stompjs';
 
 export function setupForMockSettings(hooks, defaultQuery) {
   hooks.beforeEach(function() {
@@ -22,25 +21,26 @@ export function setupForMockSettings(hooks, defaultQuery) {
 }
 
 export function basicSetupForAcceptanceTest(hooks) {
-  registerPowerSelectHelpers();
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function() {
     this.suppressLogging = true;
     window.localStorage.clear();
+    this.confirm = window.confirm;
+    window.confirm = () => true;
   });
 
   hooks.afterEach(function() {
     window.localStorage.clear();
+    window.confirm = this.confirm;
   });
 }
-
 
 export function setupForAcceptanceTest(hooks, results, columns) {
   basicSetupForAcceptanceTest(hooks);
 
   hooks.beforeEach(function() {
-    this.mockedAPI = MockedAPI.create();
+    this.mockedAPI = new MockedAPI();
     this.stub = sinon.stub(Stomp, 'over').returns(this.mockedAPI);
     this.mockedAPI.mock(results, columns);
   });

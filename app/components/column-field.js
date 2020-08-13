@@ -3,50 +3,40 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
-import EmberObject, { computed } from '@ember/object';
-import Component from '@ember/component';
 
-export default Component.extend({
-  classNames: ['column-field'],
+export default class ColumnFieldComponent extends Component {
+  @tracked selectedColumn;
+  @tracked subfield;
 
-  initialValue: null,
-  columns: null,
-  selectedColumn: null,
-  subfield: null,
-  subfieldKey: null,
-  subfieldSuffix: null,
-  subfieldSeparator: null,
-  disabled: false,
-
-  subfieldEnabled: computed('selectedColumn', 'subfieldKey', function() {
-    return this.get(`selectedColumn.${this.get('subfieldKey')}`);
-  }).readOnly(),
-
-  /** Reverse mapping from ids back to the columns for easy lookup. **/
-  columnMapping: computed('columns.[]', function() {
-    return this.get('columns').reduce((previous, current) => {
-      previous[current.id] = current;
-      return previous;
-    }, {});
-  }).readOnly(),
-
-  didReceiveAttrs() {
-    this._super(...arguments);
-    let selection = this.get('selectedColumn');
-    let initialValue = this.get('initialValue');
-    // didInsertElement doesn't seem to be called when the values above are present, so we
-    // want to make the following behave like a constructor - i.e. set only once at the beginning.
-    if (isEmpty(selection) && !isEmpty(initialValue)) {
+  constructor() {
+    super(...arguments);
+    let initialValue = this.args.initialValue;
+    if (!isEmpty(initialValue)) {
       let { field, subfield } = this.findField(initialValue);
       this.setField(field, subfield);
     }
-  },
+  }
 
-  compositeField: computed('selectedColumn', 'subfield', function() {
-    let top = this.get('selectedColumn.id');
-    let sub = this.get('subfield');
-    let suffixPosition = top.lastIndexOf(this.get('subfieldSuffix'));
+  get subfieldEnabled() {
+    return this.selectedColumn && this.selectedColumn[this.args.subfieldKey];
+  }
+
+  // Reverse mapping from ids back to the columns for easy lookup
+  get columnMapping() {
+    return this.args.columns.reduce((previous, current) => {
+      previous[current.id] = current;
+      return previous;
+    }, {});
+  }
+
+  get compositeField() {
+    let top = this.selectedColumn.id;
+    let sub = this.subfield;
+    let suffixPosition = top.lastIndexOf(this.args.subfieldSuffix);
     if (suffixPosition === -1) {
       return top;
     }
@@ -54,46 +44,46 @@ export default Component.extend({
     if (isEmpty(sub)) {
       return mainField;
     }
-    return `${mainField}${this.get('subfieldSeparator')}${sub}`;
-  }).readOnly(),
+    return `${mainField}${this.args.subfieldSeparator}${sub}`;
+  }
 
   sliceToLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.get('subfieldSeparator'));
+    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
     return lastSeparator !== -1 ? name.slice(0, lastSeparator) : name;
-  },
+  }
 
   sliceFromLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.get('subfieldSeparator'));
+    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
     return lastSeparator !== -1 ? name.slice(lastSeparator + 1) : name;
-  },
+  }
 
   findField(name) {
     // Not using Ember get if mainField contains a '.'
-    let field = this.get('columnMapping')[name];
+    let field = this.columnMapping[name];
     let subfield = '';
     // If we didn't find the full field, it is a field with a subfield
     if (isEmpty(field)) {
-      let mainField = `${this.sliceToLastSeparator(name)}${this.get('subfieldSuffix')}`;
-      field = this.get('columnMapping')[mainField];
+      let mainField = `${this.sliceToLastSeparator(name)}${this.args.subfieldSuffix}`;
+      field = this.columnMapping[mainField];
       subfield = this.sliceFromLastSeparator(name);
     }
-    return { field: EmberObject.create(field), subfield: subfield };
-  },
+    return { field, subfield };
+  }
 
   setField(field, subfield) {
-    this.set('selectedColumn', field);
-    this.set('subfield', subfield);
-  },
-
-  actions: {
-    handleSelect(column) {
-      // Clear out subfield when field changes
-      this.setField(column, '');
-      this.get('onDone')(this.get('compositeField'));
-    },
-
-    handleFocusOut() {
-      this.get('onDone')(this.get('compositeField'));
-    }
+    this.selectedColumn = field;
+    this.subfield = subfield;
   }
-});
+
+  @action
+  onSelect(column) {
+    // Clear out subfield when field changes
+    this.setField(column, '');
+    this.args.onDone(this.compositeField);
+  }
+
+  @action
+  onFocusOut() {
+    this.args.onDone(this.compositeField);
+  }
+}

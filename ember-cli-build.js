@@ -14,6 +14,14 @@ module.exports = function(defaults) {
       removeUnusedIcons: EmberApp.env() === 'production',
       useScss: true,
       useLess: false
+    },
+    autoImport: {
+      webpack: {
+        // Needed for global in sockjs dependency
+        node: { global: true }
+        // TODO: Enable this if jquery is not being bound to by our jquery plugins
+        // externals: { jquery: 'jQuery' }
+      }
     }
   });
 
@@ -31,9 +39,9 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   // Query Builder
-  app.import('node_modules/jquery-extendext/jQuery.extendext.js');
+  app.import('node_modules/jquery-extendext/jquery-extendext.js');
   app.import('node_modules/dot/doT.js');
-  app.import('node_modules/interactjs/interact.js');
+  app.import('node_modules/interactjs/dist/interact.js');
   app.import('node_modules/jQuery-QueryBuilder/dist/js/query-builder.js');
   app.import('node_modules/jQuery-QueryBuilder/dist/css/query-builder.default.css');
   // Query Builder Standalone plugins
@@ -42,7 +50,7 @@ module.exports = function(defaults) {
   app.import('node_modules/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
 
   // FileSaver
-  app.import('node_modules/file-saver/FileSaver.js');
+  app.import('node_modules/file-saver/dist/FileSaver.js');
 
   // pivottable
   app.import('node_modules/c3/c3.js');
@@ -63,6 +71,20 @@ module.exports = function(defaults) {
   app.import('node_modules/pivottable/dist/pivot.css');
   app.import('node_modules/pivottable/dist/c3_renderers.js');
   app.import('node_modules/pivottable/dist/export_renderers.js');
+
+  // SockJS and Stomp
+  const rollupJSON = require('@rollup/plugin-json');
+  app.import('node_modules/@stomp/stompjs/index.js', {
+    using: [{
+      transformation: 'cjs', as: 'stompjs', plugins: [ rollupJSON() ]
+    }]
+  });
+  const rollupBuiltins = require('rollup-plugin-node-polyfills');
+  app.import('node_modules/sockjs-client/dist/sockjs.js', {
+    using: [{
+      transformation: 'cjs', as: 'sockjs-client', plugins: [ rollupBuiltins() ]
+    }]
+  });
 
   return app.toTree();
 };

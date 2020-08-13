@@ -3,15 +3,19 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty, typeOf } from '@ember/utils';
+import { typeOf } from '@ember/utils';
+import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import Filterizer from 'bullet-ui/mixins/filterizer';
+import isEmpty from 'bullet-ui/utils/is-empty';
+import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 
-export default Route.extend(Filterizer, {
-  corsRequest: service(),
-  querier: service(),
-  queryManager: service(),
+export default class QueriesNewRoute extends Route {
+  @service('cors-request') corsRequest;
+  @service querier;
+  @service queryManager;
+  @service store;
+  cachedQuery;
 
   beforeModel() {
     return this.addDefaultQuery().then(query => {
@@ -19,32 +23,32 @@ export default Route.extend(Filterizer, {
         this.transitionTo('query', query.get('id'));
       });
     });
-  },
+  }
 
   addDefaultQuery() {
-    let fetchedQuery = this.get('cachedQuery');
+    let fetchedQuery = this.cachedQuery;
     // If we already fetched and stored the default query, use that.
     if (fetchedQuery) {
       return this.createQuery(fetchedQuery);
     }
 
-    let defaultQuery = this.get('settings.defaultQuery');
+    let defaultQuery = get(this, 'settings.defaultQuery');
     // Create an empty query if we don't have defaults
     if (!defaultQuery) {
       return this.createEmptyQuery();
     }
 
-    // If we have a default filter in settings, use that.
+    // If we have a default query in settings, use that.
     if (typeOf(defaultQuery) === 'object') {
       return this.createQuery(defaultQuery);
     }
 
     // Otherwise, assume defaultQuery is an url to get the default query from.
-    return this.get('corsRequest').request(defaultQuery).then(query => {
+    return this.corsRequest.get(defaultQuery).then(query => {
       this.set('cachedQuery', query);
       return this.createQuery(query);
     });
-  },
+  }
 
   createQuery(query) {
     if (!query) {
@@ -53,26 +57,26 @@ export default Route.extend(Filterizer, {
     // If query does not have a filter, recreate will create it. No need to call createEmptyFilter
     // If query does not have an aggregation, we must create it.
     if (isEmpty(query.aggregation)) {
-      query.aggregation = this.get('querier.defaultAPIAggregation');
+      query.aggregation = get(this, 'querier.defaultAPIAggregation');
     }
-    let queryObject = this.get('querier').recreate(query);
-    return this.get('queryManager').copyQuery(queryObject);
-  },
+    let queryObject = this.querier.recreate(query);
+    return this.queryManager.copyQuery(queryObject);
+  }
 
   createEmptyFilter(query) {
     let empty = this.store.createRecord('filter', {
-      clause: this.get('emptyClause'),
+      clause: EMPTY_CLAUSE,
       query: query
     });
     return empty.save();
-  },
+  }
 
   createEmptyQuery() {
-    let aggregation = this.store.createRecord('aggregation', this.get('querier.defaultAggregation'));
+    let aggregation = this.store.createRecord('aggregation', get(this, 'querier.defaultAggregation'));
     aggregation.save();
     let query = this.store.createRecord('query', {
       aggregation: aggregation
     });
     return this.createEmptyFilter(query).then(() => query);
   }
-});
+}

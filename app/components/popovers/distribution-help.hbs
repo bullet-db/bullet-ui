@@ -1,0 +1,66 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<p>This option is used to get distributions of a field (numeric or a field that can be coerced into a number).</p>
+
+<h5 class="content-header">Types of Distributions</h5>
+
+<h6 class="content-sub-header">Quantiles</h6>
+<p>
+  If this is chosen, you can get the values at various percentiles in the distribution of the field you are interested in. The percentiles are represented as numbers between <strong>0</strong> and <strong>1</strong>. For example, <strong>0.25</strong> means the <strong>25th</strong> percentile and so on. This is the domain for the points you will define.
+</p>
+<h6 class="content-sub-header">Frequencies (Probability Mass Function)</h6>
+<p>
+  If this is chosen, you can get a frequency count of values of your field that fell into various intervals (or buckets). The domain is the range of values of your field. You will also get a <strong>probability</strong> (as a fraction between 0 and 1) of how much of your data falls into each interval.
+</p>
+<h6 class="content-sub-header">Cumulative Frequencies (Cumulative Distribution Function)</h6>
+<p>
+  This option is very similar to the Frequencies option but you instead get a cumulative frequency and probability instead for the intervals.
+</p>
+
+<h5 class="content-header">Creating Points</h5>
+
+This section helps you generate points that determine how your domain is created for the distribution type you have chosen. For <strong>Quantiles</strong>, you will be generating points from <strong>0 to 1</strong>, whereas for <strong>Frequencies</strong> and <strong>Cumulative Frequencies</strong>, you will be picking the points that end up breaking up the range of values for your field into intervals or buckets.
+
+<h6 class="content-sub-header">Evenly Spaced Points</h6>
+<p>
+  You can choose a number here and it will be used to generate evenly spaced points in the whole range of your domain.
+</p>
+<p>
+  For <strong>Quantiles</strong>, the points will be evenly generated from 0 to 1 (both inclusive). If you chose <strong>11</strong>, then the points will be <strong>[0, 0.1, 0.2, ... 0.9, 1.0]</strong>.
+</p>
+<p>
+  For <strong>Frequencies</strong>, the points will be evenly generated from the minimum value of your field to the maximum value (both inclusive). These points will then be used to create intervals, starting at <strong>-infinity to 1st point, 1st point to 2nd point, ... last point to +infinity</strong>
+</p>
+
+<h6 class="content-sub-header">Evenly Spaced Points in a Region</h6>
+<p>
+  This option is exactly like the Evenly Spaced Option above but you get to define the region with the restriction that for <strong>Quantiles</strong>, it must be in the range from <strong>0</strong> and <strong>1</strong>. You specify a start point, an end point and an increment and Bullet will generate <strong>(end - start) / increment</strong> points. You might use this if your distribution is skewed or you want to see a narrower slice of the domain for your field.
+</p>
+<h6 class="content-sub-header">Define Points</h6>
+<p>
+  The completely free-form option where you can define <strong>comma</strong> separated numeric values that are used as either:
+</p>
+<ul>
+  <li>Percentile values (between 0 and 1 for <strong>Quantiles</strong>)</li>
+  <li>Split locations (for <strong>Frequencies</strong> and <strong>Cumulative Frequencies</strong>) to create intervals</li>
+</ul>
+
+<p>An example for <strong>Quantiles</strong> might be <strong>0.1,0.25,0.75,0.99</strong></p>
+
+<p>An example for <strong>Frequencies</strong> might be <strong>5000,10000,-1000,0</strong>. The latter will create the following intervals: <strong>(-infinity to -1000), [-1000 to 0), [0 to 5000), [5000 to 10000), [10000 to +infinity)</strong>.</p>
+<p>If the same points were used for <strong>Cumulative Frequencies</strong>, the start point of each interval above would just be <strong>-infinity</strong>.</p>
+
+<h5 class="content-header">Constraints</h5>
+<p>
+  The maximum number of points that you can create through any of the domain creation options above is <strong>{{@settings.defaultValues.sketches.distributionMaxNumberOfPoints}}</strong>. If you specify or generate, the first points that cause this maximum to be reached will be used.
+</p>
+<p>
+  Unlike Group Data and Count Distinct, the order in which the data arrives to Bullet can affect the results. The error when the result is estimated is not a Gaussian error function and is not described in terms of the values of your field. In other words, if the 50th percentile was estimated to some value, you could not bound the true median by using the value +- constant (see below for a good approximation). The error is expressed in terms of the <strong>normalized rank</strong>. If one were to sort the true data stream, you would obtain a rank for each item from 0 to the stream length. If you then divided each rank by length, you would get ranks from 0 to 1. In this domain, a <strong>normalized rank error</strong> of 0.002, for example, means that a value returned for the 0.50 or 50th percentile could actually lie between 0.498 and 0.502 in the normalized ranks with 99% confidence. The normalized rank error for this Bullet instance is determined by <strong>{{@settings.defaultValues.sketches.distributionMaxEntries}}</strong> and can be seen in the Result Metadata section.
+</p>
+
+<p>
+  <a href="https://datasketches.apache.org/docs/Quantiles/QuantilesAccuracy.html">This page</a> lists the normalized rank error as a percentage for <strong>{{@settings.defaultValues.sketches.distributionMaxEntries}}</strong> (you can also find it by running a query and looking for it in the Result Metadata). If you obtain successive quantile values at granularities lower than this rank error, the results may not be accurate. While the sketch speaks of the normalized rank error, you can still obtain reasonable bounds for values. For example, if the normalized rank error was 1% and you obtained quantile values at 0.48, 0.50 and 0.52, you could use the values at 0.52 and 0.48 as very reasonable upper and lower bounds on your true median (you might even be able to use 0.49 and 0.51 if the error was 1%).
+</p>

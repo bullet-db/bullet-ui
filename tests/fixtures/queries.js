@@ -1,4 +1,4 @@
-import FILTERS from '../fixtures/filters';
+import FILTERS from 'bullet-ui/tests/fixtures/filters';
 
 const QUERIES = {
   AND_ENUMERATED_COUNT_DISTINCT: {
@@ -16,7 +16,7 @@ const QUERIES = {
   AND_LIST_TUMBLING_WINDOW: {
     filters: [FILTERS.AND_LIST],
     window: {
-      emit: { type: 'TIME', every: 2000 }
+      emit: {type: 'TIME', every: 2000 }
     },
     duration: 20000
   }

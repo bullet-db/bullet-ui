@@ -3,11 +3,11 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import DS from 'ember-data';
+import Model, { attr, belongsTo } from '@ember-data/model';
 
-export default DS.Model.extend({
+export default class FilterModel extends Model {
   // Stores the AST of the filter clauses.
-  clause: DS.attr(),
-  summary: DS.attr('string'),
-  query: DS.belongsTo('query', { autoSave: true })
-});
+  @attr() clause;
+  @attr('string') summary;
+  @belongsTo('query', { autoSave: true }) query;
+}

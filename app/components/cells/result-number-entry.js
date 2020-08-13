@@ -3,13 +3,12 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  tagName: 'span',
-  classNames: ['result-number-entry'],
-
-  click() {
-    this.get('tableActions.resultClick')(this.get('row'));
+export default class ResultNumberEntryComponent extends Component {
+  @action
+  onClick() {
+    this.args.tableActions.resultClick(this.args.row);
   }
-});
+}

@@ -1,0 +1,68 @@
+{{!--
+  Copyright 2016, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="records-viewer" {{did-update this.reset @records @timeSeriesMode}}>
+  <div class="records-title">
+
+    <span class="section-header">
+      <h3 class="section-title">Records</h3>
+      <InfoPopover @title="Visualization">
+        <Popovers::RecordsHelp/>
+      </InfoPopover>
+    </span>
+
+    <span class="records-header">
+      {{@records.length}} records in this view
+    </span>
+
+    <div class="view-controls">
+      {{#if this.enableCharting}}
+        <button type="button" class="view-control chart-view {{if this.showChart "active"}}"
+                disabled={{this.showChart}} {{on "click" this.chartMode}}>
+          {{fa-icon "area-chart"}}
+          <EmberTooltip>Chart, pivot and visualize your data</EmberTooltip>
+        </button>
+      {{/if}}
+      <button type="button" class="view-control table-view {{if this.showTable "active"}}"
+              disabled={{this.showTable}} {{on "click" this.tableMode}}>
+        {{fa-icon "table"}}
+        <EmberTooltip>Show as table</EmberTooltip>
+      </button>
+      <button type="button" class="view-control raw-view {{if this.showRawData "active"}}"
+              disabled={{this.showRawData}} {{on "click" this.rawDataMode}}>
+        {{fa-icon "code"}}
+        <EmberTooltip>Show raw data</EmberTooltip>
+      </button>
+      <div class="btn-group download-wrapper">
+        <button type="button" class="view-control download dropdown-toggle" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+          {{fa-icon "download"}}
+          <EmberTooltip @side="left">Download your data</EmberTooltip>
+        </button>
+        <ul class="download-options dropdown-menu">
+          <div class="triangle">
+            <div class="inner"></div>
+          </div>
+          <li tag="button" class="download-option"><a href="#" {{on "click" this.downloadAsJSON}}>JSON</a></li>
+          <li tag="button" class="download-option"><a href="#" {{on "click" this.downloadAsCSV}}>CSV</a></li>
+          <li tag="button" class="download-option"><a href="#" {{on "click" this.downloadAsFlatCSV}}>Flat CSV</a></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="records-display">
+    {{#if this.showRawData}}
+      <RecordsRawViewer @data={{@records}}/>
+    {{else if this.showTable}}
+      <RecordsTable @appendMode={{@appendMode}} @timeSeriesMode={{@timeSeriesMode}}
+                    @columnNames={{this.columns}} @rows={{@records}}/>
+    {{else if this.enableCharting}}
+      <RecordsCharter @timeSeriesMode={{@timeSeriesMode}} @config={{@config}} @columns={{this.columns}}
+                      @rows={{@records}} @model={{@model}}/>
+    {{/if}}
+  </div>
+</div>

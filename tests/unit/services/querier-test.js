@@ -7,8 +7,8 @@ import { isArray } from '@ember/array';
 import { isEmpty, typeOf } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import MockQuery from '../../helpers/mocked-query';
-import FILTERS from '../../fixtures/filters';
+import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
+import FILTERS from 'bullet-ui/tests/fixtures/filters';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
@@ -885,7 +885,7 @@ module('Unit | Service | querier', function(hooks) {
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emit: { type: 'Time Based', every: 5 }, include: { type: 'Everything in Window' } }
+      window: { emitType: 'Time Based', emitEvery: 5, includeType: 'Everything in Window' }
     });
   });
 
@@ -899,7 +899,7 @@ module('Unit | Service | querier', function(hooks) {
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emit: { type: 'Record Based', every: 1 }, include: { type: 'Everything in Window' } }
+      window: { emitType: 'Record Based', emitEvery: 1, includeType: 'Everything in Window' }
     });
   });
 
@@ -913,7 +913,7 @@ module('Unit | Service | querier', function(hooks) {
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emit: { type: 'Time Based', every: 1 }, include: { type: 'Everything from Start of Query' } }
+      window: { emitType: 'Time Based', emitEvery: 1, includeType: 'Everything from Start of Query' }
     });
   });
 });

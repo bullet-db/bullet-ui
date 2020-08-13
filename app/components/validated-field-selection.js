@@ -3,46 +3,92 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { defineProperty } from '@ember/object';
-import { not, or, and, alias } from '@ember/object/computed';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { isEmpty } from '@ember/utils';
+import argsGet from 'bullet-ui/utils/args-get';
 
-// Adapted from the dummy app validated-input in
-// https://github.com/offirgolan/ember-cp-validations
-export default Component.extend({
-  classNames: ['row field-selection-container validated-field-selection'],
-  classNameBindings: ['isInvalid:has-error'],
-  columns: null,
-  model: null,
-  tooltipPosition: 'right',
-  forceDirty: false,
-  validation: null,
-  valuePath: 'field',
-  subfieldSuffix: '',
-  subfieldSeparator: '',
-  fieldClasses: '',
-  nameClasses: '',
-  disabled: false,
-  enableRenaming: true,
-  enableDeleting: true,
+export default class ValidatedFieldSelectionComponent extends Component {
+  @tracked isInvalid = false;
+  @tracked errors;
+  fieldPath = 'field';
+  namePath = 'name';
 
-  notValidating: not('validation.isValidating'),
-  isDirty: or('validation.isDirty', 'forceDirty'),
-  isInvalid: and('notValidating', 'isDirty', 'validation.isInvalid'),
-
-  init() {
-    this._super(...arguments);
-    let valuePath = this.get('valuePath');
-    defineProperty(this, 'validation', alias(`model.validations.attrs.${valuePath}`));
-  },
-
-  actions: {
-    modifyField(field) {
-      this.sendAction('fieldModified', field);
-    },
-
-    deleteClicked() {
-      this.sendAction('deleteModel');
-    }
+  get tooltipPosition() {
+    return argsGet(this.args, 'tooltipPosition', 'right');
   }
-});
+
+  get enableAdditionalOptions() {
+    return argsGet(this.args, 'enableAdditionalOptions', false);
+  }
+
+  get disableField() {
+    return argsGet(this.args, 'disableField', false);
+  }
+
+  get enableRenaming() {
+    return argsGet(this.args, 'enableRenaming', true);
+  }
+
+  get enableDeleting() {
+    return argsGet(this.args, 'enableDeleting', true);
+  }
+
+  async validate(changeset, path) {
+    await changeset.validate();
+    if (!changeset.get('isInvalid')) {
+      this.isInvalid = false;
+      // This save is here for a weird bug. If we change a value and change back, no further changes apply.
+      // Saving it helps and it should be fine since we're saving to copied fields anyway
+      changeset.save();
+      return;
+    }
+    let errors = changeset.get(`error.${path}`);
+    this.isInvalid = !isEmpty(errors);
+    this.errors = errors;
+  }
+
+  @action
+  async validateAll() {
+    let changeset = this.args.changeset;
+    await changeset.validate();
+    if (!changeset.get('isInvalid')) {
+      this.isInvalid = false;
+      return;
+    }
+    let paths = [this.args.additionalPath, this.fieldPath, this.namePath];
+    let errors = paths.filter(path => !isEmpty(path)).flatMap(path => changeset.get(`error.${path}.validation`));
+    this.isInvalid = !isEmpty(errors);
+    this.errors = { validation: errors };
+  }
+
+  @action
+  onModifyAdditionalOption(option) {
+    let changeset = this.args.changeset;
+    let path = this.args.additionalPath;
+    changeset.set(path, option);
+    this.validate(changeset, path);
+  }
+
+  @action
+  onModifyField(field) {
+    let changeset = this.args.changeset;
+    let path = this.fieldPath;
+    changeset.set(path, field);
+    changeset.set(this.namePath, '');
+    this.validate(changeset, path);
+  }
+
+  @action
+  onModifyName(name) {
+    let changeset = this.args.changeset;
+    changeset.set(this.namePath, name);
+    this.validate(changeset, this.namePath);
+  }
+
+  @action
+  onDelete() {
+    this.args.onDelete();
+  }
+}

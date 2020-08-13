@@ -3,19 +3,21 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
-import DS from 'ember-data';
-import { validator, buildValidations } from 'ember-cp-validations';
 
 let AggregationTypes = EmberObject.extend({
-  RAW: 'Raw',
-  GROUP: 'Group',
-  COUNT_DISTINCT: 'Count Distinct',
-  DISTRIBUTION: 'Distribution',
-  TOP_K: 'Top K',
-
   init() {
     this._super(...arguments);
+    let names = {
+      RAW: 'Raw',
+      GROUP: 'Group',
+      COUNT_DISTINCT: 'Count Distinct',
+      DISTRIBUTION: 'Distribution',
+      TOP_K: 'Top K'
+    };
+    this.setProperties(names);
+    this.set('NAMES', names);
     this.set('API', {
       'Raw': 'RAW',
       'Group': 'GROUP',
@@ -30,20 +32,22 @@ let AggregationTypes = EmberObject.extend({
   }
 });
 
-let RawTypes = EmberObject.extend({ ALL: 'All', SELECT: 'Select' });
-
-let DistributionTypes = EmberObject.extend({
-  QUANTILE: 'Quantile',
-  PMF: 'Frequency',
-  CDF: 'Cumulative Frequency',
-
+let RawTypes = EmberObject.extend({
   init() {
     this._super(...arguments);
-    this.set('API', {
-      'Quantile': 'QUANTILE',
-      'Frequency': 'PMF',
-      'Cumulative Frequency': 'CDF'
-    });
+    let names = { ALL: 'All', SELECT: 'Select' };
+    this.set('NAMES', names);
+    this.setProperties(names);
+  }
+});
+
+let DistributionTypes = EmberObject.extend({
+  init() {
+    this._super(...arguments);
+    let names = { QUANTILE: 'Quantile', PMF: 'Frequency', CDF: 'Cumulative Frequency' };
+    this.set('NAMES', names);
+    this.setProperties(names);
+    this.set('API', { 'Quantile': 'QUANTILE', 'Frequency': 'PMF', 'Cumulative Frequency': 'CDF' });
   },
 
   apiKey(key) {
@@ -51,38 +55,25 @@ let DistributionTypes = EmberObject.extend({
   }
 });
 
-let DistributionPointTypes = EmberObject.extend({ NUMBER: 'Number', POINTS: 'Points', GENERATED: 'Generated' });
+let DistributionPointTypes = EmberObject.extend({
+  init() {
+    this._super(...arguments);
+    let names = { NUMBER: 'Number', POINTS: 'Points', GENERATED: 'Generated' }
+    this.set('NAMES', names);
+    this.setProperties(names);
+  }
+});
 
 export const AGGREGATIONS = AggregationTypes.create();
 export const RAWS = RawTypes.create();
 export const DISTRIBUTIONS = DistributionTypes.create();
 export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
-let Validations = buildValidations({
-  size: {
-    description: 'Maximum records', validators: [
-      validator('presence', true),
-      validator('number', {
-        integer: true,
-        allowString: true,
-        gte: 1,
-        message: 'Maximum results must be a positive integer'
-      }),
-      validator('aggregation-max-size')
-    ]
-  },
-  groups: validator('has-many'),
-  metrics: validator('has-many'),
-  query: validator('belongs-to'),
-  validPoints: validator('valid-points'),
-  groupAndOrMetrics: validator('group-metric-presence')
-});
-
-export default DS.Model.extend(Validations, {
-  type: DS.attr('string'),
-  size: DS.attr('number'),
-  groups: DS.hasMany('group', { dependent: 'destroy' }),
-  metrics: DS.hasMany('metric', { dependent: 'destroy' }),
-  attributes: DS.attr({ defaultValue: () => EmberObject.create() }),
-  query: DS.belongsTo('query', { autoSave: true })
-});
+export default class AggregationModel extends Model {
+  @attr('string') type;
+  @attr('number') size;
+  @hasMany('group', { dependent: 'destroy' }) groups;
+  @hasMany('metric', { dependent: 'destroy' }) metrics;
+  @attr({ defaultValue: () => EmberObject.create() }) attributes;
+  @belongsTo('query', { autoSave: true }) query;
+}

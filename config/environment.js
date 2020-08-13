@@ -9,7 +9,7 @@
 const INTERNAL_APP_SETTINGS = {
   // Use the IndexedDB Local Forage adapater
   adapter: 'indexeddb',
-  // Enable debouncing saving of windows
+  // Enable debounce saving of windows
   debounceSegmentSaves: true,
   // Only used if defaultQuery does not provide an aggregation
   defaultAggregation: { type: 'RAW', size: 1 }
@@ -89,7 +89,7 @@ module.exports = function(environment) {
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
-        // e.g. 'with-controller': true
+        // e.g. EMBER_NATIVE_DECORATOR_SUPPORT: true
       },
       EXTEND_PROTOTYPES: {
         Array: false,

@@ -3,77 +3,61 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { merge } from '@ember/polyfills';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { assign } from '@ember/polyfills';
 import { typeOf } from '@ember/utils';
 import { A } from '@ember/array';
-import { computed } from '@ember/object';
-import { alias } from '@ember/object/computed';
+import { action } from '@ember/object';
+import { alias, not, or } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 
-export default Component.extend({
-  fileSaver: service(),
-  classNames: ['records-viewer'],
-  showRawData: false,
-  showTable: false,
-  showChart: false,
-  config: null,
-  metadata: null,
-  records: null,
-  fileName: 'results',
-  model: null,
-  appendMode: false,
-  timeSeriesMode: false,
+const FILE_NAME = 'results';
+export default class RecordsViewerComponent extends Component {
+  @service fileSaver;
+  @tracked showRawData = false;
+  @tracked showTable = false;
+  @tracked showChart = false;
 
-  enableCharting: computed('config.isSingleRow', 'timeSeriesMode', function() {
-    return !this.get('config.isSingleRow') || this.get('timeSeriesMode');
-  }),
+  @alias('args.config.isSingleRow') isSingleRow;
+  @not('isSingleRow') isNotSingleRow;
+  @or('isNotSingleRow', 'args.timeSeriesMode') enableCharting;
+  @alias('showChart') isShowingChart;
 
-  isShowingChart: alias('showChart').readOnly(),
-
-  columns: computed('records', function() {
-    return A(this.extractUniqueColumns(this.get('records')));
-  }).readOnly(),
-
-  rows: computed('records', 'columns', function() {
-    return A(this.extractRows(this.get('records'), this.get('columns')));
-  }).readOnly(),
-
-  asJSON: computed('records', function() {
-    let records = this.get('records');
-    return JSON.stringify(records, null, 2);
-  }).readOnly(),
-
-  asCSV: computed('columns', 'rows', function() {
-    return this.makeCSVString(this.get('columns'), this.get('rows'));
-  }).readOnly(),
-
-  asFlatCSV: computed('records', function() {
-    let records = this.get('records');
-    let flattenedRows = records.map(item => this.flatten(item), this);
-    let columns = this.extractUniqueColumns(flattenedRows);
-    let rows = this.extractRows(flattenedRows, columns);
-    return this.makeCSVString(columns, rows);
-  }).readOnly(),
-
-  init() {
-    this._super(...arguments);
-    if (this.get('config.isReallyRaw')) {
-      this.set('showRawData', true);
+  constructor() {
+    super(...arguments);
+    if (this.args.config.isReallyRaw) {
+      this.showRawData = true;
     } else {
-      this.set('showTable', true);
+      this.showTable = true;
     }
-  },
+  }
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-    // If we should suddenly stop showing charts but we were showing a chart, go back to table
-    if (this.get('isShowingChart') && !this.get('enableCharting')) {
-      this.flipTo('showTable');
-    }
-  },
+  get columns() {
+    return A(RecordsViewerComponent.extractUniqueColumns(this.args.records));
+  }
 
-  extractUniqueColumns(records) {
+  get rows() {
+    return A(RecordsViewerComponent.extractRows(this.args.records, this.columns));
+  }
+
+  get asJSON() {
+    return JSON.stringify(this.args.records, null, 2);
+  }
+
+  get asCSV() {
+    return RecordsViewerComponent.makeCSVString(this.columns, this.rows);
+  }
+
+  get asFlatCSV() {
+    let records = this.args.records;
+    let flattenedRows = records.map(item => RecordsViewerComponent.flatten(item), this);
+    let columns = RecordsViewerComponent.extractUniqueColumns(flattenedRows);
+    let rows = RecordsViewerComponent.extractRows(flattenedRows, columns);
+    return RecordsViewerComponent.makeCSVString(columns, rows);
+  }
+
+  static extractUniqueColumns(records) {
     let columns = new Set();
     records.forEach(record => {
       for (let item in record) {
@@ -85,40 +69,40 @@ export default Component.extend({
     let columnArray = Array.from(columns);
     columnArray.sort();
     return columnArray;
-  },
+  }
 
-  extractRows(records, columns) {
+  static extractRows(records, columns) {
     let rows = [];
     records.forEach(record => {
       let row = [];
       columns.forEach(column => {
-        row.push(this.cleanItem(record[column]));
+        row.push(RecordsViewerComponent.cleanItem(record[column]));
       });
       rows.push(row);
     });
     return rows;
-  },
+  }
 
-  makeCSVString(columns, rows) {
+  static makeCSVString(columns, rows) {
     let header = columns.join(',');
     let body = rows.map(row => row.join(','));
     return header + '\r\n' + body.join('\r\n');
-  },
+  }
 
-  cleanItem(item) {
+  static cleanItem(item) {
     let type = typeOf(item);
     if (type === 'object' || type === 'array') {
       return JSON.stringify(item);
     }
     return item;
-  },
+  }
 
   /* Takes a JSON object and recursively flattens arrays and objects in it to from a single JSON object with just primitives.
    * @param  {Object} json   The JSON object.
    * @param  {String} prefix Internal use only.
    * @return {String}        The flattened JSON object.
    */
-  flatten(json, prefix) {
+  static flatten(json, prefix) {
     let flattened = {};
     let type = typeOf(json);
     if (type !== 'array' && type !== 'object') {
@@ -128,42 +112,54 @@ export default Component.extend({
     // It's a complex type, recursively flatten with the current prefix
     prefix = prefix === undefined ? '' : `${prefix}:`;
     for (let item in json) {
-      let nested = this.flatten(json[item], `${prefix}${item}`);
-      merge(flattened, nested);
+      let nested = RecordsViewerComponent.flatten(json[item], `${prefix}${item}`);
+      assign(flattened, nested);
     }
     return flattened;
-  },
+  }
 
   flipTo(field) {
-    this.set('showRawData', false);
-    this.set('showTable', false);
-    this.set('showChart', false);
-    this.set(field, true);
-  },
+    this.showRawData = false;
+    this.showTable = false;
+    this.showChart = false;
+    this[field] = true;
+  }
 
-  actions: {
-    rawDataMode() {
-      this.flipTo('showRawData');
-    },
-
-    tableMode() {
+  @action
+  reset() {
+    // If we should suddenly stop showing charts but we were showing a chart, go back to table
+    if (this.isShowingChart && !this.enableCharting) {
       this.flipTo('showTable');
-    },
-
-    chartMode() {
-      this.flipTo('showChart');
-    },
-
-    downloadAsJSON() {
-      this.get('fileSaver').save(this.get('asJSON'), 'application/json', `${this.get('fileName')}.json`);
-    },
-
-    downloadAsCSV() {
-      this.get('fileSaver').save(this.get('asCSV'), 'text/csv', `${this.get('fileName')}.csv`);
-    },
-
-    downloadAsFlatCSV() {
-      this.get('fileSaver').save(this.get('asFlatCSV'), 'text/csv', `${this.get('fileName')}_flat.csv`);
     }
   }
-});
+
+  @action
+  rawDataMode() {
+    this.flipTo('showRawData');
+  }
+
+  @action
+  tableMode() {
+    this.flipTo('showTable');
+  }
+
+  @action
+  chartMode() {
+    this.flipTo('showChart');
+  }
+
+  @action
+  downloadAsJSON() {
+    this.fileSaver.save(this.asJSON, 'application/json', `${FILE_NAME}.json`);
+  }
+
+  @action
+  downloadAsCSV() {
+    this.fileSaver.save(this.asCSV, 'text/csv', `${FILE_NAME}.csv`);
+  }
+
+  @action
+  downloadAsFlatCSV() {
+    this.fileSaver.save(this.asFlatCSV, 'text/csv', `${FILE_NAME}_flat.csv`);
+  }
+}

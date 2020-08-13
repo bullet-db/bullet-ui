@@ -3,16 +3,12 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import BaseValidator from 'ember-cp-validations/validators/base';
-
-const QueryMaxDuration = BaseValidator.extend({
-  validate(value, options, model) {
-    let maxDuration = model.get('settings.defaultValues.durationMaxSecs');
-    if (value > maxDuration) {
+export default function validateQueryMaxDuration() {
+  return (key, newDuration, oldDuration, changes, content) => {
+    let maxDuration = content.get('settings.defaultValues.durationMaxSecs');
+    if (newDuration > maxDuration) {
       return `The maintainer has configured Bullet to support a maximum of ${maxDuration}s for maximum duration`;
     }
     return true;
   }
-});
-
-export default QueryMaxDuration;
+}

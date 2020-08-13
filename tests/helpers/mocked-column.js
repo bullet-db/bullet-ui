@@ -23,25 +23,25 @@ export default EmberObject.extend({
     this._super(...arguments);
 
     this.set('enumeratedColumns', A());
-    let props = this.getProperties('name', 'type', 'subtype', 'description', 'hasFreeformField');
-    let me = EmberObject.create({ name: props.name, type: props.type, description: props.description });
+    let { name, type, subtype, description, hasFreeformField } = this;
+    let me = EmberObject.create({ name, type, description });
     this.set('flattenedColumns', A([me]));
-    if (props.hasFreeformField) {
-      this.get('flattenedColumns').pushObject(EmberObject.create({ name: props.name, type: props.subtype, hasFreeformField: true }));
+    if (hasFreeformField) {
+      this.flattenedColumns.pushObject(EmberObject.create({ name, type: subtype, hasFreeformField: true }));
     }
-    this.set('qualifiedType', isEmpty(props.subtype) ? props.type : `${props.type} OF ${props.subtype}S`);
+    this.set('qualifiedType', isEmpty(subtype) ? type : `${type} OF ${subtype}S`);
   },
 
   addEnumeration(name, description) {
     let enumeration = EmberObject.create({
-      name: `${this.get('name')}.${name}`,
-      type: this.get('subtype'),
-      qualifiedType: this.get('subtype'),
+      name: `${this.name}.${name}`,
+      type: this.subtype,
+      qualifiedType: this.subtype,
       description: description,
       isSubfield: true
     });
     this.set('hasEnumerations', true);
-    this.get('enumeratedColumns').pushObject(enumeration);
-    this.get('flattenedColumns').pushObject(enumeration);
+    this.enumeratedColumns.pushObject(enumeration);
+    this.flattenedColumns.pushObject(enumeration);
   }
 });

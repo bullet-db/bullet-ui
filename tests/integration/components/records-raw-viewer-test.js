@@ -6,7 +6,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | records raw viewer', function(hooks) {
   setupRenderingTest(hooks);
@@ -19,19 +19,10 @@ module('Integration | Component | records raw viewer', function(hooks) {
     let data = repeat(1, { foo: 'bar' });
     this.set('mockData', data);
 
-    await render(hbs`{{records-raw-viewer data=mockData}}`);
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
-    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 3);
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 2);
-
-    await render(hbs`
-      {{#records-raw-viewer data=mockData}}
-        template block text
-      {{/records-raw-viewer}}
-    `);
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
-    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 3);
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 2);
+    await render(hbs`<RecordsRawViewer @data={{this.mockData}}/>`);
+    assert.dom('.raw-display .pretty-json-container').exists({ count: 1 });
+    assert.dom('.json-formatter-row').exists({ count: 3 });
+    assert.dom('.json-formatter-open').exists({ count: 2 });
   });
 
   test('it collapses json properly when the rows and the max levels are low enough', async function(assert) {
@@ -40,12 +31,12 @@ module('Integration | Component | records raw viewer', function(hooks) {
     this.set('mockMaxLevels', 3);
 
     // Max levels = 2 since we only 2 rows
-    await render(hbs`{{records-raw-viewer data=mockData maxLevels=mockMaxLevels}}`);
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
+    await render(hbs`<RecordsRawViewer @data={{this.mockData}} @maxLevels={{this.mockMaxLevels}}/>`);
+    assert.dom('.raw-display .pretty-json-container').exists({ count: 1 });
     // One Array[2] row + 2 index rows (0 and 1) with 1 foo each = 1 + 2 + 2 = 5. The contents of foo's are lazily rendered
-    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 5);
+    assert.dom('.json-formatter-row').exists({ count: 5 });
     // But only top and index rows are open
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 3);
+    assert.dom('.json-formatter-open').exists({ count: 3 });
   });
 
   test('it collapses json properly when the rows and the max levels are greater than the breakpoint', async function(assert) {
@@ -54,11 +45,11 @@ module('Integration | Component | records raw viewer', function(hooks) {
     this.set('mockMaxLevels', 2);
 
     // Max levels is now 1 since we have > 20 rows
-    await render(hbs`{{records-raw-viewer data=mockData maxLevels=mockMaxLevels}}`);
+    await render(hbs`<RecordsRawViewer @data={{this.mockData}} @maxLevels={{this.mockMaxLevels}}/>`);
     // One Array[2] row + 25 index rows = 1 + 25 = 26. Rest are lazily rendered
-    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 26);
+    assert.dom('.json-formatter-row').exists({ count: 26 });
     // But only top row is open
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 1);
+    assert.dom('.json-formatter-open').exists({ count: 1 });
   });
 
   test('it collapses json properly when the rows and the max levels are greater than the breakpoint', async function(assert) {
@@ -67,24 +58,24 @@ module('Integration | Component | records raw viewer', function(hooks) {
     this.set('mockMaxLevels', 3);
 
     // Max levels is now 1 since we have > 40 rows
-    await render(hbs`{{records-raw-viewer data=mockData maxLevels=mockMaxLevels}}`);
+    await render(hbs`<RecordsRawViewer @data={{this.mockData}} @maxLevels={{this.mockMaxLevels}}/>`);
     // One Array[2] row + 45 index rows = 1 + 45 = 46. Rest are lazily rendered
-    assert.equal(this.element.querySelectorAll('.json-formatter-row').length, 46);
+    assert.dom('.json-formatter-row').exists({ count: 46 });
     // But only top row is open
-    assert.equal(this.element.querySelectorAll('.json-formatter-open').length, 1);
+    assert.dom('.json-formatter-open').exists({ count: 1 });
   });
 
   test('it renders raw json in a pre tag', async function(assert) {
     assert.expect(5);
     this.set('mockData', null);
 
-    await render(hbs`{{records-raw-viewer data=mockData}}`);
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
-    assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 0);
+    await render(hbs`<RecordsRawViewer @data={{this.mockData}}/>`);
+    assert.dom('.raw-display .pretty-json-container').exists({ count: 1 });
+    assert.dom('.raw-display .raw-json-display').doesNotExist();
     await click('.mode-toggle .off-view');
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
-    assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 1);
-    assert.equal(this.element.querySelector('.raw-display .raw-json-display').textContent.trim(), '');
+    assert.dom('.raw-display .pretty-json-container').doesNotExist();
+    assert.dom('.raw-display .raw-json-display').exists({ count: 1 });
+    assert.dom('.raw-display .raw-json-display').hasText('');
   });
 
   test('it renders raw json in a pre tag with the given spacing', async function(assert) {
@@ -93,12 +84,12 @@ module('Integration | Component | records raw viewer', function(hooks) {
     this.set('mockData', data);
     this.set('mockSpacing', 8);
 
-    await render(hbs`{{records-raw-viewer data=mockData spacing=mockSpacing}}`);
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 1);
-    assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 0);
+    await render(hbs`<RecordsRawViewer @data={{this.mockData}} spacing=mockSpacing/>`);
+    assert.dom('.raw-display .pretty-json-container').exists({ count: 1 });
+    assert.dom('.raw-display .raw-json-display').doesNotExist();
     await click('.mode-toggle .off-view');
-    assert.equal(this.element.querySelectorAll('.raw-display .pretty-json-container').length, 0);
-    assert.equal(this.element.querySelectorAll('.raw-display .raw-json-display').length, 1);
-    assert.equal(this.element.querySelector('.raw-display .raw-json-display').textContent.trim(), JSON.stringify(data, null, 8));
+    assert.dom('.raw-display .pretty-json-container').doesNotExist();
+    assert.dom('.raw-display .raw-json-display').exists({ count: 1 });
+    assert.dom('.raw-display .raw-json-display').hasText(JSON.stringify(data, null, 8));
   });
 });

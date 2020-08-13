@@ -1,0 +1,13 @@
+{{!--
+  Copyright 2017, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="mode-toggle" {{did-update this.reset @isToggled}}>
+ <div role="button" class="mode on-view" hidden={{this.isToggled}} {{on "click" this.onToggle}}>
+   {{fa-icon "toggle-off" class="off" size="2"}}
+ </div>
+ <div role="button" class="mode off-view" hidden={{this.isNotToggled}} {{on "click" this.onToggle}} >
+   {{fa-icon "toggle-on" class="on" size="2"}}
+ </div>
+</div>

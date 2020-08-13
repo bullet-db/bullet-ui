@@ -8,10 +8,14 @@
 
   height: 300px;
   border-collapse: collapse;
-  overflow-x: auto;
+  overflow: hidden;
 
   p {
     margin-bottom: 0;
+  }
+
+  .ember-light-table {
+    margin: 0;
   }
 
   .lt-head {
@@ -24,6 +28,7 @@
         border-bottom: 1px solid $table-header-line-color;
         color: $table-body-grey-text-color;
         overflow-x: hidden;
+        background-color: $white;
 
         .lt-sort-icon {
           float: none;
@@ -37,6 +42,7 @@
     .lt-row {
       height: 35px;
       color: $table-body-grey-text-color;
+      border-bottom: none;
 
       &:hover {
         background-color: $background-grey !important;

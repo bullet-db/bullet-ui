@@ -3,36 +3,37 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { defineProperty } from '@ember/object';
-import { not, or, and, alias } from '@ember/object/computed';
-import Component from '@ember/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { isEmpty } from '@ember/utils';
+import argsGet from 'bullet-ui/utils/args-get';
 
-// Adapted from the dummy app validated-input in
-// https://github.com/offirgolan/ember-cp-validations
-export default Component.extend({
-  classNames: ['validated-input'],
-  classNameBindings: ['isInvalid:has-error'],
-  inputClassNames: '',
-  model: null,
-  fieldName: '',
-  valuePath: '',
-  type: 'text',
-  placeHolder: '',
-  tooltipPosition: 'right',
-  forceDirty: false,
-  disabled: false,
-  // Defined properties in init
-  value: null,
-  validation: null,
+export default class ValidatedInputComponent extends Component {
+  @tracked isInvalid = false;
+  @tracked errors;
 
-  notValidating: not('validation.isValidating'),
-  isDirty: or('validation.isDirty', 'forceDirty'),
-  isInvalid: and('notValidating', 'isDirty', 'validation.isInvalid'),
-
-  init() {
-    this._super(...arguments);
-    let valuePath = this.get('valuePath');
-    defineProperty(this, 'validation', alias(`model.validations.attrs.${valuePath}`));
-    defineProperty(this, 'value', alias(`model.${valuePath}`));
+  get tooltipPosition() {
+    return argsGet(this.args, 'tooltipPosition', 'right');
   }
-});
+
+  @action
+  async validate() {
+    let changeset = this.args.changeset;
+    let path = this.args.valuePath;
+    await changeset.validate(path);
+    if (!changeset.get('isInvalid')) {
+      this.isInvalid = false;
+      return;
+    }
+    let errors = changeset.get(`error.${path}`);
+    this.isInvalid = !isEmpty(errors);
+    this.errors = errors;
+  }
+
+  @action
+  onChange(value) {
+    this.args.changeset.set(this.args.valuePath, value);
+    this.validate();
+  }
+}

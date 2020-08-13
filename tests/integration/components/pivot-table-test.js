@@ -6,8 +6,8 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
-import RESULTS from '../../fixtures/results';
+import { hbs } from 'ember-cli-htmlbars';
+import RESULTS from 'bullet-ui/tests/fixtures/results';
 
 module('Integration | Component | pivot table', function(hooks) {
   setupRenderingTest(hooks);
@@ -18,9 +18,9 @@ module('Integration | Component | pivot table', function(hooks) {
     this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
     this.set('mockOnRefresh', () => { });
 
-    await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
-                                   onRefresh=(action mockOnRefresh)}}`);
-    assert.equal(this.element.querySelector('.pvtUi select.pvtRenderer').value, 'Table');
+    await render(hbs`<PivotTable @rows={{this.mockRows}} @columns={{this.mockColumns}}
+                                 @initialOptions={{this.mockOptions}} @onRefresh={{this.mockOnRefresh}}/>`);
+    assert.dom('.pvtUi select.pvtRenderer').hasValue('Table');
   });
 
   test('it generates options by combining defaults with provided options', async function(assert) {
@@ -32,8 +32,8 @@ module('Integration | Component | pivot table', function(hooks) {
     this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
     this.set('mockOptions', { rendererName: 'Heatmap' });
 
-    await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
-                                   onRefresh=(action mockOnRefresh)}}`);
+    await render(hbs`<PivotTable @rows={{this.mockRows}} @columns={{this.mockColumns}}
+                                 @initialOptions={{this.mockOptions}} @onRefresh={{this.mockOnRefresh}}/>`);
   });
 
   test('it removes certain options before returning the configuration', async function(assert) {
@@ -48,7 +48,7 @@ module('Integration | Component | pivot table', function(hooks) {
     this.set('mockColumns', ['foo', 'bar', 'COUNT', 'avg_bar', 'sum_foo']);
     this.set('mockOptions', { rendererOptions: { foo: 'bar' }, localeStrings: { bar: 'foo' } });
 
-    await render(hbs`{{pivot-table rows=mockRows columns=mockColumns initialOptions=mockOptions
-                                   onRefresh=(action mockOnRefresh)}}`);
+    await render(hbs`<PivotTable @rows={{this.mockRows}} @columns={{this.mockColumns}}
+                                 @initialOptions={{this.mockOptions}} @onRefresh={{this.mockOnRefresh}}/>`);
   });
 });

@@ -4,5 +4,10 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="query-panel-container">
-  {{query-input query=model.query schema=model.schema fireQuery=(route-action "fireQuery")}}
+  <QueryInput @query={{@model.query}} @schema={{@model.schema}} @filter={{@model.filter}}
+              @aggregation={{@model.aggregation}} @groups={{@model.groups}} @metrics={{@model.metrics}}
+              @projections={{@model.projections}} @window={{@model.window}}
+              @onDirty={{fn (route-action "forceDirty")}}
+              @onSaveQuery={{fn (route-action "saveQuery")}}
+              @onSubmitQuery={{fn (route-action "sendQuery")}} />
 </div>

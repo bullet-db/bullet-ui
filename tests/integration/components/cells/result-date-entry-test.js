@@ -6,7 +6,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | Cell | result date entry', function(hooks) {
   setupRenderingTest(hooks);
@@ -19,7 +19,7 @@ module('Integration | Component | Cell | result date entry', function(hooks) {
         assert.equal(value, 'foo');
       }
     });
-    await render(hbs`{{cells/result-date-entry tableActions=mockTableActions row='foo'}}`);
-    await click('span');
+    await render(hbs`<Cells::ResultDateEntry @tableActions={{this.mockTableActions}} @row='foo'/>`);
+    await click('.result-date-entry');
   });
 });

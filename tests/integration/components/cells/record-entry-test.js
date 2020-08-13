@@ -5,8 +5,9 @@
  */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, settled, click } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { render, click } from '@ember/test-helpers';
+import { hbs } from 'ember-cli-htmlbars';
+import { assertTooltipNotRendered, assertTooltipRendered, findTooltip } from 'ember-tooltips/test-support/dom';
 
 module('Integration | Component | Cell | record entry', function(hooks) {
   setupRenderingTest(hooks);
@@ -14,30 +15,27 @@ module('Integration | Component | Cell | record entry', function(hooks) {
   test('it displays a simple text value', async function(assert) {
     this.set('mockRow', { content: { value: 'foo' } });
     this.set('mockColumn', { label: 'value' });
-    await render(hbs`{{cells/record-entry row=mockRow column=mockColumn}}`);
-    assert.ok(this.element.textContent, 'foo');
-    assert.equal(this.element.querySelectorAll('.record-popover-body').length, 0);
+    await render(hbs`<Cells::RecordEntry @row={{this.mockRow}} @column={{this.mockColumn}}/>`);
+    assert.dom(this.element).hasText('foo');
+    assert.dom('.record-popover-body').doesNotExist();
   });
 
   test('it renders a complex array as text', async function(assert) {
     this.set('mockRow', { content: { bar: ['foo'] } });
     this.set('mockColumn', { label: 'bar' });
-    await render(hbs`{{cells/record-entry row=mockRow column=mockColumn}}`);
-    assert.equal(this.element.querySelector('.plain-entry').textContent, '["foo"]');
+    await render(hbs`<Cells::RecordEntry @row={{this.mockRow}} @column={{this.mockColumn}}/>`);
+    assert.dom('.plain-entry').hasText('["foo"]');
   });
 
-  test('it adds the popover to the provided element selector on click', async function(assert) {
+  test('it adds a popover on click', async function(assert) {
     assert.expect(3);
     this.set('mockRow', { content: { bar: ['foo'] } });
     this.set('mockColumn', { label: 'bar' });
-    await render(
-      hbs`{{cells/record-entry id="test-record-entry" row=mockRow column=mockColumn createPopoverOn="#test-record-entry"}}`
-    );
-    assert.equal(this.element.querySelectorAll('.record-popover-title').length, 0);
-    await click('#test-record-entry');
-    return settled().then(() => {
-      assert.equal(this.element.querySelectorAll('.record-popover-title').length, 1);
-      assert.equal(this.element.querySelector('.record-popover-title > span').textContent, 'bar');
-    });
+    await render(hbs`<Cells::RecordEntry @row={{this.mockRow}} @column={{this.mockColumn}}/>`);
+    assertTooltipNotRendered(assert);
+    await click('.record-entry');
+    assertTooltipRendered(assert);
+    let tooltip = findTooltip();
+    assert.ok(tooltip.innerText.trim().indexOf('bar') !== -1);
   });
 });

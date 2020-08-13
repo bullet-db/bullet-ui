@@ -3,117 +3,114 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { not, or } from '@ember/object/computed';
 import { cancel, later } from '@ember/runloop';
-import { computed } from '@ember/object';
-import Component from '@ember/component';
+import argsGet from 'bullet-ui/utils/args-get';
 
-export default Component.extend({
-  // Component API
-  duration: 10000,
-  active: false,
-  updateInterval: 200,
-  // The value doesn't matter. Using this as a 'observer' to trigger timing again.
-  retriggerOnChangeIn: null,
+export default class TimedProgressBarComponent extends Component {
+  @tracked startTime;
+  @tracked endTime;
+  @tracked runTime;
+  @tracked percentNow = 0;
+  @tracked futureTimer;
+  @tracked timingDone = true;
+  updateInterval = 200;
 
-  // Ember Progress Bar configuration
-  shape: 'Circle',
-  strokeWidth: 8.0,
-  color: '#555',
-  doneColor: '#21D87D',
-  trailColor: '#eee',
+  // Ember Progress Bar constants
+  strokeWidth = 8.0;
+  color = '#555';
+  doneColor = '#21D87D';
+  trailColor = '#eee';
   // https://github.com/jeremyckahn/shifty/blob/e13d78f887b3783b6d93e501d26cc37a9fa2d206/src/easing-functions.js
-  easing: 'linear',
-  animationDuration: 200,
-  useStep: true,
+  easing = 'linear';
+  animationDuration = 200;
 
-  // Private component configuration
-  finished: undefined,
-  startTime: null,
-  endTime: null,
-  runTime: null,
-  percentNow: 0,
-  futureTimer: null,
-  timingDone: true,
+  @not('args.isActive') isNotActive;
+  @or('timingDone', 'isNotActive') showDone;
 
-  showDone: computed('timingDone', 'active', function() {
-    return this.get('timingDone') || !this.get('active');
-  }).readOnly(),
+  constructor() {
+    super(...arguments);
+    this.restartTimer();
+  }
 
-  progress: computed('percentNow', 'timingDone', function() {
+  get shape() {
+    return argsGet(this.args, 'shape', 'Circle');
+  }
+
+  get useStep() {
+    return argsGet(this.args, 'useStep', true);
+  }
+
+  get progress() {
     // Deliberately based on timingDone instead of showDone to show the progress percent at which the query became done
-    return this.get('timingDone') ? 1 : this.get('percentNow');
-  }).readOnly(),
+    return this.timingDone ? 1 : this.percentNow;
+  }
 
-  strokeColor: computed('showDone', 'color', function() {
-    return this.get('showDone') ? this.get('doneColor') : this.get('color');
-  }),
+  get strokeColor() {
+    return this.showDone ? this.doneColor : this.color;
+  }
 
-  options: computed('strokeWidth', 'strokeColor', 'trailColor', function() {
-    let { strokeWidth, strokeColor, trailColor, easing, animationDuration, useStep }
-      = this.getProperties('strokeWidth', 'strokeColor', 'trailColor', 'easing', 'animationDuration', 'useStep');
-
+  get options() {
     let options = {
-      strokeWidth,
-      color: strokeColor,
-      trailColor,
-      easing,
-      duration: animationDuration
+      strokeWidth: this.strokeWidth,
+      color: this.strokeColor,
+      trailColor: this.trailColor,
+      easing: this.easing,
+      duration: this.animationDuration
     };
-    if (useStep) {
-      options.step = this.get('step');
+    if (this.useStep) {
+      // Pass in the whole function
+      options.step = this.step;
     }
     return options;
-  }).readOnly(),
+  }
 
-  didReceiveAttrs() {
-    this._super(...arguments);
-    this.destroyTimer();
-    // Don't do any timing unless active. Also any changes with active true should restart timer.
-    if (this.get('active')) {
-      this.startTiming();
-    }
-  },
+  willDestroy() {
+    this.stopTiming();
+  }
 
   step(state, path) {
     let displayText = (path.value() * 100).toFixed(0);
     path.setText(`${displayText}%`);
-  },
-
-  destroyTimer() {
-    // Docs say this should return false or undefined if it doesn't exist
-    cancel(this.get('futureTimer'));
-  },
-
-  willDestroy() {
-    this.destroyTimer();
-  },
+  }
 
   startTiming() {
     let now = Date.now();
-    let magnitude = parseFloat(this.get('duration'));
+    let magnitude = parseFloat(this.args.duration);
     magnitude = magnitude <= 0 ? 1 : magnitude;
     let end = new Date(now + magnitude).getTime();
+    this.startTime = now;
+    this.endTime = end;
+    this.runTime = end - now;
+    this.percentNow = 0.0;
+    this.timingDone = false;
+    this.futureTimer = later(this, this.timer, this.updateInterval);
+  }
 
-    this.setProperties({
-      startTime: now,
-      endTime: end,
-      duration: magnitude,
-      runTime: end - now,
-      percentNow: 0.0,
-      timingDone: false,
-      futureTimer: later(this, this.timer, this.get('updateInterval'))
-    });
-  },
+  stopTiming() {
+    // Docs say this should return false or undefined if it doesn't exist
+    cancel(this.futureTimer);
+  }
 
   timer() {
     let timeNow = Date.now();
-    let delta = (timeNow - this.get('startTime')) / this.get('runTime');
-    this.set('percentNow', Math.min(delta, 1));
-    if (timeNow >= this.get('endTime')) {
-      this.set('timingDone', true);
-      this.sendAction('finished');
-      return;
+    let delta = (timeNow - this.startTime) / this.runTime;
+    this.percentNow = Math.min(delta, 1);
+    if (timeNow >= this.endTime) {
+      this.timingDone = true;
+    } else {
+      this.futureTimer = later(this, this.timer, this.updateInterval);
     }
-    this.set('futureTimer', later(this, this.timer, this.get('updateInterval')));
   }
-});
+
+  @action
+  restartTimer() {
+    this.stopTiming();
+    if (this.args.isActive) {
+      this.startTiming();
+    }
+  }
+}

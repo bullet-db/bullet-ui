@@ -7,5 +7,5 @@
   &.has-popover {
     cursor: pointer;
   }
-  // Other styling in styles/components/popovers
+  @import "../popovers/query-results-entry-popover";
 }

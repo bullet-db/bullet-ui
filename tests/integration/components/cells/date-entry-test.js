@@ -6,37 +6,34 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
-import hbs from 'htmlbars-inline-precompile';
+import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | Cell | date entry', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders an empty date text when there is no date provided', async function(assert) {
-    await render(hbs`{{cells/date-entry}}`);
-
-    assert.equal(this.element.textContent.trim(), '--');
+    await render(hbs`<Cells::DateEntry/>`);
+    assert.dom(this.element).hasText('--');
 
     await render(hbs`
-      {{#cells/date-entry}}
+      <Cells::DateEntry>
         template block text
-      {{/cells/date-entry}}
+      </Cells::DateEntry>
     `);
-
-    assert.equal(this.element.textContent.trim(), '--');
+    assert.dom(this.element).hasText('--');
   });
 
   test('it renders a date in the default format', async function(assert) {
     this.set('date', new Date(2016, 8, 1, 3, 16));
-    await render(hbs`{{cells/date-entry value=date}}`);
-
-    assert.equal(this.element.textContent.trim(), '01 Sep 03:16 AM');
+    await render(hbs`<Cells::DateEntry @value={{this.date}}/>`);
+    assert.dom(this.element).hasText('01 Sep 03:16 AM');
   });
 
 
   test('it renders a date in the given format', async function(assert) {
     this.set('date', new Date(2016, 8, 1, 3, 16));
-    await render(hbs`{{cells/date-entry value=date format='D/M HH:m'}}`);
+    await render(hbs`<Cells::DateEntry @value={{this.date}} @format='D/M HH:m'/>`);
 
-    assert.equal(this.element.textContent.trim(), '1/9 03:16');
+    assert.dom(this.element).hasText('1/9 03:16');
   });
 });

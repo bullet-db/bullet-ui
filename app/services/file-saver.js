@@ -5,8 +5,8 @@
  */
 import Service from '@ember/service';
 
-export default Service.extend({
+export default class FileSaverService extends Service {
   save(data, mimeType, name) {
     window.saveAs(new Blob([data], { type: mimeType }), name);
   }
-});
+}

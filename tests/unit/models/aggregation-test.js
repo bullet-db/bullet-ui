@@ -6,7 +6,6 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-
 import { run } from '@ember/runloop';
 
 module('Unit | Model | aggregation', function(hooks) {
