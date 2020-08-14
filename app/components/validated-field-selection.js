@@ -68,6 +68,7 @@ export default class ValidatedFieldSelectionComponent extends Component {
     let changeset = this.args.changeset;
     let path = this.args.additionalPath;
     changeset.set(path, option);
+    this.args.onChange();
     this.validate(changeset, path);
   }
 
@@ -77,6 +78,7 @@ export default class ValidatedFieldSelectionComponent extends Component {
     let path = this.fieldPath;
     changeset.set(path, field);
     changeset.set(this.namePath, '');
+    this.args.onChange();
     this.validate(changeset, path);
   }
 
@@ -84,6 +86,7 @@ export default class ValidatedFieldSelectionComponent extends Component {
   onModifyName(name) {
     let changeset = this.args.changeset;
     changeset.set(this.namePath, name);
+    this.args.onChange();
     this.validate(changeset, this.namePath);
   }
 

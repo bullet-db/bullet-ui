@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { all, resolve } from 'rsvp';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
@@ -80,18 +79,16 @@ export default class QueryRoute extends Route {
     return array;
   }
 
-  // Using rsvp promises since await inside a forEach is messy
-  createFieldLikeChangesets(collection, modelName, fields = ['field', 'name']) {
+  async createFieldLikeChangesets(collection, modelName, fields = ['field', 'name']) {
     if (isEmpty(collection)) {
       return A();
     }
     // Copy the models since we don't want to edit any original field-like hasManys when working on the query
     let promises = collection.map(model => this.queryManager.copyModelAndFields(model, modelName, fields));
-    return all(promises).then(results => {
-      let changesets = A();
-      results.forEach(result => changesets.pushObject(this.queryManager.createChangeset(result, modelName)));
-      return resolve(changesets);
-    });
+    let results = await Promise.all(promises);
+    let changesets = A();
+    results.forEach(result => changesets.pushObject(this.queryManager.createChangeset(result, modelName)));
+    return changesets;
   }
 
   submitQuery(query, result) {

@@ -34,6 +34,7 @@ export default class ValidatedInputComponent extends Component {
   @action
   onChange(value) {
     this.args.changeset.set(this.args.valuePath, value);
+    this.args.onChange();
     this.validate();
   }
 }
