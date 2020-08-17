@@ -17,15 +17,13 @@ export default class QueriesNewRoute extends Route {
   @service store;
   cachedQuery;
 
-  beforeModel() {
-    return this.addDefaultQuery().then(query => {
-      query.save().then(() => {
-        this.transitionTo('query', query.get('id'));
-      });
-    });
+  async beforeModel() {
+    let query = await this.addDefaultQuery();
+    query = await query.save();
+    this.transitionTo('query', query.get('id'));
   }
 
-  addDefaultQuery() {
+  async addDefaultQuery() {
     let fetchedQuery = this.cachedQuery;
     // If we already fetched and stored the default query, use that.
     if (fetchedQuery) {
@@ -44,13 +42,12 @@ export default class QueriesNewRoute extends Route {
     }
 
     // Otherwise, assume defaultQuery is an url to get the default query from.
-    return this.corsRequest.get(defaultQuery).then(query => {
-      this.set('cachedQuery', query);
-      return this.createQuery(query);
-    });
+    let query = await this.corsRequest.get(defaultQuery);
+    this.set('cachedQuery', query);
+    return this.createQuery(query);
   }
 
-  createQuery(query) {
+  async createQuery(query) {
     if (!query) {
       return this.createEmptyQuery();
     }
@@ -63,7 +60,7 @@ export default class QueriesNewRoute extends Route {
     return this.queryManager.copyQuery(queryObject);
   }
 
-  createEmptyFilter(query) {
+  async createEmptyFilter(query) {
     let empty = this.store.createRecord('filter', {
       clause: EMPTY_CLAUSE,
       query: query
@@ -71,12 +68,13 @@ export default class QueriesNewRoute extends Route {
     return empty.save();
   }
 
-  createEmptyQuery() {
+  async createEmptyQuery() {
     let aggregation = this.store.createRecord('aggregation', get(this, 'querier.defaultAggregation'));
-    aggregation.save();
+    await aggregation.save();
     let query = this.store.createRecord('query', {
       aggregation: aggregation
     });
-    return this.createEmptyFilter(query).then(() => query);
+    await this.createEmptyFilter(query);
+    return query;
   }
 }

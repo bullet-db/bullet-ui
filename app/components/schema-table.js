@@ -20,13 +20,13 @@ export default class SchemaTableComponent extends PaginatedTable {
   constructor() {
     super(...arguments);
     this.pageSize = 10;
-    this.rows = this.fieldsToRows(this.args.fields);
+    this.rows = SchemaTableComponent.fieldsToRows(this.args.fields);
     this.table = Table.create({ columns: this.columns });
     this.sortBy('name', 'ascending');
     this.addPages(2);
   }
 
-  fieldsToRows(fields) {
+  static fieldsToRows(fields) {
     // This needs to handle arrays (for enumeratedColumns) and the model result collection
     return typeOf(fields) === 'array' ? fields : fields.toArray();
   }

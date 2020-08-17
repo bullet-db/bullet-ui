@@ -5,7 +5,6 @@
  */
 import { isEmpty } from '@ember/utils';
 import { oneWay } from '@ember/object/computed';
-import { resolve } from 'rsvp';
 import { A } from '@ember/array';
 import EmberObject, { computed } from '@ember/object';
 
@@ -79,7 +78,7 @@ export default EmberObject.extend({
 
   topLevelPropertyAsPromise(attr) {
     if (this.promisify) {
-      this.set(attr, resolve(this.get(`_${attr}`)));
+      this.set(attr, Promise.resolve(this.get(`_${attr}`)));
     } else {
       this.set(attr, this.get(`_${attr}`));
     }
@@ -88,7 +87,7 @@ export default EmberObject.extend({
   nestedPropertyAsPromise(top, nested) {
     let attr = `${top}.${nested}`;
     if (this.promisify) {
-      this.set(attr, resolve(this.get(`_${top}._${nested}`)));
+      this.set(attr, Promise.resolve(this.get(`_${top}._${nested}`)));
     } else {
       this.set(attr, this.get(`_${top}._${nested}`));
     }
@@ -141,9 +140,9 @@ export default EmberObject.extend({
   validate() {
     let shouldValidate = this.shouldValidate;
     if (shouldValidate) {
-      return resolve({ validations: EmberObject.create({ isValid: true }) });
+      return Promise.resolve({ validations: EmberObject.create({ isValid: true }) });
     }
-    return resolve({ validations: EmberObject.create({ isValid: false, messages: ['Forced to not validate'] }) });
+    return Promise.resolve({ validations: EmberObject.create({ isValid: false, messages: ['Forced to not validate'] }) });
   },
 
   filterSummary: oneWay('_filter.summary'),

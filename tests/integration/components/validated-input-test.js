@@ -19,10 +19,15 @@ module('Integration | Component | validated input', function(hooks) {
   }
 
   test('it renders a labeled-input component as input-field and shows no error if valid', async function(assert) {
+    assert.expect(4);
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
+    this.set('mockOnChange', () => {
+      assert.ok(true);
+    });
     await render(hbs`
       <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                      @onChange={{this.mockOnChange}}
       />
     `);
     assert.dom('label').hasText('label');
@@ -32,10 +37,15 @@ module('Integration | Component | validated input', function(hooks) {
   });
 
   test('it shows a validation error tooltip if there are errors', async function(assert) {
+    assert.expect(5);
     let changeset = mockChangeset(() => true);
     this.set('mockChangeset', changeset);
+    this.set('mockOnChange', () => {
+      assert.ok(true);
+    });
     await render(hbs`
       <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                      @onChange={{this.mockOnChange}}
       />
     `);
     await fillIn('input', 30);
@@ -49,9 +59,11 @@ module('Integration | Component | validated input', function(hooks) {
   test('it does not validate on initialization but does when forced to', async function(assert) {
     let changeset = mockChangeset(() => true);
     this.set('mockChangeset', changeset);
+    this.set('mockOnChange', () => { });
     this.set('mockForceValidate', false);
     await render(hbs`
       <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                      @onChange={{this.mockOnChange}}
                       @forceValidate={{this.mockForceValidate}}
       />
     `);

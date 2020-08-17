@@ -1,4 +1,8 @@
-import { resolve } from 'rsvp';
+/*
+ *  Copyright 2020, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
 import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import Application from 'bullet-ui/app';
@@ -49,11 +53,11 @@ module('Unit | Instance Initializer | migrations', function(hooks) {
       INDEXEDDB: window.localforage.INDEXEDDB,
       setDriver(driver) {
         assert.equal(driver, window.localforage.INDEXEDDB);
-        return resolve();
+        return Promise.resolve();
       },
       clear() {
         assert.ok(true);
-        return resolve();
+        return Promise.resolve();
       }
     };
 

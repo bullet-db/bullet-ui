@@ -37,12 +37,12 @@ export default class QueryModel extends Model {
 
   @computed('projections.@each.name')
   get projectionsSummary() {
-    return this.summarizeFieldLike(this.projections);
+    return QueryModel.summarizeFieldLike(this.projections);
   }
 
   @computed('aggregation.groups.@each.name')
   get groupsSummary() {
-    return this.summarizeFieldLike(this.get('aggregation.groups'));
+    return QueryModel.summarizeFieldLike(this.get('aggregation.groups'));
   }
 
   @computed('aggregation.metrics.@each.{type,name}')
@@ -111,7 +111,7 @@ export default class QueryModel extends Model {
     let emitType = this.get('window.emitType');
     let emitEvery = this.get('window.emitEvery');
     let includeType = this.get('window.includeType');
-    return `Every ${emitEvery} ${this.getEmitUnit(emitType, emitEvery)}${this.getIncludeType(includeType)}`;
+    return `Every ${emitEvery} ${QueryModel.getEmitUnit(emitType, emitEvery)}${QueryModel.getIncludeType(includeType)}`;
   }
 
   @computed('results.[]')
@@ -133,16 +133,16 @@ export default class QueryModel extends Model {
     return max;
   }
 
-  summarizeFieldLike(fieldLike) {
+  static summarizeFieldLike(fieldLike) {
     return isEmpty(fieldLike) ? '' : fieldLike.getEach('name').reject(n => isEmpty(n)).join(', ');
   }
 
-  getEmitUnit(emitType, emitEvery) {
+  static getEmitUnit(emitType, emitEvery) {
     let unit = isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'second' : 'record';
     return Number(emitEvery) === 1 ? unit : pluralize(unit);
   }
 
-  getIncludeType(includeType) {
+  static getIncludeType(includeType) {
     return isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : '';
   }
 }

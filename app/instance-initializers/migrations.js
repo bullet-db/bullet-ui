@@ -5,20 +5,18 @@
  */
 import { isEqual } from '@ember/utils';
 
-export function initialize(application) {
+export async function initialize(application) {
   let settings = application.lookup('settings:main');
   let migrations = settings.get('migrations');
   let version = settings.get('modelVersion');
 
   const forage = window.localforage;
-  return forage.getItem('modelVersion').then(currentVersion => {
-    if (!currentVersion || version > currentVersion) {
-      let manager = application.lookup('service:queryManager');
-      return applyMigrations(manager, migrations, forage);
-    }
-  }).then(() => {
-    return forage.setItem('modelVersion', version);
-  });
+  let currentVersion = await forage.getItem('modelVersion');
+  if (!currentVersion || version > currentVersion) {
+    let manager = application.lookup('service:queryManager');
+    await applyMigrations(manager, migrations, forage);
+  }
+  return forage.setItem('modelVersion', version);
 }
 
 /**
@@ -26,7 +24,7 @@ export function initialize(application) {
  * @param  {Object} manager The query manager.
  * @param  {Object} migrations An object containing migrations to apply.
  */
-export function applyMigrations(manager, migrations, forage) {
+export async function applyMigrations(manager, migrations, forage) {
   if (!manager) {
     return;
   }
@@ -35,9 +33,8 @@ export function applyMigrations(manager, migrations, forage) {
   if (isEqual(deletions, 'result')) {
     return manager.deleteAllResults();
   } else if (isEqual(deletions, 'query')) {
-    return forage.setDriver(forage.INDEXEDDB).then(() => {
-      return forage.clear();
-    });
+    await forage.setDriver(forage.INDEXEDDB);
+    return forage.clear();
   }
 }
 

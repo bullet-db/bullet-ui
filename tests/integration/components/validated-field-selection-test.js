@@ -32,9 +32,11 @@ module('Integration | Component | validated field selection', function(hooks) {
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
+                               @onChange={{this.mockOnChange}}
                                @fieldClasses='custom-field' @nameClasses='custom-name'
       />
     `);
@@ -51,9 +53,11 @@ module('Integration | Component | validated field selection', function(hooks) {
     let changeset = mockChangeset(() => true);
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
+                               @onChange={{this.mockOnChange}}
       />
     `);
     assert.dom('.error-tooltip-link').doesNotExist();
@@ -78,10 +82,12 @@ module('Integration | Component | validated field selection', function(hooks) {
     );
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
+                               @onChange={{this.mockOnChange}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalClasses='type-selection' @additionalOptions={{this.mockAdditionalOptions}}
       />
@@ -100,10 +106,12 @@ module('Integration | Component | validated field selection', function(hooks) {
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
                                @disableField={{true}}
+                               @onChange={{this.mockOnChange}}
       />
     `);
     assert.dom('.error-tooltip-link').doesNotExist();
@@ -116,10 +124,12 @@ module('Integration | Component | validated field selection', function(hooks) {
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableRenaming={{false}}
+                               @onChange={{this.mockOnChange}}
       />
     `);
     assert.dom('.error-tooltip-link').doesNotExist();
@@ -132,10 +142,12 @@ module('Integration | Component | validated field selection', function(hooks) {
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableDeleting={{false}}
+                               @onChange={{this.mockOnChange}}
       />
     `);
     assert.dom('.error-tooltip-link').doesNotExist();
@@ -144,17 +156,43 @@ module('Integration | Component | validated field selection', function(hooks) {
     assert.dom('.delete-button').doesNotExist();
   });
 
+  test('it calls the onChange hook when changing any field', async function(assert) {
+    assert.expect(5);
+    let changeset = mockChangeset();
+    this.set('mockChangeset', changeset);
+    this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => {
+      assert.ok(true)
+    });
+    this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
+    await render(hbs`
+      <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @subfieldSeparator="." @subfieldSuffix='.*'
+                               @onChange={{this.mockOnChange}}
+                               @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
+                               @additionalOptions={{this.mockAdditionalOptions}}
+      />
+    `);
+    await selectChoose('.additional-selection', 'B');
+    await selectChoose('.field-selection', 'bar');
+    await fillIn('.field-name input', 'newName');
+    assert.dom('.error-tooltip-link').doesNotExist();
+    assert.deepEqual(changeset.modifications, [{ type: 'B' }, { field: 'bar' }, { name: '' }, { name: 'newName' }]);
+  });
+
   test('it calls the onDelete hook when deleting', async function(assert) {
     assert.expect(2);
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     this.set('mockOnDelete', () => {
       assert.ok(true);
     });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @subfieldSeparator="." @subfieldSuffix='.*'
+                               @onChange={{this.mockOnChange}}
                                @onDelete={{this.mockOnDelete}}
       />
     `);
@@ -170,10 +208,12 @@ module('Integration | Component | validated field selection', function(hooks) {
     );
     this.set('mockChangeset', changeset);
     this.set('mockColumns', MOCK_COLUMNS);
+    this.set('mockOnChange', () => { });
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
     this.set('mockForceValidate', false);
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
+                               @onChange={{this.mockOnChange}}
                                @forceValidate={{this.mockForceValidate}} @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalOptions={{this.mockAdditionalOptions}}
