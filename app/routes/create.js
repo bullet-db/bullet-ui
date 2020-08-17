@@ -13,10 +13,11 @@ export default class CreateRoute extends Route {
     return { hash: model.get('hash') };
   }
 
-  model(params) {
+  async model(params) {
     let hash = params.hash;
     let manager = this.queryManager;
-    return manager.decodeQuery(hash).then(object => manager.copyQuery(object));
+    let object = await manager.decodeQuery(hash);
+    return manager.copyQuery(object);
   }
 
   afterModel(model) {

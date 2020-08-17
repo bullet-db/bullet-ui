@@ -42,22 +42,22 @@ export default class QueriesRoute extends Route {
 
   @action
   queryClick(query) {
-    // Force the model hook to fire in query. 
+    // Force the model hook to fire in query.
     this.transitionTo('query', query.get('id'));
   }
 
   @action
-  copyQueryClick(query, callback) {
-    this.queryManager.copyQuery(query).then(copy => callback(copy));
+  async copyQueryClick(query, callback) {
+    let copy = await this.queryManager.copyQuery(query);
+    callback(copy);
   }
 
   @action
-  linkQueryClick(query, callback) {
-    this.queryManager.encodeQuery(query).then(encoded => {
-      let origin = this.origin;
-      let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
-      callback(`${origin}${path}`);
-    });
+  async linkQueryClick(query, callback) {
+    let encoded = await this.queryManager.encodeQuery(query);
+    let origin = this.origin;
+    let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
+    callback(`${origin}${path}`);
   }
 
   @action

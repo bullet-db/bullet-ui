@@ -129,12 +129,10 @@ export default class QueryRoute extends Route {
   }
 
   @action
-  sendQuery() {
-    this.queryManager.addResult(this.paramsFor('query').query_id).then(result => {
-      this.store.findRecord('query', this.paramsFor('query').query_id).then(query => {
-        this.submitQuery(query, result);
-      });
-    });
+  async sendQuery() {
+    let result = await this.queryManager.addResult(this.paramsFor('query').query_id);
+    let query = await this.store.findRecord('query', this.paramsFor('query').query_id);
+    this.submitQuery(query, result);
   }
 
   @action
