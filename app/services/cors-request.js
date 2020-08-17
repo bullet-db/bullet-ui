@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import fetch from 'fetch';
-import { reject } from 'rsvp';
 import Service from '@ember/service';
 
 export default class CORSRequestService extends Service {
