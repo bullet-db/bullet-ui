@@ -346,6 +346,8 @@ export default class QueryInputComponent extends Component {
     $(element).on(event.join(' '), bind(this, () => {
       this.validateFilter();
     }));
+    // Do this to set the summary for newly created queries with default filters
+    this.setFilter()
   }
 
   @action
