@@ -63,7 +63,7 @@ export default class TimedProgressBarComponent extends Component {
     };
     if (this.useStep) {
       // Pass in the whole function
-      options.step = this.step;
+      options.step = TimedProgressBarComponent.step;
     }
     return options;
   }
@@ -72,7 +72,7 @@ export default class TimedProgressBarComponent extends Component {
     this.stopTiming();
   }
 
-  step(state, path) {
+  static step(state, path) {
     let displayText = (path.value() * 100).toFixed(0);
     path.setText(`${displayText}%`);
   }
