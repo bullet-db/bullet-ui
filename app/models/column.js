@@ -7,8 +7,7 @@ import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
-
-export const SUBFIELD_SEPARATOR = '.';
+import { SUBFIELD_SEPARATOR } from 'bullet-ui/utils/type';
 
 export default class ColumnModel extends Model {
   @attr('string') name;

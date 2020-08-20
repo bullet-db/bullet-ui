@@ -11,7 +11,7 @@ import { hbs } from 'ember-cli-htmlbars';
 const MOCK_COLUMNS = [
   { id: 'foo' },
   { id: 'bar' },
-  { id: 'bar.*', hasFreeformField: true },
+  { id: 'bar.*', show_subfield: true },
   { id: 'baz.qux' },
   { id: 'baz.norf' }
 ];
@@ -34,8 +34,7 @@ module('Integration | Component | column field', function(hooks) {
     this.set('field', 'foo');
     this.set('mockColumns', MOCK_COLUMNS);
     await render(
-      hbs`<ColumnField @columns={{this.mockColumns}} @subfieldSeperator='.'
-                       @subfieldSuffix='.*' @initialValue={{this.field}}/>`
+      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue={{this.field}}/>`
     );
     assert.dom('.column-onlyfield .ember-power-select-selected-item').hasText('foo');
     this.set('field', 'bar');
@@ -45,8 +44,7 @@ module('Integration | Component | column field', function(hooks) {
   test('it shows a subfield for a composite field', async function(assert) {
     this.set('mockColumns', MOCK_COLUMNS);
     await render(
-      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.subfield' @subfieldKey='hasFreeformField'
-                       @subfieldSuffix='.*' @subfieldSeparator='.'/>`);
+      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.subfield' />`);
     assert.dom('.column-mainfield .ember-power-select-trigger').hasText('bar.*');
     assert.dom('.column-subfield input').exists({ count: 1 });
     assert.dom('.column-subfield input').hasValue('subfield');
@@ -60,8 +58,7 @@ module('Integration | Component | column field', function(hooks) {
       assert.equal(field, 'bar.foo');
     });
     await render(
-      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.baz' @subfieldKey='hasFreeformField'
-                       @subfieldSuffix='.*' @subfieldSeparator='.' @onDone={{this.doneHandler}}/>`
+      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.baz' @onDone={{this.doneHandler}}/>`
     );
     await fillIn('.column-subfield input', 'foo');
     assert.dom('.column-mainfield .ember-power-select-trigger').hasText('bar.*');

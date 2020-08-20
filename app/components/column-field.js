@@ -7,6 +7,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
+import { SUBFIELD_SEPARATOR } from 'bullet-ui/utils/type';
+import { SUBFIELD_SUFFIX, SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
 
 export default class ColumnFieldComponent extends Component {
   @tracked selectedColumn;
@@ -22,7 +24,7 @@ export default class ColumnFieldComponent extends Component {
   }
 
   get subfieldEnabled() {
-    return this.selectedColumn && this.selectedColumn[this.args.subfieldKey];
+    return this.selectedColumn && this.selectedColumn[SUBFIELD_ENABLED_KEY];
   }
 
   // Reverse mapping from ids back to the columns for easy lookup
@@ -36,7 +38,7 @@ export default class ColumnFieldComponent extends Component {
   get compositeField() {
     let top = this.selectedColumn.id;
     let sub = this.subfield;
-    let suffixPosition = top.lastIndexOf(this.args.subfieldSuffix);
+    let suffixPosition = top.lastIndexOf(SUBFIELD_SUFFIX);
     if (suffixPosition === -1) {
       return top;
     }
@@ -44,16 +46,16 @@ export default class ColumnFieldComponent extends Component {
     if (isEmpty(sub)) {
       return mainField;
     }
-    return `${mainField}${this.args.subfieldSeparator}${sub}`;
+    return `${mainField}${SUBFIELD_SEPARATOR}${sub}`;
   }
 
   sliceToLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
+    let lastSeparator = name.lastIndexOf(SUBFIELD_SEPARATOR);
     return lastSeparator !== -1 ? name.slice(0, lastSeparator) : name;
   }
 
   sliceFromLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
+    let lastSeparator = name.lastIndexOf(SUBFIELD_SEPARATOR);
     return lastSeparator !== -1 ? name.slice(lastSeparator + 1) : name;
   }
 
@@ -63,7 +65,7 @@ export default class ColumnFieldComponent extends Component {
     let subfield = '';
     // If we didn't find the full field, it is a field with a subfield
     if (isEmpty(field)) {
-      let mainField = `${this.sliceToLastSeparator(name)}${this.args.subfieldSuffix}`;
+      let mainField = `${this.sliceToLastSeparator(name)}${SUBFIELD_SUFFIX}`;
       field = this.columnMapping[mainField];
       subfield = this.sliceFromLastSeparator(name);
     }

@@ -35,7 +35,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @fieldClasses='custom-field' @nameClasses='custom-name'
       />
@@ -56,7 +55,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
       />
     `);
@@ -86,7 +84,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalClasses='type-selection' @additionalOptions={{this.mockAdditionalOptions}}
@@ -109,7 +106,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @disableField={{true}}
                                @onChange={{this.mockOnChange}}
       />
@@ -127,7 +123,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableRenaming={{false}}
                                @onChange={{this.mockOnChange}}
       />
@@ -145,7 +140,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableDeleting={{false}}
                                @onChange={{this.mockOnChange}}
       />
@@ -167,7 +161,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalOptions={{this.mockAdditionalOptions}}
@@ -191,7 +184,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @onDelete={{this.mockOnDelete}}
       />
@@ -214,7 +206,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @onChange={{this.mockOnChange}}
-                               @forceValidate={{this.mockForceValidate}} @subfieldSeparator="." @subfieldSuffix='.*'
+                               @forceValidate={{this.mockForceValidate}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalOptions={{this.mockAdditionalOptions}}
       />

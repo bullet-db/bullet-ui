@@ -109,7 +109,6 @@
                   {{#each this.projections as |changeset|}}
                     <ValidatedFieldSelection
                         @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteProjections}}
-                        @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                         @onDelete={{fn this.deleteFieldLike changeset this.projections}} @onChange={{@onDirty}}
                         @fieldClasses="col-xs-6" @nameClasses="col-xs-4"
                         @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
@@ -130,7 +129,6 @@
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
-                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.groups}} @onChange={{@onDirty}}
                       @fieldClasses="col-xs-6" @nameClasses="col-xs-5"
                       @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
@@ -149,7 +147,6 @@
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
                       @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
-                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.metrics}} @onChange={{@onDirty}}
                       @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="type"
                       @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection" @fieldClasses="col-xs-5"
@@ -172,7 +169,6 @@
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
                       @enableRenaming={{false}} @enableDeleting={{this.canDeleteField}}
-                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.groups}} @onChange={{@onDirty}}
                       @fieldClasses="col-xs-10" @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 {{/each}}
@@ -221,7 +217,6 @@
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
-                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @enableRenaming={{false}} @enableDeleting={{false}} @fieldClasses="col-xs-10"
                       @onDelete={{fn this.deleteFieldLike changeset this.groups}} @onChange={{@onDirty}}
                       @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
@@ -291,7 +286,6 @@
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}} @enableDeleting={{this.canDeleteField}}
-                      @subfieldSuffix={{this.subfieldSuffix}} @subfieldSeparator={{this.subfieldSeparator}}
                       @onDelete={{fn this.deleteFieldLike changeset this.groups}} @onChange={{@onDirty}}
                       @fieldClasses="col-xs-6" @nameClasses="col-xs-5"
                       @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>

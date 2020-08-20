@@ -5,33 +5,28 @@
  */
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
-import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
+import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 import { module, test } from 'qunit';
 import MockColumn from 'bullet-ui/tests/helpers/mocked-column';
 
-const [SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR] = [ '.*', '.', ','];
-
 module('Unit | Utility | builder adapter', function() {
   test('it sets default builder options with the right operators', function(assert) {
-    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
-    assert.equal(subject.builderOptions().operators.length, 13);
-    assert.ok(subject.builderOptions().sqlOperators.rlike);
+    assert.equal(builderOptions().operators.length, 13);
+    assert.ok(builderOptions().sqlOperators.rlike);
   });
 
   test('it works fine if there are no columns', function(assert) {
-    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
-    assert.ok(isEmpty(subject.builderFilters()));
-    assert.ok(isEmpty(subject.builderFilters(null)));
-    assert.ok(isEmpty(subject.builderFilters(A())));
+    assert.ok(isEmpty(builderFilters()));
+    assert.ok(isEmpty(builderFilters(null)));
+    assert.ok(isEmpty(builderFilters(A())));
   });
 
   test('it converts unknown types to simple builder filters', function(assert) {
-    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumns = A();
     mockColumns.push(MockColumn.create({ name: 'foo', type: 'BIGINTEGER' }));
     mockColumns.push(MockColumn.create({ name: 'bar', type: 'MAP' }));
     mockColumns.push(MockColumn.create({ name: 'baz', type: 'LIST' }));
-    let actualFilters = subject.builderFilters(mockColumns);
+    let actualFilters = builderFilters(mockColumns);
 
     assert.equal(actualFilters.length, 3);
 
@@ -49,13 +44,12 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts all the base type columns to the proper builder filters', function(assert) {
-    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumns = A();
     mockColumns.push(MockColumn.create({ name: 'foo', type: 'STRING' }));
     mockColumns.push(MockColumn.create({ name: 'bar', type: 'LONG' }));
     mockColumns.push(MockColumn.create({ name: 'baz', type: 'DOUBLE' }));
     mockColumns.push(MockColumn.create({ name: 'qux', type: 'BOOLEAN' }));
-    let actualFilters = subject.builderFilters(mockColumns);
+    let actualFilters = builderFilters(mockColumns);
 
     assert.equal(actualFilters.length, 4);
 
@@ -79,12 +73,11 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts a freeform map type column to a simple filter and filters for subfields', function(assert) {
-    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'STRING', hasFreeformField: true });
 
     let mockColumns = A([mockColumn]);
 
-    let actualFilters = subject.builderFilters(mockColumns);
+    let actualFilters = builderFilters(mockColumns);
 
     assert.equal(actualFilters.length, 2);
 
@@ -99,14 +92,13 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts an enumerated map type column to a simple filter and filters for subfields', function(assert) {
-    let subject = new BuilderAdapter(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR);
     let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'DOUBLE' });
     mockColumn.addEnumeration('bar', '');
     mockColumn.addEnumeration('baz', '');
 
     let mockColumns = A([mockColumn]);
 
-    let actualFilters = subject.builderFilters(mockColumns);
+    let actualFilters = builderFilters(mockColumns);
 
     assert.equal(actualFilters.length, 3);
 

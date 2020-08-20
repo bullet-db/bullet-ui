@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
-import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
+import { SUBFIELD_SEPARATOR } from 'bullet-ui/utils/type';
 
 export default class SchemaNameEntryComponent extends Component {
   get extractedValue() {

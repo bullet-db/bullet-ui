@@ -7,6 +7,10 @@
 /*eslint camelcase: 0 */
 
 import isEmpty from 'bullet-ui/utils/is-empty';
+import { SUBFIELD_SEPARATOR } from 'bullet-ui/utils/type';
+
+export const SUBFIELD_SUFFIX = `${SUBFIELD_SEPARATOR}*`;
+export const SUBFIELD_ENABLED_KEY = 'show_subfield';
 
 /**
  * Maps types to their QueryBuilder rule flags.
@@ -50,112 +54,103 @@ const TYPE_MAPPING = {
  * Provides methods to configure the QueryBuilder plugin with initial filters and options, given
  * an Enumerable of {@link Column}.
  */
-export default class BuilderAdapter {
-  subfieldSuffix;
-  subfieldSeparator;
 
-  constructor(subfieldSuffix, subfieldSeparator) {
-    this.subfieldSuffix = subfieldSuffix;
-    this.subfieldSeparator = subfieldSeparator;
-  }
-
-  /**
-   * Returns the default options for QueryBuilder. Does not include filters.
-   * @return {Object} The Options to configure QueryBuilder
-   */
-  builderOptions() {
-    return {
-      allow_empty: true,
-      plugins: {
-        'bt-tooltip-errors': {
-          delay: 0,
-          placement: 'auto bottom'
-        },
-        'sortable': {
-          icon: 'fa fa-ellipsis-v'
-        },
-        'subfield': { },
-        'placeholders': { }
+/**
+ * Returns the default options for QueryBuilder. Does not include filters.
+ * @return {Object} The Options to configure QueryBuilder
+ */
+export function builderOptions() {
+  return {
+    allow_empty: true,
+    plugins: {
+      'bt-tooltip-errors': {
+        delay: 0,
+        placement: 'auto bottom'
       },
-      fieldSuffixForSubfield: this.subfieldSuffix,
-      fieldSubfieldSeparator: this.subfieldSeparator,
-      // No need to support since rlike gets all of them:
-      // 'ends_with', 'not_ends_with', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains',
-      operators: [
-        'equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'is_empty',
-        'is_not_empty', 'greater', 'greater_or_equal', 'is_null', 'is_not_null',
-        { type: 'rlike', nb_inputs: 1, multiple: false, apply_to: ['string'] }
-      ],
-      sqlOperators: {
-        equal: { op: '= ?' },
-        not_equal: { op: '!= ?' },
-        in: { op: 'IN(?)',     sep: ', ' },
-        not_in: { op: 'NOT IN(?)', sep: ', ' },
-        less: { op: '< ?' },
-        less_or_equal: { op: '<= ?' },
-        greater: { op: '> ?' },
-        greater_or_equal: { op: '>= ?' },
-        is_empty: { op: '= \'\'' },
-        is_not_empty: { op: '!= \'\'' },
-        is_null: { op: 'IS NULL' },
-        is_not_null: { op: 'IS NOT NULL' },
-        rlike: { op: 'RLIKE ?' }
+      'sortable': {
+        icon: 'fa fa-ellipsis-v'
       },
-      icons: {
-        add_group: 'fa fa-plus',
-        add_rule: 'fa fa-plus',
-        remove_group: 'fa fa-close',
-        remove_rule: 'fa fa-close',
-        error: 'fa fa-exclamation-circle'
-      },
-      // The non-empty strings are needed!
-      lang: {
-        add_rule: 'Rule',
-        add_group: 'Group',
-        delete_rule: ' ',
-        delete_group: ' ',
-        operators: {
-          rlike: 'regex matches'
-        }
+      'subfield': { },
+      'placeholders': { }
+    },
+    fieldSuffixForSubfield: SUBFIELD_SUFFIX,
+    fieldSubfieldSeparator: SUBFIELD_SEPARATOR,
+    // No need to support since rlike gets all of them:
+    // 'ends_with', 'not_ends_with', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains',
+    operators: [
+      'equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'is_empty',
+      'is_not_empty', 'greater', 'greater_or_equal', 'is_null', 'is_not_null',
+      { type: 'rlike', nb_inputs: 1, multiple: false, apply_to: ['string'] }
+    ],
+    sqlOperators: {
+      equal: { op: '= ?' },
+      not_equal: { op: '!= ?' },
+      in: { op: 'IN(?)',     sep: ', ' },
+      not_in: { op: 'NOT IN(?)', sep: ', ' },
+      less: { op: '< ?' },
+      less_or_equal: { op: '<= ?' },
+      greater: { op: '> ?' },
+      greater_or_equal: { op: '>= ?' },
+      is_empty: { op: '= \'\'' },
+      is_not_empty: { op: '!= \'\'' },
+      is_null: { op: 'IS NULL' },
+      is_not_null: { op: 'IS NOT NULL' },
+      rlike: { op: 'RLIKE ?' }
+    },
+    icons: {
+      add_group: 'fa fa-plus',
+      add_rule: 'fa fa-plus',
+      remove_group: 'fa fa-close',
+      remove_rule: 'fa fa-close',
+      error: 'fa fa-exclamation-circle'
+    },
+    // The non-empty strings are needed!
+    lang: {
+      add_rule: 'Rule',
+      add_group: 'Group',
+      delete_rule: ' ',
+      delete_group: ' ',
+      operators: {
+        rlike: 'regex matches'
       }
-    };
-  }
-
-  /**
-   * Creates QueryBuilder version of Filters from an Enumerable of {@link Column}, flattening enumerated Columns.
-   * @param  {Column} columns An Enumerable set of Columns
-   * @return {Array}          Array of the corresponding filters.
-   */
-  builderFilters(columns) {
-    let filters = [];
-    if (isEmpty(columns)) {
-      return filters;
     }
-    return columns.reduce((previous, item) => {
-      let flattenedColumns = item.get('flattenedColumns');
-      return previous.concat(flattenedColumns.map(flatColumn => {
-        return this.rulify(flatColumn.name, flatColumn.type, flatColumn.hasFreeformField);
-      }));
-    }, filters);
-  }
+  };
+}
 
-  /**
-   * Creates a QueryBuilder filter from a {@link Column}.
-   * @private
-   * @param  {String}  name        The name of the field.
-   * @param  {String}  type        The type of the field.
-   * @param  {Boolean} hasSubfield Whether this field has a subfield or not.
-   * @return {Object}              The QueryBuilder filter.
-   */
-  rulify(name, type, hasSubfield = false) {
-    let filter = TYPE_MAPPING.types[`${type}`];
-    // Native implementation of JSON.parse is faster than jQuery extend to make a copy of the object
-    filter = JSON.parse(filter ? filter : TYPE_MAPPING.UNDEFINED);
-    filter.id = name;
-    if (hasSubfield) {
-      filter.id = `${name}${this.subfieldSuffix}`;
-      filter.show_subfield = true;
-    }
-    return filter;
+/**
+ * Creates QueryBuilder version of Filters from an Enumerable of {@link Column}, flattening enumerated Columns.
+ * @param {Column} columns An Enumerable set of Columns
+ * @return {Array} Array of the corresponding filters.
+ */
+export function builderFilters(columns) {
+  let filters = [];
+  if (isEmpty(columns)) {
+    return filters;
   }
+  return columns.reduce((previous, item) => {
+    let flattenedColumns = item.get('flattenedColumns');
+    return previous.concat(flattenedColumns.map(flatColumn => {
+      return rulify(flatColumn.name, flatColumn.type, flatColumn.hasFreeformField);
+    }));
+  }, filters);
+}
+
+/**
+ * Creates a QueryBuilder filter from a {@link Column}.
+ * @private
+ * @param {String} name The name of the field.
+ * @param {String} type The type of the field.
+ * @param {Boolean} hasSubfield Whether this field has a subfield or not.
+ * @return {Object} The QueryBuilder filter.
+ */
+function rulify(name, type, hasSubfield = false) {
+  let filter = TYPE_MAPPING.types[`${type}`];
+  // Native implementation of JSON.parse is faster than jQuery extend to make a copy of the object
+  filter = JSON.parse(filter ? filter : TYPE_MAPPING.UNDEFINED);
+  filter.id = name;
+  if (hasSubfield) {
+    filter.id = `${name}${SUBFIELD_SUFFIX}`;
+    filter[SUBFIELD_ENABLED_KEY] = true;
+  }
+  return filter;
 }
