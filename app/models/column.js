@@ -7,37 +7,42 @@ import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
-import { SUBFIELD_SEPARATOR } from 'bullet-ui/utils/type';
+import {
+  SUBFIELD_SEPARATOR, TYPES, TYPE_CLASSES,
+  getBasePrimitive, getTypeClass, getTypeDescription
+} from 'bullet-ui/utils/type';
 
 export default class ColumnModel extends Model {
   @attr('string') name;
   @attr('string') type;
-  @attr('string') subtype;
   @attr('string') description;
-  @attr() enumerations;
+  @attr() subFields;
+  @attr() subSubFields;
+  @attr() subListFields;
 
-  @computed('type', 'subtype')
+  @computed('type')
+  get fullType() {
+    return TYPES.forName(this.type);
+  }
+
+  @computed('type')
+  get typeClass() {
+    return getTypeClass(this.type);
+  }
+
   get qualifiedType() {
-    let type = this.type;
-    let subType = this.subtype;
-    let qualifiedType = type;
-    if (!isEmpty(subType)) {
-      qualifiedType = type === 'MAP' ? `MAP OF STRINGS TO ${subType}S` : `${type} OF ${subType}S`;
-    }
-    return qualifiedType;
+    return getTypeDescription(this.typeClass);
   }
 
-  @computed('enumerations')
   get hasEnumerations() {
-    return !isEmpty(this.enumerations);
+    return !isEmpty(this.subFields) || !isEmpty(this.subSubFields) || !isEmpty(this.subListFields);
   }
 
-  @computed('type', 'subtype', 'enumerations')
   get hasFreeformField() {
-    return this.type === 'MAP' && !isEmpty(this.subtype) && isEmpty(this.enumerations);
+    let typeClass = this.typeClass;
+    return typeClass === TYPE_CLASSES.PRIMITIVE_MAP || typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
   }
 
-  @computed('name', 'type', 'subtype', 'description', 'enumerations')
   get enumeratedColumns() {
     let subColumns = A(this.enumerations);
     if (isEmpty(subColumns)) {
@@ -79,5 +84,14 @@ export default class ColumnModel extends Model {
       simplifiedColumns.addObjects(enumerated);
     }
     return simplifiedColumns;
+  }
+
+  static subfieldAsColumn(subfield, parentField) {
+    let subColumn = Object.assign({ }, subfield);
+    subColumn.name = `${parentField.name}${SUBFIELD_SEPARATOR}${item.name}`;
+    subColumn.type = getSubtype(parentField.type);
+    subColumn.qualifiedType = getTypeDescription(subColumn.type);
+    subColumn.isSubfield = true;
+    return subColumn;
   }
 }

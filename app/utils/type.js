@@ -3,6 +3,9 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+
+export const SUBFIELD_SEPARATOR = '.';
+
 export class Enum {
   constructor(names) {
     for (let name in names) {
@@ -36,8 +39,6 @@ export class Enum {
   }
 }
 
-export const SUBFIELD_SEPARATOR = '.';
-
 export const TYPES = Enum.of([
   'BOOLEAN', 'INTEGER', 'LONG', 'FLOAT', 'DOUBLE', 'STRING',
   'BOOLEAN_MAP', 'INTEGER_MAP', 'LONG_MAP', 'FLOAT_MAP', 'DOUBLE_MAP', 'STRING_MAP',
@@ -49,3 +50,77 @@ export const TYPES = Enum.of([
 export const TYPE_CLASSES = Enum.of([
   'PRIMITIVE', 'PRIMITIVE_MAP', 'PRIMITIVE_LIST', 'PRIMITIVE_MAP_MAP', 'PRIMITIVE_MAP_LIST'
 ]);
+
+export function getBasePrimitive(name) {
+    return name.split('_')[0];
+}
+
+export function getSubtype(type) {
+  let base = getBasePrimitive(type);
+  switch (type) {
+    case TYPES.BOOLEAN_MAP:
+    case TYPES.INTEGER_MAP:
+    case TYPES.LONG_MAP:
+    case TYPES.FLOAT_MAP:
+    case TYPES.DOUBLE_MAP:
+    case TYPES.STRING_MAP:
+    case TYPES.BOOLEAN_LIST:
+    case TYPES.INTEGER_LIST:
+    case TYPES.LONG_LIST:
+    case TYPES.FLOAT_LIST:
+    case TYPES.DOUBLE_LIST:
+    case TYPES.STRING_LIST:
+      return TYPES[base];
+    case TYPES.BOOLEAN_MAP_MAP:
+    case TYPES.INTEGER_MAP_MAP:
+    case TYPES.LONG_MAP_MAP:
+    case TYPES.FLOAT_MAP_MAP:
+    case TYPES.DOUBLE_MAP_MAP:
+    case TYPES.STRING_MAP_MAP:
+    case TYPES.BOOLEAN_MAP_LIST:
+    case TYPES.INTEGER_MAP_LIST:
+    case TYPES.LONG_MAP_LIST:
+    case TYPES.FLOAT_MAP_LIST:
+    case TYPES.DOUBLE_MAP_LIST:
+    case TYPES.STRING_MAP_LIST:
+      return TYPES[`${base}_MAP`];
+    case TYPES.BOOLEAN:
+    case TYPES.INTEGER:
+    case TYPES.LONG:
+    case TYPES.FLOAT:
+    case TYPES.DOUBLE:
+    case TYPES.STRING:
+    default:
+      return undefined;
+  }
+}
+
+export function getTypeClass(name) {
+  if (name.indexOf('_MAP_MAP') !== -1) {
+    return TYPE_CLASSES.PRIMITIVE_MAP_MAP);
+  } else if (name.indexOf('_MAP_LIST') !== -1) {
+    return TYPE_CLASSES.PRIMITIVE_MAP_LISTS);
+  } else if (name.indexOf('_MAP') !== -1) {
+    return TYPE_CLASSES.PRIMITIVE_MAP);
+  } else if (name.indexOf('_LIST') !== -1) {
+    return TYPE_CLASSES.PRIMITIVE_LIST);
+  } else {
+    return TYPE_CLASSES.PRIMITIVE);
+  }
+}
+
+export function getTypeDescription(type, typeClass) {
+  let base = getBasePrimitive(type);
+  switch (typeClass) {
+    case TYPE_CLASSES.PRIMITIVE:
+      return base;
+    case TYPE_CLASSES.PRIMITIVE_MAP:
+      return `MAP<STRING, ${base}>`;
+    case TYPE_CLASSES.PRIMITIVE_LIST:
+      return `LIST<${base}>`;
+    case TYPE_CLASSES.PRIMITIVE_MAP_MAP:
+      return `MAP<STRING, MAP<STRING, ${base}>`;
+    case TYPE_CLASSES.PRIMITIVE_MAP_LIST:
+      return `LIST<MAP<STRING, ${base}>>`;
+  }
+}
