@@ -86,7 +86,7 @@ export function extractListIndex(name) {
   return split[0];
 }
 
-export function getSubtype(type) {
+export function getSubType(type) {
   let base = getBasePrimitive(type);
   switch (type) {
     case TYPES.BOOLEAN_MAP:
@@ -128,15 +128,15 @@ export function getSubtype(type) {
 
 export function getTypeClass(name) {
   if (name.indexOf('_MAP_MAP') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP_MAP);
+    return TYPE_CLASSES.PRIMITIVE_MAP_MAP;
   } else if (name.indexOf('_MAP_LIST') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP_LISTS);
+    return TYPE_CLASSES.PRIMITIVE_MAP_LISTS;
   } else if (name.indexOf('_MAP') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP);
+    return TYPE_CLASSES.PRIMITIVE_MAP;
   } else if (name.indexOf('_LIST') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_LIST);
+    return TYPE_CLASSES.PRIMITIVE_LIST;
   } else {
-    return TYPE_CLASSES.PRIMITIVE);
+    return TYPE_CLASSES.PRIMITIVE;
   }
 }
 
