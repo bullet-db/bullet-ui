@@ -21,7 +21,7 @@ const COLUMNS = {
         attributes: {
           name: 'complex_map_column',
           type: 'MAP',
-          subtype: 'STRING',
+          subType: 'STRING',
           description: 'A complex map of string column'
         }
       },
@@ -31,7 +31,7 @@ const COLUMNS = {
         attributes: {
           name: 'complex_list_column',
           type: 'LIST',
-          subtype: 'MAP',
+          subType: 'MAP',
           description: 'A complex list map of string column'
         }
       },
@@ -41,7 +41,7 @@ const COLUMNS = {
         attributes: {
           name: 'enumerated_map_column',
           type: 'MAP',
-          subtype: 'STRING',
+          subType: 'STRING',
           description: 'A enumeration map of string column',
           enumerations: [
             {

@@ -20,8 +20,8 @@
     padding: 15px;
     background-color: $box-rectangle-color;
 
-    .subsection-header {
-      @extend %subsection-header;
+    .sub-section-header {
+      @extend %sub-section-header;
     }
 
     .delete-button {

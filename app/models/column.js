@@ -7,9 +7,10 @@ import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
+import { FREEFORM_SUFFIX } from 'bullet-ui/utils/builder-adapter';
 import {
-  SUBFIELD_SEPARATOR, TYPES, TYPE_CLASSES,
-  getBasePrimitive, getTypeClass, getTypeDescription
+  MAP_ACCESSOR, TYPES, TYPE_CLASSES,
+  getBasePrimitive, getTypeClass, getTypeDescription, wrapMapKey, wrapListIndex
 } from 'bullet-ui/utils/type';
 
 export default class ColumnModel extends Model {
@@ -38,30 +39,42 @@ export default class ColumnModel extends Model {
     return !isEmpty(this.subFields) || !isEmpty(this.subSubFields) || !isEmpty(this.subListFields);
   }
 
-  get hasFreeformField() {
+  get hasFreeFormField() {
     let typeClass = this.typeClass;
     return typeClass === TYPE_CLASSES.PRIMITIVE_MAP || typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
   }
 
   get enumeratedColumns() {
-    let subColumns = A(this.enumerations);
-    if (isEmpty(subColumns)) {
-      return false;
+    let enumerated = [];
+    let subtype = getSubtype(this.type);
+    let subColumns = Column.subFieldsAsColumns(this.subFields, subtype, name => wrapMapKey(this.name, name));
+    let subSubColumns = Column.subFieldsAsColumns(
+      this.subSubFields, getSubtype(subtype), name => wrapMapKey(`${this.name}${FREEFORM_SUFFIX}`, name)
+    );
+    let sublistcolumns = Column.subFieldsAsColumns(
+      this.subSubFields, getSubtype(subtype), name => wrapMapKey(`${this.name}${FREEFORM_SUFFIX}`, name)
+    );
+    if (!isEmpty(subFields)) {
     }
-    let subColumnType = this.subtype;
+    if (!isEmpty(subSubFields)) {
+    }
+    if (!isEmpty(subListFields)) {
+    }
+    return enumerated;
+
     return subColumns.map(item => {
       let subColumn = EmberObject.create(item);
       let name = this.name;
-      subColumn.set('name', `${name}${SUBFIELD_SEPARATOR}${item.name}`);
+      subColumn.set('name', `${name}${MAP_ACCESSOR}${item.name}`);
       subColumn.set('type', subColumnType);
       subColumn.set('qualifiedType', subColumnType);
       subColumn.set('description', item.description);
-      subColumn.set('isSubfield', true);
+      subColumn.set('isSubField', true);
       return subColumn;
     }, this);
   }
 
-  @computed('name', 'type', 'subtype', 'description', 'hasFreeformField', 'enumeratedColumns')
+  @computed('name', 'type', 'subtype', 'description', 'hasFreeFormField', 'enumeratedColumns')
   get flattenedColumns() {
     let simplifiedColumns = A();
     // The main column
@@ -69,14 +82,14 @@ export default class ColumnModel extends Model {
       name: this.name,
       type: this.type
     }));
-    // The free form subfield
-    let hasFreeformField = this.hasFreeformField;
-    if (hasFreeformField) {
+    // The free form subField
+    let hasFreeFormField = this.hasFreeFormField;
+    if (hasFreeFormField) {
       simplifiedColumns.pushObject(EmberObject.create({
         name: this.name,
         type: this.subtype,
         description: this.description,
-        hasFreeformField: hasFreeformField
+        hasFreeFormField: hasFreeFormField
       }));
     }
     let enumerated = this.enumeratedColumns;
@@ -86,12 +99,20 @@ export default class ColumnModel extends Model {
     return simplifiedColumns;
   }
 
-  static subfieldAsColumn(subfield, parentField) {
-    let subColumn = Object.assign({ }, subfield);
-    subColumn.name = `${parentField.name}${SUBFIELD_SEPARATOR}${item.name}`;
-    subColumn.type = getSubtype(parentField.type);
-    subColumn.qualifiedType = getTypeDescription(subColumn.type);
-    subColumn.isSubfield = true;
-    return subColumn;
+  static subFieldsAsColumns(subFields, subFieldType, nameMapper) {
+    if (isEmpty(subFields)) {
+      return [];
+    }
+    let enumerated = [];
+    subFields.forEach(subField => {
+      let subColumn = { };
+      subColumn.name = nameMapper(subField.name);
+      subColumn.description = subField.description;
+      subColumn.type = subFieldType;
+      subColumn.qualifiedType = getTypeDescription(subFieldType);
+      subColumn.isSubField = true;
+      enumerated.push(subColumn);
+    });
+    return enumerated;
   }
 }

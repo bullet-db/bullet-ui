@@ -29,7 +29,7 @@ module('Integration | Component | schema table', function(hooks) {
   });
 
   test('it does not expand non-complex columns', async function(assert) {
-    let column = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'BOOLEAN', description: 'description' });
+    let column = MockColumn.create({ name: 'foo', type: 'MAP', subType: 'BOOLEAN', description: 'description' });
     let columns = A([column]);
     this.set('mockColumns', columns);
 
@@ -41,7 +41,7 @@ module('Integration | Component | schema table', function(hooks) {
   });
 
   test('it renders and expands complex columns', async function(assert) {
-    let column = MockColumn.create({ name: 'foo', type: 'MAP', subtype: 'BOOLEAN', description: 'description' });
+    let column = MockColumn.create({ name: 'foo', type: 'MAP', subType: 'BOOLEAN', description: 'description' });
     column.addEnumeration('bar', 'nested 1');
     column.addEnumeration('baz', 'nested 2');
     let columns = A([column]);

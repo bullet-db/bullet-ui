@@ -11,37 +11,37 @@ import { run } from '@ember/runloop';
 module('Unit | Model | column', function(hooks) {
   setupTest(hooks);
 
-  test('it does not allow freeform subfields if it has a wrong type', function(assert) {
+  test('it does not allow freeform subFields if it has a wrong type', function(assert) {
     let model = run(
-      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'LIST', subtype: 'MAP' })
+      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'LIST', subType: 'MAP' })
     );
-    assert.notOk(model.get('hasFreeformField'));
+    assert.notOk(model.get('hasFreeFormField'));
   });
 
-  test('it does not allow freeform subfields if it has no subtype', function(assert) {
+  test('it does not allow freeform subFields if it has no subType', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP' }));
-    assert.notOk(model.get('hasFreeformField'));
+    assert.notOk(model.get('hasFreeFormField'));
     model = run(() => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'STRING' }));
-    assert.notOk(model.get('hasFreeformField'));
+    assert.notOk(model.get('hasFreeFormField'));
   });
 
-  test('it does not allow freeform subfields if it has enumerations', function(assert) {
+  test('it does not allow freeform subFields if it has enumerations', function(assert) {
     let model = run(
       () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'STRING', enumerations: [{ name: 'foo' }] })
     );
-    assert.notOk(model.get('hasFreeformField'));
+    assert.notOk(model.get('hasFreeFormField'));
   });
 
-  test('it allows freeform subfields only if it is a MAP and has a subtype and there are no enumerations', function(assert) {
+  test('it allows freeform subFields only if it is a MAP and has a subType and there are no enumerations', function(assert) {
     let model = run(
-      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subtype: 'STRING' })
+      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subType: 'STRING' })
     );
-    assert.ok(model.get('hasFreeformField'));
+    assert.ok(model.get('hasFreeFormField'));
   });
 
   test('it returns false if there are no enumerations', function(assert) {
     let model = run(
-      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subtype: 'STRING' })
+      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subType: 'STRING' })
     );
     let enumerations = model.get('enumeratedColumns');
     assert.notOk(enumerations);
@@ -49,7 +49,7 @@ module('Unit | Model | column', function(hooks) {
 
   test('it flat maps enumerated columns', function(assert) {
     let model = run(
-      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subtype: 'STRING',
+      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subType: 'STRING',
         enumerations: [
           { name: 'foo' },
           { name: 'bar' }
@@ -66,7 +66,7 @@ module('Unit | Model | column', function(hooks) {
 
   test('it returns itself when asked for all flattened columns', function(assert) {
     let model = run(
-      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subtype: 'STRING',
+      () => this.owner.lookup('service:store').createRecord('column', { name: 'test', type: 'MAP', subType: 'STRING',
         enumerations: [
           { name: 'foo' },
           { name: 'bar' }

@@ -261,7 +261,7 @@ module('Unit | Utility | filterizer', function() {
           { field: 'second_level_4', operation: '<', values: ['-1'] },
           { field: 'second_level_5', operation: '>=', values: ['2'] },
           { field: 'second_level_6', operation: '<=', values: ['-2'] },
-          { field: 'second_level_7.bar', subfield: true, operation: 'RLIKE', values: ['f.*'] },
+          { field: 'second_level_7.bar', subField: true, operation: 'RLIKE', values: ['f.*'] },
           { field: 'second_level_8', operation: 'RLIKE', values: ['null'] }
         ]
       },
@@ -269,7 +269,7 @@ module('Unit | Utility | filterizer', function() {
     ]
   };
 
-  test('it can convert from a builder specification to the API filter specification with subfield metadata', function(assert) {
+  test('it can convert from a builder specification to the API filter specification with subField metadata', function(assert) {
     let subject = new Filterizer();
     subject.setAPIMode(false);
     let convertedClause = subject.convertRuleToClause(CANONICAL_RULE);

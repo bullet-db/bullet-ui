@@ -529,7 +529,7 @@ module('Unit | Service | querier', function(hooks) {
           {
             operation: '!=',
             field: 'complex_map_column.subfield1',
-            subfield: true,
+            subField: true,
             values: ['1', '2', '3']
           },
           {

@@ -60,7 +60,7 @@
 
       <div class="output-data-input">
 
-        <div class="subsection-header">Select your Output Type</div>
+        <div class="sub-section-header">Select your Output Type</div>
         <div class="output-options">
           <RadioButton @id="raw" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addRawAggregation false}} @updated={{fn (mut this.outputDataType)}}
@@ -90,7 +90,7 @@
 
         <div class="output-container">
           {{#if this.isRawAggregation}}
-            <div class="subsection-header">Select your Fields</div>
+            <div class="sub-section-header">Select your Fields</div>
             <div class="raw-sub-options inline-radio-buttons">
               <RadioButton @id="all" @checkedValue={{this.rawType}}
                            @changed={{fn this.deleteProjections}} @updated={{fn (mut this.rawType)}}
@@ -125,7 +125,7 @@
           {{#if this.isGroupAggregation}}
             <div class="output-nested-container">
               <div class="fields-selection-container groups-container">
-                <div class="subsection-header">Select Group Fields</div>
+                <div class="sub-section-header">Select Group Fields</div>
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
@@ -142,7 +142,7 @@
               <br/>
 
               <div class="fields-selection-container metrics-container">
-                <div class="subsection-header">Select Metric Fields</div>
+                <div class="sub-section-header">Select Metric Fields</div>
                 {{#each this.metrics as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
@@ -163,7 +163,7 @@
 
           {{#if this.isCountDistinctAggregation}}
             <div class="output-nested-container">
-              <div class="subsection-header">Select your Fields</div>
+              <div class="sub-section-header">Select your Fields</div>
               <div class="fields-selection-container fields-container">
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
@@ -178,7 +178,7 @@
                 </button>
               </div>
 
-              <div class="subsection-header">Rename Count Field</div>
+              <div class="sub-section-header">Rename Count Field</div>
               <div class="row narrow-row count-distinct-display-name">
                 <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
                               @onChange={{fn this.changeAttribute "newName"}}
@@ -190,7 +190,7 @@
 
           {{#if this.isDistributionAggregation}}
             <div class="output-nested-container">
-              <div class="subsection-header">Select Distribution</div>
+              <div class="sub-section-header">Select Distribution</div>
               <div class="distribution-sub-options distribution-type-options inline-radio-buttons">
                 <RadioButton @id="quantile" @checkedValue={{this.distributionType}}
                               @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.QUANTILE}}
@@ -212,7 +212,7 @@
                 </RadioButton>
               </div>
 
-              <div class="subsection-header">Select a Field</div>
+              <div class="sub-section-header">Select a Field</div>
               <div class="fields-selection-container fields-container">
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
@@ -223,7 +223,7 @@
                 {{/each}}
               </div>
 
-              <div class="subsection-header">Select how your Points are created</div>
+              <div class="sub-section-header">Select how your Points are created</div>
               <div class="distribution-sub-options distribution-point-options inline-radio-buttons">
                 <RadioButton @id="number-points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}}
@@ -281,7 +281,7 @@
 
           {{#if this.isTopKAggregation}}
             <div class="output-nested-container">
-              <div class="subsection-header">Select Fields</div>
+              <div class="sub-section-header">Select Fields</div>
               <div class="fields-selection-container fields-container">
                 {{#each this.groups as |changeset|}}
                   <ValidatedFieldSelection
@@ -295,21 +295,21 @@
                   {{fa-icon "plus"}} Field
                 </button>
               </div>
-              <div class="subsection-header">Select the maximum number of results</div>
+              <div class="sub-section-header">Select the maximum number of results</div>
               <div class="row narrow-row top-k-size">
                 <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="size" @label="K"
                                 @onChange={{@onDirty}}
                                 @classNames="col-xs-2" @type="number" @placeholder="Number"
                                 @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
               </div>
-              <div class="subsection-header">Having Minimum Count</div>
+              <div class="sub-section-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
                 <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.threshold"}}
                               @onChange={{fn this.changeAttribute "threshold"}}
                               @label="Minimum Count" @classNames="col-xs-2" @type="number" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>
-              <div class="subsection-header">Rename Count Field</div>
+              <div class="sub-section-header">Rename Count Field</div>
               <div class="row narrow-row top-k-display-name">
                 <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
                               @onChange={{fn this.changeAttribute "newName"}}
@@ -366,7 +366,7 @@
           </div>
         {{else}}
           <div class="window-section">
-            <div class="subsection-header">
+            <div class="sub-section-header">
               <span>Select how your window emits</span>
               <button type="button" {{on "click" this.deleteWindow}} disabled={{this.isListening}}
                       class="btn btn-xs btn-danger pull-right delete-button">
@@ -389,7 +389,7 @@
               </RadioButton>
             </div>
 
-            <div class="subsection-header">Emit Every</div>
+            <div class="sub-section-header">Emit Every</div>
             <div class="row">
               <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label={{this.everyFieldName}}
                               @onChange={{@onDirty}}
@@ -398,7 +398,7 @@
             </div>
 
             {{#if this.isTimeBasedWindow}}
-              <div class="subsection-header">Select what is included in each window</div>
+              <div class="sub-section-header">Select what is included in each window</div>
               <div class="include-type-options">
                 <RadioButton @id="include-window" @checkedValue={{this.includeType}}
                              @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}}

@@ -36,21 +36,21 @@ module('Integration | Component | column field', function(hooks) {
     await render(
       hbs`<ColumnField @columns={{this.mockColumns}} @initialValue={{this.field}}/>`
     );
-    assert.dom('.column-onlyfield .ember-power-select-selected-item').hasText('foo');
+    assert.dom('.column-only-field .ember-power-select-selected-item').hasText('foo');
     this.set('field', 'bar');
-    assert.dom('.column-onlyfield .ember-power-select-selected-item').hasText('foo');
+    assert.dom('.column-only-field .ember-power-select-selected-item').hasText('foo');
   });
 
-  test('it shows a subfield for a composite field', async function(assert) {
+  test('it shows a subField for a composite field', async function(assert) {
     this.set('mockColumns', MOCK_COLUMNS);
     await render(
-      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.subfield' />`);
-    assert.dom('.column-mainfield .ember-power-select-trigger').hasText('bar.*');
-    assert.dom('.column-subfield input').exists({ count: 1 });
-    assert.dom('.column-subfield input').hasValue('subfield');
+      hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.subField' />`);
+    assert.dom('.column-main-field .ember-power-select-trigger').hasText('bar.*');
+    assert.dom('.column-sub-field input').exists({ count: 1 });
+    assert.dom('.column-sub-field input').hasValue('subField');
   });
 
-  test('it calls the onDone action with the new field when the subfield loses focus', async function(assert) {
+  test('it calls the onDone action with the new field when the subField loses focus', async function(assert) {
     assert.expect(3);
 
     this.set('mockColumns', MOCK_COLUMNS);
@@ -60,8 +60,8 @@ module('Integration | Component | column field', function(hooks) {
     await render(
       hbs`<ColumnField @columns={{this.mockColumns}} @initialValue='bar.baz' @onDone={{this.doneHandler}}/>`
     );
-    await fillIn('.column-subfield input', 'foo');
-    assert.dom('.column-mainfield .ember-power-select-trigger').hasText('bar.*');
-    assert.dom('.column-subfield input').hasValue('foo');
+    await fillIn('.column-sub-field input', 'foo');
+    assert.dom('.column-main-field .ember-power-select-trigger').hasText('bar.*');
+    assert.dom('.column-sub-field input').hasValue('foo');
   });
 });

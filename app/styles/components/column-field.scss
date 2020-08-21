@@ -7,7 +7,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  .column-subfield {
+  .column-sub-field {
     padding-left: 0;
     label {
       @extend %query-input-label;
@@ -20,7 +20,7 @@
     }
   }
 
-  .column-mainfield, .column-onlyfield {
+  .column-main-field, .column-only-field {
     @import "power-select-query-field";
   }
 }

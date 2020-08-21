@@ -24,7 +24,7 @@
   $query-footer-panel-height: 140px;
   $output-option-indentation: 25px;
   $border-rectangle-color: #DCDEE2;
-  $subsection-color: #8C8C8C;
+  $sub-section-color: #8C8C8C;
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // Reused mixins
@@ -98,12 +98,12 @@
     }
   }
 
-  %subsection-header {
+  %sub-section-header {
     margin: 5px 0;
     text-transform: uppercase;
     font-size: $font-size-small;
     font-weight: $font-weight-medium;
-    color: $subsection-color;
+    color: $sub-section-color;
     opacity: 0.9;
   }
 

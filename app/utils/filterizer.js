@@ -4,8 +4,8 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import isEmpty from 'bullet-ui/utils/is-empty';
-import { SUBFIELD_SEPARATOR } from 'bullet-ui/utils/type';
-import { SUBFIELD_SUFFIX } from 'bullet-ui/utils/builder-adapter';
+import { MAP_ACCESSOR } from 'bullet-ui/utils/type';
+import { FREEFORM_SUFFIX } from 'bullet-ui/utils/builder-adapter';
 
 export const MULTIPLE_VALUE_SEPARATOR = ',';
 
@@ -82,8 +82,8 @@ export default class Filterizer {
   }
 
   /**
-   * Converts a Base API filter to a QueryBuilder rule. Subfields can only be handled if the filter was not generated
-   * in apiMode since we cannot distinguish an enumerated subfield from a free-form subfield.
+   * Converts a Base API filter to a QueryBuilder rule. SubFields can only be handled if the filter was not generated
+   * in apiMode since we cannot distinguish an enumerated subField from a free-form subField.
    * @private
    * @param {Object} filter The base API filter.
    * @return {Object} The corresponding QueryBuilder rule.
@@ -103,13 +103,13 @@ export default class Filterizer {
       field: field,
       value: values.join(MULTIPLE_VALUE_SEPARATOR)
     };
-    // If we have a subfield param set, subfield separated field, set the field and subfield again
-    if (filter.subfield && field.indexOf(SUBFIELD_SEPARATOR) !== -1) {
-      let split = field.split(SUBFIELD_SEPARATOR);
-      let fieldOnly = `${split[0]}${SUBFIELD_SUFFIX}`;
+    // If we have a subField param set, subField separated field, set the field and subField again
+    if (filter.subField && field.indexOf(MAP_ACCESSOR) !== -1) {
+      let split = field.split(MAP_ACCESSOR);
+      let fieldOnly = `${split[0]}${FREEFORM_SUFFIX}`;
       rule.id = fieldOnly;
       rule.field = fieldOnly;
-      rule.subfield = split[1];
+      rule.subField = split[1];
     }
 
     if (op === '==') {
@@ -205,11 +205,11 @@ export default class Filterizer {
       values: [value]
     };
     if (field && rule.subfield) {
-      let index = rule.field.lastIndexOf(SUBFIELD_SUFFIX);
-      filter.field = `${field.substring(0, index)}${SUBFIELD_SEPARATOR}${rule.subfield}`;
+      let index = rule.field.lastIndexOf(FREEFORM_SUFFIX);
+      filter.field = `${field.substring(0, index)}${MAP_ACCESSOR}${rule.subfield}`;
       // We'll add this to make sure our inverse function works but only if we're not in apiMode
       if (!this.apiMode) {
-        filter.subfield = true;
+        filter.subField = true;
       }
     }
 

@@ -4,8 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 
-export const SUBFIELD_SEPARATOR = '.';
-
 export class Enum {
   constructor(names) {
     for (let name in names) {
@@ -39,6 +37,11 @@ export class Enum {
   }
 }
 
+export const TYPE_SEPARATOR = '_';
+export const MAP_ACCESSOR = '.';
+export const LIST_ACCESSOR_START = '[';
+export const LIST_ACCESSOR_END = ']';
+
 export const TYPES = Enum.of([
   'BOOLEAN', 'INTEGER', 'LONG', 'FLOAT', 'DOUBLE', 'STRING',
   'BOOLEAN_MAP', 'INTEGER_MAP', 'LONG_MAP', 'FLOAT_MAP', 'DOUBLE_MAP', 'STRING_MAP',
@@ -52,7 +55,35 @@ export const TYPE_CLASSES = Enum.of([
 ]);
 
 export function getBasePrimitive(name) {
-    return name.split('_')[0];
+    return name.split(TYPE_SEPARATOR, 1);
+}
+
+export function wrapMapKey(map, key) {
+  return `${map}${MAP_ACCESSOR}${key}`;
+}
+
+export function wrapListIndex(list, index) {
+  return `${list}${LIST_ACCESSOR_START}${index}${LIST_ACCESSOR_END}`;
+}
+
+export function extractMapKey(name) {
+  let split = name.split(MAP_ACCESSOR, 2);
+  let map = split[0];
+  if (split.length === 1) {
+    return map;
+  }
+  return split[1];
+}
+
+export function extractListIndex(name) {
+  let split = name.split(LIST_ACCESSOR_START, 2);
+  let list = split[0];
+  if (split.length === 1) {
+    return list;
+  }
+  let rest = split[1];
+  split = rest.split(LIST_ACCESSOR_END, 2);
+  return split[0];
 }
 
 export function getSubtype(type) {
@@ -115,12 +146,12 @@ export function getTypeDescription(type, typeClass) {
     case TYPE_CLASSES.PRIMITIVE:
       return base;
     case TYPE_CLASSES.PRIMITIVE_MAP:
-      return `MAP<STRING, ${base}>`;
+      return `MAP OF STRING TO ${base}`;
     case TYPE_CLASSES.PRIMITIVE_LIST:
-      return `LIST<${base}>`;
+      return `LIST OF ${base}`;
     case TYPE_CLASSES.PRIMITIVE_MAP_MAP:
-      return `MAP<STRING, MAP<STRING, ${base}>`;
+      return `MAP OF STRING TO (MAP OF STRING TO ${base})`;
     case TYPE_CLASSES.PRIMITIVE_MAP_LIST:
-      return `LIST<MAP<STRING, ${base}>>`;
+      return `LIST OF (MAP OF STRING TO ${base})`;
   }
 }
