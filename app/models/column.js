@@ -7,11 +7,9 @@ import Model, { attr } from '@ember-data/model';
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
-import { FREEFORM_SUFFIX } from 'bullet-ui/utils/builder-adapter';
 import {
-  MAP_ACCESSOR, TYPES, TYPE_CLASSES,
-  getBasePrimitive, getTypeClass, getTypeDescription, wrapMapKey, wrapListIndex
-} from 'bullet-ui/utils/type';
+  FREEFORM, MAP_FREEFORM_SUFFIX,
+  getTypeClass, getTypeDescription, wrapMapKey, wrapListIndex } from 'bullet-ui/utils/type';
 
 export default class ColumnModel extends Model {
   @attr('string') name;
@@ -36,61 +34,91 @@ export default class ColumnModel extends Model {
   }
 
   get qualifiedType() {
-    return getTypeDescription(this.typeClass);
+    return getTypeDescription(this.type, this.typeClass);
   }
 
   get hasEnumerations() {
     return !isEmpty(this.subFields) || !isEmpty(this.subSubFields) || !isEmpty(this.subListFields);
   }
 
-  get hasFreeFormField() {
-    let typeClass = this.typeClass;
-    return typeClass === TYPE_CLASSES.PRIMITIVE_MAP || typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
+  get hasFreeFormSubField() {
+    return this.typeClass === TYPE_CLASSES.PRIMITIVE_MAP || this.typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
+  }
+
+  get hasFreeFormSubSubField() {
+    return this.typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
   }
 
   get enumeratedMapColumns() {
     let subFieldMapper = name => wrapMapKey(this.name, name);
-    let subSubFieldMapper = name => wrapMapKey(`${this.name}${FREEFORM_SUFFIX}`, name);
-    return [
-      ...Column.subFieldsAsColumns(this.subFields, this.subType, subFieldMapper),
-      ...Column.subFieldsAsColumns(this.subSubFields, this.subSubType, subSubFieldMapper),
-    ];
+    return A(Column.subFieldsAsColumns(this.subFields, this.subType, true, subFieldMapper, true));
+  }
+
+  get enumeratedSubMapColumns() {
+    let subSubFieldMapper = name => wrapMapKey(`${this.name}${MAP_FREEFORM_SUFFIX}`, name);
+    return A(Column.subFieldsAsColumns(this.subSubFields, this.subSubType, true, subSubFieldMapper, true));
+  }
+
+  get enumeratedSubListColumns() {
+    let freeFormListIndex = wrapListIndex(this.name, FREEFORM);
+    let subListFieldMapper = name => wrapMapkey(freeFormListIndex, name);
+    return A(Column.subFieldsAsColumns(this.subListFields, this.subSubType, true, subListFieldMapper, true));
   }
 
   get enumeratedColumns() {
-    let freeFormListIndex = wrapListIndex(this.name, FREEFORM_SUFFIX);
-    let subListFieldMapper = name => wrapMapkey(freeFormListIndex, name);
-
-    return [
-      ...this.enumeratedMapColumns,
-      ...Column.subFieldsAsColumns(this.subListFields, this.subSubType, subListFieldMapper)
-    ];
+    let enumerated = this.enumeratedMapColumns;
+    A.addObjects(this.enumeratedSubMapColumns);
+    A.addObjects(this.enumeratedSubListColumns);
+    return enumerated;
   }
 
   get flattenedColumns() {
+    let subType = this.subType;
+    let subSubType = this.subSubType;
+    let subFieldNameMapper = name => wrapMapKey(this.name, name);
     let simplifiedColumns = A();
-    // The main column
-    simplifiedColumns.pushObject({ name: this.name, type: this.type });
-    // The free form subField
-    if (this.hasFreeFormField) {
-      let subType = getSubType(this.type);
-      simplifiedColumns.pushObject({ name: this.name, type: this.subType, description: this.description, hasFreeFormField: true });
+
+    // The main field. Has no subField
+    simplifiedColumns.pushObject(Column.asColumn(this.name, this.type, false, { }));
+
+    let subFields = this.enumeratedMapColumns;
+    // The free form first level map - map.*
+    if (this.hasFreeFormSubField) {
+      simplifiedColumns.pushObject(Column.asColumn(this.name, subType, true, { }));
     }
-    let enumerated = this.enumeratedMapColumns;
-    if (enumerated) {
-      simplifiedColumns.addObjects(enumerated);
+    // The named first level maps - map.x They don't have subFields
+    simplifiedColumns.addObjects(Column.subFieldsAsColumns(subFields, subType, false, subFieldNameMapper, false));
+
+    // The free-form second level maps - map.x.*
+    if (this.hasFreeFormSubSubField) {
+      simplifiedColumns.addObjects(Column.subFieldsAsColumns(subFields, subSubType, true, subFieldNameMapper, false));
+    }
+    // The named second level maps - map.x.y. Only if subFields and subSubFields are not empty
+    let subSubFields = this.subSubFields;
+    if (!isEmpty(subFields) && !isEmpty(subSubFields)) {
+      subFields.forEach(subField => {
+        let prefix = wrapMapKey(this.name, subfield.name);
+        let subSubFieldNameMapper = name => wrapMapKey(prefix, name);
+        subSubFields.forEach(subSubField => {
+          simplifiedColumns.pushObject(Column.asColumn(subSubField.name, subSubType, false, { nameMapper: subSubFieldNameMapper }));
+        })
+      });
     }
     return simplifiedColumns;
   }
 
-  static subFieldsAsColumns(subFields, subFieldType, nameMapper) {
+  static subFieldsAsColumns(subFields, subFieldType, isSubField, nameMapper, getQualifiedType) {
     if (isEmpty(subFields)) {
       return [];
     }
     let type = subFieldType;
-    let qualifiedType = getTypeDescription(subFieldType);
-    return subFields.map(field => {
-      return { name: nameMapper(field.name), description: field.description, type, qualifiedType, isSubField: true };
-    });
+    let qualifiedType = getQualifiedType ? getTypeDescription(subFieldType) : undefined;
+    return subFields.map(field => Column.asColumn(
+      field.name, type, isSubField, { qualifiedType, description: field.description, nameMapper }
+    ));
+  }
+
+  static asColumn(name, type, isSubField, { qualifiedType, description, nameMapper } ) {
+    return { name: nameMapper ? nameMapper(name) : name, description, type, qualifiedType, isSubField };
   }
 }

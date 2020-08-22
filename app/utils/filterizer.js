@@ -4,8 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import isEmpty from 'bullet-ui/utils/is-empty';
-import { MAP_ACCESSOR } from 'bullet-ui/utils/type';
-import { FREEFORM_SUFFIX } from 'bullet-ui/utils/builder-adapter';
+import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
 
 export const MULTIPLE_VALUE_SEPARATOR = ',';
 
@@ -106,7 +105,7 @@ export default class Filterizer {
     // If we have a subField param set, subField separated field, set the field and subField again
     if (filter.subField && field.indexOf(MAP_ACCESSOR) !== -1) {
       let split = field.split(MAP_ACCESSOR);
-      let fieldOnly = `${split[0]}${FREEFORM_SUFFIX}`;
+      let fieldOnly = `${split[0]}${MAP_FREEFORM_SUFFIX}`;
       rule.id = fieldOnly;
       rule.field = fieldOnly;
       rule.subField = split[1];
@@ -205,7 +204,7 @@ export default class Filterizer {
       values: [value]
     };
     if (field && rule.subfield) {
-      let index = rule.field.lastIndexOf(FREEFORM_SUFFIX);
+      let index = rule.field.lastIndexOf(MAP_FREEFORM_SUFFIX);
       filter.field = `${field.substring(0, index)}${MAP_ACCESSOR}${rule.subfield}`;
       // We'll add this to make sure our inverse function works but only if we're not in apiMode
       if (!this.apiMode) {

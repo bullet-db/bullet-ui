@@ -41,6 +41,9 @@ export const TYPE_SEPARATOR = '_';
 export const MAP_ACCESSOR = '.';
 export const LIST_ACCESSOR_START = '[';
 export const LIST_ACCESSOR_END = ']';
+export const FREEFORM = '*';
+export const MAP_FREEFORM_SUFFIX = `${MAP_ACCESSOR}${FREEFORM}`;
+export const LIST_FREEFORM_SUFFIX = `${LIST_ACCESSOR_START}${FREEFORM}${LIST_ACCESSOR_END}`;
 
 export const TYPES = Enum.of([
   'BOOLEAN', 'INTEGER', 'LONG', 'FLOAT', 'DOUBLE', 'STRING',
@@ -55,7 +58,7 @@ export const TYPE_CLASSES = Enum.of([
 ]);
 
 export function getBasePrimitive(name) {
-    return name.split(TYPE_SEPARATOR, 1);
+  return name.split(TYPE_SEPARATOR, 1);
 }
 
 export function wrapMapKey(map, key) {

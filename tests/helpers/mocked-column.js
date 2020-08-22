@@ -5,43 +5,58 @@
  */
 import { isEmpty } from '@ember/utils';
 import { A } from '@ember/array';
-import EmberObject from '@ember/object';
+import { getTypeClass, getTypeDescription, wrapMapKey, wrapListIndex } from 'bullet-ui/utils/type';
 
-export default EmberObject.extend({
-  name: null,
-  type: null,
-  subType: null,
-  description: null,
-  // Computed properties as actual properties
-  qualifiedType: null,
-  flattenedColumns: null,
-  enumeratedColumns: null,
-  hasFreeFormField: false,
-  hasEnumerations: false,
+export default class MockedColumn {
+  name;
+  type;
+  description;
+  subType;
+  subSubType;
+  typeClass;
+  qualifiedType;
+  flattenedColumns;
+  enumeratedColumns;
+  enumeratedMapColumns;
+  enumeratedSubMapColumns;
+  enumeratedSubListColumns;
+  hasFreeFormSubField;
+  hasFreeFormSubSubField;
+  hasEnumerations;
 
-  init() {
-    this._super(...arguments);
+  constructor({ name, type, description, hasFreeFormSubField = false, hasFreeFormSubSubField, hasEnumerations = false }) {
+    this.enumeratedColumns = A();
+    this.enumeratedMapColumns = A();
+    this.name = name;
+    this.type = type;
+    this.description = description;
+    this.hasFreeFormSubField = hasFreeFormField;
+    this.hasEnumerations = hasEnumerations;
+    this.flattenedColumns = A([{ name, type, description }]);
+    this.typeClass = getTypeClass(type);
+    this.subType = getSubType(type);
+    this.subSubType = getSubType(this.subType);
+    this.qualifiedType = getTypeDescription(type, this.typeClass);
 
-    this.set('enumeratedColumns', A());
-    let { name, type, subType, description, hasFreeFormField } = this;
-    let me = EmberObject.create({ name, type, description });
-    this.set('flattenedColumns', A([me]));
     if (hasFreeFormField) {
-      this.flattenedColumns.pushObject(EmberObject.create({ name, type: subType, hasFreeFormField: true }));
+      this.flattenedColumns.pushObject({ name, type: this.subType, hasFreeFormField: true });
+      if (this.subSubType !== undefined) {
+        this.flattenedColumns.pushObject({ name, type: this.subType, hasFreeFormField: true });
+      }
     }
-    this.set('qualifiedType', isEmpty(subType) ? type : `${type} OF ${subType}S`);
-  },
+    this.qualifiedType = isEmpty(subType) ? type : `${type} OF ${subType}S`;
+  }
 
   addEnumeration(name, description) {
-    let enumeration = EmberObject.create({
+    let enumeration = {
       name: `${this.name}.${name}`,
       type: this.subType,
       qualifiedType: this.subType,
       description: description,
       isSubField: true
-    });
-    this.set('hasEnumerations', true);
+    }
+    this.hasEnumerations = true;
     this.enumeratedColumns.pushObject(enumeration);
     this.flattenedColumns.pushObject(enumeration);
   }
-});
+}

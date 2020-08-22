@@ -7,9 +7,8 @@
 /*eslint camelcase: 0 */
 
 import isEmpty from 'bullet-ui/utils/is-empty';
-import { MAP_ACCESSOR } from 'bullet-ui/utils/type';
+import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
 
-export const FREEFORM_SUFFIX = `${MAP_ACCESSOR}*`;
 export const SUBFIELD_ENABLED_KEY = 'show_subfield';
 
 /**
@@ -73,7 +72,7 @@ export function builderOptions() {
       'subfield': { },
       'placeholders': { }
     },
-    fieldSuffixForSubfield: FREEFORM_SUFFIX,
+    fieldSuffixForSubfield: MAP_FREEFORM_SUFFIX,
     fieldSubfieldSeparator: MAP_ACCESSOR,
     // No need to support since rlike gets all of them:
     // 'ends_with', 'not_ends_with', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains',
@@ -130,7 +129,7 @@ export function builderFilters(columns) {
   return columns.reduce((previous, item) => {
     let flattenedColumns = item.get('flattenedColumns');
     return previous.concat(flattenedColumns.map(flatColumn => {
-      return rulify(flatColumn.name, flatColumn.type, flatColumn.hasFreeFormField);
+      return rulify(flatColumn.name, flatColumn.type, flatColumn.isSubField);
     }));
   }, filters);
 }
@@ -149,7 +148,7 @@ function rulify(name, type, hasSubField = false) {
   filter = JSON.parse(filter ? filter : TYPE_MAPPING.UNDEFINED);
   filter.id = name;
   if (hasSubField) {
-    filter.id = `${name}${FREEFORM_SUFFIX}`;
+    filter.id = `${name}${MAP_FREEFORM_SUFFIX}`;
     filter[SUBFIELD_ENABLED_KEY] = true;
   }
   return filter;

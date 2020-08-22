@@ -7,8 +7,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
-import { MAP_ACCESSOR } from 'bullet-ui/utils/type';
-import { FREEFORM_SUFFIX, SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
+import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
+import { SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
 
 export default class ColumnFieldComponent extends Component {
   @tracked selectedColumn;
@@ -38,7 +38,7 @@ export default class ColumnFieldComponent extends Component {
   get compositeField() {
     let top = this.selectedColumn.id;
     let sub = this.subField;
-    let suffixPosition = top.lastIndexOf(FREEFORM_SUFFIX);
+    let suffixPosition = top.lastIndexOf(MAP_FREEFORM_SUFFIX);
     if (suffixPosition === -1) {
       return top;
     }
@@ -65,7 +65,7 @@ export default class ColumnFieldComponent extends Component {
     let subField = '';
     // If we didn't find the full field, it is a field with a subField
     if (isEmpty(field)) {
-      let mainField = `${this.sliceToLastSeparator(name)}${FREEFORM_SUFFIX}`;
+      let mainField = `${this.sliceToLastSeparator(name)}${MAP_FREEFORM_SUFFIX}`;
       field = this.columnMapping[mainField];
       subField = this.sliceFromLastSeparator(name);
     }
