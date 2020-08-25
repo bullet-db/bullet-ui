@@ -6,7 +6,7 @@
 
 export class Enum {
   constructor(names) {
-    for (let name in names) {
+    for (let name of names) {
       this[name] = Symbol.for(name);
     }
     Object.freeze(this);
@@ -58,7 +58,7 @@ export const TYPE_CLASSES = Enum.of([
 ]);
 
 export function getBasePrimitive(name) {
-  return name.split(TYPE_SEPARATOR, 1);
+  return name.split(TYPE_SEPARATOR, 1)[0];
 }
 
 export function wrapMapKey(map, key) {
@@ -89,8 +89,9 @@ export function extractListIndex(name) {
   return split[0];
 }
 
-export function getSubType(type) {
-  let base = getBasePrimitive(type);
+export function getSubType(name) {
+  let base = getBasePrimitive(name);
+  let type = TYPES[name];
   switch (type) {
     case TYPES.BOOLEAN_MAP:
     case TYPES.INTEGER_MAP:
@@ -104,7 +105,7 @@ export function getSubType(type) {
     case TYPES.FLOAT_LIST:
     case TYPES.DOUBLE_LIST:
     case TYPES.STRING_LIST:
-      return TYPES[base];
+      return base;
     case TYPES.BOOLEAN_MAP_MAP:
     case TYPES.INTEGER_MAP_MAP:
     case TYPES.LONG_MAP_MAP:
@@ -117,7 +118,7 @@ export function getSubType(type) {
     case TYPES.FLOAT_MAP_LIST:
     case TYPES.DOUBLE_MAP_LIST:
     case TYPES.STRING_MAP_LIST:
-      return TYPES[`${base}_MAP`];
+      return `${base}_MAP`;
     case TYPES.BOOLEAN:
     case TYPES.INTEGER:
     case TYPES.LONG:
@@ -133,7 +134,7 @@ export function getTypeClass(name) {
   if (name.indexOf('_MAP_MAP') !== -1) {
     return TYPE_CLASSES.PRIMITIVE_MAP_MAP;
   } else if (name.indexOf('_MAP_LIST') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP_LISTS;
+    return TYPE_CLASSES.PRIMITIVE_MAP_LIST;
   } else if (name.indexOf('_MAP') !== -1) {
     return TYPE_CLASSES.PRIMITIVE_MAP;
   } else if (name.indexOf('_LIST') !== -1) {

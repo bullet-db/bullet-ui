@@ -5,7 +5,10 @@
  */
 import { isEmpty } from '@ember/utils';
 import { A } from '@ember/array';
-import { getTypeClass, getTypeDescription, wrapMapKey, wrapListIndex } from 'bullet-ui/utils/type';
+import {
+  TYPES, TYPE_CLASSES, FREEFORM, MAP_FREEFORM_SUFFIX,
+  getTypeClass, getSubType, getTypeDescription, wrapMapKey, wrapListIndex
+} from 'bullet-ui/utils/type';
 
 export default class MockedColumn {
   name;
@@ -14,7 +17,7 @@ export default class MockedColumn {
   subType;
   subSubType;
   typeClass;
-  qualifiedType;
+  typeName;
   flattenedColumns;
   enumeratedColumns;
   enumeratedMapColumns;
@@ -24,39 +27,64 @@ export default class MockedColumn {
   hasFreeFormSubSubField;
   hasEnumerations;
 
-  constructor({ name, type, description, hasFreeFormSubField = false, hasFreeFormSubSubField, hasEnumerations = false }) {
-    this.enumeratedColumns = A();
-    this.enumeratedMapColumns = A();
+  constructor({ name, type, description }) {
     this.name = name;
     this.type = type;
     this.description = description;
-    this.hasFreeFormSubField = hasFreeFormField;
-    this.hasEnumerations = hasEnumerations;
-    this.flattenedColumns = A([{ name, type, description }]);
-    this.typeClass = getTypeClass(type);
+
+    let typeClass = getTypeClass(type);
     this.subType = getSubType(type);
     this.subSubType = getSubType(this.subType);
-    this.qualifiedType = getTypeDescription(type, this.typeClass);
+    this.typeClass = typeClass;
+    this.typeName = getTypeDescription(type, typeClass);
+    this.flattenedColumns = A([{ name, type, description }]);
+    this.hasFreeFormSubField = typeClass === TYPE_CLASSES.PRIMITIVE_MAP || typeClass == TYPE_CLASSES.PRIMITIVE_MAP_MAP;
+    this.hasFreeFormSubSubField = typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
 
-    if (hasFreeFormField) {
-      this.flattenedColumns.pushObject({ name, type: this.subType, hasFreeFormField: true });
-      if (this.subSubType !== undefined) {
-        this.flattenedColumns.pushObject({ name, type: this.subType, hasFreeFormField: true });
-      }
+    if (hasFreeFormSubField) {
+      this.flattenedColumns.pushObject({ name, type: this.subType, isSubField: true });
     }
-    this.qualifiedType = isEmpty(subType) ? type : `${type} OF ${subType}S`;
+    this.enumeratedColumns = A();
+    this.enumeratedMapColumns = A();
+    this.enumeratedSubMapColumns = A();
+    this.enumeratedSubListColumns = A();
   }
 
-  addEnumeration(name, description) {
+  addEnumeration(name, type, description) {
     let enumeration = {
-      name: `${this.name}.${name}`,
-      type: this.subType,
-      qualifiedType: this.subType,
+      name: name,
+      type: type,
       description: description,
-      isSubField: true
-    }
+      typeName: getTypeDescription(type),
+    };
     this.hasEnumerations = true;
-    this.enumeratedColumns.pushObject(enumeration);
-    this.flattenedColumns.pushObject(enumeration);
+    let object = EmberObject.create(enumeration);
+    this.enumeratedColumns.pushObject(object);
+    this.flattenedColumns.pushObject(object);
+    return enumeration;
+  }
+
+  addMapEnumeration(name, description) {
+    let enumeration = this.addEnumeration(wrapMapKey(this.name, name), this.subType, description);
+    this.enumeratedMapColumns.pushObject(enumeration);
+    if (this.hasFreeFormSubSubField) {
+      let subEnumeration = Object.assign({ }, enumeration);
+      subEnumeration.isSubField = true;
+      this.flattenedColumns.pushObject(EmberObject.create(subEnumeration));
+    }
+  }
+
+  addSubMapEnumeration(name, description) {
+    this.enumeratedMapColumns.forEach(column => {
+      let columnName = wrapMapKey(wrapMapKey(this.name, column.name), name);
+      let enumeration = this.addEnumeration(columnName, this.subSubType, description);
+      this.enumeratedSubMapColumns.pushObject(EmberObject.create(enumeration));
+    })
+  }
+
+  addSubListEnumeration(name, description) {
+    let columName = wrapMapKey(wrapListIndex(this.name, FREEFORM), name);
+    let enumeration = this.addEnumeration(columnName, this.subSubType, description);
+    this.enumeratedSubListColumns.pushObject(EmberObject.create(enumeration));
   }
 }

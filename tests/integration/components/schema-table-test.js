@@ -14,7 +14,7 @@ module('Integration | Component | schema table', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders the name, type and description of columns', async function(assert) {
-    let column = MockColumn.create({ name: 'foo', type: 'STRING', description: 'description' });
+    let column = new MockColumn({ name: 'foo', type: 'STRING', description: 'description' });
     let columns = A([column]);
     this.set('mockColumns', columns);
 
@@ -29,7 +29,7 @@ module('Integration | Component | schema table', function(hooks) {
   });
 
   test('it does not expand non-complex columns', async function(assert) {
-    let column = MockColumn.create({ name: 'foo', type: 'MAP', subType: 'BOOLEAN', description: 'description' });
+    let column = new MockColumn({ name: 'foo', type: 'BOOLEAN_MAP', description: 'description' });
     let columns = A([column]);
     this.set('mockColumns', columns);
 
@@ -41,7 +41,7 @@ module('Integration | Component | schema table', function(hooks) {
   });
 
   test('it renders and expands complex columns', async function(assert) {
-    let column = MockColumn.create({ name: 'foo', type: 'MAP', subType: 'BOOLEAN', description: 'description' });
+    let column = new MockColumn({ name: 'foo', type: 'BOOLEAN_MAP', description: 'description' });
     column.addEnumeration('bar', 'nested 1');
     column.addEnumeration('baz', 'nested 2');
     let columns = A([column]);
@@ -71,9 +71,9 @@ module('Integration | Component | schema table', function(hooks) {
   });
 
   test('it default sorts by name ascending and can sort', async function(assert) {
-    let columnA = MockColumn.create({ name: 'foo', type: 'STRING', description: 'description' });
-    let columnB = MockColumn.create({ name: 'bar', type: 'STRING', description: 'description' });
-    let columnC = MockColumn.create({ name: 'qux', type: 'STRING', description: 'description' });
+    let columnA = new MockColumn({ name: 'foo', type: 'STRING', description: 'description' });
+    let columnB = new MockColumn({ name: 'bar', type: 'STRING', description: 'description' });
+    let columnC = new MockColumn({ name: 'qux', type: 'STRING', description: 'description' });
     let columns = A([columnA, columnB, columnC]);
     this.set('mockColumns', columns);
 

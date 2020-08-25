@@ -127,7 +127,7 @@ export function builderFilters(columns) {
     return filters;
   }
   return columns.reduce((previous, item) => {
-    let flattenedColumns = item.get('flattenedColumns');
+    let flattenedColumns = item.flattenedColumns;
     return previous.concat(flattenedColumns.map(flatColumn => {
       return rulify(flatColumn.name, flatColumn.type, flatColumn.isSubField);
     }));

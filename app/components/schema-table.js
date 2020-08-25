@@ -12,7 +12,7 @@ import PaginatedTable from 'bullet-ui/components/paginated-table';
 export default class SchemaTableComponent extends PaginatedTable {
   columns = A([
     { label: 'Field', width: '250px', valuePath: 'name', cellComponent: 'cells/schema-name-entry' },
-    { label: 'Type', width: '250px', valuePath: 'qualifiedType', cellComponent: 'cells/schema-type-entry' },
+    { label: 'Type', width: '300px', valuePath: 'typeName', cellComponent: 'cells/schema-type-entry' },
     { label: 'Description', valuePath: 'description', cellComponent: 'cells/schema-description-entry' }
   ]);
   rows;

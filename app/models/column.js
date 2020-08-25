@@ -8,8 +8,8 @@ import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
 import {
-  FREEFORM, MAP_FREEFORM_SUFFIX,
-  getTypeClass, getTypeDescription, wrapMapKey, wrapListIndex } from 'bullet-ui/utils/type';
+  FREEFORM, MAP_FREEFORM_SUFFIX, TYPE_CLASSES,
+  getTypeClass, getSubType, getTypeDescription, wrapMapKey, wrapListIndex } from 'bullet-ui/utils/type';
 
 export default class ColumnModel extends Model {
   @attr('string') name;
@@ -30,10 +30,11 @@ export default class ColumnModel extends Model {
   }
 
   get subSubType() {
-    return getSubType(this.subType);
+    let subType = this.subType;
+    return subType ? getSubType(subType) : subType;
   }
 
-  get qualifiedType() {
+  get typeName() {
     return getTypeDescription(this.type, this.typeClass);
   }
 
@@ -51,24 +52,24 @@ export default class ColumnModel extends Model {
 
   get enumeratedMapColumns() {
     let subFieldMapper = name => wrapMapKey(this.name, name);
-    return A(Column.subFieldsAsColumns(this.subFields, this.subType, true, subFieldMapper, true));
+    return A(ColumnModel.toColumns(this.subFields, this.subType, true, subFieldMapper, true));
   }
 
   get enumeratedSubMapColumns() {
     let subSubFieldMapper = name => wrapMapKey(`${this.name}${MAP_FREEFORM_SUFFIX}`, name);
-    return A(Column.subFieldsAsColumns(this.subSubFields, this.subSubType, true, subSubFieldMapper, true));
+    return A(ColumnModel.toColumns(this.subSubFields, this.subSubType, true, subSubFieldMapper, true));
   }
 
   get enumeratedSubListColumns() {
-    let freeFormListIndex = wrapListIndex(this.name, FREEFORM);
-    let subListFieldMapper = name => wrapMapkey(freeFormListIndex, name);
-    return A(Column.subFieldsAsColumns(this.subListFields, this.subSubType, true, subListFieldMapper, true));
+    let subListFieldMapper = name => wrapMapKey(wrapListIndex(this.name, FREEFORM), name);
+    return A(ColumnModel.toColumns(this.subListFields, this.subSubType, true, subListFieldMapper, true));
   }
 
   get enumeratedColumns() {
-    let enumerated = this.enumeratedMapColumns;
-    A.addObjects(this.enumeratedSubMapColumns);
-    A.addObjects(this.enumeratedSubListColumns);
+    let enumerated = A();
+    enumerated.addObjects(this.enumeratedMapColumns);
+    enumerated.addObjects(this.enumeratedSubMapColumns);
+    enumerated.addObjects(this.enumeratedSubListColumns);
     return enumerated;
   }
 
@@ -79,46 +80,48 @@ export default class ColumnModel extends Model {
     let simplifiedColumns = A();
 
     // The main field. Has no subField
-    simplifiedColumns.pushObject(Column.asColumn(this.name, this.type, false, { }));
+    simplifiedColumns.pushObject(ColumnModel.toColumn(this.name, this.type, false, { }));
 
-    let subFields = this.enumeratedMapColumns;
     // The free form first level map - map.*
     if (this.hasFreeFormSubField) {
-      simplifiedColumns.pushObject(Column.asColumn(this.name, subType, true, { }));
+      simplifiedColumns.pushObject(ColumnModel.toColumn(this.name, subType, true, { }));
     }
+
     // The named first level maps - map.x They don't have subFields
-    simplifiedColumns.addObjects(Column.subFieldsAsColumns(subFields, subType, false, subFieldNameMapper, false));
+    let subFields = this.subFields;
+    simplifiedColumns.addObjects(ColumnModel.toColumns(subFields, subType, false, subFieldNameMapper, false));
 
     // The free-form second level maps - map.x.*
     if (this.hasFreeFormSubSubField) {
-      simplifiedColumns.addObjects(Column.subFieldsAsColumns(subFields, subSubType, true, subFieldNameMapper, false));
+      simplifiedColumns.addObjects(this.enumeratedMapColumns);
     }
     // The named second level maps - map.x.y. Only if subFields and subSubFields are not empty
     let subSubFields = this.subSubFields;
     if (!isEmpty(subFields) && !isEmpty(subSubFields)) {
       subFields.forEach(subField => {
-        let prefix = wrapMapKey(this.name, subfield.name);
+        let prefix = wrapMapKey(this.name, subField.name);
         let subSubFieldNameMapper = name => wrapMapKey(prefix, name);
         subSubFields.forEach(subSubField => {
-          simplifiedColumns.pushObject(Column.asColumn(subSubField.name, subSubType, false, { nameMapper: subSubFieldNameMapper }));
+          let column = ColumnModel.toColumn(subSubField.name, subSubType, false, { nameMapper: subSubFieldNameMapper });
+          simplifiedColumns.pushObject(column);
         })
       });
     }
     return simplifiedColumns;
   }
 
-  static subFieldsAsColumns(subFields, subFieldType, isSubField, nameMapper, getQualifiedType) {
+  static toColumns(subFields, subFieldType, isSubField, nameMapper, getTypeName) {
     if (isEmpty(subFields)) {
       return [];
     }
     let type = subFieldType;
-    let qualifiedType = getQualifiedType ? getTypeDescription(subFieldType) : undefined;
-    return subFields.map(field => Column.asColumn(
-      field.name, type, isSubField, { qualifiedType, description: field.description, nameMapper }
-    ));
+    let typeName = getTypeName ? getTypeDescription(subFieldType, getTypeClass(subFieldType)) : undefined;
+    return subFields.map(field =>
+      ColumnModel.toColumn(field.name, type, isSubField, { typeName, description: field.description, nameMapper })
+    );
   }
 
-  static asColumn(name, type, isSubField, { qualifiedType, description, nameMapper } ) {
-    return { name: nameMapper ? nameMapper(name) : name, description, type, qualifiedType, isSubField };
+  static toColumn(name, type, isSubField, { typeName, description, nameMapper } ) {
+    return EmberObject.create({ name: nameMapper ? nameMapper(name) : name, description, type, typeName, isSubField });
   }
 }

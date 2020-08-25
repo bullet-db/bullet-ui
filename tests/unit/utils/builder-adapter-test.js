@@ -23,9 +23,9 @@ module('Unit | Utility | builder adapter', function() {
 
   test('it converts unknown types to simple builder filters', function(assert) {
     let mockColumns = A();
-    mockColumns.push(MockColumn.create({ name: 'foo', type: 'BIGINTEGER' }));
-    mockColumns.push(MockColumn.create({ name: 'bar', type: 'MAP' }));
-    mockColumns.push(MockColumn.create({ name: 'baz', type: 'LIST' }));
+    mockColumns.pushObject(new MockColumn({ name: 'foo', type: 'BIGINTEGER' }));
+    mockColumns.pushObject(new MockColumn({ name: 'bar', type: 'LONG_MAP' }));
+    mockColumns.pushObject(new MockColumn({ name: 'baz', type: 'FLOAT_LIST' }));
     let actualFilters = builderFilters(mockColumns);
 
     assert.equal(actualFilters.length, 3);
@@ -45,10 +45,10 @@ module('Unit | Utility | builder adapter', function() {
 
   test('it converts all the base type columns to the proper builder filters', function(assert) {
     let mockColumns = A();
-    mockColumns.push(MockColumn.create({ name: 'foo', type: 'STRING' }));
-    mockColumns.push(MockColumn.create({ name: 'bar', type: 'LONG' }));
-    mockColumns.push(MockColumn.create({ name: 'baz', type: 'DOUBLE' }));
-    mockColumns.push(MockColumn.create({ name: 'qux', type: 'BOOLEAN' }));
+    mockColumns.pushObject(new MockColumn({ name: 'foo', type: 'STRING' }));
+    mockColumns.pushObject(new MockColumn({ name: 'bar', type: 'LONG' }));
+    mockColumns.pushObject(new MockColumn({ name: 'baz', type: 'DOUBLE' }));
+    mockColumns.pushObject(new MockColumn({ name: 'qux', type: 'BOOLEAN' }));
     let actualFilters = builderFilters(mockColumns);
 
     assert.equal(actualFilters.length, 4);
@@ -73,7 +73,7 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts a freeform map type column to a simple filter and filters for subFields', function(assert) {
-    let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subType: 'STRING', hasFreeFormField: true });
+    let mockColumn = new MockColumn({ name: 'foo', type: 'STRING_MAP', isSubField: true });
 
     let mockColumns = A([mockColumn]);
 
@@ -92,9 +92,9 @@ module('Unit | Utility | builder adapter', function() {
   });
 
   test('it converts an enumerated map type column to a simple filter and filters for subFields', function(assert) {
-    let mockColumn = MockColumn.create({ name: 'foo', type: 'MAP', subType: 'DOUBLE' });
-    mockColumn.addEnumeration('bar', '');
-    mockColumn.addEnumeration('baz', '');
+    let mockColumn = new MockColumn({ name: 'foo', type: 'DOUBLE_MAP' });
+    mockColumn.addMapEnumeration('bar', '');
+    mockColumn.addMapEnumeration('baz', '');
 
     let mockColumns = A([mockColumn]);
 

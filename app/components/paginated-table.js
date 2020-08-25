@@ -63,7 +63,7 @@ export default class PaginatedTable extends Component {
     }
     // Default String convertor
     if (this.useDefaultStringExtractor) {
-      return a => String(a.get(column));
+      return a => String(a[column]);
     }
     // Identity
     return this.defaultExtractor(column);
