@@ -20,8 +20,7 @@ const COLUMNS = {
         type: 'column',
         attributes: {
           name: 'complex_map_column',
-          type: 'MAP',
-          subType: 'STRING',
+          type: 'STRING_MAP',
           description: 'A complex map of string column'
         }
       },
@@ -30,8 +29,7 @@ const COLUMNS = {
         type: 'column',
         attributes: {
           name: 'complex_list_column',
-          type: 'LIST',
-          subType: 'MAP',
+          type: 'STRING_MAP_LIST',
           description: 'A complex list map of string column'
         }
       },
@@ -40,10 +38,8 @@ const COLUMNS = {
         type: 'column',
         attributes: {
           name: 'enumerated_map_column',
-          type: 'MAP',
-          subType: 'STRING',
-          description: 'A enumeration map of string column',
-          enumerations: [
+          type: 'STRING_MAP',
+          subFields: [
             {
               name: 'nested_1',
               description: ''

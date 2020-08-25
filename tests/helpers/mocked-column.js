@@ -3,10 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty } from '@ember/utils';
 import { A } from '@ember/array';
+import EmberObject from '@ember/object';
 import {
-  TYPES, TYPE_CLASSES, FREEFORM, MAP_FREEFORM_SUFFIX,
+  TYPE_CLASSES, FREEFORM, MAP_FREEFORM_SUFFIX,
   getTypeClass, getSubType, getTypeDescription, wrapMapKey, wrapListIndex
 } from 'bullet-ui/utils/type';
 
@@ -21,8 +21,6 @@ export default class MockedColumn {
   flattenedColumns;
   enumeratedColumns;
   enumeratedMapColumns;
-  enumeratedSubMapColumns;
-  enumeratedSubListColumns;
   hasFreeFormSubField;
   hasFreeFormSubSubField;
   hasEnumerations;
@@ -33,58 +31,66 @@ export default class MockedColumn {
     this.description = description;
 
     let typeClass = getTypeClass(type);
-    this.subType = getSubType(type);
-    this.subSubType = getSubType(this.subType);
+    let subType = getSubType(type);
+    this.subType = subType;
+    this.subSubType = subType ? getSubType(subType) : subType;
     this.typeClass = typeClass;
     this.typeName = getTypeDescription(type, typeClass);
-    this.flattenedColumns = A([{ name, type, description }]);
+    this.flattenedColumns = A([EmberObject.create({ name, type, description })]);
     this.hasFreeFormSubField = typeClass === TYPE_CLASSES.PRIMITIVE_MAP || typeClass == TYPE_CLASSES.PRIMITIVE_MAP_MAP;
     this.hasFreeFormSubSubField = typeClass === TYPE_CLASSES.PRIMITIVE_MAP_MAP;
 
-    if (hasFreeFormSubField) {
-      this.flattenedColumns.pushObject({ name, type: this.subType, isSubField: true });
+    if (this.hasFreeFormSubField) {
+      this.flattenedColumns.pushObject(EmberObject.create({ name, type: this.subType, isSubField: true }));
     }
     this.enumeratedColumns = A();
     this.enumeratedMapColumns = A();
-    this.enumeratedSubMapColumns = A();
-    this.enumeratedSubListColumns = A();
   }
 
-  addEnumeration(name, type, description) {
+  static makeEnumeration(name, type, description, isSubField = true) {
     let enumeration = {
       name: name,
       type: type,
       description: description,
-      typeName: getTypeDescription(type),
+      isSubField: isSubField,
+      typeName: getTypeDescription(type, getTypeClass(type))
     };
-    this.hasEnumerations = true;
-    let object = EmberObject.create(enumeration);
-    this.enumeratedColumns.pushObject(object);
-    this.flattenedColumns.pushObject(object);
     return enumeration;
   }
 
   addMapEnumeration(name, description) {
-    let enumeration = this.addEnumeration(wrapMapKey(this.name, name), this.subType, description);
-    this.enumeratedMapColumns.pushObject(enumeration);
+    this.hasEnumerations = true;
+    let enumeration = MockedColumn.makeEnumeration(wrapMapKey(this.name, name), this.subType, description);
+    let object = EmberObject.create(enumeration);
+    this.enumeratedColumns.pushObject(object);
+    this.enumeratedMapColumns.pushObject(object);
+
+    enumeration.isSubField = undefined;
+    this.flattenedColumns.pushObject(EmberObject.create(enumeration));
+
     if (this.hasFreeFormSubSubField) {
-      let subEnumeration = Object.assign({ }, enumeration);
-      subEnumeration.isSubField = true;
+      let subEnumeration = MockedColumn.makeEnumeration(wrapMapKey(this.name, name), this.subSubType, description);
       this.flattenedColumns.pushObject(EmberObject.create(subEnumeration));
     }
   }
 
   addSubMapEnumeration(name, description) {
+    this.hasEnumerations = true;
+    let columnName = wrapMapKey(`${this.name}${MAP_FREEFORM_SUFFIX}`, name);
+    let enumeration = MockedColumn.makeEnumeration(columnName, this.subSubType, description);
+    this.enumeratedColumns.pushObject(EmberObject.create(enumeration));
+
+    enumeration.isSubField = undefined;
     this.enumeratedMapColumns.forEach(column => {
-      let columnName = wrapMapKey(wrapMapKey(this.name, column.name), name);
-      let enumeration = this.addEnumeration(columnName, this.subSubType, description);
-      this.enumeratedSubMapColumns.pushObject(EmberObject.create(enumeration));
-    })
+      enumeration.name = wrapMapKey(column.name, name);
+      this.flattenedColumns.pushObject(EmberObject.create(enumeration));
+    });
   }
 
   addSubListEnumeration(name, description) {
-    let columName = wrapMapKey(wrapListIndex(this.name, FREEFORM), name);
-    let enumeration = this.addEnumeration(columnName, this.subSubType, description);
-    this.enumeratedSubListColumns.pushObject(EmberObject.create(enumeration));
+    this.hasEnumerations = true;
+    let columnName = wrapMapKey(wrapListIndex(this.name, FREEFORM), name);
+    let object = EmberObject.create(MockedColumn.makeEnumeration(columnName, this.subSubType, description));
+    this.enumeratedColumns.pushObject(object);
   }
 }

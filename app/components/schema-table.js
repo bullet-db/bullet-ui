@@ -12,7 +12,7 @@ import PaginatedTable from 'bullet-ui/components/paginated-table';
 export default class SchemaTableComponent extends PaginatedTable {
   columns = A([
     { label: 'Field', width: '250px', valuePath: 'name', cellComponent: 'cells/schema-name-entry' },
-    { label: 'Type', width: '300px', valuePath: 'typeName', cellComponent: 'cells/schema-type-entry' },
+    { label: 'Type', width: '320px', valuePath: 'typeName', cellComponent: 'cells/schema-type-entry' },
     { label: 'Description', valuePath: 'description', cellComponent: 'cells/schema-description-entry' }
   ]);
   rows;
@@ -22,7 +22,9 @@ export default class SchemaTableComponent extends PaginatedTable {
     this.pageSize = 10;
     this.rows = SchemaTableComponent.fieldsToRows(this.args.fields);
     this.table = Table.create({ columns: this.columns });
-    this.sortBy('name', 'ascending');
+    if (!this.args.isNested) {
+      this.sortBy('name', 'ascending');
+    }
     this.addPages(2);
   }
 

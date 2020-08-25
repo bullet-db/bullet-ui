@@ -9,7 +9,8 @@ import { isEmpty } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
 import {
   FREEFORM, MAP_FREEFORM_SUFFIX, TYPE_CLASSES,
-  getTypeClass, getSubType, getTypeDescription, wrapMapKey, wrapListIndex } from 'bullet-ui/utils/type';
+  getTypeClass, getSubType, getTypeDescription, wrapMapKey, wrapListIndex
+} from 'bullet-ui/utils/type';
 
 export default class ColumnModel extends Model {
   @attr('string') name;
@@ -93,7 +94,9 @@ export default class ColumnModel extends Model {
 
     // The free-form second level maps - map.x.*
     if (this.hasFreeFormSubSubField) {
-      simplifiedColumns.addObjects(this.enumeratedMapColumns);
+      this.enumeratedMapColumns.forEach(column =>
+        simplifiedColumns.pushObject(ColumnModel.toColumn(column.name, subSubType, true, { }))
+      );
     }
     // The named second level maps - map.x.y. Only if subFields and subSubFields are not empty
     let subSubFields = this.subSubFields;

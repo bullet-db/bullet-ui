@@ -150,12 +150,12 @@ export function getTypeDescription(type, typeClass) {
     case TYPE_CLASSES.PRIMITIVE:
       return base;
     case TYPE_CLASSES.PRIMITIVE_MAP:
-      return `MAP OF STRING TO ${base}`;
+      return `MAP<STRING, ${base}>`;
     case TYPE_CLASSES.PRIMITIVE_LIST:
-      return `LIST OF ${base}`;
+      return `LIST<${base}>`;
     case TYPE_CLASSES.PRIMITIVE_MAP_MAP:
-      return `MAP OF STRING TO (MAP OF STRING TO ${base})`;
+      return `MAP<STRING, MAP<STRING, ${base}>>`;
     case TYPE_CLASSES.PRIMITIVE_MAP_LIST:
-      return `LIST OF (MAP OF STRING TO ${base})`;
+      return `LIST<MAP<STRING, ${base}>>`;
   }
 }

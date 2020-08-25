@@ -23,9 +23,9 @@ module('Acceptance | schema', function(hooks) {
     assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[1])).hasText('complex_map_column');
     assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[2])).hasText('enumerated_map_column');
     assert.dom(findIn('.schema-name-entry', findAll('.schema-table .lt-body .lt-row')[3])).hasText('simple_column');
-    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[0])).hasText('LIST OF MAPS');
-    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[1])).hasText('MAP OF STRINGS TO STRINGS');
-    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[2])).hasText('MAP OF STRINGS TO STRINGS');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[0])).hasText('LIST<MAP<STRING, STRING>>');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[1])).hasText('MAP<STRING, STRING>');
+    assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[2])).hasText('MAP<STRING, STRING>');
     assert.dom(findIn('.schema-type-entry', findAll('.schema-table .lt-body .lt-row')[3])).hasText('STRING');
 
     assert.dom(findAll('.schema-table .lt-body .lt-row')[2]).hasClass('has-enumerations');

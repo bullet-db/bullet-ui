@@ -108,7 +108,7 @@ export default class Filterizer {
       let fieldOnly = `${split[0]}${MAP_FREEFORM_SUFFIX}`;
       rule.id = fieldOnly;
       rule.field = fieldOnly;
-      rule.subField = split[1];
+      rule.subfield = split[1];
     }
 
     if (op === '==') {
