@@ -16,6 +16,19 @@ export const SUBFIELD_ENABLED_KEY = 'show_subfield';
  * @private
  * @type {Object}
  */
+
+const INTEGER_MAPPING = JSON.stringify({
+  type: 'integer',
+  placeholder: 'integer', placeholders: { in: 'integers ( _, _, _, ..., _ )', not_in: 'integers ( _, _, _, ..., _ )' },
+  operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+});
+
+const FLOAT_MAPPING = JSON.stringify({
+  type: 'double',
+  placeholder: 'number', placeholders: { in: 'numbers ( _, _, _, ..., _ )', not_in: 'numbers ( _, _, _, ..., _ )' },
+  operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+});
+
 const TYPE_MAPPING = {
   // Storing as JSON string to quickly create a deep copy using JSON.parse
   UNDEFINED: JSON.stringify({
@@ -23,26 +36,17 @@ const TYPE_MAPPING = {
     operators: ['is_null', 'is_not_null']
   }),
 
-  // MAP and LIST will map to UNDEFINED
+  // MAPs and LISTs will map to UNDEFINED
   types: {
     STRING: JSON.stringify({
       type: 'string',
       placeholder: 'string', placeholders: { in: 'strings ( _, _, _, ..., _ )', not_in: 'strings ( _, _, _, ..., _ )', rlike: 'strings ( _, _, _, ..., _ )' },
       operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null', 'rlike']
     }),
-
-    LONG: JSON.stringify({
-      type: 'integer',
-      placeholder: 'integer', placeholders: { in: 'integers ( _, _, _, ..., _ )', not_in: 'integers ( _, _, _, ..., _ )' },
-      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
-    }),
-
-    DOUBLE: JSON.stringify({
-      type: 'double',
-      placeholder: 'number', placeholders: { in: 'numbers ( _, _, _, ..., _ )', not_in: 'numbers ( _, _, _, ..., _ )' },
-      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
-    }),
-
+    INTEGER: INTEGER_MAPPING,
+    LONG: INTEGER_MAPPING,
+    FLOAT: FLOAT_MAPPING,
+    DOUBLE: FLOAT_MAPPING,
     BOOLEAN: JSON.stringify({
       type: 'boolean', input: 'radio', values: { true: 'true', false: 'false' }
     })
