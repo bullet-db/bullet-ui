@@ -7,11 +7,12 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, fillIn } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import { SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
 
 const MOCK_COLUMNS = [
   { id: 'foo' },
   { id: 'bar' },
-  { id: 'bar.*', show_subfield: true },
+  { id: 'bar.*', [SUBFIELD_ENABLED_KEY]: true },
   { id: 'baz.qux' },
   { id: 'baz.norf' }
 ];

@@ -1,12 +1,12 @@
-/*
+[SUBFIELD_ENABLED_KEY]/*
  *  Copyright 2020, Yahoo Inc.
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
 import { isEmpty } from '@ember/utils';
-import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 import { module, test } from 'qunit';
+import { SUBFIELD_ENABLED_KEY, builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 import MockColumn from 'bullet-ui/tests/helpers/mocked-column';
 
 module('Unit | Utility | builder adapter', function() {
@@ -84,7 +84,7 @@ module('Unit | Utility | builder adapter', function() {
     assert.equal(actualFilters[1].id, 'foo.*');
     assert.equal(actualFilters[1].operators.length, 13);
     assert.equal(actualFilters[1].type, 'string');
-    assert.equal(actualFilters[1].show_subfield, true);
+    assert.equal(actualFilters[1][SUBFIELD_ENABLED_KEY], true);
   });
 
   test('it converts complex types into fully enumerated and flattened filters', function(assert) {
@@ -109,51 +109,51 @@ module('Unit | Utility | builder adapter', function() {
     assert.equal(actualFilters[0].id, 'foo');
     assert.equal(actualFilters[0].operators.length, 2);
     assert.equal(actualFilters[0].type, 'integer');
-    assert.notOk(actualFilters[0].show_subfield);
+    assert.notOk(actualFilters[0][SUBFIELD_ENABLED_KEY]);
 
     assert.equal(actualFilters[1].id, 'bar');
     assert.equal(actualFilters[1].operators.length, 2);
     assert.equal(actualFilters[1].type, 'integer');
-    assert.notOk(actualFilters[1].show_subfield);
+    assert.notOk(actualFilters[1][SUBFIELD_ENABLED_KEY]);
 
     assert.equal(actualFilters[2].id, 'bar.*');
     assert.equal(actualFilters[2].operators.length, 10);
     assert.equal(actualFilters[2].type, 'integer');
-    assert.equal(actualFilters[2].show_subfield, true);
+    assert.equal(actualFilters[2][SUBFIELD_ENABLED_KEY], true);
 
     assert.equal(actualFilters[3].id, 'baz');
     assert.equal(actualFilters[3].operators.length, 2);
     assert.equal(actualFilters[3].type, 'integer');
-    assert.notOk(actualFilters[3].show_subfield);
+    assert.notOk(actualFilters[3][SUBFIELD_ENABLED_KEY]);
 
     assert.equal(actualFilters[4].id, 'qux');
     assert.equal(actualFilters[4].operators.length, 2);
     assert.equal(actualFilters[4].type, 'integer');
-    assert.notOk(actualFilters[4].show_subfield);
+    assert.notOk(actualFilters[4][SUBFIELD_ENABLED_KEY]);
 
     assert.equal(actualFilters[5].id, 'qux.*');
     assert.equal(actualFilters[5].operators.length, 2);
     assert.equal(actualFilters[5].type, 'integer');
-    assert.equal(actualFilters[5].show_subfield, true);
+    assert.equal(actualFilters[5][SUBFIELD_ENABLED_KEY], true);
 
     assert.equal(actualFilters[6].id, 'qux.foo');
     assert.equal(actualFilters[6].operators.length, 2);
     assert.equal(actualFilters[6].type, 'integer');
-    assert.notOk(actualFilters[6].show_subfield);
+    assert.notOk(actualFilters[6][SUBFIELD_ENABLED_KEY]);
 
     assert.equal(actualFilters[7].id, 'qux.foo.*');
     assert.equal(actualFilters[7].operators.length, 10);
     assert.equal(actualFilters[7].type, 'double');
-    assert.equal(actualFilters[7].show_subfield, true);
+    assert.equal(actualFilters[7][SUBFIELD_ENABLED_KEY], true);
 
     assert.equal(actualFilters[8].id, 'qux.foo.bar');
     assert.equal(actualFilters[8].operators.length, 10);
     assert.equal(actualFilters[8].type, 'double');
-    assert.notOk(actualFilters[8].show_subfield);
+    assert.notOk(actualFilters[8][SUBFIELD_ENABLED_KEY]);
 
     assert.equal(actualFilters[9].id, 'norf');
     assert.equal(actualFilters[9].operators.length, 2);
     assert.equal(actualFilters[9].type, 'integer');
-    assert.notOk(actualFilters[9].show_subfield);
+    assert.notOk(actualFilters[9][SUBFIELD_ENABLED_KEY]);
   });
 });

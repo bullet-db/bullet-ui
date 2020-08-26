@@ -9,6 +9,7 @@ import { render, click, fillIn, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { selectChoose } from 'ember-power-select/test-support/helpers'
 import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
+import { SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
 import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 
 module('Integration | Component | validated field selection', function(hooks) {
@@ -17,7 +18,7 @@ module('Integration | Component | validated field selection', function(hooks) {
   const MOCK_COLUMNS = [
     { id: 'foo' },
     { id: 'bar' },
-    { id: 'bar.*', 'show_subfield': true },
+    { id: 'bar.*', [SUBFIELD_ENABLED_KEY]: true },
     { id: 'baz.qux' },
     { id: 'baz.norf' }
   ];
