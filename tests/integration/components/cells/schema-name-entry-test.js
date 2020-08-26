@@ -22,10 +22,10 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
     assert.dom('.schema-enumeration-caret').doesNotExist();
   });
 
-  test('it displays an subfield column', async function(assert) {
+  test('it displays a subField column', async function(assert) {
     this.set('mockRow', EmberObject.create({
       name: 'foo.bar',
-      isSubfield: true
+      isSubField: true
     }));
     await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
 
@@ -36,7 +36,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
   test('it displays an expand caret if the row has enumerations', async function(assert) {
     this.set('mockRow', EmberObject.create({
       name: 'foo.bar',
-      isSubfield: true,
+      isSubField: true,
       hasEnumerations: true
     }));
     await render(hbs`<Cells::SchemaNameEntry @row={{this.mockRow}}/>`);
@@ -46,7 +46,7 @@ module('Integration | Component | Cell | schema name entry', function(hooks) {
   test('it displays an expanded caret if the row is expanded', async function(assert) {
     this.set('mockRow', EmberObject.create({
       name: 'foo.bar',
-      isSubfield: true,
+      isSubField: true,
       hasEnumerations: true,
       expanded: true
     }));

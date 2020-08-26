@@ -56,7 +56,7 @@ module('Acceptance | query default query api', function(hooks) {
     assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('foo,bar');
 
     let field = findAll('.output-container .field-selection-container')[0];
-    assert.dom(findIn('.column-onlyfield .ember-power-select-selected-item', field)).hasText('simple_column');
+    assert.dom(findIn('.column-only-field .ember-power-select-selected-item', field)).hasText('simple_column');
     assert.dom('.output-container .count-distinct-display-name input').hasValue('');
     assert.dom('.options-container .query-duration input').hasValue('50');
   });

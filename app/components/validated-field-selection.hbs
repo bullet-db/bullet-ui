@@ -21,16 +21,14 @@
 
   {{#unless this.disableField}}
     <div class="{{@fieldClasses}} field-selection">
-      <ColumnField @columns={{@columns}} @initialValue={{@changeset.field}} @subfieldKey="show_subfield"
-                   @subfieldSeparator={{@subfieldSeparator}} @subfieldSuffix={{@subfieldSuffix}}
-                   @onDone={{this.onModifyField}} @disabled={{@disabled}} />
+      <ColumnField @columns={{@columns}} @initialValue={{@changeset.field}} @onDone={{this.onModifyField}}
+                   @disabled={{@disabled}} />
     </div>
   {{/unless}}
 
   {{#if this.enableRenaming}}
     <div class="{{@nameClasses}} field-name">
-      <LabeledInput @label="Display Name" @value={{@changeset.name}}
-                    @onChange={{this.onModifyName}}
+      <LabeledInput @label="Display Name" @value={{@changeset.name}} @onChange={{this.onModifyName}}
                     @type="text" @placeholder="Optional" @disabled={{@disabled}} />
     </div>
   {{/if}}

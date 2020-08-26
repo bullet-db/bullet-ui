@@ -4,12 +4,12 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
-import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
+import { MAP_ACCESSOR } from 'bullet-ui/utils/type';
 
 export default class SchemaNameEntryComponent extends Component {
   get extractedValue() {
     let row = this.args.row;
     let name = row.get('name');
-    return row.get('isSubfield') ? name.substring(name.lastIndexOf(SUBFIELD_SEPARATOR) + 1) : name;
+    return row.get('isSubField') ? name.substring(name.lastIndexOf(MAP_ACCESSOR) + 1) : name;
   }
 }

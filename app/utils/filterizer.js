@@ -4,6 +4,9 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import isEmpty from 'bullet-ui/utils/is-empty';
+import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
+
+export const MULTIPLE_VALUE_SEPARATOR = ',';
 
 /**
  * This represents the empty clause better since the QueryBuilder displays nothing.
@@ -15,28 +18,7 @@ export const EMPTY_CLAUSE = { condition: 'AND', rules: [] }
  * Responsible for converting between the formats of filter rules - QueryBuilder to and from API Query filter.
  */
 export default class Filterizer {
-  subfieldSuffix;
-  subfieldSeparator;
-  multipleValueSeparator;
-  apiMode;
-
-  /**
-   * Creates an instance of the Filterizer.
-   * @param {String} subfieldSuffix The suffix that has been appended to fields that have free form subfields in the
-   *                                QueryBuilder rule. Only needed to use methods that convert to the API format.
-   * @param {String}  subfieldSeparator The separator to append to fields that have free form subfields when creating the
-   *                                    API rule. Only needed to use methods that convert to the API format.
-   * @param {String}  multipleValueSeparator The separator used to demarcate multiple values in a Querybuilder value.
-   * @param {Boolean} apiMode If in apiMode, all converted or created filters interoperate with strict API definition.
-                              If this is not true, additional metadata (subfield in particular) may be added for helping
-                              with some operations.
-   */
-  constructor(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode) {
-    this.subfieldSuffix = subfieldSuffix;
-    this.subfieldSeparator = subfieldSeparator;
-    this.multipleValueSeparator = multipleValueSeparator;
-    this.apiMode = apiMode;
-  }
+  apiMode = true;
 
   setAPIMode(mode) {
     this.apiMode = mode;
@@ -46,8 +28,8 @@ export default class Filterizer {
    * Converts an API filter clause to its QueryBuilder rule. Basic
    * filter clauses (no logical operation at the top level) will be
    * wrapped in an AND.
-   * @param  {Object} clause The API filter clause.
-   * @return {Object}        The corresponding QueryBuilder rule.
+   * @param {Object} clause The API filter clause.
+   * @return {Object} The corresponding QueryBuilder rule.
    */
   convertClauseToRule(clause) {
     let rule = this.convertClauseToRuleHelper(clause);
@@ -65,8 +47,8 @@ export default class Filterizer {
    * filter clause (no logical operation at the top level), a basic rule will
    * be returned.
    * @private
-   * @param  {Object} clause The API filter clause.
-   * @return {Object}        The corresponding QueryBuilder rule.
+   * @param {Object} clause The API filter clause.
+   * @return {Object} The corresponding QueryBuilder rule.
    */
   convertClauseToRuleHelper(clause) {
     let operation = clause.operation;
@@ -83,8 +65,8 @@ export default class Filterizer {
   /**
    * Converts a list of API filter clauses to their QueryBuilder rules.
    * @private
-   * @param  {Object} clauses The API filter clauses.
-   * @return {Object}         The corresponding QueryBuilder rules.
+   * @param {Object} clauses The API filter clauses.
+   * @return {Object} The corresponding QueryBuilder rules.
    */
   convertClausesToRules(clauses) {
     let converted = [];
@@ -99,11 +81,11 @@ export default class Filterizer {
   }
 
   /**
-   * Converts a Base API filter to a QueryBuilder rule. Subfields can only be handled if the filter was not generated
-   * in apiMode since we cannot distinguish an enumerated subfield from a free-form subfield.
+   * Converts a Base API filter to a QueryBuilder rule. SubFields can only be handled if the filter was not generated
+   * in apiMode since we cannot distinguish an enumerated subField from a free-form subField.
    * @private
-   * @param  {Object} filter The base API filter.
-   * @return {Object}        The corresponding QueryBuilder rule.
+   * @param {Object} filter The base API filter.
+   * @return {Object} The corresponding QueryBuilder rule.
    */
   convertFilterToRule(filter) {
     let field = filter.field;
@@ -118,12 +100,12 @@ export default class Filterizer {
     let rule = {
       id: field,
       field: field,
-      value: values.join(this.multipleValueSeparator)
+      value: values.join(MULTIPLE_VALUE_SEPARATOR)
     };
-    // If we have a subfield param set, subfield separated field, set the field and subfield again
-    if (filter.subfield && field.indexOf(this.subfieldSeparator) !== -1) {
-      let split = field.split(this.subfieldSeparator);
-      let fieldOnly = `${split[0]}${this.subfieldSuffix}`;
+    // If we have a subField param set, subField separated field, set the field and subField again
+    if (filter.subField && field.indexOf(MAP_ACCESSOR) !== -1) {
+      let split = field.split(MAP_ACCESSOR);
+      let fieldOnly = `${split[0]}${MAP_FREEFORM_SUFFIX}`;
       rule.id = fieldOnly;
       rule.field = fieldOnly;
       rule.subfield = split[1];
@@ -174,7 +156,7 @@ export default class Filterizer {
    * (no logical operation at the top level), a basic filter clause
    * will be returned.
    * @param  {Object} rule A QueryBuilder specification of rules.
-   * @return {Object}      An API specification of the filters.
+   * @return {Object} An API specification of the filters.
    */
   convertRuleToClause(rule) {
     let operation = rule.condition;
@@ -193,7 +175,7 @@ export default class Filterizer {
    * Converts a list of QueryBuilder rules to their API filter clauses.
    * @private
    * @param  {Object} rules The QueryBuilder rules.
-   * @return {Object}       The corresponding API filter clauses.
+   * @return {Object} The corresponding API filter clauses.
    */
   convertRulesToClauses(rules) {
     let converted = [];
@@ -211,7 +193,7 @@ export default class Filterizer {
    * Converts a QueryBuilder rule to a Base API filter.
    * @private
    * @param  {Object} filter The QueryBuilder rule.
-   * @return {Object}        The corresponding base API filter.
+   * @return {Object} The corresponding base API filter.
    */
   convertRuleToFilter(rule) {
     let op = rule.operator;
@@ -222,11 +204,11 @@ export default class Filterizer {
       values: [value]
     };
     if (field && rule.subfield) {
-      let index = rule.field.lastIndexOf(this.subfieldSuffix);
-      filter.field = `${field.substring(0, index)}${this.subfieldSeparator}${rule.subfield}`;
+      let index = rule.field.lastIndexOf(MAP_FREEFORM_SUFFIX);
+      filter.field = `${field.substring(0, index)}${MAP_ACCESSOR}${rule.subfield}`;
       // We'll add this to make sure our inverse function works but only if we're not in apiMode
       if (!this.apiMode) {
-        filter.subfield = true;
+        filter.subField = true;
       }
     }
 
@@ -234,12 +216,12 @@ export default class Filterizer {
       filter.operation = '==';
     } else if (op === 'in') {
       filter.operation = '==';
-      filter.values = value.split(this.multipleValueSeparator).map(i => i.trim());
+      filter.values = value.split(MULTIPLE_VALUE_SEPARATOR).map(i => i.trim());
     } else if (op === 'not_equal') {
       filter.operation = '!=';
     } else if (op === 'not_in') {
       filter.operation = '!=';
-      filter.values = value.split(this.multipleValueSeparator).map(i => i.trim());
+      filter.values = value.split(MULTIPLE_VALUE_SEPARATOR).map(i => i.trim());
     } else if (op === 'is_null') {
       filter.operation = '==';
       filter.values = ['NULL'];
@@ -262,7 +244,7 @@ export default class Filterizer {
       filter.operation = '<';
     } else if (op === 'rlike') {
       filter.operation = 'RLIKE';
-      filter.values = value.split(this.multipleValueSeparator).map(i => i.trim());
+      filter.values = value.split(MULTIPLE_VALUE_SEPARATOR).map(i => i.trim());
     } else {
       throw new Error(`Unknown operator: ${op} in rule: ${JSON.stringify(rule)}`);
     }

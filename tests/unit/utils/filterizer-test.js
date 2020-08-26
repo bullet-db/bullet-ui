@@ -6,11 +6,9 @@
 import Filterizer from 'bullet-ui/utils/filterizer';
 import { module, test } from 'qunit';
 
-const [SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR] = [ '.*', '.', ','];
-
 module('Unit | Utility | filterizer', function() {
   test('it recognizes nulls', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     assert.ok(subject.isNull('null'));
     assert.ok(subject.isNull('Null'));
     assert.ok(subject.isNull('NULL'));
@@ -18,7 +16,7 @@ module('Unit | Utility | filterizer', function() {
   });
 
   test('it recognizes the logical operations', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     assert.ok(subject.isLogical('AND'));
     assert.ok(subject.isLogical('OR'));
     assert.ok(subject.isLogical('NOT'));
@@ -27,21 +25,21 @@ module('Unit | Utility | filterizer', function() {
   });
 
   test('it wraps a simple API clause into an AND builder rule', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let clause = { field: 'foo', operation: '<', values: [5] };
     let expected = { condition: 'AND', rules: [{ id: 'foo', field: 'foo', operator: 'less', value: '5' }] };
     assert.deepEqual(subject.convertClauseToRule(clause), expected);
   });
 
   test('it accepts empty clauses', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let clause = { operation: 'AND', clauses: [] };
     let expected = { condition: 'AND', rules: [] };
     assert.deepEqual(subject.convertClauseToRule(clause), expected);
   });
 
   test('it does not accept empty fields for API clauses', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let clause = { operation: '<', values: [1] };
     assert.throws(() => {
       subject.convertClauseToRule(clause);
@@ -54,7 +52,7 @@ module('Unit | Utility | filterizer', function() {
 
   test('it does not accept empty values for API clauses', function(assert) {
 
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let clause = { field: 'foo', operation: '<' };
     assert.throws(() => {
       subject.convertClauseToRule(clause);
@@ -66,7 +64,7 @@ module('Unit | Utility | filterizer', function() {
   });
 
   test('it does not allow unknown operations for API clauses', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let clause = { field: 'foo', values: [5] };
     assert.throws(() => {
       subject.convertClauseToRule(clause);
@@ -79,14 +77,14 @@ module('Unit | Utility | filterizer', function() {
 
   test('it accepts empty rules', function(assert) {
 
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let rule = { condition: 'AND', rules: [] };
     let expected = { operation: 'AND', clauses: [] };
     assert.deepEqual(subject.convertRuleToClause(rule), expected);
   });
 
   test('it does not allow unknown operators in builder rules', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let rule = { condition: 'OR', rules: [{ id: 'foo', value: 'bar' }] };
     assert.throws(() => {
       subject.convertRuleToClause(rule);
@@ -206,13 +204,13 @@ module('Unit | Utility | filterizer', function() {
   };
 
   test('it can convert from an API filter specification to the builder specification', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let convertedRule = subject.convertClauseToRule(CANONICAL_CLAUSE);
     assert.deepEqual(convertedRule, CONVERTED_RULE);
   });
 
   test('it can convert from a builder specification to the API filter specification', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, true);
+    let subject = new Filterizer();
     let convertedClause = subject.convertRuleToClause(CANONICAL_RULE);
     assert.deepEqual(convertedClause, CONVERTED_CLAUSE);
   });
@@ -263,7 +261,7 @@ module('Unit | Utility | filterizer', function() {
           { field: 'second_level_4', operation: '<', values: ['-1'] },
           { field: 'second_level_5', operation: '>=', values: ['2'] },
           { field: 'second_level_6', operation: '<=', values: ['-2'] },
-          { field: 'second_level_7.bar', subfield: true, operation: 'RLIKE', values: ['f.*'] },
+          { field: 'second_level_7.bar', subField: true, operation: 'RLIKE', values: ['f.*'] },
           { field: 'second_level_8', operation: 'RLIKE', values: ['null'] }
         ]
       },
@@ -271,15 +269,16 @@ module('Unit | Utility | filterizer', function() {
     ]
   };
 
-  test('it can convert from a builder specification to the API filter specification with subfield metadata', function(assert) {
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, false);
+  test('it can convert from a builder specification to the API filter specification with subField metadata', function(assert) {
+    let subject = new Filterizer();
+    subject.setAPIMode(false);
     let convertedClause = subject.convertRuleToClause(CANONICAL_RULE);
     assert.deepEqual(convertedClause, CONVERTED_CLAUSE_NOT_IN_API_MODE);
   });
 
   test('it can convert from an API filter with metadata specification to the builder specification', function(assert) {
     // Does not matter if we're in apiMode or not
-    let subject = new Filterizer(SUBFIELD_SUFFIX, SUBFIELD_SEPARATOR, MULTIPLE_VALUE_SEPARATOR, false);
+    let subject = new Filterizer();
     let convertedRule = subject.convertClauseToRule(CONVERTED_CLAUSE_NOT_IN_API_MODE);
     assert.deepEqual(convertedRule, CONVERTED_RULE_FROM_API_MODE);
   });

@@ -9,6 +9,7 @@ import { render, click, fillIn, settled } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 import { selectChoose } from 'ember-power-select/test-support/helpers'
 import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
+import { SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
 import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 
 module('Integration | Component | validated field selection', function(hooks) {
@@ -17,7 +18,7 @@ module('Integration | Component | validated field selection', function(hooks) {
   const MOCK_COLUMNS = [
     { id: 'foo' },
     { id: 'bar' },
-    { id: 'bar.*', 'show_subfield': true },
+    { id: 'bar.*', [SUBFIELD_ENABLED_KEY]: true },
     { id: 'baz.qux' },
     { id: 'baz.norf' }
   ];
@@ -35,7 +36,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @fieldClasses='custom-field' @nameClasses='custom-name'
       />
@@ -56,7 +56,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
       />
     `);
@@ -86,7 +85,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalClasses='type-selection' @additionalOptions={{this.mockAdditionalOptions}}
@@ -109,7 +107,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @disableField={{true}}
                                @onChange={{this.mockOnChange}}
       />
@@ -127,7 +124,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableRenaming={{false}}
                                @onChange={{this.mockOnChange}}
       />
@@ -145,7 +141,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockOnChange', () => { });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @enableDeleting={{false}}
                                @onChange={{this.mockOnChange}}
       />
@@ -167,7 +162,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     this.set('mockAdditionalOptions', [ 'A', 'B', 'C'])
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalOptions={{this.mockAdditionalOptions}}
@@ -191,7 +185,6 @@ module('Integration | Component | validated field selection', function(hooks) {
     });
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
-                               @subfieldSeparator="." @subfieldSuffix='.*'
                                @onChange={{this.mockOnChange}}
                                @onDelete={{this.mockOnDelete}}
       />
@@ -214,7 +207,7 @@ module('Integration | Component | validated field selection', function(hooks) {
     await render(hbs`
       <ValidatedFieldSelection @columns={{this.mockColumns}} @changeset={{this.mockChangeset}}
                                @onChange={{this.mockOnChange}}
-                               @forceValidate={{this.mockForceValidate}} @subfieldSeparator="." @subfieldSuffix='.*'
+                               @forceValidate={{this.mockForceValidate}}
                                @enableAdditionalOptions={{true}} @additionalPath='type' @additionalLabel='Type Label'
                                @additionalOptions={{this.mockAdditionalOptions}}
       />

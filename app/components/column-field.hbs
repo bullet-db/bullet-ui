@@ -4,18 +4,18 @@
   See the LICENSE file associated with the project for terms.
  --}}
 <div class="column-field">
-  {{#if this.subfieldEnabled}}
-    <div class="column-mainfield col-xs-8">
+  {{#if this.subFieldEnabled}}
+    <div class="column-main-field col-xs-8">
       <PowerSelectColumn @disabled={{@disabled}} @selectedColumn={{this.selectedColumn}} @columns={{@columns}}
                          @onChange={{this.onSelect}}/>
     </div>
-    <div class="column-subfield col-xs-4">
-      <label>Subfield</label>
-      <Input {{on "change" (fn this.onFocusOut)}} @value={{this.subfield}} @type="text" 
+    <div class="column-sub-field col-xs-4">
+      <label>SubField</label>
+      <Input {{on "change" (fn this.onFocusOut)}} @value={{this.subField}} @type="text"
              placeholder="Optional" class="form-control" disabled={{@disabled}}/>
     </div>
   {{else}}
-    <div class="column-onlyfield col-xs-12">
+    <div class="column-only-field col-xs-12">
       <PowerSelectColumn @disabled={{@disabled}} @selectedColumn={{this.selectedColumn}} @columns={{@columns}}
                          @onChange={{this.onSelect}}/>
     </div>

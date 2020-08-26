@@ -7,22 +7,24 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { isEmpty } from '@ember/utils';
+import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
+import { SUBFIELD_ENABLED_KEY } from 'bullet-ui/utils/builder-adapter';
 
 export default class ColumnFieldComponent extends Component {
   @tracked selectedColumn;
-  @tracked subfield;
+  @tracked subField;
 
   constructor() {
     super(...arguments);
     let initialValue = this.args.initialValue;
     if (!isEmpty(initialValue)) {
-      let { field, subfield } = this.findField(initialValue);
-      this.setField(field, subfield);
+      let { field, subField } = this.findField(initialValue);
+      this.setField(field, subField);
     }
   }
 
-  get subfieldEnabled() {
-    return this.selectedColumn && this.selectedColumn[this.args.subfieldKey];
+  get subFieldEnabled() {
+    return this.selectedColumn && this.selectedColumn[SUBFIELD_ENABLED_KEY];
   }
 
   // Reverse mapping from ids back to the columns for easy lookup
@@ -35,8 +37,8 @@ export default class ColumnFieldComponent extends Component {
 
   get compositeField() {
     let top = this.selectedColumn.id;
-    let sub = this.subfield;
-    let suffixPosition = top.lastIndexOf(this.args.subfieldSuffix);
+    let sub = this.subField;
+    let suffixPosition = top.lastIndexOf(MAP_FREEFORM_SUFFIX);
     if (suffixPosition === -1) {
       return top;
     }
@@ -44,40 +46,40 @@ export default class ColumnFieldComponent extends Component {
     if (isEmpty(sub)) {
       return mainField;
     }
-    return `${mainField}${this.args.subfieldSeparator}${sub}`;
+    return `${mainField}${MAP_ACCESSOR}${sub}`;
   }
 
   sliceToLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
+    let lastSeparator = name.lastIndexOf(MAP_ACCESSOR);
     return lastSeparator !== -1 ? name.slice(0, lastSeparator) : name;
   }
 
   sliceFromLastSeparator(name) {
-    let lastSeparator = name.lastIndexOf(this.args.subfieldSeparator);
+    let lastSeparator = name.lastIndexOf(MAP_ACCESSOR);
     return lastSeparator !== -1 ? name.slice(lastSeparator + 1) : name;
   }
 
   findField(name) {
     // Not using Ember get if mainField contains a '.'
     let field = this.columnMapping[name];
-    let subfield = '';
-    // If we didn't find the full field, it is a field with a subfield
+    let subField = '';
+    // If we didn't find the full field, it is a field with a subField
     if (isEmpty(field)) {
-      let mainField = `${this.sliceToLastSeparator(name)}${this.args.subfieldSuffix}`;
+      let mainField = `${this.sliceToLastSeparator(name)}${MAP_FREEFORM_SUFFIX}`;
       field = this.columnMapping[mainField];
-      subfield = this.sliceFromLastSeparator(name);
+      subField = this.sliceFromLastSeparator(name);
     }
-    return { field, subfield };
+    return { field, subField };
   }
 
-  setField(field, subfield) {
+  setField(field, subField) {
     this.selectedColumn = field;
-    this.subfield = subfield;
+    this.subField = subField;
   }
 
   @action
   onSelect(column) {
-    // Clear out subfield when field changes
+    // Clear out subField when field changes
     this.setField(column, '');
     this.args.onDone(this.compositeField);
   }

@@ -24,9 +24,8 @@ export default class QuerierService extends Service {
 
   constructor() {
     super(...arguments);
-    const [ subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode ] = [ '.*', '.', ',', true ];
-    this.filterizer = new Filterizer(subfieldSuffix, subfieldSeparator, multipleValueSeparator, apiMode);
-    this.apiMode = apiMode;
+    this.filterizer = new Filterizer();
+    this.setAPIMode(true);
   }
 
   setAPIMode(mode) {

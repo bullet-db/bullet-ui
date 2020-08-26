@@ -9,22 +9,19 @@ import { tracked } from '@glimmer/tracking';
 import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import { action } from '@ember/object';
+import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { SUBFIELD_SEPARATOR } from 'bullet-ui/models/column';
 import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
 import { METRICS } from 'bullet-ui/models/metric';
 import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
-import BuilderAdapter from 'bullet-ui/utils/builder-adapter';
+import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 
 export default class QueryInputComponent extends Component {
   // Constants
   queryBuilderClass = 'builder';
-  subfieldSeparator = SUBFIELD_SEPARATOR;
-  subfieldSuffix = `${SUBFIELD_SEPARATOR}*`;
   AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
   RAW_TYPES = RAWS.get('NAMES');
   DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
@@ -91,8 +88,6 @@ export default class QueryInputComponent extends Component {
     this.settings = getOwner(this).lookup('settings:main');
     this.errors = A();
 
-    this.builderAdapter = new BuilderAdapter(this.subfieldSuffix, this.subfieldSeparator);
-
     // Save all changesets and changeset arrays
     this.queryChangeset = this.args.query;
     this.aggregationChangeset = this.args.aggregation;
@@ -122,8 +117,9 @@ export default class QueryInputComponent extends Component {
 
   // Getters
 
+  @computed('args.schema')
   get columns() {
-    return this.builderAdapter.builderFilters(this.args.schema);
+    return builderFilters(this.args.schema);
   }
 
   get recordBasedWindowDisabled() {
@@ -179,7 +175,7 @@ export default class QueryInputComponent extends Component {
   }
 
   get queryBuilderOptions() {
-    let options = this.builderAdapter.builderOptions();
+    let options = builderOptions();
     options.filters = this.columns;
     options.rules = this.filterClause;
     return options;
@@ -346,6 +342,8 @@ export default class QueryInputComponent extends Component {
     $(element).on(event.join(' '), bind(this, () => {
       this.validateFilter();
     }));
+    // Do this to set the summary for newly created queries with default filters
+    this.setFilter()
   }
 
   @action

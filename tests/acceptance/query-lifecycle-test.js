@@ -141,7 +141,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     let fields = findAll('.projections-container .field-selection-container');
     await selectChoose(findIn('.field-selection', fields[0]), 'simple_column');
     await fillIn(findIn('.field-name input', fields[0]), 'new_name');
-    assert.dom('.projections-container .column-onlyfield').exists({ count: 2 });
+    assert.dom('.projections-container .column-only-field').exists({ count: 2 });
     await click(findIn('.delete-button', fields[1]));
     assert.dom('.projections-container .field-selection-container').exists({ count: 1 });
     // The last one cannot be removed
@@ -154,7 +154,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     await visit('/queries/new');
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
-    assert.dom('.projections-container .column-onlyfield').exists({ count: 1 });
+    assert.dom('.projections-container .column-only-field').exists({ count: 1 });
     await fillIn('.options-container .aggregation-size input', '');
     await click('.save-button');
     assert.dom('.projections-container .field-name input').hasValue('simple_column');
@@ -168,14 +168,14 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
-    assert.dom('.projections-container .field-selection .column-mainfield').exists({ count: 1 });
-    await blur('.projections-container .field-selection-container .field-selection .column-subfield input');
-    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
-    assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('');
-    await fillIn('.projections-container .field-selection-container .field-selection .column-subfield input', 'foo');
-    await blur('.projections-container .field-selection-container .field-selection .column-subfield input');
-    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
-    assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
+    assert.dom('.projections-container .field-selection .column-main-field').exists({ count: 1 });
+    await blur('.projections-container .field-selection-container .field-selection .column-sub-field input');
+    assert.dom('.projections-container .column-main-field .ember-power-select-selected-item').hasText('complex_map_column.*');
+    assert.dom('.projections-container .field-selection-container .column-sub-field input').hasValue('');
+    await fillIn('.projections-container .field-selection-container .field-selection .column-sub-field input', 'foo');
+    await blur('.projections-container .field-selection-container .field-selection .column-sub-field input');
+    assert.dom('.projections-container .column-main-field .ember-power-select-selected-item').hasText('complex_map_column.*');
+    assert.dom('.projections-container .field-selection-container .column-sub-field input').hasValue('foo');
   });
 
   test('switching to another output data type wipes selected columns', async function(assert) {
@@ -185,18 +185,18 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
-      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
+      findIn('.field-selection .column-sub-field input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await blur(findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]));
+    await blur(findIn('.field-selection .column-sub-field input', findAll('.projections-container .field-selection-container')[0]));
     await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
     await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[1]), 'simple_column');
     await click('.save-button');
     assert.dom('.projections-container .field-selection-container').exists({ count: 2 });
-    assert.dom('.projections-container .column-mainfield .ember-power-select-selected-item').hasText('complex_map_column.*');
-    assert.dom('.projections-container .field-selection-container .column-subfield input').hasValue('foo');
+    assert.dom('.projections-container .column-main-field .ember-power-select-selected-item').hasText('complex_map_column.*');
+    assert.dom('.projections-container .field-selection-container .column-sub-field input').hasValue('foo');
     assert.dom('.projections-container .field-selection-container .field-name input').hasValue('new_name');
     // This means that save was also successful
     assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
@@ -238,10 +238,10 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .raw-sub-options #select');
     await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
-      findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]),
+      findIn('.field-selection .column-sub-field input', findAll('.projections-container .field-selection-container')[0]),
       'foo'
     );
-    await blur(findIn('.field-selection .column-subfield input', findAll('.projections-container .field-selection-container')[0]));
+    await blur(findIn('.field-selection .column-sub-field input', findAll('.projections-container .field-selection-container')[0]));
     await fillIn(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0]), 'new_name');
 
     await click('.output-container .projections-container .add-projection');
@@ -311,11 +311,11 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom('.filter-container .rule-filter-container select').hasValue('complex_list_column');
     assert.dom(
-      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0])
+      findIn('.column-only-field .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[0])
     ).hasText('complex_map_column');
     assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[0])).hasValue('complex_map_column');
     assert.dom(
-      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1])
+      findIn('.column-only-field .ember-power-select-selected-item', findAll('.groups-container .field-selection-container')[1])
     ).hasText('simple_column');
     assert.dom(findIn('.field-name input', findAll('.groups-container .field-selection-container')[1])).hasValue('bar');
     assert.dom(
@@ -369,7 +369,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(find('.output-container .distribution-type-options #cumulative').parentElement).hasClass('checked');
     assert.dom(find('.output-container .distribution-point-options #number-points').parentElement).hasClass('checked');
     assert.dom(
-      '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
+      '.output-container .field-selection-container .column-only-field .ember-power-select-selected-item'
     ).hasText('simple_column');
     assert.dom('.output-container .distribution-type-number-of-points input').hasValue('15');
   });
@@ -400,7 +400,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(find('.output-container .distribution-type-options #frequency').parentElement).hasClass('checked');
     assert.dom(find('.output-container .distribution-point-options #generate-points').parentElement).hasClass('checked');
     assert.dom(
-      '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
+      '.output-container .field-selection-container .column-only-field .ember-power-select-selected-item'
     ).hasText('simple_column');
     assert.dom(findAll('.output-container .distribution-type-point-range input')[0]).hasValue('1.5');
     assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('2.5');
@@ -430,7 +430,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(find('.output-container .distribution-type-options #quantile').parentElement).hasClass('checked');
     assert.dom(find('.output-container .distribution-point-options #points').parentElement).hasClass('checked');
     assert.dom(
-      '.output-container .field-selection-container .column-onlyfield .ember-power-select-selected-item'
+      '.output-container .field-selection-container .column-only-field .ember-power-select-selected-item'
     ).hasText('simple_column');
     assert.dom('.output-container .distribution-type-points input').hasValue('0,0.2,1');
   });
@@ -445,8 +445,8 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click('.output-container .add-field');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[1]), 'complex_map_column.*');
-    await fillIn(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]), 'foo');
-    await blur(findIn('.field-selection .column-subfield input', findAll('.output-container .field-selection-container')[1]));
+    await fillIn(findIn('.field-selection .column-sub-field input', findAll('.output-container .field-selection-container')[1]), 'foo');
+    await blur(findIn('.field-selection .column-sub-field input', findAll('.output-container .field-selection-container')[1]));
     await fillIn(findIn('.field-name input', findAll('.output-container .field-selection-container')[1]), 'new_name');
     await fillIn('.output-container .top-k-size input', '15');
     await fillIn('.output-container .top-k-min-count input', '1500');
@@ -463,12 +463,12 @@ module('Acceptance | query lifecycle', function(hooks) {
     await click(findAll('.queries-table .query-name-entry')[1]);
     assert.dom(find('.output-options #top-k').parentElement).hasClass('checked');
     assert.dom(
-      findIn('.column-onlyfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0])
+      findIn('.column-only-field .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[0])
     ).hasText('simple_column');
     assert.dom(
-      findIn('.column-mainfield .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
+      findIn('.column-main-field .ember-power-select-selected-item', findAll('.output-container .field-selection-container')[1])
     ).hasText('complex_map_column.*');
-    assert.dom(findIn('.column-subfield input', findAll('.output-container .field-selection-container')[1])).hasValue('foo');
+    assert.dom(findIn('.column-sub-field input', findAll('.output-container .field-selection-container')[1])).hasValue('foo');
     assert.dom(findIn('.field-name input', findAll('.output-container .field-selection-container')[1])).hasValue('new_name');
     assert.dom('.output-container .top-k-size input').hasValue('15');
     assert.dom('.output-container .top-k-min-count input').hasValue('1500');
