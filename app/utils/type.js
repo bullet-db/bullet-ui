@@ -21,7 +21,7 @@ export class Enum {
   }
 
   hasSymbol(symbol) {
-    return symbol === this[Symbol.keyFor(symbol)];
+    return symbol === this[Enum.forSymbol(symbol)];
   }
 
   hasName(name) {
@@ -30,6 +30,10 @@ export class Enum {
 
   forName(name) {
     return this[name];
+  }
+
+  static forSymbol(symbol) {
+    return Symbol.keyFor(symbol);
   }
 
   static of(names) {

@@ -1,11 +1,11 @@
 {
   "default": {
-    "queryHost": "https://bullet-propane-all-data-api.data.yahoo.com:4443",
+    "queryHost": "https://foo.bar.com:4443",
     "queryNamespace": "api/bullet",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://local.data.yahoo.com:9443",
+    "schemaHost": "https://foo.bar.com:4443",
     "schemaNamespace": "api/bullet",
     "helpLinks": [
       {
