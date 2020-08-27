@@ -36,7 +36,7 @@ export default class ColumnModel extends Model {
   }
 
   get typeName() {
-    return getTypeDescription(this.type, this.typeClass);
+    return getTypeDescription(this.type);
   }
 
   get hasEnumerations() {
@@ -118,7 +118,7 @@ export default class ColumnModel extends Model {
       return [];
     }
     let type = subFieldType;
-    let typeName = getTypeName ? getTypeDescription(subFieldType, getTypeClass(subFieldType)) : undefined;
+    let typeName = getTypeName ? getTypeDescription(subFieldType) : undefined;
     return subFields.map(field =>
       ColumnModel.toColumn(field.name, type, isSubField, { typeName, description: field.description, nameMapper })
     );

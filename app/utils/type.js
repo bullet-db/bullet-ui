@@ -3,43 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-
-export class Enum {
-  constructor(names) {
-    for (let name of names) {
-      this[name] = Symbol.for(name);
-    }
-    Object.freeze(this);
-  }
-
-  get symbols() {
-    return Object.keys(this).map(name => this[name]);
-  }
-
-  get names() {
-    return Object.keys(this);
-  }
-
-  hasSymbol(symbol) {
-    return symbol === this[Enum.forSymbol(symbol)];
-  }
-
-  hasName(name) {
-    return this[name] !== undefined;
-  }
-
-  forName(name) {
-    return this[name];
-  }
-
-  static forSymbol(symbol) {
-    return Symbol.keyFor(symbol);
-  }
-
-  static of(names) {
-    return new Enum(names);
-  }
-}
+import Enum from 'bullet-ui/utils/enum';
 
 export const TYPE_SEPARATOR = '_';
 export const MAP_ACCESSOR = '.';
@@ -49,16 +13,51 @@ export const FREEFORM = '*';
 export const MAP_FREEFORM_SUFFIX = `${MAP_ACCESSOR}${FREEFORM}`;
 export const LIST_FREEFORM_SUFFIX = `${LIST_ACCESSOR_START}${FREEFORM}${LIST_ACCESSOR_END}`;
 
-export const TYPES = Enum.of([
-  'BOOLEAN', 'INTEGER', 'LONG', 'FLOAT', 'DOUBLE', 'STRING',
-  'BOOLEAN_MAP', 'INTEGER_MAP', 'LONG_MAP', 'FLOAT_MAP', 'DOUBLE_MAP', 'STRING_MAP',
-  'BOOLEAN_MAP_MAP', 'INTEGER_MAP_MAP', 'LONG_MAP_MAP', 'FLOAT_MAP_MAP', 'DOUBLE_MAP_MAP', 'STRING_MAP_MAP',
-  'BOOLEAN_LIST', 'INTEGER_LIST', 'LONG_LIST', 'FLOAT_LIST', 'DOUBLE_LIST', 'STRING_LIST',
-  'BOOLEAN_MAP_LIST', 'INTEGER_MAP_LIST', 'LONG_MAP_LIST', 'FLOAT_MAP_LIST', 'DOUBLE_MAP_LIST', 'STRING_MAP_LIST'
+export const TYPE_CLASSES = Enum.of([
+  'PRIMITIVE',
+  'PRIMITIVE_MAP',
+  'PRIMITIVE_LIST',
+  'PRIMITIVE_MAP_MAP',
+  'PRIMITIVE_MAP_LIST'
 ]);
 
-export const TYPE_CLASSES = Enum.of([
-  'PRIMITIVE', 'PRIMITIVE_MAP', 'PRIMITIVE_LIST', 'PRIMITIVE_MAP_MAP', 'PRIMITIVE_MAP_LIST'
+const BOOLEAN = { name: 'BOOLEAN', class: TYPE_CLASSES.PRIMITIVE };
+const INTEGER = { name: 'INTEGER', class: TYPE_CLASSES.PRIMITIVE };
+const LONG = { name: 'LONG', class: TYPE_CLASSES.PRIMITIVE };
+const FLOAT = { name: 'FLOAT', class: TYPE_CLASSES.PRIMITIVE };
+const DOUBLE = { name: 'DOUBLE', class: TYPE_CLASSES.PRIMITIVE };
+const STRING = { name: 'STRING', class: TYPE_CLASSES.PRIMITIVE };
+const BOOLEAN_MAP = { name: 'BOOLEAN_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP };
+const INTEGER_MAP = { name: 'INTEGER_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP };
+const LONG_MAP = { name: 'LONG_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP };
+const FLOAT_MAP = { name: 'FLOAT_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP };
+const DOUBLE_MAP = { name: 'DOUBLE_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP };
+const STRING_MAP = { name: 'STRING_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP };
+const BOOLEAN_MAP_MAP = { name: 'BOOLEAN_MAP_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP_MAP };
+const INTEGER_MAP_MAP = { name: 'INTEGER_MAP_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP_MAP };
+const LONG_MAP_MAP = { name: 'LONG_MAP_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP_MAP };
+const FLOAT_MAP_MAP = { name: 'FLOAT_MAP_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP_MAP };
+const DOUBLE_MAP_MAP = { name: 'DOUBLE_MAP_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP_MAP };
+const STRING_MAP_MAP = { name: 'STRING_MAP_MAP', class: TYPE_CLASSES.PRIMITIVE_MAP_MAP };
+const BOOLEAN_LIST = { name: 'BOOLEAN_LIST', class: TYPE_CLASSES.PRIMITIVE_LIST };
+const INTEGER_LIST = { name: 'INTEGER_LIST', class: TYPE_CLASSES.PRIMITIVE_LIST };
+const LONG_LIST = { name: 'LONG_LIST', class: TYPE_CLASSES.PRIMITIVE_LIST };
+const FLOAT_LIST = { name: 'FLOAT_LIST', class: TYPE_CLASSES.PRIMITIVE_LIST };
+const DOUBLE_LIST = { name: 'DOUBLE_LIST', class: TYPE_CLASSES.PRIMITIVE_LIST };
+const STRING_LIST = { name: 'STRING_LIST', class: TYPE_CLASSES.PRIMITIVE_LIST };
+const BOOLEAN_MAP_LIST = { name: 'BOOLEAN_MAP_LIST', class: TYPE_CLASSES.PRIMITIVE_MAP_LIST };
+const INTEGER_MAP_LIST = { name: 'INTEGER_MAP_LIST', class: TYPE_CLASSES.PRIMITIVE_MAP_LIST };
+const LONG_MAP_LIST = { name: 'LONG_MAP_LIST', class: TYPE_CLASSES.PRIMITIVE_MAP_LIST };
+const FLOAT_MAP_LIST = { name: 'FLOAT_MAP_LIST', class: TYPE_CLASSES.PRIMITIVE_MAP_LIST };
+const DOUBLE_MAP_LIST = { name: 'DOUBLE_MAP_LIST', class: TYPE_CLASSES.PRIMITIVE_MAP_LIST };
+const STRING_MAP_LIST = { name: 'STRING_MAP_LIST', class: TYPE_CLASSES.PRIMITIVE_MAP_LIST };
+
+export const TYPES = Enum.of([
+  BOOLEAN, INTEGER, LONG, FLOAT, DOUBLE, STRING,
+  BOOLEAN_MAP, INTEGER_MAP, LONG_MAP, FLOAT_MAP, DOUBLE_MAP, STRING_MAP,
+  BOOLEAN_MAP_MAP, INTEGER_MAP_MAP, LONG_MAP_MAP, FLOAT_MAP_MAP, DOUBLE_MAP_MAP, STRING_MAP_MAP,
+  BOOLEAN_LIST, INTEGER_LIST, LONG_LIST, FLOAT_LIST, DOUBLE_LIST, STRING_LIST,
+  BOOLEAN_MAP_LIST, INTEGER_MAP_LIST, LONG_MAP_LIST, FLOAT_MAP_LIST, DOUBLE_MAP_LIST, STRING_MAP_LIST
 ]);
 
 export function getBasePrimitive(name) {
@@ -135,21 +134,12 @@ export function getSubType(name) {
 }
 
 export function getTypeClass(name) {
-  if (name.indexOf('_MAP_MAP') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP_MAP;
-  } else if (name.indexOf('_MAP_LIST') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP_LIST;
-  } else if (name.indexOf('_MAP') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_MAP;
-  } else if (name.indexOf('_LIST') !== -1) {
-    return TYPE_CLASSES.PRIMITIVE_LIST;
-  } else {
-    return TYPE_CLASSES.PRIMITIVE;
-  }
+  return TYPES.getMetaEntryForName(name, 'class');
 }
 
-export function getTypeDescription(type, typeClass) {
-  let base = getBasePrimitive(type);
+export function getTypeDescription(name) {
+  let base = getBasePrimitive(name);
+  let typeClass = getTypeClass(name);
   switch (typeClass) {
     case TYPE_CLASSES.PRIMITIVE:
       return base;
