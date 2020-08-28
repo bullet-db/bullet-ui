@@ -41,8 +41,8 @@ export default class QuerierService extends Service {
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
-   * @param  {Object} json The API Bullet query.
-   * @return {Object}      An Ember Object that looks like the Ember Data representation.
+   * @param {Object} json The API Bullet query.
+   * @return {Object} An Ember Object that looks like the Ember Data representation.
    */
   recreate(json) {
     let query = EmberObject.create();
@@ -70,8 +70,8 @@ export default class QuerierService extends Service {
 
   /**
    * Converts an internal Ember Bullet query to the API query specification.
-   * @param  {Object} query An Ember Data object representing the query.
-   * @return {Object}       The API Bullet query.
+   * @param {Object} query An Ember Data object representing the query.
+   * @return {Object} The API Bullet query.
    */
   reformat(query) {
     let json = { };

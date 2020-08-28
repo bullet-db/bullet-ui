@@ -32,15 +32,6 @@ let AggregationTypes = EmberObject.extend({
   }
 });
 
-let RawTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = { ALL: 'All', SELECT: 'Select' };
-    this.set('NAMES', names);
-    this.setProperties(names);
-  }
-});
-
 let DistributionTypes = EmberObject.extend({
   init() {
     this._super(...arguments);
@@ -65,7 +56,6 @@ let DistributionPointTypes = EmberObject.extend({
 });
 
 export const AGGREGATIONS = AggregationTypes.create();
-export const RAWS = RawTypes.create();
 export const DISTRIBUTIONS = DistributionTypes.create();
 export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 

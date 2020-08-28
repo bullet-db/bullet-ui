@@ -94,12 +94,12 @@
             <div class="raw-sub-options inline-radio-buttons">
               <RadioButton @id="all" @checkedValue={{this.rawType}}
                            @changed={{fn this.deleteProjections}} @updated={{fn (mut this.rawType)}}
-                           @value={{this.RAW_TYPES.ALL}} @disabled={{this.isListening}}>
+                           @value={{desc this.RAW_TYPES this.RAW_TYPES.ALL}} @disabled={{this.isListening}}>
                 Show All Fields
               </RadioButton>
               <RadioButton @id="select" @checkedValue={{this.rawType}}
                            @changed={{fn this.addRawAggregation true}} @updated={{fn (mut this.rawType)}}
-                           @value={{this.RAW_TYPES.SELECT}} @disabled={{this.isListening}}>
+                           @value={{desc this.RAW_TYPES this.RAW_TYPES.SELECT}} @disabled={{this.isListening}}>
                 Select Fields
               </RadioButton>
             </div>

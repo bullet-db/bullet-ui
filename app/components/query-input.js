@@ -14,15 +14,15 @@ import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import { RAW_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 
 export default class QueryInputComponent extends Component {
   // Constants
   queryBuilderClass = 'builder';
   AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
-  RAW_TYPES = RAWS.get('NAMES');
+  RAW_TYPES = RAW_TYPES;
   DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
   DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
   EMIT_TYPES = EMIT_TYPES;
@@ -69,7 +69,7 @@ export default class QueryInputComponent extends Component {
   @equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')) isCountDistinctAggregation;
   @equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')) isDistributionAggregation;
   @equal('outputDataType', AGGREGATIONS.get('TOP_K')) isTopKAggregation;
-  @equal('rawType', RAWS.get('SELECT')) isSelectType;
+  @equal('rawType', RAW_TYPES.describe(RAW_TYPES.SELECT)) isSelectType;
   @and('isRawAggregation', 'isSelectType') showRawSelections;
   @equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')) isNumberOfPoints;
   @equal('pointType', DISTRIBUTION_POINTS.get('POINTS')) isPoints;
@@ -108,7 +108,7 @@ export default class QueryInputComponent extends Component {
       this.includeType = this.windowChangeset.get('includeType');
     }
 
-    this.rawType = isEmpty(this.projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
+    this.rawType = RAW_TYPES.describe(isEmpty(this.projections) ? RAW_TYPES.ALL : RAW_TYPES.SELECT);
     this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATIONS.get('RAW');
     this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
     this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
@@ -209,7 +209,7 @@ export default class QueryInputComponent extends Component {
 
   async changeAggregation(type) {
     if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
-      this.rawType = RAWS.get('ALL');
+      this.rawType = RAW_TYPES.describe(RAW_TYPES.ALL);
     }
     if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
       this.distributionType = DISTRIBUTIONS.get('QUANTILE');
