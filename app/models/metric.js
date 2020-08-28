@@ -4,31 +4,10 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Model, { attr, belongsTo } from '@ember-data/model';
-import EmberObject from '@ember/object';
-
-let Metric = EmberObject.extend({
-
-  init() {
-    this._super(...arguments);
-    let names = { SUM: 'Sum', COUNT: 'Count', MIN: 'Minimum', MAX: 'Maximum', AVG: 'Average' };
-    this.setProperties(names);
-    this.set('NAMES', names);
-    this.set('INVERSE', { 'Sum': 'SUM', 'Count': 'COUNT', 'Minimum': 'MIN', 'Maximum': 'MAX', 'Average': 'AVG' });
-  },
-
-  invert(key) {
-    return this.get(`INVERSE.${key}`);
-  },
-
-  asList() {
-    return [this.SUM, this.COUNT, this.MIN, this.MAX, this.AVG];
-  }
-});
-
-export const METRICS = Metric.create();
+import { METRIC_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class MetricModel extends Model {
-  @attr('string', { defaultValue: METRICS.get('SUM') }) type;
+  @attr('string', { defaultValue: METRIC_TYPES.describe(METRIC_TYPES.SUM) }) type;
   @attr('string') field;
   @attr('string') name;
   @belongsTo('aggregation', { autoSave: true }) aggregation;

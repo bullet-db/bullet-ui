@@ -12,7 +12,7 @@ import validateMultiModelRelationships,
        { validateWindowAggregation, validateGroupMetricPresence, validateWindowEmitFrequency }
        from 'bullet-ui/validators/multi-model';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Validator | multi model', function(hooks) {
   setupTest(hooks);
@@ -42,15 +42,15 @@ module('Unit | Validator | multi model', function(hooks) {
       type: AGGREGATIONS.get('RAW')
     });
     let window = EmberObject.create({
-      includeType: INCLUDE_TYPES.get('WINDOW'),
+      includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW),
     });
     assert.ok(validate(window, aggregation));
 
-    window.set('includeType', INCLUDE_TYPES.get('ALL'));
+    window.set('includeType', INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
     assert.equal(validate(window, aggregation), 'The window should not include all from start when aggregation type is Raw');
 
     aggregation.set('type', AGGREGATIONS.get('GROUP'));
-    window.set('emitType', EMIT_TYPES.get('RECORD'));
+    window.set('emitType', EMIT_TYPES.describe(EMIT_TYPES.RECORD));
     assert.equal(validate(window, aggregation), 'The window should not be record based when aggregation type is not Raw');
   });
 
@@ -66,7 +66,7 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
       emitEvery: 21
     });
     let settings = EmberObject.create();
@@ -82,7 +82,7 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
       emitEvery: 9,
     });
     let settings = EmberObject.create({
@@ -102,7 +102,7 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('RECORD'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.RECORD),
       emitEvery: 21
     });
     let settings = EmberObject.create();
@@ -120,9 +120,9 @@ module('Unit | Validator | multi model', function(hooks) {
       type: AGGREGATIONS.get('GROUP')
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
       emitEvery: 9,
-      includeType: INCLUDE_TYPES.get('ALL')
+      includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)
     });
     let metrics = A();
     let groups = A();

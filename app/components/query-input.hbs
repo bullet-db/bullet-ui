@@ -146,7 +146,7 @@
                 {{#each this.metrics as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
-                      @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
+                      @disableField={{eq changeset.type (desc this.METRIC_TYPES this.METRIC_TYPES.COUNT)}}
                       @onDelete={{fn this.deleteFieldLike changeset this.metrics}} @onChange={{@onDirty}}
                       @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="type"
                       @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection" @fieldClasses="col-xs-5"
@@ -378,14 +378,14 @@
               <RadioButton @id="time-based" @checkedValue={{this.emitType}}
                            @changed={{fn this.changeEmitType this.EMIT_TYPES.TIME}}
                            @updated={{fn (mut this.emitType)}}
-                           @value={{this.EMIT_TYPES.TIME}} @disabled={{this.isListening}}>
-                {{this.EMIT_TYPES.TIME}}
+                           @value={{desc this.EMIT_TYPES this.EMIT_TYPES.TIME}} @disabled={{this.isListening}}>
+                {{desc this.EMIT_TYPES this.EMIT_TYPES.TIME}}
               </RadioButton>
               <RadioButton @id="record-based" @checkedValue={{this.emitType}}
                            @changed={{fn this.changeEmitType this.EMIT_TYPES.RECORD}}
                            @updated={{fn (mut this.emitType)}}
-                           @value={{this.EMIT_TYPES.RECORD}} @disabled={{this.recordBasedWindowDisabled}}>
-                {{this.EMIT_TYPES.RECORD}}
+                           @value={{desc this.EMIT_TYPES this.EMIT_TYPES.RECORD}} @disabled={{this.recordBasedWindowDisabled}}>
+                {{desc this.EMIT_TYPES this.EMIT_TYPES.RECORD}}
               </RadioButton>
             </div>
 
@@ -403,14 +403,14 @@
                 <RadioButton @id="include-window" @checkedValue={{this.includeType}}
                              @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}}
                              @updated={{fn (mut this.includeType)}}
-                             @value={{this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
-                  {{this.INCLUDE_TYPES.WINDOW}}
+                             @value={{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
+                  {{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.WINDOW}}
                 </RadioButton>
                 <RadioButton @id="include-all" @checkedValue={{this.includeType}}
                              @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}}
                              @updated={{fn (mut this.includeType)}}
-                             @value={{this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>
-                  {{this.INCLUDE_TYPES.ALL}}
+                             @value={{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>
+                  {{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.ALL}}
                 </RadioButton>
               </div>
               {{#if this.isRawAggregation}}

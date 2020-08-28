@@ -12,8 +12,7 @@ import Service, { inject as service } from '@ember/service';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { METRICS } from 'bullet-ui/models/metric';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class QuerierService extends Service {
   @service stompWebsocket;
@@ -163,14 +162,14 @@ export default class QuerierService extends Service {
       return false;
     }
 
-    let emitType = EMIT_TYPES.get(json.emit.type);
-    let emitEvery = isEqual(json.emit.type, 'TIME') ? Number(json.emit.every) / 1000 : Number(json.emit.every);
+    let emitType = EMIT_TYPES.description(json.emit.type);
+    let emitEvery = isEqual(EMIT_TYPES[json.emit.type], EMIT_TYPES.TIME) ? Number(json.emit.every) / 1000 : Number(json.emit.every);
 
     let includeType;
-    if (!isEmpty(json.include) && isEqual(json.include.type, 'ALL')) {
-      includeType = INCLUDE_TYPES.get('ALL');
+    if (!isEmpty(json.include) && isEqual(INCLUDE_TYPES[json.include.type], INCLUDE_TYPES.ALL)) {
+      includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL);
     } else {
-      includeType = INCLUDE_TYPES.get('WINDOW');
+      includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
     }
     return EmberObject.create({
       emitType: emitType,
@@ -200,14 +199,14 @@ export default class QuerierService extends Service {
     let emitEvery = window.get('emitEvery');
     let json = {
       emit: {
-        type: EMIT_TYPES.apiKey(emitType),
-        every: isEqual(emitType, EMIT_TYPES.get('TIME')) ? Number(emitEvery) * 1000 : Number(emitEvery)
+        type: EMIT_TYPES.name(emitType),
+        every: isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? Number(emitEvery) * 1000 : Number(emitEvery)
       }
     };
 
     let includeType = window.get('includeType');
-    if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
-      json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
+    if (isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL))) {
+      json.include = { type: INCLUDE_TYPES.name(includeType) };
     }
     return json;
   }
@@ -303,7 +302,7 @@ export default class QuerierService extends Service {
     }
     let groupOperations = A();
     json.forEach(item => {
-      let type = METRICS.get(item.type);
+      let type = METRIC_TYPES.description(item.type);
       let operation = EmberObject.create({ type: type });
       this.setIfTruthy(operation, 'field', item.field);
       this.setIfTruthy(operation, 'name', item.newName);
@@ -318,7 +317,7 @@ export default class QuerierService extends Service {
     }
     let json = [];
     metrics.forEach(item => {
-      let invertedType = METRICS.invert(item.get('type'));
+      let invertedType = METRIC_TYPES.name(item.get('type'));
       let metric = { type: invertedType };
       this.assignIfTruthy(metric, 'field', item.get('field'));
       this.assignIfTruthy(metric, 'newName', item.get('name'));

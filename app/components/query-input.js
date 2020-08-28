@@ -15,8 +15,7 @@ import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import { METRICS } from 'bullet-ui/models/metric';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 
 export default class QueryInputComponent extends Component {
@@ -26,10 +25,10 @@ export default class QueryInputComponent extends Component {
   RAW_TYPES = RAWS.get('NAMES');
   DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
   DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
-  EMIT_TYPES = EMIT_TYPES.get('NAMES');
-  INCLUDE_TYPES = INCLUDE_TYPES.get('NAMES');
-  METRIC_TYPES = METRICS.get('NAMES');
-  METRICS_LIST = METRICS.asList();
+  EMIT_TYPES = EMIT_TYPES;
+  INCLUDE_TYPES = INCLUDE_TYPES;
+  METRIC_TYPES = METRIC_TYPES;
+  METRICS_LIST = METRIC_TYPES.descriptions;
 
   @service queryManager;
 
@@ -75,8 +74,8 @@ export default class QueryInputComponent extends Component {
   @equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')) isNumberOfPoints;
   @equal('pointType', DISTRIBUTION_POINTS.get('POINTS')) isPoints;
   @equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')) isGeneratedPoints;
-  @equal('emitType', EMIT_TYPES.get('TIME')) isTimeBasedWindow;
-  @equal('emitType', EMIT_TYPES.get('RECORD')) isRecordBasedWindow;
+  @equal('emitType', EMIT_TYPES.describe(EMIT_TYPES.TIME)) isTimeBasedWindow;
+  @equal('emitType', EMIT_TYPES.describe(EMIT_TYPES.RECORD)) isRecordBasedWindow;
   @or('isRecordBasedWindow', 'isListening') everyDisabled;
   @or('isRecordBasedWindow', 'isListening') includeDisabled;
   @not('hasWindow') noWindow;
@@ -419,27 +418,27 @@ export default class QueryInputComponent extends Component {
 
   @action
   changeEmitType(emitType) {
-    if (isEqual(emitType, EMIT_TYPES.get('RECORD'))) {
-      this.includeType = INCLUDE_TYPES.get('WINDOW');
-      this.changeWindow(emitType, this.defaultEveryForRecordWindow, INCLUDE_TYPES.get('WINDOW'));
+    this.emitType = EMIT_TYPES.describe(emitType);
+    if (isEqual(emitType, EMIT_TYPES.RECORD)) {
+      this.includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
+      this.changeWindow(this.emitType, this.defaultEveryForRecordWindow, this.includeType);
     } else {
-      this.changeWindow(emitType, this.defaultEveryForTimeWindow, this.includeType);
+      this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
     }
-    this.emitType = emitType;
   }
 
   @action
   changeIncludeType(includeType) {
-    this.changeWindow(this.emitType, this.windowChangeset.get('emitEvery'), includeType);
-    this.includeType = includeType;
+    this.includeType = INCLUDE_TYPES.describe(includeType);
+    this.changeWindow(this.emitType, this.windowChangeset.get('emitEvery'), this.includeType);
   }
 
   @action
   async addWindow() {
     let changeset = await this.createOptionalModel('window', this.window);
     this.windowChangeset = changeset;
-    this.includeType = INCLUDE_TYPES.get('WINDOW');
-    this.emitType = EMIT_TYPES.get('TIME');
+    this.includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
+    this.emitType = EMIT_TYPES.describe(EMIT_TYPES.TIME);
     this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
     this.hasWindow = true;
     this.args.onDirty();

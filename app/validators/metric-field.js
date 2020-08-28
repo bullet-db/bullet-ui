@@ -4,12 +4,12 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEmpty, isEqual } from '@ember/utils';
-import { METRICS } from 'bullet-ui/models/metric';
 import currentValue from 'bullet-ui/utils/current-value';
+import { METRIC_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default function validateMetricField() {
   return (key, newValue, oldValue, changes, content) => {
-    const COUNT = METRICS.get('COUNT');
+    const COUNT = METRIC_TYPES.describe(METRIC_TYPES.COUNT);
     let { type, field } = currentValue(changes, content, ['type', 'field']);
     if (!isEmpty(field) || isEqual(type, COUNT)) {
       return true;

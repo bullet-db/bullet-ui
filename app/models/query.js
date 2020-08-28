@@ -11,8 +11,7 @@ import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { pluralize } from 'ember-inflector';
 import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
-import { METRICS } from 'bullet-ui/models/metric';
+import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class QueryModel extends Model {
   @attr('string') name;
@@ -52,7 +51,7 @@ export default class QueryModel extends Model {
       let type = m.get('type');
       let field = m.get('field');
       let name = m.get('name');
-      if (type === METRICS.get('COUNT')) {
+      if (type === METRIC_TYPES.describe(METRIC_TYPES.COUNT)) {
         field = '*';
       }
       return isEmpty(name) ? `${type}(${field})` : name;
@@ -138,11 +137,11 @@ export default class QueryModel extends Model {
   }
 
   static getEmitUnit(emitType, emitEvery) {
-    let unit = isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'second' : 'record';
+    let unit = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? 'second' : 'record';
     return Number(emitEvery) === 1 ? unit : pluralize(unit);
   }
 
   static getIncludeType(includeType) {
-    return isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : '';
+    return isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)) ? ', Cumulative' : '';
   }
 }

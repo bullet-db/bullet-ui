@@ -10,8 +10,7 @@ import { setupTest } from 'ember-qunit';
 import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 import FILTERS from 'bullet-ui/tests/fixtures/filters';
 import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { METRICS } from 'bullet-ui/models/metric';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Service | querier', function(hooks) {
   setupTest(hooks);
@@ -223,11 +222,11 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
-    query.addMetric(METRICS.get('COUNT'), null, 'cnt');
-    query.addMetric(METRICS.get('SUM'), 'baz', 'sum');
-    query.addMetric(METRICS.get('MAX'), 'foo');
-    query.addMetric(METRICS.get('AVG'), 'bar');
-    query.addMetric(METRICS.get('MIN'), 'foo');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.COUNT), null, 'cnt');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.SUM), 'baz', 'sum');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MAX), 'foo');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.AVG), 'bar');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MIN), 'foo');
 
     assert.deepEqual(service.reformat(query), {
       aggregation: {
@@ -253,9 +252,9 @@ module('Unit | Service | querier', function(hooks) {
     query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
     query.addGroup('foo', 'foo');
     query.addGroup('complex_map_column.foo', 'bar');
-    query.addMetric(METRICS.get('COUNT'));
-    query.addMetric(METRICS.get('SUM'), 'baz', 'sum');
-    query.addMetric(METRICS.get('MIN'), 'foo');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.COUNT));
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.SUM), 'baz', 'sum');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MIN), 'foo');
 
     assert.deepEqual(service.reformat(query), {
       aggregation: {
@@ -409,11 +408,11 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('RAW'), 10);
-    query.addWindow(EMIT_TYPES.get('TIME'), 2, null);
+    query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.TIME), 2, null);
     assert.deepEqual(service.reformat(query), {
       aggregation: { size: 10, type: 'RAW' },
       duration: 10000,
-      window: { emit: { type: 'TIME', every: 2000 } }
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 2000 } }
     });
   });
 
@@ -421,11 +420,11 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('RAW'), 10);
-    query.addWindow(EMIT_TYPES.get('RECORD'), 1, null);
+    query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.RECORD), 1, null);
     assert.deepEqual(service.reformat(query), {
       aggregation: { size: 10, type: 'RAW' },
       duration: 10000,
-      window: { emit: { type: 'RECORD', every: 1 } }
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.RECORD), every: 1 } }
     });
   });
 
@@ -433,11 +432,14 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('RAW'), 10);
-    query.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('ALL'));
+    query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.TIME), 2, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
     assert.deepEqual(service.reformat(query), {
       aggregation: { size: 10, type: 'RAW' },
       duration: 10000,
-      window: { emit: { type: 'TIME', every: 2000 }, include: { type: 'ALL' } }
+      window: {
+        emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 2000 },
+        include: { type: INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL) } 
+      }
     });
   });
 

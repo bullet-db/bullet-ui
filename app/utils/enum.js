@@ -39,7 +39,7 @@ export default class Enum {
   }
 
   hasSymbol(symbol) {
-    return symbol === this[Enum.forSymbol(symbol)];
+    return symbol === this[this.forSymbol(symbol)];
   }
 
   hasName(name) {
@@ -50,12 +50,16 @@ export default class Enum {
     return this[name];
   }
 
+  forSymbol(symbol) {
+    return Symbol.keyFor(symbol);
+  }
+
   getMetaForName(name) {
     return this.metadata[name];
   }
 
   getMetaForSymbol(symbol) {
-    return this.getMetaForName(Enum.forSymbol(symbol));
+    return this.getMetaForName(this.forSymbol(symbol));
   }
 
   getMetaEntryForName(name, key) {
@@ -63,11 +67,7 @@ export default class Enum {
   }
 
   getMetaEntryForSymbol(symbol, key) {
-    return this.getMetaEntryForName(Enum.forSymbol(symbol), key);
-  }
-
-  static forSymbol(symbol) {
-    return Symbol.keyFor(symbol);
+    return this.getMetaEntryForName(this.forSymbol(symbol), key);
   }
 
   static of(names) {

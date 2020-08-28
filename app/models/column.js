@@ -35,6 +35,7 @@ export default class ColumnModel extends Model {
     return subType ? getSubType(subType) : subType;
   }
 
+  @computed('type')
   get typeName() {
     return getTypeDescription(this.type);
   }
