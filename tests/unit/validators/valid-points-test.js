@@ -6,7 +6,8 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
+import { DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 import validatePoints from 'bullet-ui/validators/valid-points';
 
 module('Unit | Validator | valid points', function(hooks) {
@@ -37,7 +38,7 @@ module('Unit | Validator | valid points', function(hooks) {
       type: AGGREGATIONS.get('DISTRIBUTION'),
       settings: SETTINGS,
       attributes: {
-        pointType: DISTRIBUTION_POINTS.get('NUMBER'),
+        pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
         type: DISTRIBUTIONS.get('PMF'),
         numberOfPoints: null
       }
@@ -64,7 +65,7 @@ module('Unit | Validator | valid points', function(hooks) {
       type: AGGREGATIONS.get('DISTRIBUTION'),
       settings: SETTINGS,
       attributes: {
-        pointType: DISTRIBUTION_POINTS.get('GENERATED'),
+        pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED),
         type: DISTRIBUTIONS.get('PMF'),
         start: 15,
         end: 500,
@@ -126,7 +127,7 @@ module('Unit | Validator | valid points', function(hooks) {
       type: AGGREGATIONS.get('DISTRIBUTION'),
       settings: SETTINGS,
       attributes: {
-        pointType: DISTRIBUTION_POINTS.get('POINTS'),
+        pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS),
         type: DISTRIBUTIONS.get('PMF'),
         points: ''
       }

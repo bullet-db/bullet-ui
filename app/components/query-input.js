@@ -14,9 +14,11 @@ import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import { RAW_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
+import {
+  RAW_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+} from 'bullet-ui/utils/query-constants';
 
 export default class QueryInputComponent extends Component {
   // Constants
@@ -24,7 +26,7 @@ export default class QueryInputComponent extends Component {
   AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
   RAW_TYPES = RAW_TYPES;
   DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
-  DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
+  DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINT_TYPES;
   EMIT_TYPES = EMIT_TYPES;
   INCLUDE_TYPES = INCLUDE_TYPES;
   METRIC_TYPES = METRIC_TYPES;
@@ -71,9 +73,9 @@ export default class QueryInputComponent extends Component {
   @equal('outputDataType', AGGREGATIONS.get('TOP_K')) isTopKAggregation;
   @equal('rawType', RAW_TYPES.describe(RAW_TYPES.SELECT)) isSelectType;
   @and('isRawAggregation', 'isSelectType') showRawSelections;
-  @equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')) isNumberOfPoints;
-  @equal('pointType', DISTRIBUTION_POINTS.get('POINTS')) isPoints;
-  @equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')) isGeneratedPoints;
+  @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER)) isNumberOfPoints;
+  @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS)) isPoints;
+  @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED)) isGeneratedPoints;
   @equal('emitType', EMIT_TYPES.describe(EMIT_TYPES.TIME)) isTimeBasedWindow;
   @equal('emitType', EMIT_TYPES.describe(EMIT_TYPES.RECORD)) isRecordBasedWindow;
   @or('isRecordBasedWindow', 'isListening') everyDisabled;
@@ -111,7 +113,7 @@ export default class QueryInputComponent extends Component {
     this.rawType = RAW_TYPES.describe(isEmpty(this.projections) ? RAW_TYPES.ALL : RAW_TYPES.SELECT);
     this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATIONS.get('RAW');
     this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
-    this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
+    this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
   }
 
   // Getters
@@ -213,7 +215,7 @@ export default class QueryInputComponent extends Component {
     }
     if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
       this.distributionType = DISTRIBUTIONS.get('QUANTILE');
-      this.distributionPointType = DISTRIBUTION_POINTS.get('NUMBER');
+      this.distributionPointType = DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
     }
 
     // Reset the aggregation changeset
@@ -378,7 +380,7 @@ export default class QueryInputComponent extends Component {
   async addDistributionAggregation() {
     await this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups);
     // Default type is Quantile, Number of Points
-    this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
+    this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
   }
 
   @action
@@ -388,7 +390,7 @@ export default class QueryInputComponent extends Component {
 
   @action
   changeDistributionPointType(type) {
-    this.setAttributes(this.distributionType, type);
+    this.setAttributes(this.distributionType, DISTRIBUTION_POINT_TYPES.describe(type));
   }
 
   @action

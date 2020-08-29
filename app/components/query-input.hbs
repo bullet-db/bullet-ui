@@ -228,19 +228,22 @@
                 <RadioButton @id="number-points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}}
                              @updated={{fn (mut this.pointType)}}
-                             @value={{this.DISTRIBUTION_POINT_TYPES.NUMBER}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_POINT_TYPES this.DISTRIBUTION_POINT_TYPES.NUMBER}}
+                             @disabled={{this.isListening}}>
                   Evenly spaced points
                 </RadioButton>
                 <RadioButton @id="generate-points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.GENERATED}}
                              @updated={{fn (mut this.pointType)}}
-                             @value={{this.DISTRIBUTION_POINT_TYPES.GENERATED}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_POINT_TYPES this.DISTRIBUTION_POINT_TYPES.GENERATED}}
+                             @disabled={{this.isListening}}>
                   Evenly spaced points in a region
                 </RadioButton>
                 <RadioButton @id="points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.POINTS}}
                              @updated={{fn (mut this.pointType)}}
-                             @value={{this.DISTRIBUTION_POINT_TYPES.POINTS}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_POINT_TYPES this.DISTRIBUTION_POINT_TYPES.POINTS}}
+                             @disabled={{this.isListening}}>
                   Define points
                 </RadioButton>
               </div>

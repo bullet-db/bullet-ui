@@ -46,18 +46,8 @@ let DistributionTypes = EmberObject.extend({
   }
 });
 
-let DistributionPointTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = { NUMBER: 'Number', POINTS: 'Points', GENERATED: 'Generated' }
-    this.set('NAMES', names);
-    this.setProperties(names);
-  }
-});
-
 export const AGGREGATIONS = AggregationTypes.create();
 export const DISTRIBUTIONS = DistributionTypes.create();
-export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
 
 export default class AggregationModel extends Model {
   @attr('string') type;
