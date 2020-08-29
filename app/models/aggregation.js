@@ -32,22 +32,7 @@ let AggregationTypes = EmberObject.extend({
   }
 });
 
-let DistributionTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = { QUANTILE: 'Quantile', PMF: 'Frequency', CDF: 'Cumulative Frequency' };
-    this.set('NAMES', names);
-    this.setProperties(names);
-    this.set('API', { 'Quantile': 'QUANTILE', 'Frequency': 'PMF', 'Cumulative Frequency': 'CDF' });
-  },
-
-  apiKey(key) {
-    return this.get(`API.${key}`);
-  }
-});
-
 export const AGGREGATIONS = AggregationTypes.create();
-export const DISTRIBUTIONS = DistributionTypes.create();
 
 export default class AggregationModel extends Model {
   @attr('string') type;

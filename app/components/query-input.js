@@ -14,10 +14,10 @@ import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 import {
-  RAW_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+  RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
 
 export default class QueryInputComponent extends Component {
@@ -25,7 +25,7 @@ export default class QueryInputComponent extends Component {
   queryBuilderClass = 'builder';
   AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
   RAW_TYPES = RAW_TYPES;
-  DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
+  DISTRIBUTION_TYPES = DISTRIBUTION_TYPES;
   DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINT_TYPES;
   EMIT_TYPES = EMIT_TYPES;
   INCLUDE_TYPES = INCLUDE_TYPES;
@@ -112,7 +112,7 @@ export default class QueryInputComponent extends Component {
 
     this.rawType = RAW_TYPES.describe(isEmpty(this.projections) ? RAW_TYPES.ALL : RAW_TYPES.SELECT);
     this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATIONS.get('RAW');
-    this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
+    this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
     this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
   }
 
@@ -214,7 +214,7 @@ export default class QueryInputComponent extends Component {
       this.rawType = RAW_TYPES.describe(RAW_TYPES.ALL);
     }
     if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
-      this.distributionType = DISTRIBUTIONS.get('QUANTILE');
+      this.distributionType = DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
       this.distributionPointType = DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
     }
 
@@ -245,7 +245,8 @@ export default class QueryInputComponent extends Component {
 
   setAttributes(type, pointType) {
     let defaults = { points: '', start: '', end: '', increment: '', numberOfPoints: '' };
-    if (isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
+    let quantile = DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
+    if (isEqual(type, quantile)) {
       defaults.points = this.settings.get('defaultValues.distributionQuantilePoints');
       defaults.start = this.settings.get('defaultValues.distributionQuantileStart');
       defaults.end = this.settings.get('defaultValues.distributionQuantileEnd');
@@ -253,13 +254,13 @@ export default class QueryInputComponent extends Component {
     }
     defaults.numberOfPoints = this.settings.get('defaultValues.distributionNumberOfPoints');
 
-    let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
-    let isQuantile = isEqual(type, DISTRIBUTIONS.get('QUANTILE'));
+    let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), quantile);
+    let isQuantile = isEqual(type, quantile);
     let fields = [];
     for (let field in defaults) {
-      // Wipe the current values if our last type or current type is Quantile but not both -> an XOR operation
+      // Wipe the current values if our last type or current type is quantile but not both -> an XOR operation
       // If you're changing point types within particular distribution type, it shouldn't lose values entered
-      // But if you go to QUANTILE or come from QUANTILE, it will wipe all the quantile specific defaults
+      // But if you go to quantile or come from quantile, it will wipe all the quantile specific defaults
       fields.push({ name: field, value: defaults[field], forceSet: lastQuantile !== isQuantile });
     }
     fields.push({ name: 'type', value: type, forceSet: true });
@@ -380,12 +381,12 @@ export default class QueryInputComponent extends Component {
   async addDistributionAggregation() {
     await this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups);
     // Default type is Quantile, Number of Points
-    this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
+    this.setAttributes(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
   }
 
   @action
   changeDistributionType(type) {
-    this.setAttributes(type, this.pointType);
+    this.setAttributes(DISTRIBUTION_TYPES.describe(type), this.pointType);
   }
 
   @action

@@ -6,8 +6,8 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 import validatePoints from 'bullet-ui/validators/valid-points';
 
 module('Unit | Validator | valid points', function(hooks) {
@@ -39,7 +39,7 @@ module('Unit | Validator | valid points', function(hooks) {
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
-        type: DISTRIBUTIONS.get('PMF'),
+        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF),
         numberOfPoints: null
       }
     });
@@ -66,7 +66,7 @@ module('Unit | Validator | valid points', function(hooks) {
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED),
-        type: DISTRIBUTIONS.get('PMF'),
+        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF),
         start: 15,
         end: 500,
         increment: 50
@@ -105,7 +105,7 @@ module('Unit | Validator | valid points', function(hooks) {
     mockModel.set('attributes.start', -1);
     mockModel.set('attributes.end', 1);
     mockModel.set('attributes.increment', 0.1);
-    mockModel.set('attributes.type', DISTRIBUTIONS.get('QUANTILE'));
+    mockModel.set('attributes.type', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE));
     assert.equal(validate('attributes.type', null, null, { }, mockModel), expected);
     mockModel.set('attributes.end', 10);
     assert.equal(validate('attributes.end', null, null, { }, mockModel), expected);
@@ -128,7 +128,7 @@ module('Unit | Validator | valid points', function(hooks) {
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS),
-        type: DISTRIBUTIONS.get('PMF'),
+        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF),
         points: ''
       }
     });
@@ -140,7 +140,7 @@ module('Unit | Validator | valid points', function(hooks) {
     assert.equal(validate('attribute.points', null, null, { }, mockModel), expected);
 
     expected = 'Quantiles requires points between 0 and 1. These are not: -0.4,1.2';
-    mockModel.set('attributes.type', DISTRIBUTIONS.get('QUANTILE'));
+    mockModel.set('attributes.type', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE));
     mockModel.set('attributes.points', '0.3, -0.4, 0.35, 0.4, 1.2, 0');
     assert.equal(validate('attribute.points', null, null, { }, mockModel), expected);
 

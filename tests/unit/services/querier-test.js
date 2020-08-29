@@ -9,8 +9,8 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 import FILTERS from 'bullet-ui/tests/fixtures/filters';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { DISTRIBUTION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Service | querier', function(hooks) {
   setupTest(hooks);
@@ -234,11 +234,11 @@ module('Unit | Service | querier', function(hooks) {
         type: 'GROUP',
         attributes: {
           operations: [
-            { type: 'COUNT', newName: 'cnt' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MAX', field: 'foo' },
-            { type: 'AVG', field: 'bar' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT), newName: 'cnt' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MAX), field: 'foo' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.AVG), field: 'bar' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -263,9 +263,9 @@ module('Unit | Service | querier', function(hooks) {
         fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
         attributes: {
           operations: [
-            { type: 'COUNT' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT) },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -278,7 +278,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTIONS.get('QUANTILE')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -286,7 +286,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -297,7 +297,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTIONS.get('PMF')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -305,7 +305,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'PMF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -316,7 +316,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTIONS.get('CDF')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -324,7 +324,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'CDF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -337,7 +337,7 @@ module('Unit | Service | querier', function(hooks) {
       start: 0.4,
       end: 0.6,
       increment: 0.01,
-      type: DISTRIBUTIONS.get('QUANTILE')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -345,7 +345,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), start: 0.4, end: 0.6, increment: 0.01 }
       },
       duration: 10000
     });
@@ -356,7 +356,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
       points: '0.5,0.2, 0.75,0.99',
-      type: DISTRIBUTIONS.get('QUANTILE')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -364,7 +364,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), points: [0.5, 0.2, 0.75, 0.99] }
       },
       duration: 10000
     });
@@ -438,7 +438,7 @@ module('Unit | Service | querier', function(hooks) {
       duration: 10000,
       window: {
         emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 2000 },
-        include: { type: INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL) } 
+        include: { type: INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL) }
       }
     });
   });
@@ -654,11 +654,11 @@ module('Unit | Service | querier', function(hooks) {
         type: 'GROUP',
         attributes: {
           operations: [
-            { type: 'COUNT', newName: 'cnt' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MAX', field: 'foo' },
-            { type: 'AVG', field: 'bar' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT), newName: 'cnt' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MAX), field: 'foo' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.AVG), field: 'bar' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -671,11 +671,11 @@ module('Unit | Service | querier', function(hooks) {
         type: 'Group',
         attributes: { },
         metrics: [
-          { type: 'Count', name: 'cnt' },
-          { type: 'Sum', field: 'baz', name: 'sum' },
-          { type: 'Maximum', field: 'foo' },
-          { type: 'Average', field: 'bar' },
-          { type: 'Minimum', field: 'foo' }
+          { type: METRIC_TYPES.describe(METRIC_TYPES.COUNT), name: 'cnt' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.SUM), field: 'baz', name: 'sum' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.MAX), field: 'foo' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.AVG), field: 'bar' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.MIN), field: 'foo' }
         ]
       },
       duration: 10
@@ -691,9 +691,9 @@ module('Unit | Service | querier', function(hooks) {
         fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
         attributes: {
           operations: [
-            { type: 'COUNT' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT) },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -707,9 +707,9 @@ module('Unit | Service | querier', function(hooks) {
         attributes: { },
         groups: [{ field: 'foo', name: 'foo' }, { field: 'complex_map_column.foo', name: 'bar' }],
         metrics: [
-          { type: 'Count' },
-          { type: 'Sum', field: 'baz', name: 'sum' },
-          { type: 'Minimum', field: 'foo' }
+          { type: METRIC_TYPES.describe(METRIC_TYPES.COUNT) },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.SUM), field: 'baz', name: 'sum' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.MIN), field: 'foo' }
         ]
       },
       duration: 10
@@ -723,7 +723,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -733,7 +733,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Quantile', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -746,7 +746,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'PMF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -756,7 +756,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Frequency', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -769,7 +769,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'CDF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -779,7 +779,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Cumulative Frequency', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -792,7 +792,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), start: 0.4, end: 0.6, increment: 0.01 }
       },
       duration: 10000
     };
@@ -802,7 +802,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Quantile', start: 0.4, end: 0.6, increment: 0.01 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), start: 0.4, end: 0.6, increment: 0.01 }
       },
       duration: 10
     });
@@ -815,7 +815,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'DISTRIBUTION',
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), points: [0.5, 0.2, 0.75, 0.99] }
       },
       duration: 10000
     };
@@ -825,7 +825,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Quantile', points: '0.5,0.2,0.75,0.99' }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), points: '0.5,0.2,0.75,0.99' }
       },
       duration: 10
     });
@@ -881,13 +881,17 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = {
       aggregation: { type: 'RAW', size: 10 },
-      window: { emit: { type: 'TIME', every: 5000 } },
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 5000 } },
       duration: 10000
     };
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emitType: 'Time Based', emitEvery: 5, includeType: 'Everything in Window' }
+      window: {
+        emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
+        emitEvery: 5,
+        includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW)
+      }
     });
   });
 
@@ -895,13 +899,17 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = {
       aggregation: { type: 'RAW', size: 10 },
-      window: { emit: { type: 'RECORD', every: 1 } },
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.RECORD), every: 1 } },
       duration: 10000
     };
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emitType: 'Record Based', emitEvery: 1, includeType: 'Everything in Window' }
+      window: {
+        emitType: EMIT_TYPES.describe(EMIT_TYPES.RECORD),
+        emitEvery: 1,
+        includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW)
+      }
     });
   });
 
@@ -909,13 +917,20 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = {
       aggregation: { type: 'RAW', size: 10 },
-      window: { emit: { type: 'TIME', every: 1000 }, include: { type: 'ALL' } },
+      window: {
+        emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 1000 },
+        include: { type: INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL) }
+      },
       duration: 10000
     };
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emitType: 'Time Based', emitEvery: 1, includeType: 'Everything from Start of Query' }
+      window: {
+        emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
+        emitEvery: 1,
+        includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)
+      }
     });
   });
 });

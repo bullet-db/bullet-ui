@@ -5,9 +5,9 @@
  */
 import $ from 'jquery';
 import { isEmpty, isEqual } from '@ember/utils';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import currentValue from 'bullet-ui/utils/current-value';
-import { DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
+import { DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default function validatePoints() {
   return (key, newValue, oldValue, changes, content) => {
@@ -50,7 +50,7 @@ function validateFreeFormPoints(type, changes, content) {
   if (!isEmpty(badPoints)) {
     return `These are not valid points: ${badPoints.join()}`;
   }
-  if (isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
+  if (isEqual(type, DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE))) {
     let badRange = pointList.map(s => parseFloat(s)).filter(f => f < 0 || f > 1);
     if (!isEmpty(badRange)) {
       return `Quantiles requires points between 0 and 1. These are not: ${badRange.join()}`;
@@ -93,7 +93,7 @@ function validateGeneratedPoints(type, changes, content) {
   if (increment <= 0) {
     return `You must specify a positive Increment`;
   }
-  if (isEqual(type, DISTRIBUTIONS.get('QUANTILE')) && (start < 0 || end > 1)) {
+  if (isEqual(type, DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)) && (start < 0 || end > 1)) {
     return 'Quantiles requires that you specify a Start and End between 0 and 1';
   }
   let numberOfPoints = (end - start) / increment;

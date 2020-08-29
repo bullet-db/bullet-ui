@@ -5,8 +5,9 @@
  */
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
 import { run } from '@ember/runloop';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { DISTRIBUTION_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Model | aggregation', function(hooks) {
   setupTest(hooks);
@@ -25,8 +26,17 @@ module('Unit | Model | aggregation', function(hooks) {
   });
 
   test('it maps the api types for the distribution types properly', function(assert) {
-    assert.equal(DISTRIBUTIONS.apiKey('Quantile'), 'QUANTILE');
-    assert.equal(DISTRIBUTIONS.apiKey('Frequency'), 'PMF');
-    assert.equal(DISTRIBUTIONS.apiKey('Cumulative Frequency'), 'CDF');
+    assert.equal(
+      DISTRIBUTION_TYPES.name(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)),
+      DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE)
+    );
+    assert.equal(
+      DISTRIBUTION_TYPES.name(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF)),
+      DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF)
+    );
+    assert.equal(
+      DISTRIBUTION_TYPES.name(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF)),
+      DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF)
+    );
   });
 });

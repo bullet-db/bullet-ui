@@ -11,8 +11,10 @@ import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import {
+  DISTRIBUTION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+} from 'bullet-ui/utils/query-constants';
 
 export default class QuerierService extends Service {
   @service stompWebsocket;
@@ -254,7 +256,7 @@ export default class QuerierService extends Service {
     this.assignIfTruthyNumeric(attributes, 'numberOfPoints', json.numberOfPoints);
     this.assignIfTruthy(attributes, 'points', this.makePoints(json.points));
     if (!isEmpty(json.type)) {
-      this.assignIfTruthy(attributes, 'type', DISTRIBUTIONS.get(json.type));
+      this.assignIfTruthy(attributes, 'type', DISTRIBUTION_TYPES.description(json.type));
     }
     // TOP_K
     this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
@@ -277,7 +279,7 @@ export default class QuerierService extends Service {
     if (!this.apiMode) {
       this.assignIfTruthy(json, 'pointType', aggregation.get('attributes.pointType'));
     }
-    this.assignIfTruthy(json, 'type', DISTRIBUTIONS.apiKey(aggregation.get('attributes.type')));
+    this.assignIfTruthy(json, 'type', DISTRIBUTION_TYPES.name(aggregation.get('attributes.type')));
 
     // TOP_K
     this.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
