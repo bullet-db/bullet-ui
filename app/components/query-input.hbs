@@ -64,26 +64,32 @@
         <div class="output-options">
           <RadioButton @id="raw" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addRawAggregation false}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.RAW}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.RAW}}
+                       @disabled={{this.isListening}}>
             Raw Data
           </RadioButton>
           <RadioButton @id="grouped-data" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addGroupAggregation}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.GROUP}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.GROUP}}
+                       @disabled={{this.isListening}}>
             Group Data
           </RadioButton>
           <RadioButton @id="count-distinct" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addCountDistinctAggregation}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.COUNT_DISTINCT}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.COUNT_DISTINCT}}
+                       @disabled={{this.isListening}}>
             Count Distinct
           </RadioButton>
           <RadioButton @id="distribution" @checkedValue={{this.outputDataType}}
-                       @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}} @value={{this.AGGREGATION_TYPES.DISTRIBUTION}} @disabled={{this.isListening}}>
+                       @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.DISTRIBUTION}}
+                       @disabled={{this.isListening}}>
             Distribution
           </RadioButton>
           <RadioButton @id="top-k" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addTopKAggregation}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.TOP_K}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.TOP_K}}
+                       @disabled={{this.isListening}}>
             Top K
           </RadioButton>
         </div>

@@ -4,8 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual, isEmpty, isNone, typeOf } from '@ember/utils';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATION_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 /**
  * This exists because when working across changesets, we do not want to connect them to each other till the final save.
@@ -31,21 +30,22 @@ export function validateWindowAggregation(window, aggregation) {
   if (isNone(window)) {
     return true;
   }
+  const RAW = AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
   let aggregationType = aggregation.get('type');
   let emitType = window.get('emitType');
   let includeType = window.get('includeType');
-  if (isEqual(aggregationType, AGGREGATIONS.get('RAW')) && isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL))) {
-    return 'The window should not include all from start when aggregation type is Raw';
+  if (isEqual(aggregationType, RAW) && isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL))) {
+    return `The window should not include all from start when aggregation type is ${RAW}`;
   }
-  if (!isEqual(aggregationType, AGGREGATIONS.get('RAW')) && isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.RECORD))) {
-    return 'The window should not be record based when aggregation type is not Raw';
+  if (!isEqual(aggregationType, RAW) && isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.RECORD))) {
+    return `The window should not be record based when aggregation type is not ${RAW}`;
   }
   return true;
 }
 
 export function validateGroupMetricPresence(aggregation, groups, metrics) {
   let newType = aggregation.get('type');
-  if (isEqual(newType, AGGREGATIONS.get('GROUP')) && isEmpty(groups) && isEmpty(metrics)) {
+  if (isEqual(newType, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)) && isEmpty(groups) && isEmpty(metrics)) {
     return 'If you are grouping data, you must add at least one Group Field and/or Metric Field';
   }
   return true;

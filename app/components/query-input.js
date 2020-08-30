@@ -14,16 +14,15 @@ import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
 import {
-  RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+  AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
 
 export default class QueryInputComponent extends Component {
   // Constants
   queryBuilderClass = 'builder';
-  AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
+  AGGREGATION_TYPES = AGGREGATION_TYPES;
   RAW_TYPES = RAW_TYPES;
   DISTRIBUTION_TYPES = DISTRIBUTION_TYPES;
   DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINT_TYPES;
@@ -66,11 +65,11 @@ export default class QueryInputComponent extends Component {
   @tracked includeType;
 
   // Helper computed properties
-  @equal('outputDataType', AGGREGATIONS.get('RAW')) isRawAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('GROUP')) isGroupAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')) isCountDistinctAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')) isDistributionAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('TOP_K')) isTopKAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) isRawAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)) isGroupAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)) isCountDistinctAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)) isDistributionAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)) isTopKAggregation;
   @equal('rawType', RAW_TYPES.describe(RAW_TYPES.SELECT)) isSelectType;
   @and('isRawAggregation', 'isSelectType') showRawSelections;
   @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER)) isNumberOfPoints;
@@ -111,7 +110,7 @@ export default class QueryInputComponent extends Component {
     }
 
     this.rawType = RAW_TYPES.describe(isEmpty(this.projections) ? RAW_TYPES.ALL : RAW_TYPES.SELECT);
-    this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATIONS.get('RAW');
+    this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
     this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
     this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
   }
@@ -210,10 +209,10 @@ export default class QueryInputComponent extends Component {
   }
 
   async changeAggregation(type) {
-    if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
+    if (!isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW))) {
       this.rawType = RAW_TYPES.describe(RAW_TYPES.ALL);
     }
-    if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
+    if (!isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION))) {
       this.distributionType = DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
       this.distributionPointType = DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
     }
@@ -355,31 +354,32 @@ export default class QueryInputComponent extends Component {
 
   @action
   addRawAggregation(selectType = false) {
+    const RAW = AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
     if (selectType) {
-      this.changeAggregationToFieldLike(AGGREGATIONS.get('RAW'), 'projection', this.projections);
+      this.changeAggregationToFieldLike(RAW, 'projection', this.projections);
     } else {
-      this.changeAggregation(AGGREGATIONS.get('RAW'));
+      this.changeAggregation(RAW);
     }
   }
 
   @action
   addGroupAggregation() {
-    this.changeAggregation(AGGREGATIONS.get('GROUP'));
+    this.changeAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP));
   }
 
   @action
   addCountDistinctAggregation() {
-    this.changeAggregationToFieldLike(AGGREGATIONS.get('COUNT_DISTINCT'), 'group', this.groups);
+    this.changeAggregationToFieldLike(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT), 'group', this.groups);
   }
 
   @action
   addTopKAggregation() {
-    this.changeAggregationToFieldLike(AGGREGATIONS.get('TOP_K'), 'group', this.groups);
+    this.changeAggregationToFieldLike(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K), 'group', this.groups);
   }
 
   @action
   async addDistributionAggregation() {
-    await this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups);
+    await this.changeAggregationToFieldLike(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 'group', this.groups);
     // Default type is Quantile, Number of Points
     this.setAttributes(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
   }

@@ -6,9 +6,8 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 import validatePoints from 'bullet-ui/validators/valid-points';
+import { AGGREGATION_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Validator | valid points', function(hooks) {
   setupTest(hooks);
@@ -24,10 +23,10 @@ module('Unit | Validator | valid points', function(hooks) {
   test('it ignores non distribution type aggregations', function(assert) {
     let validate = validatePoints();
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('RAW')
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)
     });
     assert.ok(validate('type', null, null, { }, mockModel));
-    mockModel.set('type', AGGREGATIONS.get('COUNT_DISTINCT'));
+    mockModel.set('type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT));
     assert.ok(validate('type', null, null, { }, mockModel));
   });
 
@@ -35,7 +34,7 @@ module('Unit | Validator | valid points', function(hooks) {
     let validate = validatePoints();
     let expected;
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('DISTRIBUTION'),
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
@@ -62,7 +61,7 @@ module('Unit | Validator | valid points', function(hooks) {
     let validate = validatePoints();
     let expected;
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('DISTRIBUTION'),
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED),
@@ -124,7 +123,7 @@ module('Unit | Validator | valid points', function(hooks) {
     let validate = validatePoints();
     let expected;
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('DISTRIBUTION'),
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS),

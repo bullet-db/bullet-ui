@@ -10,7 +10,7 @@ import { equal, or } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
 import { A } from '@ember/array';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class ResultModel extends Model {
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
@@ -23,11 +23,11 @@ export default class ResultModel extends Model {
   // Cache exists to not dump all the records into windows at once. Use syncCache to consolidate cache and windows.
   cache = [];
 
-  @equal('querySnapshot.type', AGGREGATIONS.get('RAW')) isRaw;
-  @equal('querySnapshot.type', AGGREGATIONS.get('COUNT_DISTINCT')) isCountDistinct;
-  @equal('querySnapshot.type', AGGREGATIONS.get('GROUP')) isGroup;
-  @equal('querySnapshot.type', AGGREGATIONS.get('DISTRIBUTION')) isDistribution;
-  @equal('querySnapshot.type', AGGREGATIONS.get('TOP_K')) isTopK;
+  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) isRaw;
+  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)) isCountDistinct;
+  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)) isGroup;
+  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)) isDistribution;
+  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)) isTopK;
   @or('isCountDistinct', 'isGroupAll') isSingleRow;
 
   @computed('isRaw', 'querySnapshot.projectionsSize')

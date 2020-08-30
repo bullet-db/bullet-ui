@@ -7,7 +7,7 @@ import { run } from '@ember/runloop';
 import { isPresent } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Model | result', function(hooks) {
   setupTest(hooks);
@@ -23,7 +23,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a raw result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('RAW') });
+      model.set('querySnapshot', { type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW) });
       assert.ok(model.get('isRaw'));
       assert.notOk(model.get('isReallyRaw'));
     });
@@ -32,7 +32,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a really raw result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('RAW'), projectionsSize: 0 });
+      model.set('querySnapshot', { type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), projectionsSize: 0 });
       assert.ok(model.get('isRaw'));
       assert.ok(model.get('isReallyRaw'));
       assert.notOk(model.get('isSingleRow'));
@@ -42,7 +42,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a count distinct result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('COUNT_DISTINCT') });
+      model.set('querySnapshot', { type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT) });
       assert.ok(model.get('isCountDistinct'));
       assert.ok(model.get('isSingleRow'));
     });
@@ -51,13 +51,17 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a group by result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('GROUP'), groupsSize: 2, metricsSize: 2 });
+      model.set('querySnapshot', {
+        type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP), groupsSize: 2, metricsSize: 2
+      });
       assert.ok(model.get('isGroupBy'));
       assert.notOk(model.get('isGroupAll'));
       assert.notOk(model.get('isSingleRow'));
     });
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('GROUP'), groupsSize: 1, metricsSize: 1 });
+      model.set('querySnapshot', {
+        type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP), groupsSize: 1, metricsSize: 1
+      });
       assert.ok(model.get('isGroupBy'));
       assert.notOk(model.get('isGroupAll'));
       assert.notOk(model.get('isSingleRow'));
@@ -67,7 +71,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a group all result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('GROUP'), groupsSize: 0 });
+      model.set('querySnapshot', { type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP), groupsSize: 0 });
       assert.notOk(model.get('isGroupBy'));
       assert.ok(model.get('isGroupAll'));
       assert.ok(model.get('isSingleRow'));
@@ -77,7 +81,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a distribution result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('DISTRIBUTION') });
+      model.set('querySnapshot', { type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION) });
       assert.ok(model.get('isDistribution'));
       assert.notOk(model.get('isSingleRow'));
     });
@@ -86,7 +90,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a top k result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('querySnapshot', { type: AGGREGATIONS.get('TOP_K') });
+      model.set('querySnapshot', { type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K) });
       assert.ok(model.get('isTopK'));
       assert.notOk(model.get('isSingleRow'));
     });

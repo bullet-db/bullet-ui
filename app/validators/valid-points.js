@@ -5,9 +5,8 @@
  */
 import $ from 'jquery';
 import { isEmpty, isEqual } from '@ember/utils';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import currentValue from 'bullet-ui/utils/current-value';
-import { DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATION_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default function validatePoints() {
   return (key, newValue, oldValue, changes, content) => {
@@ -16,7 +15,7 @@ export default function validatePoints() {
       'attributes.type' : distributionType,
       'attributes.pointType' : pointType
     } = currentValue(changes, content, ['type', 'attributes.type', 'attributes.pointType']);
-    if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
+    if (!isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION))) {
       return true;
     }
     if (isEqual(pointType, DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS))) {

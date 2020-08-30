@@ -1,4 +1,4 @@
-/*
+AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)/*
  *  Copyright 2016, Yahoo Inc.
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
@@ -10,8 +10,7 @@ import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { pluralize } from 'ember-inflector';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class QueryModel extends Model {
   @attr('string') name;
@@ -61,18 +60,18 @@ export default class QueryModel extends Model {
   @computed('aggregation.{type,size}', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary')
   get aggregationSummary() {
     let type = this.get('aggregation.type');
-    if (type === AGGREGATIONS.get('RAW')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) {
       return '';
     }
     let groupsSummary = this.groupsSummary;
-    if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)) {
       return `${type} ON (${groupsSummary})`;
     }
-    if (type === AGGREGATIONS.get('DISTRIBUTION')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)) {
       let distributionType = this.get('aggregation.attributes.type');
       return `${distributionType} ON ${groupsSummary}`;
     }
-    if (type === AGGREGATIONS.get('TOP_K')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)) {
       let k = this.get('aggregation.size');
       let countField = (this.get('aggregation.attributes.newName') === undefined ? 'Count' : this.get('aggregation.attributes.newName'));
       let summary = `TOP ${k} OF (${groupsSummary})`;

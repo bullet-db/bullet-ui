@@ -18,12 +18,12 @@ module('Unit | Model | window', function(hooks) {
     assert.equal(model.get('includeType'), INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW));
   });
 
-  test('it maps the api types for the emit types properly', function(assert) {
+  test('it maps the names for the emit types properly', function(assert) {
     assert.equal(EMIT_TYPES.name(EMIT_TYPES.describe(EMIT_TYPES.TIME)), EMIT_TYPES.forSymbol(EMIT_TYPES.TIME));
     assert.equal(EMIT_TYPES.name(EMIT_TYPES.describe(EMIT_TYPES.RECORD)), EMIT_TYPES.forSymbol(EMIT_TYPES.RECORD));
   });
 
-  test('it maps the api types for the include types properly', function(assert) {
+  test('it maps the names for the include types properly', function(assert) {
     assert.equal(INCLUDE_TYPES.name(INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)), INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL));
   });
 });

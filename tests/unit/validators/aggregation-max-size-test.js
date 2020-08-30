@@ -6,8 +6,8 @@
 import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
 import validateAggregationMaxSize from 'bullet-ui/validators/aggregation-max-size';
+import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Validator | aggregation max size', function(hooks) {
   setupTest(hooks);
@@ -15,7 +15,7 @@ module('Unit | Validator | aggregation max size', function(hooks) {
   test('it does not let you exceed the maximum aggregation size', function(assert) {
     var validate = validateAggregationMaxSize();
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('GROUP'),
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP),
       settings: {
         defaultValues: {
           rawMaxSize: 100,
@@ -31,7 +31,7 @@ module('Unit | Validator | aggregation max size', function(hooks) {
   test('it does not let you exceed the maximum size for the Raw aggregation', function(assert) {
     var validate = validateAggregationMaxSize();
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('RAW'),
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW),
       settings: {
         defaultValues: {
           rawMaxSize: 100,

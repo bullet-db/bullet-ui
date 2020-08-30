@@ -6,34 +6,6 @@
 import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
 
-let AggregationTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = {
-      RAW: 'Raw',
-      GROUP: 'Group',
-      COUNT_DISTINCT: 'Count Distinct',
-      DISTRIBUTION: 'Distribution',
-      TOP_K: 'Top K'
-    };
-    this.setProperties(names);
-    this.set('NAMES', names);
-    this.set('API', {
-      'Raw': 'RAW',
-      'Group': 'GROUP',
-      'Count Distinct': 'COUNT DISTINCT',
-      'Distribution': 'DISTRIBUTION',
-      'Top K': 'TOP K'
-    });
-  },
-
-  apiKey(key) {
-    return this.get(`API.${key}`);
-  }
-});
-
-export const AGGREGATIONS = AggregationTypes.create();
-
 export default class AggregationModel extends Model {
   @attr('string') type;
   @attr('number') size;

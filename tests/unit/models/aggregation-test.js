@@ -6,8 +6,7 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import { run } from '@ember/runloop';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { DISTRIBUTION_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATION_TYPES, DISTRIBUTION_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Model | aggregation', function(hooks) {
   setupTest(hooks);
@@ -17,15 +16,30 @@ module('Unit | Model | aggregation', function(hooks) {
     assert.ok(model.get('attributes'));
   });
 
-  test('it maps the api types for the aggregation types properly', function(assert) {
-    assert.equal(AGGREGATIONS.apiKey('Raw'), 'RAW');
-    assert.equal(AGGREGATIONS.apiKey('Group'), 'GROUP');
-    assert.equal(AGGREGATIONS.apiKey('Count Distinct'), 'COUNT DISTINCT');
-    assert.equal(AGGREGATIONS.apiKey('Distribution'), 'DISTRIBUTION');
-    assert.equal(AGGREGATIONS.apiKey('Top K'), 'TOP K');
+  test('it maps the names for the aggregation types properly', function(assert) {
+    assert.equal(
+      AGGREGATION_TYPES.name(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)),
+      AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)
+    );
+    assert.equal(
+      AGGREGATION_TYPES.name(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)),
+      AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.COUNT_DISTINCT)
+    );
+    assert.equal(
+      AGGREGATION_TYPES.name(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)),
+      AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)
+    );
+    assert.equal(
+      AGGREGATION_TYPES.name(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)),
+      AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)
+    );
+    assert.equal(
+      AGGREGATION_TYPES.name(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)),
+      AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.TOP_K)
+    );
   });
 
-  test('it maps the api types for the distribution types properly', function(assert) {
+  test('it maps the names for the distribution types properly', function(assert) {
     assert.equal(
       DISTRIBUTION_TYPES.name(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)),
       DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE)

@@ -11,8 +11,7 @@ import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
 import config from 'bullet-ui/config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 // Validations
 import QueryValidations from 'bullet-ui/validators/query';
 import ProjectionValidations from 'bullet-ui/validators/projection';
@@ -275,7 +274,8 @@ export default class QueryManagerService extends Service {
 
   fixAggregationSize(aggregation) {
     let type = aggregation.get('type');
-    if (!(isEqual(type, AGGREGATIONS.get('RAW')) || isEqual(type, AGGREGATIONS.get('TOP_K')))) {
+    if (!(isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) ||
+          isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)))) {
       aggregation.set('size', this.settings.defaultValues?.aggregationMaxSize);
     }
   }
