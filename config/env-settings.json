@@ -1,6 +1,6 @@
 {
   "default": {
-    "queryHost": "https://foo.bar.com:4443"",
+    "queryHost": "https://foo.bar.com:4443",
     "queryNamespace": "api/bullet",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
