@@ -5,28 +5,11 @@
  */
 import { module, test } from 'qunit';
 import {
-  Enum, MAP_ACCESSOR, LIST_ACCESSOR_START, LIST_ACCESSOR_END, TYPES, TYPE_CLASSES, getSubType, getTypeClass,
+  MAP_ACCESSOR, LIST_ACCESSOR_START, LIST_ACCESSOR_END, TYPES, TYPE_CLASSES, getSubType, getTypeClass,
   getTypeDescription, getBasePrimitive, wrapMapKey, wrapListIndex, extractMapKey, extractListIndex
 } from 'bullet-ui/utils/type';
 
 module('Unit | Utility | type', function() {
-  test('it allows you enumerate values', function(assert) {
-    const enumerated = Enum.of(['RED', 'GREEN', 'BLUE']);
-    let symbols = enumerated.symbols;
-    let names = enumerated.names;
-
-    assert.equal(symbols.length, 3);
-    assert.equal(names.length, 3);
-    for (let i = 0; i < 3; ++i) {
-      assert.ok(enumerated.hasSymbol(symbols[i]));
-      assert.ok(enumerated.hasName(names[i]));
-      assert.ok(enumerated.forName(names[i]) === symbols[i]);
-      assert.ok(Enum.forSymbol(symbols[i]) === names[i]);
-    }
-    assert.notOk(enumerated.hasSymbol(Symbol.for('YELLOW')));
-    assert.notOk(enumerated.hasName('YELLOW'));
-  });
-
   test('it defines the types supported', function(assert) {
     assert.ok(TYPES.names.length, 30);
 
@@ -172,36 +155,36 @@ module('Unit | Utility | type', function() {
   });
 
   test('it can provide a description for any type given a type class', function(assert) {
-    assert.equal(getTypeDescription('INTEGER', TYPE_CLASSES.PRIMITIVE), 'INTEGER');
-    assert.equal(getTypeDescription('LONG', TYPE_CLASSES.PRIMITIVE), 'LONG');
-    assert.equal(getTypeDescription('FLOAT', TYPE_CLASSES.PRIMITIVE), 'FLOAT');
-    assert.equal(getTypeDescription('DOUBLE', TYPE_CLASSES.PRIMITIVE), 'DOUBLE');
-    assert.equal(getTypeDescription('STRING', TYPE_CLASSES.PRIMITIVE), 'STRING');
-    assert.equal(getTypeDescription('BOOLEAN', TYPE_CLASSES.PRIMITIVE), 'BOOLEAN');
-    assert.equal(getTypeDescription('INTEGER_MAP', TYPE_CLASSES.PRIMITIVE_MAP), 'MAP<STRING, INTEGER>');
-    assert.equal(getTypeDescription('LONG_MAP', TYPE_CLASSES.PRIMITIVE_MAP), 'MAP<STRING, LONG>');
-    assert.equal(getTypeDescription('FLOAT_MAP', TYPE_CLASSES.PRIMITIVE_MAP), 'MAP<STRING, FLOAT>');
-    assert.equal(getTypeDescription('DOUBLE_MAP', TYPE_CLASSES.PRIMITIVE_MAP), 'MAP<STRING, DOUBLE>');
-    assert.equal(getTypeDescription('STRING_MAP', TYPE_CLASSES.PRIMITIVE_MAP), 'MAP<STRING, STRING>');
-    assert.equal(getTypeDescription('BOOLEAN_MAP', TYPE_CLASSES.PRIMITIVE_MAP), 'MAP<STRING, BOOLEAN>');
-    assert.equal(getTypeDescription('INTEGER_MAP_MAP', TYPE_CLASSES.PRIMITIVE_MAP_MAP), 'MAP<STRING, MAP<STRING, INTEGER>>');
-    assert.equal(getTypeDescription('LONG_MAP_MAP', TYPE_CLASSES.PRIMITIVE_MAP_MAP), 'MAP<STRING, MAP<STRING, LONG>>');
-    assert.equal(getTypeDescription('FLOAT_MAP_MAP', TYPE_CLASSES.PRIMITIVE_MAP_MAP), 'MAP<STRING, MAP<STRING, FLOAT>>');
-    assert.equal(getTypeDescription('DOUBLE_MAP_MAP', TYPE_CLASSES.PRIMITIVE_MAP_MAP), 'MAP<STRING, MAP<STRING, DOUBLE>>');
-    assert.equal(getTypeDescription('STRING_MAP_MAP', TYPE_CLASSES.PRIMITIVE_MAP_MAP), 'MAP<STRING, MAP<STRING, STRING>>');
-    assert.equal(getTypeDescription('BOOLEAN_MAP_MAP', TYPE_CLASSES.PRIMITIVE_MAP_MAP), 'MAP<STRING, MAP<STRING, BOOLEAN>>');
-    assert.equal(getTypeDescription('INTEGER_LIST', TYPE_CLASSES.PRIMITIVE_LIST), 'LIST<INTEGER>');
-    assert.equal(getTypeDescription('LONG_LIST', TYPE_CLASSES.PRIMITIVE_LIST), 'LIST<LONG>');
-    assert.equal(getTypeDescription('FLOAT_LIST', TYPE_CLASSES.PRIMITIVE_LIST), 'LIST<FLOAT>');
-    assert.equal(getTypeDescription('DOUBLE_LIST', TYPE_CLASSES.PRIMITIVE_LIST), 'LIST<DOUBLE>');
-    assert.equal(getTypeDescription('STRING_LIST', TYPE_CLASSES.PRIMITIVE_LIST), 'LIST<STRING>');
-    assert.equal(getTypeDescription('BOOLEAN_LIST', TYPE_CLASSES.PRIMITIVE_LIST), 'LIST<BOOLEAN>');
-    assert.equal(getTypeDescription('INTEGER_MAP_LIST', TYPE_CLASSES.PRIMITIVE_MAP_LIST), 'LIST<MAP<STRING, INTEGER>>');
-    assert.equal(getTypeDescription('LONG_MAP_LIST', TYPE_CLASSES.PRIMITIVE_MAP_LIST), 'LIST<MAP<STRING, LONG>>');
-    assert.equal(getTypeDescription('FLOAT_MAP_LIST', TYPE_CLASSES.PRIMITIVE_MAP_LIST), 'LIST<MAP<STRING, FLOAT>>');
-    assert.equal(getTypeDescription('DOUBLE_MAP_LIST', TYPE_CLASSES.PRIMITIVE_MAP_LIST), 'LIST<MAP<STRING, DOUBLE>>');
-    assert.equal(getTypeDescription('STRING_MAP_LIST', TYPE_CLASSES.PRIMITIVE_MAP_LIST), 'LIST<MAP<STRING, STRING>>');
-    assert.equal(getTypeDescription('BOOLEAN_MAP_LIST', TYPE_CLASSES.PRIMITIVE_MAP_LIST), 'LIST<MAP<STRING, BOOLEAN>>');
+    assert.equal(getTypeDescription('INTEGER'), 'INTEGER');
+    assert.equal(getTypeDescription('LONG'), 'LONG');
+    assert.equal(getTypeDescription('FLOAT'), 'FLOAT');
+    assert.equal(getTypeDescription('DOUBLE'), 'DOUBLE');
+    assert.equal(getTypeDescription('STRING'), 'STRING');
+    assert.equal(getTypeDescription('BOOLEAN'), 'BOOLEAN');
+    assert.equal(getTypeDescription('INTEGER_MAP'), 'MAP<STRING, INTEGER>');
+    assert.equal(getTypeDescription('LONG_MAP'), 'MAP<STRING, LONG>');
+    assert.equal(getTypeDescription('FLOAT_MAP'), 'MAP<STRING, FLOAT>');
+    assert.equal(getTypeDescription('DOUBLE_MAP'), 'MAP<STRING, DOUBLE>');
+    assert.equal(getTypeDescription('STRING_MAP'), 'MAP<STRING, STRING>');
+    assert.equal(getTypeDescription('BOOLEAN_MAP'), 'MAP<STRING, BOOLEAN>');
+    assert.equal(getTypeDescription('INTEGER_MAP_MAP'), 'MAP<STRING, MAP<STRING, INTEGER>>');
+    assert.equal(getTypeDescription('LONG_MAP_MAP'), 'MAP<STRING, MAP<STRING, LONG>>');
+    assert.equal(getTypeDescription('FLOAT_MAP_MAP'), 'MAP<STRING, MAP<STRING, FLOAT>>');
+    assert.equal(getTypeDescription('DOUBLE_MAP_MAP'), 'MAP<STRING, MAP<STRING, DOUBLE>>');
+    assert.equal(getTypeDescription('STRING_MAP_MAP'), 'MAP<STRING, MAP<STRING, STRING>>');
+    assert.equal(getTypeDescription('BOOLEAN_MAP_MAP'), 'MAP<STRING, MAP<STRING, BOOLEAN>>');
+    assert.equal(getTypeDescription('INTEGER_LIST'), 'LIST<INTEGER>');
+    assert.equal(getTypeDescription('LONG_LIST'), 'LIST<LONG>');
+    assert.equal(getTypeDescription('FLOAT_LIST'), 'LIST<FLOAT>');
+    assert.equal(getTypeDescription('DOUBLE_LIST'), 'LIST<DOUBLE>');
+    assert.equal(getTypeDescription('STRING_LIST'), 'LIST<STRING>');
+    assert.equal(getTypeDescription('BOOLEAN_LIST'), 'LIST<BOOLEAN>');
+    assert.equal(getTypeDescription('INTEGER_MAP_LIST'), 'LIST<MAP<STRING, INTEGER>>');
+    assert.equal(getTypeDescription('LONG_MAP_LIST'), 'LIST<MAP<STRING, LONG>>');
+    assert.equal(getTypeDescription('FLOAT_MAP_LIST'), 'LIST<MAP<STRING, FLOAT>>');
+    assert.equal(getTypeDescription('DOUBLE_MAP_LIST'), 'LIST<MAP<STRING, DOUBLE>>');
+    assert.equal(getTypeDescription('STRING_MAP_LIST'), 'LIST<MAP<STRING, STRING>>');
+    assert.equal(getTypeDescription('BOOLEAN_MAP_LIST'), 'LIST<MAP<STRING, BOOLEAN>>');
   });
 
   test('it can wrap map and list keys', function(assert) {

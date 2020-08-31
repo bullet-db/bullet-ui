@@ -11,9 +11,9 @@ import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { METRICS } from 'bullet-ui/models/metric';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import {
+  AGGREGATION_TYPES, DISTRIBUTION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+} from 'bullet-ui/utils/query-constants';
 
 export default class QuerierService extends Service {
   @service stompWebsocket;
@@ -36,14 +36,14 @@ export default class QuerierService extends Service {
   @computed('defaultAPIAggregation').readOnly()
   get defaultAggregation() {
     let aggregation = this.defaultAPIAggregation;
-    aggregation.type = AGGREGATIONS.get(aggregation.type);
+    aggregation.type = AGGREGATION_TYPES.description(aggregation.type);
     return aggregation;
   }
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
-   * @param  {Object} json The API Bullet query.
-   * @return {Object}      An Ember Object that looks like the Ember Data representation.
+   * @param {Object} json The API Bullet query.
+   * @return {Object} An Ember Object that looks like the Ember Data representation.
    */
   recreate(json) {
     let query = EmberObject.create();
@@ -53,26 +53,26 @@ export default class QuerierService extends Service {
     let window = this.recreateWindow(json.window);
 
     let filter = EmberObject.create();
-    if (!this.isTruthy(clause)) {
+    if (!QuerierService.isTruthy(clause)) {
       clause = EMPTY_CLAUSE;
     }
     filter.set('clause', clause);
     // One additional non-API key placed into the object for summarizing. Copy the summary as is
-    this.setIfTruthy(filter, 'summary', json.filterSummary);
+    QuerierService.setIfTruthy(filter, 'summary', json.filterSummary);
 
-    this.setIfTruthy(query, 'filter', filter);
-    this.setIfTruthy(query, 'projections', projection);
-    this.setIfTruthy(query, 'aggregation', aggregation);
-    this.setIfTruthy(query, 'window', window);
-    this.setIfTruthy(query, 'name', json.name);
+    QuerierService.setIfTruthy(query, 'filter', filter);
+    QuerierService.setIfTruthy(query, 'projections', projection);
+    QuerierService.setIfTruthy(query, 'aggregation', aggregation);
+    QuerierService.setIfTruthy(query, 'window', window);
+    QuerierService.setIfTruthy(query, 'name', json.name);
     query.set('duration', Number(json.duration) / 1000);
     return query;
   }
 
   /**
    * Converts an internal Ember Bullet query to the API query specification.
-   * @param  {Object} query An Ember Data object representing the query.
-   * @return {Object}       The API Bullet query.
+   * @param {Object} query An Ember Data object representing the query.
+   * @return {Object} The API Bullet query.
    */
   reformat(query) {
     let json = { };
@@ -88,13 +88,13 @@ export default class QuerierService extends Service {
       json.filters = [filter];
     }
     if (!this.apiMode) {
-      this.assignIfTruthy(json, 'name', query.get('name'));
-      this.assignIfTruthy(json, 'filterSummary', query.get('filter.summary'));
+      QuerierService.assignIfTruthy(json, 'name', query.get('name'));
+      QuerierService.assignIfTruthy(json, 'filterSummary', query.get('filter.summary'));
     }
     if (projection) {
       json.projection = { fields: projection };
     }
-    this.assignIfTruthy(json, 'aggregation', aggregation);
+    QuerierService.assignIfTruthy(json, 'aggregation', aggregation);
     json.duration = Number(query.get('duration')) * 1000;
     return json;
   }
@@ -149,9 +149,9 @@ export default class QuerierService extends Service {
     let metrics = this.makeMetrics(json.attributes);
     let attributes = this.makeAttributes(json.attributes);
 
-    aggregation.set('type', AGGREGATIONS.get(this.snakeCase(json.type)));
-    this.setIfTruthy(aggregation, 'groups', groups);
-    this.setIfTruthy(aggregation, 'metrics', metrics);
+    aggregation.set('type', AGGREGATION_TYPES.description(QuerierService.snakeCase(json.type)));
+    QuerierService.setIfTruthy(aggregation, 'groups', groups);
+    QuerierService.setIfTruthy(aggregation, 'metrics', metrics);
     aggregation.set('attributes', attributes);
     aggregation.set('size', Number(json.size));
 
@@ -163,14 +163,14 @@ export default class QuerierService extends Service {
       return false;
     }
 
-    let emitType = EMIT_TYPES.get(json.emit.type);
-    let emitEvery = isEqual(json.emit.type, 'TIME') ? Number(json.emit.every) / 1000 : Number(json.emit.every);
+    let emitType = EMIT_TYPES.description(json.emit.type);
+    let emitEvery = isEqual(EMIT_TYPES[json.emit.type], EMIT_TYPES.TIME) ? Number(json.emit.every) / 1000 : Number(json.emit.every);
 
     let includeType;
-    if (!isEmpty(json.include) && isEqual(json.include.type, 'ALL')) {
-      includeType = INCLUDE_TYPES.get('ALL');
+    if (!isEmpty(json.include) && isEqual(INCLUDE_TYPES[json.include.type], INCLUDE_TYPES.ALL)) {
+      includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL);
     } else {
-      includeType = INCLUDE_TYPES.get('WINDOW');
+      includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
     }
     return EmberObject.create({
       emitType: emitType,
@@ -187,10 +187,10 @@ export default class QuerierService extends Service {
     let fields = this.getFields(aggregation.get('groups'));
     let attributes = this.getAttributes(aggregation);
 
-    json.type = AGGREGATIONS.apiKey(aggregation.get('type'));
+    json.type = QuerierService.spaceCase(AGGREGATION_TYPES.name(aggregation.get('type')));
     json.size = Number(aggregation.get('size'));
-    this.assignIfTruthy(json, 'fields', fields);
-    this.assignIfTruthy(json, 'attributes', attributes);
+    QuerierService.assignIfTruthy(json, 'fields', fields);
+    QuerierService.assignIfTruthy(json, 'attributes', attributes);
 
     return json;
   }
@@ -200,14 +200,14 @@ export default class QuerierService extends Service {
     let emitEvery = window.get('emitEvery');
     let json = {
       emit: {
-        type: EMIT_TYPES.apiKey(emitType),
-        every: isEqual(emitType, EMIT_TYPES.get('TIME')) ? Number(emitEvery) * 1000 : Number(emitEvery)
+        type: EMIT_TYPES.name(emitType),
+        every: isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? Number(emitEvery) * 1000 : Number(emitEvery)
       }
     };
 
     let includeType = window.get('includeType');
-    if (isEqual(includeType, INCLUDE_TYPES.get('ALL'))) {
-      json.include = { type: INCLUDE_TYPES.apiKey(includeType) };
+    if (isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL))) {
+      json.include = { type: INCLUDE_TYPES.name(includeType) };
     }
     return json;
   }
@@ -219,8 +219,8 @@ export default class QuerierService extends Service {
     let fields = A();
     for (let key in json) {
       let field = EmberObject.create();
-      this.setIfTruthy(field, fieldName, key);
-      this.setIfTruthy(field, valueName, json[key]);
+      QuerierService.setIfTruthy(field, fieldName, key);
+      QuerierService.setIfTruthy(field, valueName, json[key]);
       fields.pushObject(field);
     }
     return fields;
@@ -245,20 +245,20 @@ export default class QuerierService extends Service {
     let attributes = { };
 
     // COUNT_DISTINCT, TOP_K
-    this.assignIfTruthy(attributes, 'newName', json.newName);
+    QuerierService.assignIfTruthy(attributes, 'newName', json.newName);
 
     // DISTRIBUTION
-    this.assignIfTruthy(attributes, 'pointType', json.pointType);
-    this.assignIfTruthyNumeric(attributes, 'start', json.start);
-    this.assignIfTruthyNumeric(attributes, 'end', json.end);
-    this.assignIfTruthyNumeric(attributes, 'increment', json.increment);
-    this.assignIfTruthyNumeric(attributes, 'numberOfPoints', json.numberOfPoints);
-    this.assignIfTruthy(attributes, 'points', this.makePoints(json.points));
+    QuerierService.assignIfTruthy(attributes, 'pointType', json.pointType);
+    QuerierService.assignIfTruthyNumeric(attributes, 'start', json.start);
+    QuerierService.assignIfTruthyNumeric(attributes, 'end', json.end);
+    QuerierService.assignIfTruthyNumeric(attributes, 'increment', json.increment);
+    QuerierService.assignIfTruthyNumeric(attributes, 'numberOfPoints', json.numberOfPoints);
+    QuerierService.assignIfTruthy(attributes, 'points', this.makePoints(json.points));
     if (!isEmpty(json.type)) {
-      this.assignIfTruthy(attributes, 'type', DISTRIBUTIONS.get(json.type));
+      QuerierService.assignIfTruthy(attributes, 'type', DISTRIBUTION_TYPES.description(json.type));
     }
     // TOP_K
-    this.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
+    QuerierService.assignIfTruthyNumeric(attributes, 'threshold', json.threshold);
 
     return EmberObject.create(attributes);
   }
@@ -267,25 +267,25 @@ export default class QuerierService extends Service {
     let json = { };
 
     // COUNT_DISTINCT, TOP_K
-    this.assignIfTruthy(json, 'newName', aggregation.get('attributes.newName'));
+    QuerierService.assignIfTruthy(json, 'newName', aggregation.get('attributes.newName'));
 
     // DISTRIBUTION
-    this.assignIfTruthyNumeric(json, 'start', aggregation.get('attributes.start'));
-    this.assignIfTruthyNumeric(json, 'end', aggregation.get('attributes.end'));
-    this.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
-    this.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
-    this.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
+    QuerierService.assignIfTruthyNumeric(json, 'start', aggregation.get('attributes.start'));
+    QuerierService.assignIfTruthyNumeric(json, 'end', aggregation.get('attributes.end'));
+    QuerierService.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
+    QuerierService.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
+    QuerierService.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
     if (!this.apiMode) {
-      this.assignIfTruthy(json, 'pointType', aggregation.get('attributes.pointType'));
+      QuerierService.assignIfTruthy(json, 'pointType', aggregation.get('attributes.pointType'));
     }
-    this.assignIfTruthy(json, 'type', DISTRIBUTIONS.apiKey(aggregation.get('attributes.type')));
+    QuerierService.assignIfTruthy(json, 'type', DISTRIBUTION_TYPES.name(aggregation.get('attributes.type')));
 
     // TOP_K
-    this.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
+    QuerierService.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
 
     // GROUP
     let operations = this.getGroupOperations(aggregation.get('metrics'));
-    this.assignIfTruthy(json, 'operations', operations);
+    QuerierService.assignIfTruthy(json, 'operations', operations);
 
     return $.isEmptyObject(json) ? false : json;
   }
@@ -303,10 +303,10 @@ export default class QuerierService extends Service {
     }
     let groupOperations = A();
     json.forEach(item => {
-      let type = METRICS.get(item.type);
+      let type = METRIC_TYPES.description(item.type);
       let operation = EmberObject.create({ type: type });
-      this.setIfTruthy(operation, 'field', item.field);
-      this.setIfTruthy(operation, 'name', item.newName);
+      QuerierService.setIfTruthy(operation, 'field', item.field);
+      QuerierService.setIfTruthy(operation, 'name', item.newName);
       groupOperations.pushObject(operation);
     });
     return groupOperations;
@@ -318,10 +318,10 @@ export default class QuerierService extends Service {
     }
     let json = [];
     metrics.forEach(item => {
-      let invertedType = METRICS.invert(item.get('type'));
+      let invertedType = METRIC_TYPES.name(item.get('type'));
       let metric = { type: invertedType };
-      this.assignIfTruthy(metric, 'field', item.get('field'));
-      this.assignIfTruthy(metric, 'newName', item.get('name'));
+      QuerierService.assignIfTruthy(metric, 'field', item.get('field'));
+      QuerierService.assignIfTruthy(metric, 'newName', item.get('name'));
       json.push(metric);
     });
     return json;
@@ -342,31 +342,35 @@ export default class QuerierService extends Service {
     return json;
   }
 
-  snakeCase(string) {
+  static snakeCase(string) {
     return string.replace(/ /g, '_');
   }
 
-  assignIfTruthyNumeric(json, key, value) {
+  static spaceCase(string) {
+    return string.replace(/_/g, ' ');
+  }
+
+  static assignIfTruthyNumeric(json, key, value) {
     if (!isEmpty(value)) {
       json[key] = parseFloat(value);
     }
     return json;
   }
 
-  isTruthy(value) {
+  static isTruthy(value) {
     // Also works for boolean false -> Object.keys(false) = []
     return !isEmpty(value) && Object.keys(value).length !== 0;
   }
 
-  assignIfTruthy(json, key, value) {
-    if (this.isTruthy(value)) {
+  static assignIfTruthy(json, key, value) {
+    if (QuerierService.isTruthy(value)) {
       json[key] = value;
     }
     return json;
   }
 
-  setIfTruthy(object, key, value) {
-    if (this.isTruthy(value)) {
+  static setIfTruthy(object, key, value) {
+    if (QuerierService.isTruthy(value)) {
       object.set(key, value);
     }
     return object;

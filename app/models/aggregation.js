@@ -6,69 +6,6 @@
 import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 import EmberObject from '@ember/object';
 
-let AggregationTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = {
-      RAW: 'Raw',
-      GROUP: 'Group',
-      COUNT_DISTINCT: 'Count Distinct',
-      DISTRIBUTION: 'Distribution',
-      TOP_K: 'Top K'
-    };
-    this.setProperties(names);
-    this.set('NAMES', names);
-    this.set('API', {
-      'Raw': 'RAW',
-      'Group': 'GROUP',
-      'Count Distinct': 'COUNT DISTINCT',
-      'Distribution': 'DISTRIBUTION',
-      'Top K': 'TOP K'
-    });
-  },
-
-  apiKey(key) {
-    return this.get(`API.${key}`);
-  }
-});
-
-let RawTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = { ALL: 'All', SELECT: 'Select' };
-    this.set('NAMES', names);
-    this.setProperties(names);
-  }
-});
-
-let DistributionTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = { QUANTILE: 'Quantile', PMF: 'Frequency', CDF: 'Cumulative Frequency' };
-    this.set('NAMES', names);
-    this.setProperties(names);
-    this.set('API', { 'Quantile': 'QUANTILE', 'Frequency': 'PMF', 'Cumulative Frequency': 'CDF' });
-  },
-
-  apiKey(key) {
-    return this.get(`API.${key}`);
-  }
-});
-
-let DistributionPointTypes = EmberObject.extend({
-  init() {
-    this._super(...arguments);
-    let names = { NUMBER: 'Number', POINTS: 'Points', GENERATED: 'Generated' }
-    this.set('NAMES', names);
-    this.setProperties(names);
-  }
-});
-
-export const AGGREGATIONS = AggregationTypes.create();
-export const RAWS = RawTypes.create();
-export const DISTRIBUTIONS = DistributionTypes.create();
-export const DISTRIBUTION_POINTS = DistributionPointTypes.create();
-
 export default class AggregationModel extends Model {
   @attr('string') type;
   @attr('number') size;

@@ -14,22 +14,22 @@ import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { AGGREGATIONS, RAWS, DISTRIBUTIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
-import { METRICS } from 'bullet-ui/models/metric';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
+import {
+  AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+} from 'bullet-ui/utils/query-constants';
 
 export default class QueryInputComponent extends Component {
   // Constants
   queryBuilderClass = 'builder';
-  AGGREGATION_TYPES = AGGREGATIONS.get('NAMES');
-  RAW_TYPES = RAWS.get('NAMES');
-  DISTRIBUTION_TYPES = DISTRIBUTIONS.get('NAMES');
-  DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINTS.get('NAMES');
-  EMIT_TYPES = EMIT_TYPES.get('NAMES');
-  INCLUDE_TYPES = INCLUDE_TYPES.get('NAMES');
-  METRIC_TYPES = METRICS.get('NAMES');
-  METRICS_LIST = METRICS.asList();
+  AGGREGATION_TYPES = AGGREGATION_TYPES;
+  RAW_TYPES = RAW_TYPES;
+  DISTRIBUTION_TYPES = DISTRIBUTION_TYPES;
+  DISTRIBUTION_POINT_TYPES = DISTRIBUTION_POINT_TYPES;
+  EMIT_TYPES = EMIT_TYPES;
+  INCLUDE_TYPES = INCLUDE_TYPES;
+  METRIC_TYPES = METRIC_TYPES;
+  METRICS_LIST = METRIC_TYPES.descriptions;
 
   @service queryManager;
 
@@ -65,18 +65,18 @@ export default class QueryInputComponent extends Component {
   @tracked includeType;
 
   // Helper computed properties
-  @equal('outputDataType', AGGREGATIONS.get('RAW')) isRawAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('GROUP')) isGroupAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('COUNT_DISTINCT')) isCountDistinctAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('DISTRIBUTION')) isDistributionAggregation;
-  @equal('outputDataType', AGGREGATIONS.get('TOP_K')) isTopKAggregation;
-  @equal('rawType', RAWS.get('SELECT')) isSelectType;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) isRawAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)) isGroupAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)) isCountDistinctAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)) isDistributionAggregation;
+  @equal('outputDataType', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)) isTopKAggregation;
+  @equal('rawType', RAW_TYPES.describe(RAW_TYPES.SELECT)) isSelectType;
   @and('isRawAggregation', 'isSelectType') showRawSelections;
-  @equal('pointType', DISTRIBUTION_POINTS.get('NUMBER')) isNumberOfPoints;
-  @equal('pointType', DISTRIBUTION_POINTS.get('POINTS')) isPoints;
-  @equal('pointType', DISTRIBUTION_POINTS.get('GENERATED')) isGeneratedPoints;
-  @equal('emitType', EMIT_TYPES.get('TIME')) isTimeBasedWindow;
-  @equal('emitType', EMIT_TYPES.get('RECORD')) isRecordBasedWindow;
+  @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER)) isNumberOfPoints;
+  @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS)) isPoints;
+  @equal('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED)) isGeneratedPoints;
+  @equal('emitType', EMIT_TYPES.describe(EMIT_TYPES.TIME)) isTimeBasedWindow;
+  @equal('emitType', EMIT_TYPES.describe(EMIT_TYPES.RECORD)) isRecordBasedWindow;
   @or('isRecordBasedWindow', 'isListening') everyDisabled;
   @or('isRecordBasedWindow', 'isListening') includeDisabled;
   @not('hasWindow') noWindow;
@@ -109,10 +109,10 @@ export default class QueryInputComponent extends Component {
       this.includeType = this.windowChangeset.get('includeType');
     }
 
-    this.rawType = isEmpty(this.projections) ? RAWS.get('ALL') : RAWS.get('SELECT');
-    this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATIONS.get('RAW');
-    this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTIONS.get('QUANTILE');
-    this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINTS.get('NUMBER');
+    this.rawType = RAW_TYPES.describe(isEmpty(this.projections) ? RAW_TYPES.ALL : RAW_TYPES.SELECT);
+    this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
+    this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
+    this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
   }
 
   // Getters
@@ -209,12 +209,12 @@ export default class QueryInputComponent extends Component {
   }
 
   async changeAggregation(type) {
-    if (!isEqual(type, AGGREGATIONS.get('RAW'))) {
-      this.rawType = RAWS.get('ALL');
+    if (!isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW))) {
+      this.rawType = RAW_TYPES.describe(RAW_TYPES.ALL);
     }
-    if (!isEqual(type, AGGREGATIONS.get('DISTRIBUTION'))) {
-      this.distributionType = DISTRIBUTIONS.get('QUANTILE');
-      this.distributionPointType = DISTRIBUTION_POINTS.get('NUMBER');
+    if (!isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION))) {
+      this.distributionType = DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
+      this.distributionPointType = DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
     }
 
     // Reset the aggregation changeset
@@ -244,7 +244,8 @@ export default class QueryInputComponent extends Component {
 
   setAttributes(type, pointType) {
     let defaults = { points: '', start: '', end: '', increment: '', numberOfPoints: '' };
-    if (isEqual(type, DISTRIBUTIONS.get('QUANTILE'))) {
+    let quantile = DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
+    if (isEqual(type, quantile)) {
       defaults.points = this.settings.get('defaultValues.distributionQuantilePoints');
       defaults.start = this.settings.get('defaultValues.distributionQuantileStart');
       defaults.end = this.settings.get('defaultValues.distributionQuantileEnd');
@@ -252,13 +253,13 @@ export default class QueryInputComponent extends Component {
     }
     defaults.numberOfPoints = this.settings.get('defaultValues.distributionNumberOfPoints');
 
-    let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), DISTRIBUTIONS.get('QUANTILE'));
-    let isQuantile = isEqual(type, DISTRIBUTIONS.get('QUANTILE'));
+    let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), quantile);
+    let isQuantile = isEqual(type, quantile);
     let fields = [];
     for (let field in defaults) {
-      // Wipe the current values if our last type or current type is Quantile but not both -> an XOR operation
+      // Wipe the current values if our last type or current type is quantile but not both -> an XOR operation
       // If you're changing point types within particular distribution type, it shouldn't lose values entered
-      // But if you go to QUANTILE or come from QUANTILE, it will wipe all the quantile specific defaults
+      // But if you go to quantile or come from quantile, it will wipe all the quantile specific defaults
       fields.push({ name: field, value: defaults[field], forceSet: lastQuantile !== isQuantile });
     }
     fields.push({ name: 'type', value: type, forceSet: true });
@@ -353,43 +354,44 @@ export default class QueryInputComponent extends Component {
 
   @action
   addRawAggregation(selectType = false) {
+    const RAW = AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
     if (selectType) {
-      this.changeAggregationToFieldLike(AGGREGATIONS.get('RAW'), 'projection', this.projections);
+      this.changeAggregationToFieldLike(RAW, 'projection', this.projections);
     } else {
-      this.changeAggregation(AGGREGATIONS.get('RAW'));
+      this.changeAggregation(RAW);
     }
   }
 
   @action
   addGroupAggregation() {
-    this.changeAggregation(AGGREGATIONS.get('GROUP'));
+    this.changeAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP));
   }
 
   @action
   addCountDistinctAggregation() {
-    this.changeAggregationToFieldLike(AGGREGATIONS.get('COUNT_DISTINCT'), 'group', this.groups);
+    this.changeAggregationToFieldLike(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT), 'group', this.groups);
   }
 
   @action
   addTopKAggregation() {
-    this.changeAggregationToFieldLike(AGGREGATIONS.get('TOP_K'), 'group', this.groups);
+    this.changeAggregationToFieldLike(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K), 'group', this.groups);
   }
 
   @action
   async addDistributionAggregation() {
-    await this.changeAggregationToFieldLike(AGGREGATIONS.get('DISTRIBUTION'), 'group', this.groups);
+    await this.changeAggregationToFieldLike(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 'group', this.groups);
     // Default type is Quantile, Number of Points
-    this.setAttributes(DISTRIBUTIONS.get('QUANTILE'), DISTRIBUTION_POINTS.get('NUMBER'));
+    this.setAttributes(DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
   }
 
   @action
   changeDistributionType(type) {
-    this.setAttributes(type, this.pointType);
+    this.setAttributes(DISTRIBUTION_TYPES.describe(type), this.pointType);
   }
 
   @action
   changeDistributionPointType(type) {
-    this.setAttributes(this.distributionType, type);
+    this.setAttributes(this.distributionType, DISTRIBUTION_POINT_TYPES.describe(type));
   }
 
   @action
@@ -419,27 +421,27 @@ export default class QueryInputComponent extends Component {
 
   @action
   changeEmitType(emitType) {
-    if (isEqual(emitType, EMIT_TYPES.get('RECORD'))) {
-      this.includeType = INCLUDE_TYPES.get('WINDOW');
-      this.changeWindow(emitType, this.defaultEveryForRecordWindow, INCLUDE_TYPES.get('WINDOW'));
+    this.emitType = EMIT_TYPES.describe(emitType);
+    if (isEqual(emitType, EMIT_TYPES.RECORD)) {
+      this.includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
+      this.changeWindow(this.emitType, this.defaultEveryForRecordWindow, this.includeType);
     } else {
-      this.changeWindow(emitType, this.defaultEveryForTimeWindow, this.includeType);
+      this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
     }
-    this.emitType = emitType;
   }
 
   @action
   changeIncludeType(includeType) {
-    this.changeWindow(this.emitType, this.windowChangeset.get('emitEvery'), includeType);
-    this.includeType = includeType;
+    this.includeType = INCLUDE_TYPES.describe(includeType);
+    this.changeWindow(this.emitType, this.windowChangeset.get('emitEvery'), this.includeType);
   }
 
   @action
   async addWindow() {
     let changeset = await this.createOptionalModel('window', this.window);
     this.windowChangeset = changeset;
-    this.includeType = INCLUDE_TYPES.get('WINDOW');
-    this.emitType = EMIT_TYPES.get('TIME');
+    this.includeType = INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
+    this.emitType = EMIT_TYPES.describe(EMIT_TYPES.TIME);
     this.changeWindow(this.emitType, this.defaultEveryForTimeWindow, this.includeType);
     this.hasWindow = true;
     this.args.onDirty();

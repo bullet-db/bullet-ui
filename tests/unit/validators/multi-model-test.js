@@ -11,8 +11,7 @@ import { setupTest } from 'ember-qunit';
 import validateMultiModelRelationships,
        { validateWindowAggregation, validateGroupMetricPresence, validateWindowEmitFrequency }
        from 'bullet-ui/validators/multi-model';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
+import { AGGREGATION_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Validator | multi model', function(hooks) {
   setupTest(hooks);
@@ -20,7 +19,7 @@ module('Unit | Validator | multi model', function(hooks) {
   test('it checks to see if grouped data has groups or metrics', function(assert) {
     let validate = validateGroupMetricPresence;
     let mockModel = EmberObject.create({
-      type: AGGREGATIONS.get('GROUP')
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)
     });
     let groups, metrics;
     let expected = 'If you are grouping data, you must add at least one Group Field and/or Metric Field';
@@ -38,20 +37,21 @@ module('Unit | Validator | multi model', function(hooks) {
 
   test('it checks if the window is valid', function(assert) {
     let validate = validateWindowAggregation;
+    const RAW = AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
     let aggregation = EmberObject.create({
-      type: AGGREGATIONS.get('RAW')
+      type: RAW
     });
     let window = EmberObject.create({
-      includeType: INCLUDE_TYPES.get('WINDOW'),
+      includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW),
     });
     assert.ok(validate(window, aggregation));
 
-    window.set('includeType', INCLUDE_TYPES.get('ALL'));
-    assert.equal(validate(window, aggregation), 'The window should not include all from start when aggregation type is Raw');
+    window.set('includeType', INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
+    assert.equal(validate(window, aggregation), `The window should not include all from start when aggregation type is ${RAW}`);
 
-    aggregation.set('type', AGGREGATIONS.get('GROUP'));
-    window.set('emitType', EMIT_TYPES.get('RECORD'));
-    assert.equal(validate(window, aggregation), 'The window should not be record based when aggregation type is not Raw');
+    aggregation.set('type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP));
+    window.set('emitType', EMIT_TYPES.describe(EMIT_TYPES.RECORD));
+    assert.equal(validate(window, aggregation), `The window should not be record based when aggregation type is not ${RAW}`);
   });
 
   test('it successfully validates when it has no window', function(assert) {
@@ -66,7 +66,7 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
       emitEvery: 21
     });
     let settings = EmberObject.create();
@@ -82,7 +82,7 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
       emitEvery: 9,
     });
     let settings = EmberObject.create({
@@ -102,7 +102,7 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('RECORD'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.RECORD),
       emitEvery: 21
     });
     let settings = EmberObject.create();
@@ -117,12 +117,12 @@ module('Unit | Validator | multi model', function(hooks) {
       duration: 20
     });
     let aggregation = EmberObject.create({
-      type: AGGREGATIONS.get('GROUP')
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)
     });
     let window = EmberObject.create({
-      emitType: EMIT_TYPES.get('TIME'),
+      emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
       emitEvery: 9,
-      includeType: INCLUDE_TYPES.get('ALL')
+      includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)
     });
     let metrics = A();
     let groups = A();

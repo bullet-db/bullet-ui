@@ -10,9 +10,7 @@ import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { pluralize } from 'ember-inflector';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
-import { METRICS } from 'bullet-ui/models/metric';
+import { AGGREGATION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class QueryModel extends Model {
   @attr('string') name;
@@ -52,7 +50,7 @@ export default class QueryModel extends Model {
       let type = m.get('type');
       let field = m.get('field');
       let name = m.get('name');
-      if (type === METRICS.get('COUNT')) {
+      if (type === METRIC_TYPES.describe(METRIC_TYPES.COUNT)) {
         field = '*';
       }
       return isEmpty(name) ? `${type}(${field})` : name;
@@ -62,18 +60,18 @@ export default class QueryModel extends Model {
   @computed('aggregation.{type,size}', 'aggregation.attributes.{type,newName,threshold}', 'groupsSummary', 'metricsSummary')
   get aggregationSummary() {
     let type = this.get('aggregation.type');
-    if (type === AGGREGATIONS.get('RAW')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) {
       return '';
     }
     let groupsSummary = this.groupsSummary;
-    if (type === AGGREGATIONS.get('COUNT_DISTINCT')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)) {
       return `${type} ON (${groupsSummary})`;
     }
-    if (type === AGGREGATIONS.get('DISTRIBUTION')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)) {
       let distributionType = this.get('aggregation.attributes.type');
       return `${distributionType} ON ${groupsSummary}`;
     }
-    if (type === AGGREGATIONS.get('TOP_K')) {
+    if (type === AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)) {
       let k = this.get('aggregation.size');
       let countField = (this.get('aggregation.attributes.newName') === undefined ? 'Count' : this.get('aggregation.attributes.newName'));
       let summary = `TOP ${k} OF (${groupsSummary})`;
@@ -138,11 +136,11 @@ export default class QueryModel extends Model {
   }
 
   static getEmitUnit(emitType, emitEvery) {
-    let unit = isEqual(emitType, EMIT_TYPES.get('TIME')) ? 'second' : 'record';
+    let unit = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? 'second' : 'record';
     return Number(emitEvery) === 1 ? unit : pluralize(unit);
   }
 
   static getIncludeType(includeType) {
-    return isEqual(includeType, INCLUDE_TYPES.get('ALL')) ? ', Cumulative' : '';
+    return isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)) ? ', Cumulative' : '';
   }
 }

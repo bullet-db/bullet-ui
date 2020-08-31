@@ -11,7 +11,7 @@ import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
 import config from 'bullet-ui/config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
-import { AGGREGATIONS, DISTRIBUTION_POINTS } from 'bullet-ui/models/aggregation';
+import { AGGREGATION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 // Validations
 import QueryValidations from 'bullet-ui/validators/query';
 import ProjectionValidations from 'bullet-ui/validators/projection';
@@ -274,7 +274,8 @@ export default class QueryManagerService extends Service {
 
   fixAggregationSize(aggregation) {
     let type = aggregation.get('type');
-    if (!(isEqual(type, AGGREGATIONS.get('RAW')) || isEqual(type, AGGREGATIONS.get('TOP_K')))) {
+    if (!(isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) ||
+          isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)))) {
       aggregation.set('size', this.settings.defaultValues?.aggregationMaxSize);
     }
   }
@@ -293,9 +294,9 @@ export default class QueryManagerService extends Service {
 
   fixAggregationAttributes(aggregation) {
     let pointType = aggregation.get('attributes.pointType');
-    if (isEqual(pointType, DISTRIBUTION_POINTS.GENERATED)) {
+    if (isEqual(pointType, DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED))) {
       this.removeAttributes(aggregation, 'numberOfPoints', 'points');
-    } else if (isEqual(pointType, DISTRIBUTION_POINTS.NUMBER)) {
+    } else if (isEqual(pointType, DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER))) {
       this.removeAttributes(aggregation, 'start', 'end', 'increment', 'points');
     } else {
       this.removeAttributes(aggregation, 'start', 'end', 'increment', 'numberOfPoints');

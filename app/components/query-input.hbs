@@ -64,26 +64,32 @@
         <div class="output-options">
           <RadioButton @id="raw" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addRawAggregation false}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.RAW}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.RAW}}
+                       @disabled={{this.isListening}}>
             Raw Data
           </RadioButton>
           <RadioButton @id="grouped-data" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addGroupAggregation}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.GROUP}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.GROUP}}
+                       @disabled={{this.isListening}}>
             Group Data
           </RadioButton>
           <RadioButton @id="count-distinct" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addCountDistinctAggregation}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.COUNT_DISTINCT}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.COUNT_DISTINCT}}
+                       @disabled={{this.isListening}}>
             Count Distinct
           </RadioButton>
           <RadioButton @id="distribution" @checkedValue={{this.outputDataType}}
-                       @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}} @value={{this.AGGREGATION_TYPES.DISTRIBUTION}} @disabled={{this.isListening}}>
+                       @changed={{fn this.addDistributionAggregation}} @updated={{fn (mut this.outputDataType)}}
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.DISTRIBUTION}}
+                       @disabled={{this.isListening}}>
             Distribution
           </RadioButton>
           <RadioButton @id="top-k" @checkedValue={{this.outputDataType}}
                        @changed={{fn this.addTopKAggregation}} @updated={{fn (mut this.outputDataType)}}
-                       @value={{this.AGGREGATION_TYPES.TOP_K}} @disabled={{this.isListening}}>
+                       @value={{desc this.AGGREGATION_TYPES this.AGGREGATION_TYPES.TOP_K}}
+                       @disabled={{this.isListening}}>
             Top K
           </RadioButton>
         </div>
@@ -94,12 +100,12 @@
             <div class="raw-sub-options inline-radio-buttons">
               <RadioButton @id="all" @checkedValue={{this.rawType}}
                            @changed={{fn this.deleteProjections}} @updated={{fn (mut this.rawType)}}
-                           @value={{this.RAW_TYPES.ALL}} @disabled={{this.isListening}}>
+                           @value={{desc this.RAW_TYPES this.RAW_TYPES.ALL}} @disabled={{this.isListening}}>
                 Show All Fields
               </RadioButton>
               <RadioButton @id="select" @checkedValue={{this.rawType}}
                            @changed={{fn this.addRawAggregation true}} @updated={{fn (mut this.rawType)}}
-                           @value={{this.RAW_TYPES.SELECT}} @disabled={{this.isListening}}>
+                           @value={{desc this.RAW_TYPES this.RAW_TYPES.SELECT}} @disabled={{this.isListening}}>
                 Select Fields
               </RadioButton>
             </div>
@@ -146,7 +152,7 @@
                 {{#each this.metrics as |changeset|}}
                   <ValidatedFieldSelection
                       @changeset={{changeset}} @columns={{this.columns}}
-                      @disableField={{eq changeset.type this.METRIC_TYPES.COUNT}}
+                      @disableField={{eq changeset.type (desc this.METRIC_TYPES this.METRIC_TYPES.COUNT)}}
                       @onDelete={{fn this.deleteFieldLike changeset this.metrics}} @onChange={{@onDirty}}
                       @enableAdditionalOptions={{true}} @additionalOptions={{this.METRICS_LIST}} @additionalPath="type"
                       @additionalLabel="Metric" @additionalClasses="col-xs-3 metric-selection" @fieldClasses="col-xs-5"
@@ -195,19 +201,22 @@
                 <RadioButton @id="quantile" @checkedValue={{this.distributionType}}
                               @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.QUANTILE}}
                               @updated={{fn (mut this.distributionType)}}
-                              @value={{this.DISTRIBUTION_TYPES.QUANTILE}} @disabled={{this.isListening}}>
+                              @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.QUANTILE}}
+                              @disabled={{this.isListening}}>
                   Quantiles
                 </RadioButton>
                 <RadioButton @id="frequency" @checkedValue={{this.distributionType}}
                              @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.PMF}}
                              @updated={{fn (mut this.distributionType)}}
-                             @value={{this.DISTRIBUTION_TYPES.PMF}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.PMF}}
+                             @disabled={{this.isListening}}>
                   Frequencies
                 </RadioButton>
                 <RadioButton @id="cumulative" @checkedValue={{this.distributionType}}
                              @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.CDF}}
                              @updated={{fn (mut this.distributionType)}}
-                             @value={{this.DISTRIBUTION_TYPES.CDF}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.CDF}}
+                             @disabled={{this.isListening}}>
                   Cumulative Frequencies
                 </RadioButton>
               </div>
@@ -228,19 +237,22 @@
                 <RadioButton @id="number-points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.NUMBER}}
                              @updated={{fn (mut this.pointType)}}
-                             @value={{this.DISTRIBUTION_POINT_TYPES.NUMBER}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_POINT_TYPES this.DISTRIBUTION_POINT_TYPES.NUMBER}}
+                             @disabled={{this.isListening}}>
                   Evenly spaced points
                 </RadioButton>
                 <RadioButton @id="generate-points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.GENERATED}}
                              @updated={{fn (mut this.pointType)}}
-                             @value={{this.DISTRIBUTION_POINT_TYPES.GENERATED}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_POINT_TYPES this.DISTRIBUTION_POINT_TYPES.GENERATED}}
+                             @disabled={{this.isListening}}>
                   Evenly spaced points in a region
                 </RadioButton>
                 <RadioButton @id="points" @checkedValue={{this.pointType}}
                              @changed={{fn this.changeDistributionPointType this.DISTRIBUTION_POINT_TYPES.POINTS}}
                              @updated={{fn (mut this.pointType)}}
-                             @value={{this.DISTRIBUTION_POINT_TYPES.POINTS}} @disabled={{this.isListening}}>
+                             @value={{desc this.DISTRIBUTION_POINT_TYPES this.DISTRIBUTION_POINT_TYPES.POINTS}}
+                             @disabled={{this.isListening}}>
                   Define points
                 </RadioButton>
               </div>
@@ -378,14 +390,14 @@
               <RadioButton @id="time-based" @checkedValue={{this.emitType}}
                            @changed={{fn this.changeEmitType this.EMIT_TYPES.TIME}}
                            @updated={{fn (mut this.emitType)}}
-                           @value={{this.EMIT_TYPES.TIME}} @disabled={{this.isListening}}>
-                {{this.EMIT_TYPES.TIME}}
+                           @value={{desc this.EMIT_TYPES this.EMIT_TYPES.TIME}} @disabled={{this.isListening}}>
+                {{desc this.EMIT_TYPES this.EMIT_TYPES.TIME}}
               </RadioButton>
               <RadioButton @id="record-based" @checkedValue={{this.emitType}}
                            @changed={{fn this.changeEmitType this.EMIT_TYPES.RECORD}}
                            @updated={{fn (mut this.emitType)}}
-                           @value={{this.EMIT_TYPES.RECORD}} @disabled={{this.recordBasedWindowDisabled}}>
-                {{this.EMIT_TYPES.RECORD}}
+                           @value={{desc this.EMIT_TYPES this.EMIT_TYPES.RECORD}} @disabled={{this.recordBasedWindowDisabled}}>
+                {{desc this.EMIT_TYPES this.EMIT_TYPES.RECORD}}
               </RadioButton>
             </div>
 
@@ -403,14 +415,14 @@
                 <RadioButton @id="include-window" @checkedValue={{this.includeType}}
                              @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.WINDOW}}
                              @updated={{fn (mut this.includeType)}}
-                             @value={{this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
-                  {{this.INCLUDE_TYPES.WINDOW}}
+                             @value={{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.WINDOW}} @disabled={{this.includeDisabled}}>
+                  {{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.WINDOW}}
                 </RadioButton>
                 <RadioButton @id="include-all" @checkedValue={{this.includeType}}
                              @changed={{fn this.changeIncludeType this.INCLUDE_TYPES.ALL}}
                              @updated={{fn (mut this.includeType)}}
-                             @value={{this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>
-                  {{this.INCLUDE_TYPES.ALL}}
+                             @value={{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.ALL}} @disabled={{this.allIncludeTypeDisabled}}>
+                  {{desc this.INCLUDE_TYPES this.INCLUDE_TYPES.ALL}}
                 </RadioButton>
               </div>
               {{#if this.isRawAggregation}}

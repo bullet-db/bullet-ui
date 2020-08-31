@@ -7,11 +7,12 @@ import { isArray } from '@ember/array';
 import { isEmpty, typeOf } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
+import QuerierService from 'bullet-ui/services/querier';
+import {
+  AGGREGATION_TYPES, DISTRIBUTION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+} from 'bullet-ui/utils/query-constants';
 import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 import FILTERS from 'bullet-ui/tests/fixtures/filters';
-import { AGGREGATIONS, DISTRIBUTIONS } from 'bullet-ui/models/aggregation';
-import { METRICS } from 'bullet-ui/models/metric';
-import { EMIT_TYPES, INCLUDE_TYPES } from 'bullet-ui/models/window';
 
 module('Unit | Service | querier', function(hooks) {
   setupTest(hooks);
@@ -79,9 +80,9 @@ module('Unit | Service | querier', function(hooks) {
     assert.deepEqual(service.reformat(query), {
       duration: 20000
     });
-    query.addAggregation(AGGREGATIONS.get('RAW'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     assert.deepEqual(service.reformat(query), {
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 20000
     });
   });
@@ -89,11 +90,11 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats projections correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 1, created: new Date(Date.now()) });
-    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);
     query.addProjection('foo', 'goo');
     query.addProjection('timestamp', 'ts');
     assert.deepEqual(service.reformat(query), {
-      aggregation: { size: 10, type: 'RAW' },
+      aggregation: { size: 10, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       projection: { fields: { foo: 'goo', timestamp: 'ts' } },
       duration: 1000
     });
@@ -102,21 +103,27 @@ module('Unit | Service | querier', function(hooks) {
   test('it ignores a removed filter', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ foo: 'bar' });
-    query.addAggregation(AGGREGATIONS.get('RAW'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.set('filter', undefined);
-    assert.deepEqual(service.reformat(query), { aggregation: { size: 1, type: 'RAW' }, duration: 0 });
+    assert.deepEqual(service.reformat(query), {
+      aggregation: {
+        size: 1,
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW))
+      },
+      duration: 0
+    });
   });
 
   test('it formats a query correctly with a name', function(assert) {
     let service = this.owner.factoryFor('service:querier').create({ apiMode: false });
     let query = MockQuery.create({ name: 'foo' });
     let filter = { condition: 'OR', rules: [] };
-    query.addAggregation(AGGREGATIONS.get('RAW'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.addFilter(filter, 'foo');
     assert.deepEqual(service.reformat(query), {
       name: 'foo',
       filterSummary: 'foo',
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 0
     });
   });
@@ -125,11 +132,11 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.factoryFor('service:querier').create({ apiMode: false });
     let query = MockQuery.create();
     let filter = { condition: 'OR', rules: [] };
-    query.addAggregation(AGGREGATIONS.get('RAW'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.addFilter(filter, 'foo');
     assert.deepEqual(service.reformat(query), {
       filterSummary: 'foo',
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 0
     });
   });
@@ -144,11 +151,11 @@ module('Unit | Service | querier', function(hooks) {
         { field: 'simple_column', subfield: null, operator: 'in', value: 'foo,bar' }
       ]
     };
-    query.addAggregation(AGGREGATIONS.get('RAW'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.addFilter(filter, 'foo');
     assert.deepEqual(service.reformat(query), {
       filters: [FILTERS.OR_FREEFORM],
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 0
     });
   });
@@ -162,11 +169,11 @@ module('Unit | Service | querier', function(hooks) {
         { field: 'foo', operator: 'is_null' }
       ]
     };
-    query.addAggregation(AGGREGATIONS.get('RAW'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.addFilter(filter, 'foo');
     assert.deepEqual(service.reformat(query), {
       filters: [{ field: 'foo', operation: '==', values: ['NULL'] }],
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 0
     });
   });
@@ -174,13 +181,13 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a count distinct query with a new name query correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('COUNT_DISTINCT'), 100, { newName: 'cnt' });
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT), 100, { newName: 'cnt' });
     query.addGroup('foo', '1');
     query.addGroup('bar', '2');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 100,
-        type: 'COUNT DISTINCT',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.COUNT_DISTINCT)),
         fields: { foo: '1', bar: '2' },
         attributes: { newName: 'cnt' }
       },
@@ -191,12 +198,12 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a count distinct query without a new name query correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('COUNT_DISTINCT'), 100);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT), 100);
     query.addGroup('foo', '1');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 100,
-        type: 'COUNT DISTINCT',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.COUNT_DISTINCT)),
         fields: { foo: '1' }
       },
       duration: 10000
@@ -206,13 +213,13 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a distinct query correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP), 500);
     query.addGroup('foo', '1');
     query.addGroup('bar', '2');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'GROUP',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)),
         fields: { foo: '1', bar: '2' }
       },
       duration: 10000
@@ -222,24 +229,24 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a group all query correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
-    query.addMetric(METRICS.get('COUNT'), null, 'cnt');
-    query.addMetric(METRICS.get('SUM'), 'baz', 'sum');
-    query.addMetric(METRICS.get('MAX'), 'foo');
-    query.addMetric(METRICS.get('AVG'), 'bar');
-    query.addMetric(METRICS.get('MIN'), 'foo');
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP), 500);
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.COUNT), null, 'cnt');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.SUM), 'baz', 'sum');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MAX), 'foo');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.AVG), 'bar');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MIN), 'foo');
 
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'GROUP',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)),
         attributes: {
           operations: [
-            { type: 'COUNT', newName: 'cnt' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MAX', field: 'foo' },
-            { type: 'AVG', field: 'bar' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT), newName: 'cnt' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MAX), field: 'foo' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.AVG), field: 'bar' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -250,23 +257,23 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a group by query correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('GROUP'), 500);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP), 500);
     query.addGroup('foo', 'foo');
     query.addGroup('complex_map_column.foo', 'bar');
-    query.addMetric(METRICS.get('COUNT'));
-    query.addMetric(METRICS.get('SUM'), 'baz', 'sum');
-    query.addMetric(METRICS.get('MIN'), 'foo');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.COUNT));
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.SUM), 'baz', 'sum');
+    query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MIN), 'foo');
 
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'GROUP',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)),
         fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
         attributes: {
           operations: [
-            { type: 'COUNT' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT) },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -277,17 +284,17 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a quantile distribution with number of points', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTIONS.get('QUANTILE')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -296,17 +303,17 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a frequency distribution with number of points', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTIONS.get('PMF')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'PMF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -315,17 +322,17 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a cumulative frequency distribution with number of points', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTIONS.get('CDF')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'CDF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -334,19 +341,19 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a distribution with generated points', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       start: 0.4,
       end: 0.6,
       increment: 0.01,
-      type: DISTRIBUTIONS.get('QUANTILE')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), start: 0.4, end: 0.6, increment: 0.01 }
       },
       duration: 10000
     });
@@ -355,17 +362,17 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a distribution with free-form points', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('DISTRIBUTION'), 500, {
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       points: '0.5,0.2, 0.75,0.99',
-      type: DISTRIBUTIONS.get('QUANTILE')
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), points: [0.5, 0.2, 0.75, 0.99] }
       },
       duration: 10000
     });
@@ -374,12 +381,12 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a top k query correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('TOP_K'), 500);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K), 500);
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'TOP K',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.TOP_K)),
         fields: { foo: 'foo' }
       },
       duration: 10000
@@ -389,7 +396,7 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a top k query with threshold and new name correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('TOP_K'), 500, {
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K), 500, {
       newName: 'bar',
       threshold: 150
     });
@@ -397,7 +404,7 @@ module('Unit | Service | querier', function(hooks) {
     assert.deepEqual(service.reformat(query), {
       aggregation: {
         size: 500,
-        type: 'TOP K',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.TOP_K)),
         fields: { foo: 'foo' },
         attributes: { newName: 'bar', threshold: 150 }
       },
@@ -408,36 +415,39 @@ module('Unit | Service | querier', function(hooks) {
   test('it formats a time window correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
-    query.addWindow(EMIT_TYPES.get('TIME'), 2, null);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);
+    query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.TIME), 2, null);
     assert.deepEqual(service.reformat(query), {
-      aggregation: { size: 10, type: 'RAW' },
+      aggregation: { size: 10, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 10000,
-      window: { emit: { type: 'TIME', every: 2000 } }
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 2000 } }
     });
   });
 
   test('it formats a record window correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
-    query.addWindow(EMIT_TYPES.get('RECORD'), 1, null);
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);
+    query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.RECORD), 1, null);
     assert.deepEqual(service.reformat(query), {
-      aggregation: { size: 10, type: 'RAW' },
+      aggregation: { size: 10, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 10000,
-      window: { emit: { type: 'RECORD', every: 1 } }
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.RECORD), every: 1 } }
     });
   });
 
   test('it formats a include all window correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = MockQuery.create({ duration: 10 });
-    query.addAggregation(AGGREGATIONS.get('RAW'), 10);
-    query.addWindow(EMIT_TYPES.get('TIME'), 2, INCLUDE_TYPES.get('ALL'));
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);
+    query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.TIME), 2, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
     assert.deepEqual(service.reformat(query), {
-      aggregation: { size: 10, type: 'RAW' },
+      aggregation: { size: 10, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 10000,
-      window: { emit: { type: 'TIME', every: 2000 }, include: { type: 'ALL' } }
+      window: {
+        emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 2000 },
+        include: { type: INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL) }
+      }
     });
   });
 
@@ -445,7 +455,7 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.factoryFor('service:querier').create({ apiMode: false });
     let query = {
       name: 'foo',
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 20000
     };
 
@@ -460,7 +470,7 @@ module('Unit | Service | querier', function(hooks) {
   test('it recreates a raw query with no filters', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = {
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 20000
     };
     assertEmberEqual(assert, service.recreate(query), {
@@ -486,7 +496,7 @@ module('Unit | Service | querier', function(hooks) {
   test('it recreates projections correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = {
-      aggregation: { size: 10, type: 'RAW' },
+      aggregation: { size: 10, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       projection: { fields: { foo: 'goo', timestamp: 'ts' } },
       duration: 1000
     };
@@ -502,7 +512,7 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = {
       filters: [FILTERS.OR_FREEFORM],
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 0
     };
     assertEmberEqual(assert, service.recreate(query), {
@@ -539,7 +549,7 @@ module('Unit | Service | querier', function(hooks) {
           }
         ]
       }],
-      aggregation: { size: 1, type: 'RAW', attributes: { } },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)), attributes: { } },
       duration: 0
     };
     assertEmberEqual(assert, service.recreate(query), {
@@ -561,7 +571,7 @@ module('Unit | Service | querier', function(hooks) {
     let service = this.owner.lookup('service:querier');
     let query = {
       filters: [{ field: 'foo', operation: '!=', values: ['1'] }],
-      aggregation: { size: 1, type: 'RAW' },
+      aggregation: { size: 1, type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)) },
       duration: 0
     };
     assertEmberEqual(assert, service.recreate(query), {
@@ -581,7 +591,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 100,
-        type: 'COUNT DISTINCT',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.COUNT_DISTINCT)),
         fields: { foo: '1', bar: '2' },
         attributes: { newName: 'cnt' }
       },
@@ -604,7 +614,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 100,
-        type: 'COUNT DISTINCT',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.COUNT_DISTINCT)),
         fields: { foo: '1', bar: '2' }
       },
       duration: 10000
@@ -626,7 +636,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'GROUP',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)),
         attributes: { },
         fields: { foo: '1', bar: '2' }
       },
@@ -649,14 +659,14 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'GROUP',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)),
         attributes: {
           operations: [
-            { type: 'COUNT', newName: 'cnt' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MAX', field: 'foo' },
-            { type: 'AVG', field: 'bar' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT), newName: 'cnt' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MAX), field: 'foo' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.AVG), field: 'bar' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -669,11 +679,11 @@ module('Unit | Service | querier', function(hooks) {
         type: 'Group',
         attributes: { },
         metrics: [
-          { type: 'Count', name: 'cnt' },
-          { type: 'Sum', field: 'baz', name: 'sum' },
-          { type: 'Maximum', field: 'foo' },
-          { type: 'Average', field: 'bar' },
-          { type: 'Minimum', field: 'foo' }
+          { type: METRIC_TYPES.describe(METRIC_TYPES.COUNT), name: 'cnt' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.SUM), field: 'baz', name: 'sum' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.MAX), field: 'foo' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.AVG), field: 'bar' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.MIN), field: 'foo' }
         ]
       },
       duration: 10
@@ -685,13 +695,13 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'GROUP',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.GROUP)),
         fields: { foo: 'foo', 'complex_map_column.foo': 'bar' },
         attributes: {
           operations: [
-            { type: 'COUNT' },
-            { type: 'SUM', field: 'baz', newName: 'sum' },
-            { type: 'MIN', field: 'foo' }
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.COUNT) },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.SUM), field: 'baz', newName: 'sum' },
+            { type: METRIC_TYPES.forSymbol(METRIC_TYPES.MIN), field: 'foo' }
           ]
         }
       },
@@ -705,9 +715,9 @@ module('Unit | Service | querier', function(hooks) {
         attributes: { },
         groups: [{ field: 'foo', name: 'foo' }, { field: 'complex_map_column.foo', name: 'bar' }],
         metrics: [
-          { type: 'Count' },
-          { type: 'Sum', field: 'baz', name: 'sum' },
-          { type: 'Minimum', field: 'foo' }
+          { type: METRIC_TYPES.describe(METRIC_TYPES.COUNT) },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.SUM), field: 'baz', name: 'sum' },
+          { type: METRIC_TYPES.describe(METRIC_TYPES.MIN), field: 'foo' }
         ]
       },
       duration: 10
@@ -719,9 +729,9 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -731,7 +741,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Quantile', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -742,9 +752,9 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'PMF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -754,7 +764,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Frequency', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -765,9 +775,9 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'CDF', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -777,7 +787,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Cumulative Frequency', numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -788,9 +798,9 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', start: 0.4, end: 0.6, increment: 0.01 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), start: 0.4, end: 0.6, increment: 0.01 }
       },
       duration: 10000
     };
@@ -800,7 +810,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Quantile', start: 0.4, end: 0.6, increment: 0.01 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), start: 0.4, end: 0.6, increment: 0.01 }
       },
       duration: 10
     });
@@ -811,9 +821,9 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'DISTRIBUTION',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: 'QUANTILE', points: [0.5, 0.2, 0.75, 0.99] }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.QUANTILE), points: [0.5, 0.2, 0.75, 0.99] }
       },
       duration: 10000
     };
@@ -823,7 +833,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: 'Quantile', points: '0.5,0.2,0.75,0.99' }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE), points: '0.5,0.2,0.75,0.99' }
       },
       duration: 10
     });
@@ -834,7 +844,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'TOP K',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.TOP_K)),
         attributes: { },
         fields: { foo: 'foo' }
       },
@@ -857,7 +867,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = {
       aggregation: {
         size: 500,
-        type: 'TOP K',
+        type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.TOP_K)),
         fields: { foo: 'foo' },
         attributes: { newName: 'bar', threshold: 150 }
       },
@@ -878,42 +888,57 @@ module('Unit | Service | querier', function(hooks) {
   test('it recreates a time window correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = {
-      aggregation: { type: 'RAW', size: 10 },
-      window: { emit: { type: 'TIME', every: 5000 } },
+      aggregation: { type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)), size: 10 },
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 5000 } },
       duration: 10000
     };
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emitType: 'Time Based', emitEvery: 5, includeType: 'Everything in Window' }
+      window: {
+        emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
+        emitEvery: 5,
+        includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW)
+      }
     });
   });
 
   test('it recreates a record window correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = {
-      aggregation: { type: 'RAW', size: 10 },
-      window: { emit: { type: 'RECORD', every: 1 } },
+      aggregation: { type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)), size: 10 },
+      window: { emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.RECORD), every: 1 } },
       duration: 10000
     };
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emitType: 'Record Based', emitEvery: 1, includeType: 'Everything in Window' }
+      window: {
+        emitType: EMIT_TYPES.describe(EMIT_TYPES.RECORD),
+        emitEvery: 1,
+        includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW)
+      }
     });
   });
 
   test('it recreates a include all window correctly', function(assert) {
     let service = this.owner.lookup('service:querier');
     let query = {
-      aggregation: { type: 'RAW', size: 10 },
-      window: { emit: { type: 'TIME', every: 1000 }, include: { type: 'ALL' } },
+      aggregation: { type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.RAW)), size: 10 },
+      window: {
+        emit: { type: EMIT_TYPES.forSymbol(EMIT_TYPES.TIME), every: 1000 },
+        include: { type: INCLUDE_TYPES.forSymbol(INCLUDE_TYPES.ALL) }
+      },
       duration: 10000
     };
     assertEmberEqual(assert, service.recreate(query), {
       aggregation: { size: 10, type: 'Raw' },
       duration: 10,
-      window: { emitType: 'Time Based', emitEvery: 1, includeType: 'Everything from Start of Query' }
+      window: {
+        emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
+        emitEvery: 1,
+        includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)
+      }
     });
   });
 });

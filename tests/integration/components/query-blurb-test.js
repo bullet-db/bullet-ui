@@ -7,7 +7,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import { AGGREGATIONS } from 'bullet-ui/models/aggregation';
+import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
 import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 
 module('Integration | Component | query blurb', function(hooks) {
@@ -23,7 +23,7 @@ module('Integration | Component | query blurb', function(hooks) {
 
   test('it fully summarizes a query', async function(assert) {
     let query = MockQuery.create({ duration: 1 });
-    query.addAggregation(AGGREGATIONS.get('LIMIT'), 1, { points: '0.1,0.2' });
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 1, { points: '0.1,0.2' });
     query.addFilter({ }, 'An Actual Filter Summary');
     query.addProjection('foo', 'f');
     query.addProjection('bar', 'b');

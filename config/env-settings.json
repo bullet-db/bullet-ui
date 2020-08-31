@@ -20,9 +20,9 @@
     },
     "defaultQuery": null,
     "defaultValues": {
-      "aggregationMaxSize": 512,
+      "aggregationMaxSize": 500,
       "rawMaxSize": 100,
-      "durationMaxSecs": 120,
+      "durationMaxSecs": 86400,
       "distributionNumberOfPoints": 11,
       "distributionQuantilePoints": "0, 0.25, 0.5, 0.75, 0.9, 1",
       "distributionQuantileStart": 0,
