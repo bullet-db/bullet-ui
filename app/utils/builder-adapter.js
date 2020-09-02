@@ -6,6 +6,7 @@
 
 /*eslint camelcase: 0 */
 
+import { bind } from '@ember/runloop';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
 
@@ -19,14 +20,14 @@ export const SUBFIELD_ENABLED_KEY = 'show_subfield';
 
 const INTEGER_MAPPING = JSON.stringify({
   type: 'integer',
-  placeholder: 'integer', placeholders: { in: 'integers ( _, _, _, ..., _ )', not_in: 'integers ( _, _, _, ..., _ )' },
-  operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+  placeholder: 'integer', placeholders: { in: 'integers ( _, _, _, ..., _ )' },
+  operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'is_null', 'is_not_null']
 });
 
 const FLOAT_MAPPING = JSON.stringify({
   type: 'double',
-  placeholder: 'number', placeholders: { in: 'numbers ( _, _, _, ..., _ )', not_in: 'numbers ( _, _, _, ..., _ )' },
-  operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_null', 'is_not_null']
+  placeholder: 'number', placeholders: { in: 'numbers ( _, _, _, ..., _ )' },
+  operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'is_null', 'is_not_null']
 });
 
 const TYPE_MAPPING = {
@@ -40,8 +41,8 @@ const TYPE_MAPPING = {
   types: {
     STRING: JSON.stringify({
       type: 'string',
-      placeholder: 'string', placeholders: { in: 'strings ( _, _, _, ..., _ )', not_in: 'strings ( _, _, _, ..., _ )', rlike: 'strings ( _, _, _, ..., _ )' },
-      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'not_in', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null', 'rlike']
+      placeholder: 'string', placeholders: { in: 'strings ( _, _, _, ..., _ )', rlike: 'strings ( _, _, _, ..., _ )' },
+      operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'in', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null', 'rlike']
     }),
     INTEGER: INTEGER_MAPPING,
     LONG: INTEGER_MAPPING,
@@ -81,15 +82,14 @@ export function builderOptions() {
     // No need to support since rlike gets all of them:
     // 'ends_with', 'not_ends_with', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains',
     operators: [
-      'equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'is_empty',
-      'is_not_empty', 'greater', 'greater_or_equal', 'is_null', 'is_not_null',
+      'equal', 'not_equal', 'less', 'less_or_equal', 'is_empty',
+      'is_not_empty', 'greater', 'greater_or_equal', 'in', 'is_null', 'is_not_null',
       { type: 'rlike', nb_inputs: 1, multiple: false, apply_to: ['string'] }
     ],
     sqlOperators: {
       equal: { op: '= ?' },
       not_equal: { op: '!= ?' },
-      in: { op: 'IN(?)',     sep: ', ' },
-      not_in: { op: 'NOT IN(?)', sep: ', ' },
+      in: { op: 'IN [?]' },
       less: { op: '< ?' },
       less_or_equal: { op: '<= ?' },
       greater: { op: '> ?' },
@@ -98,7 +98,7 @@ export function builderOptions() {
       is_not_empty: { op: '!= \'\'' },
       is_null: { op: 'IS NULL' },
       is_not_null: { op: 'IS NOT NULL' },
-      rlike: { op: 'RLIKE ?' }
+      rlike: { op: 'RLIKE ANY [?]' }
     },
     icons: {
       add_group: 'fa fa-plus',
@@ -136,6 +136,53 @@ export function builderFilters(columns) {
       return rulify(flatColumn.name, flatColumn.type, flatColumn.isSubField);
     }));
   }, filters);
+}
+
+export function addQueryBuilder(element, options, context, dirtyHook, validateHook) {
+  // This needs to be bound BEFORE the querybuilder is initialized to create inputs with the right types
+  element.on('getRuleInput.queryBuilder.filter', bind(this, fixRuleValue));
+  element.queryBuilder(options);
+  element.on('rulesChanged.queryBuilder', bind(context, dirtyHook));
+  let event = [
+    'afterUpdateRuleFilter.queryBuilder',
+    'afterUpdateRuleOperator.queryBuilder',
+    'afterUpdateRuleSubfield.queryBuilder',
+    'afterUpdateRuleValue.queryBuilder'
+  ];
+  element.on(event.join(' '), bind(context, validateHook));
+  element.on('ruleToSQL.queryBuilder.filter', bind(this, fixSQLForRule));
+  element.on('validateValue.queryBuilder.filter', bind(this, fixValidation));
+}
+
+function fixSQLForRule(event, rule, value, sqlFunction) {
+  let operator = rule.operator;
+  if (operator === 'in' || operator === 'rlike') {
+    // Strip leading and trailing quote and add them around each. This is not added based on the rule.type but
+    // rather the type of the value itself inside querybuilder.
+    let values = value.slice(1, value.length - 1).split(',')
+    value = values.map(v => {
+      return rule.type === 'string' ? `'${v}'` : v;
+    }).join(',');
+  }
+  // Any changer applied for the getSQLField event is discarded unfortunately
+  event.value = `${rule.field}  ${sqlFunction(value)}`;
+}
+
+function fixRuleValue(event, rule) {
+  let template = event.value;
+  let operator = rule.operator.type;
+  if (rule.type !== 'string' && (operator === 'in' || operator === 'rlike')) {
+    event.value = template.replace('type="number"', 'type="text"');
+  }
+}
+
+function fixValidation(event, value, rule) {
+  let operator = rule.operator.type;
+  let result = event.value;
+  // Force ok for not valid, non-string, in or rlike rules
+  if (result !== true && rule.type !== 'string' && (operator === 'in' || operator === 'rlike')) {
+    event.value = true;
+  }
 }
 
 /**

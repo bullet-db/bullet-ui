@@ -12,9 +12,8 @@ import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
-import { bind } from '@ember/runloop';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
+import { builderOptions, builderFilters, addQueryBuilder } from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
@@ -203,6 +202,8 @@ export default class QueryInputComponent extends Component {
     let originalSummary = this.filterChangeset.get('summary');
     let currentFilterSummary = this.currentFilterSummary;
     if (!isEqual(originalSummary, currentFilterSummary)) {
+      console.log(originalSummary);
+      console.log(currentFilterSummary);
       this.filterChangeset.set('summary', this.currentFilterSummary);
     }
     return this.filterChangeset;
@@ -285,6 +286,11 @@ export default class QueryInputComponent extends Component {
     $(this.queryBuilderInputs).removeAttr('disabled');
   }
 
+  dirtyFilter() {
+    this.filterChanged = true;
+    this.args.onDirty();
+  }
+
   validateFilter() {
     let element = this.queryBuilderElement;
     return $(element).queryBuilder('validate');
@@ -328,23 +334,9 @@ export default class QueryInputComponent extends Component {
 
   @action
   addQueryBuilder(element) {
-    $(element).queryBuilder(this.queryBuilderOptions);
-    // Need to use bind to put it in the ember run loop for linting
-    $(element).on('rulesChanged.queryBuilder', bind(this, () => {
-      this.filterChanged = true;
-      this.args.onDirty();
-    }));
-    let event = [
-      'afterUpdateRuleFilter.queryBuilder',
-      'afterUpdateRuleOperator.queryBuilder',
-      'afterUpdateRuleSubfield.queryBuilder',
-      'afterUpdateRuleValue.queryBuilder'
-    ];
-    $(element).on(event.join(' '), bind(this, () => {
-      this.validateFilter();
-    }));
+    addQueryBuilder($(element), this.queryBuilderOptions, this, this.dirtyFilter, this.validateFilter);
     // Do this to set the summary for newly created queries with default filters
-    this.setFilter()
+    this.setFilter();
   }
 
   @action
