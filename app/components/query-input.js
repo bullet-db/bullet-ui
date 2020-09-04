@@ -202,8 +202,6 @@ export default class QueryInputComponent extends Component {
     let originalSummary = this.filterChangeset.get('summary');
     let currentFilterSummary = this.currentFilterSummary;
     if (!isEqual(originalSummary, currentFilterSummary)) {
-      console.log(originalSummary);
-      console.log(currentFilterSummary);
       this.filterChangeset.set('summary', this.currentFilterSummary);
     }
     return this.filterChangeset;
@@ -312,6 +310,7 @@ export default class QueryInputComponent extends Component {
     if (!this.validateFilter()) {
       validations.push(this.queryManager.createValidationError('There is an issue with the filters'));
     }
+    this.isValidating = false;
     if (!isEmpty(validations)) {
       throw validations;
     }
