@@ -4,13 +4,13 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { A } from '@ember/array';
-import $ from 'jquery';
 import { isNone, isEqual } from '@ember/utils';
 import EmberObject, { computed } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import Service, { inject as service } from '@ember/service';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import Filterizer, { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
+import QueryConverter from 'bullet-ui/utils/query-converter';
 import {
   AGGREGATION_TYPES, DISTRIBUTION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
@@ -38,6 +38,15 @@ export default class QuerierService extends Service {
     let aggregation = this.defaultAPIAggregation;
     aggregation.type = AGGREGATION_TYPES.description(aggregation.type);
     return aggregation;
+  }
+
+  /**
+   * Converts an internal Ember Bullet query to the API query specification.
+   * @param {Object} query An Ember Data object representing the query.
+   * @return {Object} The API Bullet query.
+   */
+  reformat(query) {
+    return QueryConverter.createBQL(query);
   }
 
   /**
@@ -69,36 +78,6 @@ export default class QuerierService extends Service {
     return query;
   }
 
-  /**
-   * Converts an internal Ember Bullet query to the API query specification.
-   * @param {Object} query An Ember Data object representing the query.
-   * @return {Object} The API Bullet query.
-   */
-  reformat(query) {
-    let json = { };
-    let filter = this.reformatFilter(query.get('filter'));
-    let projection = this.reformatProjections(query.get('projections'));
-    let aggregation = this.reformatAggregation(query.get('aggregation'));
-
-    if (!query.get('isWindowless')) {
-      json.window = this.reformatWindow(query.get('window'));
-    }
-
-    if (filter) {
-      json.filters = [filter];
-    }
-    if (!this.apiMode) {
-      QuerierService.assignIfTruthy(json, 'name', query.get('name'));
-      QuerierService.assignIfTruthy(json, 'filterSummary', query.get('filter.summary'));
-    }
-    if (projection) {
-      json.projection = { fields: projection };
-    }
-    QuerierService.assignIfTruthy(json, 'aggregation', aggregation);
-    json.duration = Number(query.get('duration')) * 1000;
-    return json;
-  }
-
   recreateFilter(json) {
     if (isNone(json)) {
       return false;
@@ -107,37 +86,11 @@ export default class QuerierService extends Service {
     return this.filterizer.convertClauseToRule(rule);
   }
 
-  reformatFilter(filter) {
-    if (isNone(filter)) {
-      return false;
-    }
-    let clause = filter.get('clause');
-    if (!clause || $.isEmptyObject(clause)) {
-      return false;
-    }
-    let converted = this.filterizer.convertRuleToClause(clause);
-    let innerClauses = converted.clauses;
-    if (isEmpty(innerClauses)) {
-      return false;
-    }
-    // If we got here, we should have a valid clause.
-    let innerClause = converted.clauses[0];
-    // Unbox if it's a single simple filter nested inside
-    if (innerClauses.length === 1 && !this.filterizer.isLogical(innerClause.operation)) {
-      return innerClause;
-    }
-    return converted;
-  }
-
   recreateProjections(json) {
     if (isEmpty(json)) {
       return false;
     }
     return this.makeFields(json.fields);
-  }
-
-  reformatProjections(projections) {
-    return this.getFields(projections);
   }
 
   recreateAggregation(json) {
@@ -179,39 +132,6 @@ export default class QuerierService extends Service {
     });
   }
 
-  reformatAggregation(aggregation) {
-    if (isEmpty(aggregation)) {
-      return false;
-    }
-    let json = { };
-    let fields = this.getFields(aggregation.get('groups'));
-    let attributes = this.getAttributes(aggregation);
-
-    json.type = QuerierService.spaceCase(AGGREGATION_TYPES.name(aggregation.get('type')));
-    json.size = Number(aggregation.get('size'));
-    QuerierService.assignIfTruthy(json, 'fields', fields);
-    QuerierService.assignIfTruthy(json, 'attributes', attributes);
-
-    return json;
-  }
-
-  reformatWindow(window) {
-    let emitType = window.get('emitType');
-    let emitEvery = window.get('emitEvery');
-    let json = {
-      emit: {
-        type: EMIT_TYPES.name(emitType),
-        every: isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? Number(emitEvery) * 1000 : Number(emitEvery)
-      }
-    };
-
-    let includeType = window.get('includeType');
-    if (isEqual(includeType, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL))) {
-      json.include = { type: INCLUDE_TYPES.name(includeType) };
-    }
-    return json;
-  }
-
   makeFields(json, fieldName = 'field', valueName = 'name') {
     if (isEmpty(json)) {
       return false;
@@ -224,17 +144,6 @@ export default class QuerierService extends Service {
       fields.pushObject(field);
     }
     return fields;
-  }
-
-  getFields(enumerable, sourceName = 'field', targetName = 'name') {
-    if (isEmpty(enumerable)) {
-      return false;
-    }
-    let json = { };
-    enumerable.forEach(item => {
-      json[item.get(sourceName)] = item.get(targetName);
-    });
-    return json;
   }
 
   makeAttributes(json) {
@@ -263,33 +172,6 @@ export default class QuerierService extends Service {
     return EmberObject.create(attributes);
   }
 
-  getAttributes(aggregation) {
-    let json = { };
-
-    // COUNT_DISTINCT, TOP_K
-    QuerierService.assignIfTruthy(json, 'newName', aggregation.get('attributes.newName'));
-
-    // DISTRIBUTION
-    QuerierService.assignIfTruthyNumeric(json, 'start', aggregation.get('attributes.start'));
-    QuerierService.assignIfTruthyNumeric(json, 'end', aggregation.get('attributes.end'));
-    QuerierService.assignIfTruthyNumeric(json, 'increment', aggregation.get('attributes.increment'));
-    QuerierService.assignIfTruthyNumeric(json, 'numberOfPoints', aggregation.get('attributes.numberOfPoints'));
-    QuerierService.assignIfTruthy(json, 'points', this.getPoints(aggregation.get('attributes.points')));
-    if (!this.apiMode) {
-      QuerierService.assignIfTruthy(json, 'pointType', aggregation.get('attributes.pointType'));
-    }
-    QuerierService.assignIfTruthy(json, 'type', DISTRIBUTION_TYPES.name(aggregation.get('attributes.type')));
-
-    // TOP_K
-    QuerierService.assignIfTruthyNumeric(json, 'threshold', aggregation.get('attributes.threshold'));
-
-    // GROUP
-    let operations = this.getGroupOperations(aggregation.get('metrics'));
-    QuerierService.assignIfTruthy(json, 'operations', operations);
-
-    return $.isEmptyObject(json) ? false : json;
-  }
-
   makeMetrics(attributes) {
     if (isEmpty(attributes)) {
       return false;
@@ -312,34 +194,11 @@ export default class QuerierService extends Service {
     return groupOperations;
   }
 
-  getGroupOperations(metrics) {
-    if (isEmpty(metrics)) {
-      return false;
-    }
-    let json = [];
-    metrics.forEach(item => {
-      let invertedType = METRIC_TYPES.name(item.get('type'));
-      let metric = { type: invertedType };
-      QuerierService.assignIfTruthy(metric, 'field', item.get('field'));
-      QuerierService.assignIfTruthy(metric, 'newName', item.get('name'));
-      json.push(metric);
-    });
-    return json;
-  }
-
   makePoints(points) {
     if (isEmpty(points)) {
       return false;
     }
     return points.join(',');
-  }
-
-  getPoints(points) {
-    let json = [];
-    if (!isEmpty(points)) {
-      points.split(',').map(s => s.trim()).forEach(n => json.push(parseFloat(n)));
-    }
-    return json;
   }
 
   static snakeCase(string) {

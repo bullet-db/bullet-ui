@@ -9,8 +9,6 @@ import {
   AGGREGATION_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
 
-const MS_SECOND = 1000;
-
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
  * from BQL. It does not the support the full BQL interface.
@@ -151,7 +149,7 @@ export default class QueryConverter {
   }
 
   static createFrom(query) {
-    let duration = Number(query.get('duration')) * MS_SECOND;
+    let duration = Number(query.get('duration')) * 1000;
     return `FROM STREAM(${duration}, TIME)`
   }
 
