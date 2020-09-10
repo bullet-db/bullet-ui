@@ -199,7 +199,7 @@ function fixRuleInput(event, rule) {
 }
 
 // This exists to fix values that get set to non-strings when in or rlike is used with no comma
-function fixRuleValue(event, rule, previousValue) {
+function fixRuleValue(event, rule) {
   let value = rule.value;
   if (value === undefined || typeof value === 'string') {
     return;
@@ -215,7 +215,7 @@ function fixValidation(event, value, rule) {
   let operator = rule.operator.type;
   let result = event.value;
   // Force ok: not valid, non-string, number errors for in or rlike rules
-  if (result !== true && result.indexOf('number_nan') !== -1 && rule.type !== 'string' && isMultipleOperator(rule.operator.type)) {
+  if (result !== true && result.indexOf('number_nan') !== -1 && rule.type !== 'string' && isMultipleOperator(operator)) {
     event.value = true;
   }
 }

@@ -6,15 +6,10 @@
 import { isNone, isEqual } from '@ember/utils';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import {
-  AGGREGATION_TYPES, DISTRIBUTION_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
+  AGGREGATION_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
 
 const MS_SECOND = 1000;
-
-const LEFT_PAREN = '(';
-const RIGHT_PAREN = ')';
-
-const FROM_STREAM = 'FROM STREAM('
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
@@ -27,6 +22,7 @@ export default class QueryConverter {
    * @return {Object} An Ember Object that looks like the Ember Data representation.
    */
   createQuery(bql) {
+    return bql;
   }
 
   /**
@@ -36,31 +32,31 @@ export default class QueryConverter {
    */
   static createBQL(query) {
     let aggregation = query.get('aggregation');
-    let type = AGGREGATION_TYPES.forName(AGGREGATION_TYPES.name(query.get('aggregation.type')));
+    let type = AGGREGATION_TYPES.forName(AGGREGATION_TYPES.name(aggregation.get('type')));
 
+    // No need for HAVING or ORDER
     let select = QueryConverter.createSelect(type, query, aggregation);
     let from = QueryConverter.createFrom(query);
-    let where = QueryConverter.createWhere(query.get('filter'));
-    let groupBy = QueryConverter.createGroupBy(type, aggregation);
-    // No need for HAVING
-    // No need for ORDER
-    let windowing = QueryConverter.createWindowing(query.get('window'));
-    let limit = QueryConverter.createLimit(type, aggregation);
-    return `${select} ${from} ${where} ${groupBy} ${windowing} ${limit}`;
+    let where = QueryConverter.createOptionalWhere(query.get('filter'));
+    let groupBy = QueryConverter.createOptionalGroupBy(type, aggregation);
+    let windowing = QueryConverter.createOptionalWindowing(query.get('window'));
+    let limit = QueryConverter.createOptionalLimit(type, aggregation);
+    // Optionals are responsible for adding a trailing space if they exist
+    return `${select} ${from} ${where}${groupBy}${windowing}${limit};`;
   }
 
   static createSelect(type, query, aggregation) {
     switch (type) {
       case AGGREGATION_TYPES.RAW:
-        return createSelectRaw(query);
+        return QueryConverter.createSelectRaw(query);
       case AGGREGATION_TYPES.COUNT_DISTINCT:
-        return createSelectCountDistinct(aggregation);
+        return QueryConverter.createSelectCountDistinct(aggregation);
       case AGGREGATION_TYPES.GROUP:
-        return createSelectGroup(aggregation);
+        return QueryConverter.createSelectGroup(aggregation);
       case AGGREGATION_TYPES.DISTRIBUTION:
-        return createSelectDistribution(aggregation);
+        return QueryConverter.createSelectDistribution(aggregation);
       case AGGREGATION_TYPES.TOP_K:
-        return createSelectTopK(aggregation);
+        return QueryConverter.createSelectTopK(aggregation);
     }
   }
 
@@ -69,13 +65,12 @@ export default class QueryConverter {
     if (isEmpty(projections)) {
       return 'SELECT *';
     }
-    return `SELECT ${projections.map(projection => QueryConverter.createField(projection)).toArray().join(', ')}`;
+    return `SELECT ${projections.map(projection => QueryConverter.createField(projection)).join(', ')}`;
   }
 
   static createSelectCountDistinct(aggregation) {
-    let fields = aggregation.get('groups');
+    let fields = aggregation.get('groups').mapBy('field').join(', ');
     let alias = aggregation.get('attributes.newName');
-    fields = fields.mapBy('field').toArray().join(', ');
     let optionalAlias = isEmpty(alias) ? '' : ` AS "${alias}"`;
     return `SELECT COUNT(DISTINCT ${fields})${optionalAlias}`;
   }
@@ -84,21 +79,22 @@ export default class QueryConverter {
     let groups = aggregation.get('groups');
     let metrics = aggregation.get('metrics');
 
-    let fields = groups.map(group => QueryConverter.createField(group)).toArray().join(', ');
+    let fields = groups.map(group => QueryConverter.createField(group)).join(', ');
     let aggregates = metrics.map(metric => {
       let operation = METRIC_TYPES.name(metric.get('type'));
       let type = METRIC_TYPES.forName(operation);
+      let alias = metric.get('name');
+      let optionalAlias = isEmpty(alias) ? '' : ` AS "${alias}"`;
       switch (type) {
         case METRIC_TYPES.COUNT:
-          return `COUNT(*)`;
+          return `COUNT(*)${optionalAlias}`;
         case METRIC_TYPES.SUM:
-        case METRIC_TYPES.COUNT:
         case METRIC_TYPES.MIN:
         case METRIC_TYPES.MAX:
         case METRIC_TYPES.AVG:
-          return `${operation}(${metric.get('field')}) AS "${metric.get('name')}"`
+          return `${operation}(${metric.get('field')})${optionalAlias}`
       }
-    }).toArray().join(', ');
+    }).join(', ');
 
     if (isEmpty(groups)) {
       return `SELECT ${aggregates}`;
@@ -112,26 +108,29 @@ export default class QueryConverter {
   static createSelectDistribution(aggregation) {
     let distribution = DISTRIBUTION_TYPES.name(aggregation.get('attributes.type'));
     // Only one
-    let field = aggregation.get('groups').map(group => QueryConverter.createField(group)).firstObject;
+    let field = aggregation.get('groups').mapBy('field')[0];
 
     let pointType = DISTRIBUTION_POINT_TYPES.name(aggregation.get('attributes.pointType'));
     let type = DISTRIBUTION_POINT_TYPES.forName(pointType);
     let points;
     switch (type) {
-      case DISTRIBUTION_POINT_TYPES.NUMBER:
+      case DISTRIBUTION_POINT_TYPES.NUMBER: {
         let numberOfPoints = parseFloat(aggregation.get('attributes.numberOfPoints'));
         points = `LINEAR, ${numberOfPoints}`;
         break;
-      case DISTRIBUTION_POINT_TYPES.POINTS:
+      }
+      case DISTRIBUTION_POINT_TYPES.POINTS: {
         let manual = aggregation.get('attributes.points');
         points = `MANUAL, ${manual.split(',').map(p => parseFloat(p.trim())).join(', ')}`;
         break;
-      case DISTRIBUTION_POINT_TYPES.GENERATED:
+      }
+      case DISTRIBUTION_POINT_TYPES.GENERATED: {
         let start = parseFloat(aggregation.get('attributes.start'));
         let end = parseFloat(aggregation.get('attributes.end'));
         let increment = parseFloat(aggregation.get('attributes.increment'));
         points = `REGION, ${start}, ${end}, ${increment}`;
         break;
+      }
     }
     return `SELECT ${distribution}(${field}, ${points})`;
   }
@@ -141,12 +140,12 @@ export default class QueryConverter {
     let k = Number(aggregation.get('size'));
     let threshold = aggregation.get('attributes.threshold');
     let optionalThreshold = isEmpty(threshold) ? '' : `, ${Number(threshold)}`;
-    let fields = groups.mapBy('field').toArray().join(', ');
+    let fields = groups.mapBy('field').join(', ');
 
     let newName = aggregation.get('attributes.newName');
     let optionalAlias = isEmpty(newName) ? '' : ` AS "${newName}"`;
 
-    let renames = groups.map(field => QueryConverter.createField(field)).toArray().join(', ');
+    let renames = groups.map(field => QueryConverter.createField(field)).join(', ');
 
     return `SELECT TOP(${k}${optionalThreshold}, ${fields})${optionalAlias}, ${renames}`;
   }
@@ -156,22 +155,27 @@ export default class QueryConverter {
     return `FROM STREAM(${duration}, TIME)`
   }
 
-  static createWhere(filter) {
+  static createOptionalWhere(filter) {
     if (isNone(filter)) {
       return '';
     }
-    return filter.get('summary');
+    let summary = filter.get('summary');
+    // Shouldn't get filters with no summaries ideally
+    return isEmpty(summary) ? '' : `WHERE ${summary} `;
   }
 
-  static createGroupBy(type, aggregation) {
-    let fields = aggregation.get('groups');
-    if (type !== AGGREGATION_TYPES.GROUP || isEmpty(fields)) {
+  static createOptionalGroupBy(type, aggregation) {
+    if (type !== AGGREGATION_TYPES.GROUP) {
       return '';
     }
-    return `GROUP BY ${fields.mapBy('field').toArray().join(', ')}`;
+    let fields = aggregation.get('groups');
+    if (isEmpty(fields)) {
+      return '';
+    }
+    return `GROUP BY ${fields.mapBy('field').join(', ')} `;
   }
 
-  static createWindowing(window) {
+  static createOptionalWindowing(window) {
     if (isEmpty(window)) {
       return '';
     }
@@ -179,23 +183,22 @@ export default class QueryConverter {
     let emitEvery = window.get('emitEvery');
     emitEvery = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? Number(emitEvery) * 1000 : Number(emitEvery);
     let type = EMIT_TYPES.name(emitType);
-    let isAll = isEqual(window.get('includeType'), INCLUDE_TYPES.describe(INCLUDE_TYPES.START));
-    return isAll ? `WINDOWING EVERY(${emitEvery}, ${type}, ALL)` : `WINDOWING TUMBLING(${emitEvery}, ${type})`;
+    let isAll = isEqual(window.get('includeType'), INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
+    return isAll ? `WINDOWING EVERY(${emitEvery}, ${type}, ALL) ` : `WINDOWING TUMBLING(${emitEvery}, ${type}) `;
   }
 
-  static createLimit(type, aggregation) {
+  static createOptionalLimit(type, aggregation) {
     switch (type) {
       case AGGREGATION_TYPES.RAW:
       case AGGREGATION_TYPES.GROUP:
       case AGGREGATION_TYPES.DISTRIBUTION:
-        let size = Number(aggregation.get('size'));
-        return `LIMIT ${size}`;
+        return `LIMIT ${Number(aggregation.get('size'))} `;
       default:
         return '';
     }
   }
 
   static createField(field, fieldName = 'field', aliasName = 'name') {
-    return `"${field.get(fieldName)}" AS "${field.get(aliasName)}"`;
+    return `${field.get(fieldName)} AS "${field.get(aliasName)}"`;
   }
 }

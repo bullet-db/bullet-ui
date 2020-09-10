@@ -33,7 +33,7 @@ const COUNT_DISTINCT = { name: 'COUNT_DISTINCT', description: 'Count Distinct' }
 const DISTRIBUTION = { name: 'DISTRIBUTION', description: 'Distribution' };
 const TOP_K = { name: 'TOP_K', description: 'Top K' };
 
-const ALL =  { name: 'ALL', description: 'All' };
+const ALL_RAW =  { name: 'ALL', description: 'All' };
 const SELECT =  { name: 'SELECT', description: 'Select' };
 
 const QUANTILE = { name: 'QUANTILE', description: 'Quantile' };
@@ -54,12 +54,12 @@ const TIME = { name: 'TIME', description: 'Time Based' };
 const RECORD = { name: 'RECORD', description: 'Record Based' };
 
 const WINDOW = { name: 'WINDOW', description: 'Everything in Window' };
-const START = { name: 'ALL', description: 'Everything from Start of Query' };
+const ALL_INCLUDE = { name: 'ALL', description: 'Everything from Start of Query' };
 
 export const AGGREGATION_TYPES = DescribableEnum.of([RAW, GROUP, COUNT_DISTINCT, DISTRIBUTION, TOP_K]);
-export const RAW_TYPES = DescribableEnum.of([ALL, SELECT]);
+export const RAW_TYPES = DescribableEnum.of([ALL_RAW, SELECT]);
 export const DISTRIBUTION_TYPES = DescribableEnum.of([QUANTILE, FREQ, CUMFREQ]);
 export const DISTRIBUTION_POINT_TYPES = DescribableEnum.of([NUMBER, POINTS, GENERATED]);
 export const METRIC_TYPES = DescribableEnum.of([COUNT, SUM, MIN, MAX, AVG]);
 export const EMIT_TYPES = DescribableEnum.of([TIME, RECORD]);
-export const INCLUDE_TYPES = DescribableEnum.of([WINDOW, START]);
+export const INCLUDE_TYPES = DescribableEnum.of([WINDOW, ALL_INCLUDE]);
