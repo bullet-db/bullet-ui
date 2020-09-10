@@ -305,7 +305,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF)
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -313,7 +313,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.FREQ), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -324,7 +324,7 @@ module('Unit | Service | querier', function(hooks) {
     let query = MockQuery.create({ duration: 10 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF)
+      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CUMFREQ)
     });
     query.addGroup('foo', 'foo');
     assert.deepEqual(service.reformat(query), {
@@ -332,7 +332,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CUMFREQ), numberOfPoints: 15 }
       },
       duration: 10000
     });
@@ -754,7 +754,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.FREQ), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -764,7 +764,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF), numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ), numberOfPoints: 15 }
       },
       duration: 10
     });
@@ -777,7 +777,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: QuerierService.spaceCase(AGGREGATION_TYPES.forSymbol(AGGREGATION_TYPES.DISTRIBUTION)),
         fields: { foo: 'foo' },
-        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.forSymbol(DISTRIBUTION_TYPES.CUMFREQ), numberOfPoints: 15 }
       },
       duration: 10000
     };
@@ -787,7 +787,7 @@ module('Unit | Service | querier', function(hooks) {
         size: 500,
         type: 'Distribution',
         groups: [{ field: 'foo', name: 'foo' }],
-        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CDF), numberOfPoints: 15 }
+        attributes: { type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CUMFREQ), numberOfPoints: 15 }
       },
       duration: 10
     });

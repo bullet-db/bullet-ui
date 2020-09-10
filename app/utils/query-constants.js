@@ -37,8 +37,8 @@ const ALL =  { name: 'ALL', description: 'All' };
 const SELECT =  { name: 'SELECT', description: 'Select' };
 
 const QUANTILE = { name: 'QUANTILE', description: 'Quantile' };
-const PMF = { name: 'PMF', description: 'Frequency' };
-const CDF = { name: 'CDF', description: 'Cumulative Frequency' };
+const FREQ = { name: 'FREQ', description: 'Frequency' };
+const CUMFREQ = { name: 'CUMFREQ', description: 'Cumulative Frequency' };
 
 const NUMBER =  { name: 'NUMBER', description: 'Number' };
 const POINTS =  { name: 'POINTS', description: 'Points' };
@@ -58,7 +58,7 @@ const START = { name: 'ALL', description: 'Everything from Start of Query' };
 
 export const AGGREGATION_TYPES = DescribableEnum.of([RAW, GROUP, COUNT_DISTINCT, DISTRIBUTION, TOP_K]);
 export const RAW_TYPES = DescribableEnum.of([ALL, SELECT]);
-export const DISTRIBUTION_TYPES = DescribableEnum.of([QUANTILE, PMF, CDF]);
+export const DISTRIBUTION_TYPES = DescribableEnum.of([QUANTILE, FREQ, CUMFREQ]);
 export const DISTRIBUTION_POINT_TYPES = DescribableEnum.of([NUMBER, POINTS, GENERATED]);
 export const METRIC_TYPES = DescribableEnum.of([COUNT, SUM, MIN, MAX, AVG]);
 export const EMIT_TYPES = DescribableEnum.of([TIME, RECORD]);

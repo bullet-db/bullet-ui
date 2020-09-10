@@ -38,7 +38,7 @@ module('Unit | Validator | valid points', function(hooks) {
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
-        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF),
+        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
         numberOfPoints: null
       }
     });
@@ -65,7 +65,7 @@ module('Unit | Validator | valid points', function(hooks) {
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED),
-        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF),
+        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
         start: 15,
         end: 500,
         increment: 50
@@ -127,7 +127,7 @@ module('Unit | Validator | valid points', function(hooks) {
       settings: SETTINGS,
       attributes: {
         pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS),
-        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.PMF),
+        type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
         points: ''
       }
     });

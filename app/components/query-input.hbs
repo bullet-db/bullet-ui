@@ -206,16 +206,16 @@
                   Quantiles
                 </RadioButton>
                 <RadioButton @id="frequency" @checkedValue={{this.distributionType}}
-                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.PMF}}
+                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.FREQ}}
                              @updated={{fn (mut this.distributionType)}}
-                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.PMF}}
+                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.FREQ}}
                              @disabled={{this.isListening}}>
                   Frequencies
                 </RadioButton>
                 <RadioButton @id="cumulative" @checkedValue={{this.distributionType}}
-                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.CDF}}
+                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.CUMFREQ}}
                              @updated={{fn (mut this.distributionType)}}
-                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.CDF}}
+                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.CUMFREQ}}
                              @disabled={{this.isListening}}>
                   Cumulative Frequencies
                 </RadioButton>
