@@ -3,11 +3,38 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import EmberObject from '@ember/object';
 import { isNone, isEqual } from '@ember/utils';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import {
   AGGREGATION_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
+
+/**
+ * Creates a non-capturing group for the given keyword and captures the content (non-greedily) after the keyword
+ * in a named group with the given groupName
+  * @param {[type]} keyword The keyword to capture. If multiple words, will be converted to have one or more whitespace.
+  * @param {[type]} groupName The name of the capture group for the content after the keyword (non-greedy).
+  * @return {[type]} A String that represents the regex.
+  */
+function regex(keyword, groupName) {
+  // Split by whitespace and join back the words using the literal '\s+;'
+  keyword = keyword.split(/\s+/).join('\\s+');
+  return `(?:${keyword}\\s+(?<${groupName}>.+?))`
+}
+
+const S = regex('SELECT', 'select');
+const F = regex('FROM', 'from');
+const WH = regex('WHERE', 'where');
+const G = regex('GROUP BY', 'groupBy');
+const H = regex('HAVING', 'having');
+const O = regex('ORDER BY', 'orderBy');
+const WI = regex('WINDOWING', 'windowing');
+const L = regex('LIMIT', 'limit');
+// Handles Having and Order By as well
+const SQL = new RegExp(`^${S}\\s+${F}\\s+${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
+
+const STREAM = /(?:STREAM\s*\((?<duration>\d*)(?:,\s*TIME)?\))/i
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
@@ -19,12 +46,49 @@ export default class QueryConverter {
    * @param {Object} bql The String BQL query.
    * @return {Object} An Ember Object that looks like the Ember Data representation.
    */
-  createQuery(bql) {
-    return bql;
+  static recreateQuery(bql) {
+    let query = EmberObject.create();
+    if (isEmpty(bql)) {
+      return query;
+    }
+    let result = bql.match(SQL);
+    // Ignore orderBy and having
+    let { select, from, where, groupBy, windowing, limit } = result.groups;
+    QueryConverter.recreateFilter(query, where);
+    QueryConverter.recreateProjections(query, select);
+    QueryConverter.recreateAggregation(query, select, groupBy, limit);
+    QueryConverter.recreateWindow(query, windowing);
+    QueryConverter.recreateDuration(query, from);
+    return query;
+  }
+
+  static recreateFilter(query, where) {
+    if (isEmpty(where)) {
+      return;
+    }
+    let filter = EmberObject.create();
+    filter.set('summary', where);
+    query.set('filter', filter);
+  }
+
+  static recreateProjections(query, select) {
+  }
+
+  static recreateAggregation(query, select, groupby, limit) {
+  }
+
+  static recreateWindow(query, windowing) {
+  }
+
+  static recreateDuration(query, from) {
+    let { duration } = from.match(STREAM).groups;
+    if (duration) {
+      query.set('duration', Number(duration) / 1000);
+    }
   }
 
   /**
-   * Reformats a Ember Data like representation to a BQL query.
+   * Creates a BQL query from a Ember Data like representation.
    * @param {Object} query An Ember Object that looks like the Ember Data representation of a query.
    * @return {Object} A String BQL query.
    */
