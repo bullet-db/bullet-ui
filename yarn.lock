@@ -13121,6 +13121,11 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
+sql-parser-mistic@~1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/sql-parser-mistic/-/sql-parser-mistic-1.2.3.tgz#338b8685bd9fe7844df0dccc01afc2ebca0950ea"
+  integrity sha512-2jyVSr7jIgbeFnPW8JO4hTMkDP5mTxbbWX+P7GcCbCwHp+ffiJeQGBK4dDLoPZvexK2Wgy0aUBfsWgc2DPhYRg==
+
 sri-toolbox@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/sri-toolbox/-/sri-toolbox-0.2.0.tgz#a7fea5c3fde55e675cf1c8c06f3ebb5c2935835e"

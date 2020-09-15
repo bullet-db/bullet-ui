@@ -90,6 +90,11 @@ export function builderOptions() {
       is_not_null: { op: 'IS NOT NULL' },
       rlike: { op: 'RLIKE ANY [?]' }
     },
+    sqlRuleOperator: {
+      'RLIKE ANY': (val) => {
+        return { op: 'rlike', val: val };
+      }
+    },
     icons: {
       add_group: 'fa fa-plus',
       add_rule: 'fa fa-plus',

@@ -119,7 +119,8 @@
     "qunit-dom": "^1.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "sass": "^1.26.3",
-    "sockjs-client": "~1.4.0"
+    "sockjs-client": "~1.4.0",
+    "sql-parser-mistic": "~1.2.3"
   },
   "resolutions": {
     "ember-composable-helpers": "^3.1.1",

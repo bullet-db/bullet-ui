@@ -48,6 +48,7 @@ module.exports = function(defaults) {
   app.import('node_modules/jQuery-QueryBuilder-Subfield/query-builder-subfield.js');
   app.import('node_modules/jQuery-QueryBuilder-Subfield/query-builder-subfield.css');
   app.import('node_modules/jQuery-QueryBuilder-Placeholders/query-builder-placeholders.js');
+  app.import('node_modules/sql-parser-mistic/browser/sql-parser.js');
 
   // FileSaver
   app.import('node_modules/file-saver/dist/FileSaver.js');
