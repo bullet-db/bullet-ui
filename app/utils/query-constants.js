@@ -22,6 +22,10 @@ export class DescribableEnum extends Enum {
     return this.names.find(name => this.description(name) === description);
   }
 
+  identify(symbol) {
+    return this.getMetaEntryForSymbol(symbol, 'name');
+  }
+
   static of(names) {
     return new DescribableEnum(names);
   }

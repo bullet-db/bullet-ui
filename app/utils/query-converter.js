@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import { A } from '@ember/array';
 import EmberObject from '@ember/object';
 import { isNone, isEqual } from '@ember/utils';
 import isEmpty from 'bullet-ui/utils/is-empty';
@@ -23,6 +24,7 @@ function regex(keyword, groupName) {
   return `(?:${keyword}\\s+(?<${groupName}>.+?))`
 }
 
+// Full BQL regexes
 const S = regex('SELECT', 'select');
 const F = regex('FROM', 'from');
 const WH = regex('WHERE', 'where');
@@ -32,29 +34,60 @@ const O = regex('ORDER BY', 'orderBy');
 const WI = regex('WINDOWING', 'windowing');
 const L = regex('LIMIT', 'limit');
 // Handles Having and Order By as well
-const SQL = new RegExp(`^${S}\\s+${F}\\s+${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
+const SQL = new RegExp(`^${S}\\s+${F}\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
 
-const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i
-const EVERY = /(?:EVERY\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*(?:,\s*(?<all>ALL))?\s*\))/i
-const TUMBLING = /(?:TUMBLING\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*\))/i
+// Sub-BQL to Query parts regexes
+const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i;
+const EVERY = /(?:EVERY\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*(?:,\s*(?<all>ALL))?\s*\))/i;
+const TUMBLING = /(?:TUMBLING\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*\))/i;
+const COUNT_DISTINCT = /COUNT\s*\(\s*DISTINCT (?<fields>.+?)\)\s*(?:AS\s+(?<alias>.+?))?$/i;
+const DISTRIBUTION = /.+?\s*\(\s*(?<field>.+?)\s*,\s*(?<points>.+?)\s*\)/i;
+const TOP_K = /.*?TOP\s*\(\s*(?<k>\d+)\s*(?:,\s*(?<threshold>\d+))?\s*,\s*(?<fields>.+?)\s*\)\s*(?:AS\s* (?<alias>.+?))?(?:,\s*(?<renames>.+?))?$/i;
+const FIELD = /\s*(?<name>.+?)\s* (?:AS \s*(?<alias>[^\s]+))?\s*/i
+
+// Aggregation Type test regexes
+const COUNT_DISTINCT_TEST = /.*?COUNT\s*\(\s*DISTINCT .+?\).*/i;
+const QUANTILE_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identity(DISTRIBUTION_TYPES.QUANTILE)}\\s*\\(.+?\\).*}`, 'i');
+const FREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identity(DISTRIBUTION_TYPES.FREQ)}\\s*\\(.+?\\).*}`, 'i');
+const CUMFREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identity(DISTRIBUTION_TYPES.CUMFREQ)}\\s*\\(.+?\\).*}`, 'i');
+const TOP_TEST = /.*?TOP\s*\(.+?\).*/i;
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
  * from BQL. It does not the support the full BQL interface.
  */
 export default class QueryConverter {
+  // BQL to Query methods
+
+  static classifyBQL(select, groupBy, limit) {
+    // The only kind of group by is supported in this converter - has to be GROUP
+    if (!isEmpty(groupBy)) {
+      return AGGREGATION_TYPES.GROUP;
+    }
+    if (COUNT_DISTINCT_TEST.test(select)) {
+      return AGGREGATION_TYPES.COUNT_DISTINCT;
+    }
+    if (TOP_TEST.test(select)) {
+      return AGGREGATION_TYPES.TOP_K;
+    }
+    if (QUANTILE_TEST.test(select) || FREQ_TEST.test(select) || CUMFREQ_TEST.test(select)) {
+      return AGGREGATION_TYPES.DISTRIBUTION;
+    }
+    return AGGREGATION_TYPES.RAW;
+  }
+
   /**
    * Recreates a Ember Data like representation from a BQL query.
    * @param {Object} bql The String BQL query.
    * @return {Object} An Ember Object that looks like the Ember Data representation.
    */
   static recreateQuery(bql) {
-    let query = EmberObject.create();
-    if (isEmpty(bql)) {
-      return query;
-    }
-    // Ignore orderBy and having
     let result = bql.match(SQL);
+    if (isEmpty(result)) {
+      return null;
+    }
+    let query = EmberObject.create();
+    // Ignore orderBy and having. Can throw error
     let { select, from, where, groupBy, windowing, limit } = result.groups;
 
     let type = classifyBQL(select, groupBy, limit);
@@ -76,6 +109,10 @@ export default class QueryConverter {
   }
 
   static recreateProjections(type, query, select) {
+    if (type !== AGGREGATION_TYPES.RAW) {
+      return;
+    }
+    QueryConverter.setIfTruthy(query, 'projection', QueryConverter.recreateFields(select));
   }
 
   static recreateAggregation(type, query, select, groupBy, limit) {
@@ -85,18 +122,86 @@ export default class QueryConverter {
     if (isEmpty(windowing)) {
       return;
     }
+    let result = windowing.match(TUMBLING);
+    if (isEmpty(result)) {
+      result = windowing.match(EVERY);
+      if (isEmpty(result)) {
+        return;
+      }
+    }
+    let window = EmberObject.create();
+    let { every, type, all } = result.groups;
+    let emitEvery, emitType, includeType;
+
+    emitEvery = Number(every);
+    type = type.toUpperCase();
+    if (type === EMIT_TYPES.identity(EMIT_TYPES.TIME)) {
+      emitType = EMIT_TYPES.describe(EMIT_TYPES.TIME);
+      emitEvery = emitEvery / 1000;
+    } else {
+      emitType = EMIT_TYPES.describe(EMIT_TYPES.RECORD);
+    }
+    includeType = all ? INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL) : INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
+    window.set('emitType', emitType);
+    window.set('emitEvery', emitEvery);
+    window.set('includeType', includeType);
+    query.set('window', window);
   }
 
   static recreateDuration(query, from) {
-    let { duration } = from.match(STREAM).groups;
-    if (duration) {
-      query.set('duration', Number(duration) / 1000);
+    let result = from.match(STREAM).groups;
+    if (!isEmpty(result) && result.duration) {
+      query.set('duration', Number(result.duration) / 1000);
     }
   }
 
-  static classifyBQL(select, groupBy, limit) {
-    return AGGREGATION_TYPES.RAW;
+  static recreateFields(fieldsString, fieldName = 'field', valueName = 'name') {
+    if (isEmpty(fieldsString)) {
+      return null;
+    }
+    let fields = A();
+    let fieldsArray = fieldsString.split(',');
+    fieldsArray.forEach(fieldString => {
+      let field = QueryConverter.recreateField(fieldString, fieldName, valueName);
+      if (QueryConverter.isTruthy(field)) {
+        fields.pushObject(field);
+      }
+    });
+    return fields;
   }
+
+  static recreateField(fieldString, fieldName, valueName) {
+    let result = fieldString.match(FIELD);
+    if (isEmpty(result)) {
+      return null;
+    }
+    let field = EmberObject.create();
+    let { name, alias } = result.groups;
+    QueryConverter.setIfTruthy(field, fieldName, name);
+    QueryConverter.setIfTruthy(field, valueName, QueryConverter.stripParentheses(alias));
+    return field;
+  }
+
+  static stripParentheses(alias) {
+    if (!isEmpty(alias) && (alias.startsWith('"') || alias.startsWith('\''))) {
+      return alias.slice(1, -1);
+    }
+    return alias;
+  }
+
+  static setIfTruthy(object, key, value) {
+    if (QueryConverter.isTruthy(value)) {
+      object.set(key, value);
+    }
+    return object;
+  }
+
+  static isTruthy(value) {
+    // Also works for boolean false -> Object.keys(false) = []
+    return !isEmpty(value) && Object.keys(value).length !== 0;
+  }
+
+  // Query to BQL methods
 
   static classifyQuery(aggregation) {
     return AGGREGATION_TYPES.forName(AGGREGATION_TYPES.name(aggregation.get('type')));
