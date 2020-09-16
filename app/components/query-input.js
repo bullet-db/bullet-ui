@@ -13,7 +13,7 @@ import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { builderOptions, builderFilters, addQueryBuilder } from 'bullet-ui/utils/builder-adapter';
+import { builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks } from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
@@ -173,19 +173,6 @@ export default class QueryInputComponent extends Component {
 
   // Helpers
 
-  setQueryBuilderRules() {
-    let element = this.queryBuilderElement;
-    let rules = this.filterChangeset.get('clause');
-    let summary = this.filterChangeset.get('summary');
-    if (rules && !$.isEmptyObject(rules)) {
-      $(element).queryBuilder('setRules', rules);
-    } else if (!isEmpty(summary)) {
-      $(element).queryBuilder('setRulesFromSQL', summary);
-    } else {
-      $(element).queryBuilder('setRules', EMPTY_CLAUSE);
-    }
-  }
-
   setFilter() {
     // This check is here because the changeset creates a wrapper for the object literal clause and that counts as a
     // change. Since we have an action for forcing dirty on a filter change, we can track this on a real change instead
@@ -194,7 +181,7 @@ export default class QueryInputComponent extends Component {
       this.filterChangeset.set('clause', this.currentFilterClause);
     }
     // Summary might change even without the clause changing because we can create it from the query builder's toSQL
-    this.summarizeFilter();
+    this.setFilterSummary();
   }
 
   setFilterSummary() {
@@ -341,10 +328,22 @@ export default class QueryInputComponent extends Component {
     if (isNone(this.filterChangeset)) {
       this.filterChangeset = await this.createOptionalModel('filter', this.filter);
     }
-    addQueryBuilder($(element), this.queryBuilderOptions, this, this.dirtyFilter, this.validateFilter);
+    let jQueryElement = $(element);
+    // Add the querybuilder
+    addQueryBuilder(jQueryElement, this.queryBuilderOptions);
     // Set the initial rules
-    this.setQueryBuilderRules();
-    // Do this to set the summary for newly created queries with default filters
+    let rules = this.filterChangeset.get('clause');
+    let summary = this.filterChangeset.get('summary');
+    if (rules && !$.isEmptyObject(rules)) {
+      jQueryElement.queryBuilder('setRules', rules);
+    } else if (!isEmpty(summary)) {
+      jQueryElement.queryBuilder('setRulesFromSQL', summary);
+    } else {
+      jQueryElement.queryBuilder('setRules', EMPTY_CLAUSE);
+    }
+    // Add the hooks after the initial rules for any further changes and for validation
+    addQueryBuilderHooks(jQueryElement, this, this.dirtyFilter, this.validateFilter);
+    // Do this to set the summary if changed for newly created queries. This forces the changeset to dirty if needed
     this.setFilterSummary();
   }
 

@@ -34,7 +34,9 @@ const L = regex('LIMIT', 'limit');
 // Handles Having and Order By as well
 const SQL = new RegExp(`^${S}\\s+${F}\\s+${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
 
-const STREAM = /(?:STREAM\s*\((?<duration>\d*)(?:,\s*TIME)?\))/i
+const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i
+const EVERY = /(?:EVERY\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*(?:,\s*(?<all>ALL))?\s*\))/i
+const TUMBLING = /(?:TUMBLING\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*\))/i
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
@@ -51,12 +53,14 @@ export default class QueryConverter {
     if (isEmpty(bql)) {
       return query;
     }
-    let result = bql.match(SQL);
     // Ignore orderBy and having
+    let result = bql.match(SQL);
     let { select, from, where, groupBy, windowing, limit } = result.groups;
+
+    let type = classifyBQL(select, groupBy, limit);
     QueryConverter.recreateFilter(query, where);
-    QueryConverter.recreateProjections(query, select);
-    QueryConverter.recreateAggregation(query, select, groupBy, limit);
+    QueryConverter.recreateProjections(type, query, select);
+    QueryConverter.recreateAggregation(type, query, select, groupBy, limit);
     QueryConverter.recreateWindow(query, windowing);
     QueryConverter.recreateDuration(query, from);
     return query;
@@ -71,13 +75,16 @@ export default class QueryConverter {
     query.set('filter', filter);
   }
 
-  static recreateProjections(query, select) {
+  static recreateProjections(type, query, select) {
   }
 
-  static recreateAggregation(query, select, groupby, limit) {
+  static recreateAggregation(type, query, select, groupBy, limit) {
   }
 
   static recreateWindow(query, windowing) {
+    if (isEmpty(windowing)) {
+      return;
+    }
   }
 
   static recreateDuration(query, from) {
@@ -87,6 +94,14 @@ export default class QueryConverter {
     }
   }
 
+  static classifyBQL(select, groupBy, limit) {
+    return AGGREGATION_TYPES.RAW;
+  }
+
+  static classifyQuery(aggregation) {
+    return AGGREGATION_TYPES.forName(AGGREGATION_TYPES.name(aggregation.get('type')));
+  }
+
   /**
    * Creates a BQL query from a Ember Data like representation.
    * @param {Object} query An Ember Object that looks like the Ember Data representation of a query.
@@ -94,7 +109,7 @@ export default class QueryConverter {
    */
   static createBQL(query) {
     let aggregation = query.get('aggregation');
-    let type = AGGREGATION_TYPES.forName(AGGREGATION_TYPES.name(aggregation.get('type')));
+    let type = QueryConverter.classifyQuery(aggregation);
 
     // No need for HAVING or ORDER
     let select = QueryConverter.createSelect(type, query, aggregation);

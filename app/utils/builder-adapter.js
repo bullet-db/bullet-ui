@@ -134,18 +134,26 @@ export function builderFilters(columns) {
 }
 
 /**
- * Given a JQuery Element and options, adds the QueryBuilder to it and adds the relevant hooks for dirty and validation.
+ * Given a JQuery Element and options, adds the QueryBuilder to it.
  * @param {JQueryElement} element The JQuery element to add the QueryBuilder to.
  * @param {[type]} options Initial options for the builder.
- * @param {[type]} context The this context for use for the hooks.
- * @param {[type]} dirtyHook The hook to invoke whenever something changes in the QueryBuilder.
- * @param {[type]} validateHook The hook to invoke for validation when something changes in the QueryBuilder.
  */
-export function addQueryBuilder(element, options, context, dirtyHook, validateHook) {
+export function addQueryBuilder(element, options) {
   // This needs to be bound BEFORE the querybuilder is initialized to create inputs with the right types
   element.on('getRuleInput.queryBuilder.filter', bind(this, fixRuleInput));
   element.on('afterUpdateRuleValue.queryBuilder', bind(this, fixRuleValue));
   element.queryBuilder(options);
+  element.on('ruleToSQL.queryBuilder.filter', bind(this, fixSQLForRule));
+  element.on('validateValue.queryBuilder.filter', bind(this, fixValidation));
+}
+
+/**
+ * Given a JQuery Element with the QueryBuilder, adds the relevant hooks for dirty and validation.
+ * @param {[type]} context The this context for use for the hooks.
+ * @param {[type]} dirtyHook The hook to invoke whenever something changes in the QueryBuilder.
+ * @param {[type]} validateHook The hook to invoke for validation when something changes in the QueryBuilder.
+ */
+export function addQueryBuilderHooks(element, context, dirtyHook, validateHook) {
   element.on('rulesChanged.queryBuilder', bind(context, dirtyHook));
   let event = [
     'afterUpdateRuleFilter.queryBuilder',
@@ -154,8 +162,6 @@ export function addQueryBuilder(element, options, context, dirtyHook, validateHo
     'afterUpdateRuleValue.queryBuilder'
   ];
   element.on(event.join(' '), bind(context, validateHook));
-  element.on('ruleToSQL.queryBuilder.filter', bind(this, fixSQLForRule));
-  element.on('validateValue.queryBuilder.filter', bind(this, fixValidation));
 }
 
 /**
