@@ -174,6 +174,38 @@ export default class QueryConverter {
   static recreateDistributionAggregation(query, select) {
     let aggregation = EmberObject.create();
     aggregation.set('type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION));
+    let result = select.match(DISTRIBUTION);
+    let { type, field, points } = result.groups;
+    type = type.toUpperCase();
+
+    let groups = A([EmberObject.create({ field: field })]);
+    aggregation.set('groups', groups);
+
+    let attributes = EmberObject.create();
+    attributes.set('type', DISTRIBUTION_TYPES.describe(type));
+
+    let pointArray = points.split(',');
+    let pointType = pointArray[0].toUpperCase();
+    switch (pointType) {
+      case 'LINEAR': {
+        attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
+        attributes.set('numberOfPoints', points[1]);
+        break;
+      }
+      case 'MANUAL': {
+        attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS));
+        attributes.set('points', points.slice(1).map(p => Number(p)).join(','));
+        break;
+      }
+      case 'REGION': {
+        attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED));
+        attributes.set('start', points[1]);
+        attributes.set('end', points[2]);
+        attributes.set('increment', points[3]);
+        break;
+      }
+    }
+    aggregation.set('attributes', attributes);
     return aggregation;
   }
 
