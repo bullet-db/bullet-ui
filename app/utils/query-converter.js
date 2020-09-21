@@ -61,7 +61,7 @@ const FUNCTIONAL_TEST = /^\s*(\S+?\s*\(\s*\S+?\s*\))\s*(\s*,\s*\S+?\s*\(\s*\S+?\
 export default class QueryConverter {
   // BQL to Query methods
 
-  static classifyBQL(select, groupBy, limit) {
+  static classifyBQL(select, groupBy) {
     // Group By
     if (!isEmpty(groupBy)) {
       return AGGREGATION_TYPES.GROUP;
@@ -96,7 +96,7 @@ export default class QueryConverter {
     // Ignore orderBy and having. Can throw error
     let { select, from, where, groupBy, windowing, limit } = result.groups;
 
-    let type = classifyBQL(select, groupBy, limit);
+    let type = QueryConverter.classifyBQL(select, groupBy);
     QueryConverter.recreateFilter(query, where);
     QueryConverter.recreateProjections(type, query, select);
     QueryConverter.recreateAggregation(type, query, select, groupBy, limit);
@@ -189,7 +189,7 @@ export default class QueryConverter {
     switch (pointType) {
       case 'LINEAR': {
         attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
-        attributes.set('numberOfPoints', points[1]);
+        attributes.set('numberOfPoints', Number(points[1]));
         break;
       }
       case 'MANUAL': {
@@ -199,9 +199,9 @@ export default class QueryConverter {
       }
       case 'REGION': {
         attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED));
-        attributes.set('start', points[1]);
-        attributes.set('end', points[2]);
-        attributes.set('increment', points[3]);
+        attributes.set('start', Number(points[1]));
+        attributes.set('end', Number(points[2]));
+        attributes.set('increment', Number(points[3]));
         break;
       }
     }
@@ -212,6 +212,28 @@ export default class QueryConverter {
   static recreateTopKAggregation(query, select) {
     let aggregation = EmberObject.create();
     aggregation.set('type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K));
+
+    let result = select.match(TOP_K);
+    let { k, threshold, fields, alias, renames } = result.groups;
+
+    aggregation.set('size', Number(k));
+
+    let recreatedFields = QueryConverter.recreateFields(fields);
+    let recreatedAliases = QueryConverter.recreateFields(renames);
+    // If we have aliases, go through them and find the field for it and add the alias. Could do a map but not worth it
+    if (!isEmpty(recreatedAliases)) {
+      recreatedAliases.forEach(alias => {
+        let field = recreatedFields.findBy('field', alias.get('field'));
+        field.set('name', alias.get('name'));
+      });
+    }
+    aggregation.set('groups', recreatedFields);
+
+    let attributes = EmberObject.create();
+    QueryConverter.setIfTruthy(attributes, 'threshold', threshold)
+    QueryConverter.setIfTruthy(attributes, 'newName', alias)
+    aggregation.set('attributes', attributes);
+
     return aggregation;
   }
 
