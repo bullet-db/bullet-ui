@@ -48,11 +48,12 @@ const FUNCTION = /^\s*(?<type>\S+?)\s*\(\s*(?<field>\S+?)\s*\)\s*$/i;
 
 // Aggregation Type test regexes
 const COUNT_DISTINCT_TEST = /.*?COUNT\s*\(\s*DISTINCT .+?\).*/i;
-const QUANTILE_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.QUANTILE)}\\s*\\(.+?\\).*}`, 'i');
-const FREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.FREQ)}\\s*\\(.+?\\).*}`, 'i');
-const CUMFREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.CUMFREQ)}\\s*\\(.+?\\).*}`, 'i');
+const QUANTILE_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.QUANTILE)}\\s*\\(.+?\\).*`, 'i');
+const FREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.FREQ)}\\s*\\(.+?\\).*`, 'i');
+const CUMFREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.CUMFREQ)}\\s*\\(.+?\\).*`, 'i');
 const TOP_TEST = /.*?TOP\s*\(.+?\).*/i;
-const FUNCTIONAL_TEST = /^\s*(\S+?\s*\(\s*\S+?\s*\))\s*(\s*,\s*\S+?\s*\(\s*\S+?\s*\))*$/i;
+const FUNCTION_TEST = '(?:\\s*\\S+?\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)'
+const FUNCTIONAL_TEST = new RegExp(`^${FUNCTION_TEST}(?:,*${FUNCTION_TEST})*$`, 'i');
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
@@ -97,6 +98,7 @@ export default class QueryConverter {
     let { select, from, where, groupBy, windowing, limit } = result.groups;
 
     let type = QueryConverter.classifyBQL(select, groupBy);
+
     QueryConverter.recreateFilter(query, where);
     QueryConverter.recreateProjections(type, query, select);
     QueryConverter.recreateAggregation(type, query, select, groupBy, limit);
@@ -115,10 +117,10 @@ export default class QueryConverter {
   }
 
   static recreateProjections(type, query, select) {
-    if (type !== AGGREGATION_TYPES.RAW) {
+    if (type !== AGGREGATION_TYPES.RAW || select.indexOf('*') !== -1) {
       return;
     }
-    QueryConverter.setIfTruthy(query, 'projection', QueryConverter.recreateFields(select));
+    QueryConverter.setIfTruthy(query, 'projections', QueryConverter.recreateFields(select));
   }
 
   static recreateAggregation(type, query, select, groupBy, limit) {
@@ -136,13 +138,13 @@ export default class QueryConverter {
     }
   }
 
-  static recreateRawAggregation(query, select, limit) {
+  static recreateRawAggregation(query, limit) {
     let aggregation = EmberObject.create();
     aggregation.set('type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     if (!isEmpty(limit)) {
       aggregation.set('size', Number(limit));
     }
-    return aggregation;
+    query.set('aggregation', aggregation);
   }
 
   static recreateCountDistinctAggregation(query, select) {
@@ -157,18 +159,53 @@ export default class QueryConverter {
       attributes.set('newName', QueryConverter.stripParentheses(alias));
       aggregation.set('attributes', attributes);
     }
-    return aggregation;
+    query.set('aggregation', aggregation);
   }
 
   static recreateGroupAggregation(query, select, groupBy) {
     let aggregation = EmberObject.create();
     aggregation.set('type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP));
-    // It isn't actually possible to Group By a set of fields and NOT have them in the select for the simple queries
-    let groups = QueryConverter.recreateFields(groupBy);
-    let metrics = QueryConverter.recreateMetrics(select);
+    let fields = QueryConverter.recreateFields(select);
+    let groups = QueryConverter.recreateGroups(fields, groupBy);
+    let metrics = QueryConverter.recreateMetrics(fields);
     QueryConverter.setIfTruthy(aggregation, 'groups', groups);
     QueryConverter.setIfTruthy(aggregation, 'metrics', metrics);
-    return aggregation;
+    query.set('aggregation', aggregation);
+  }
+
+  static recreateGroups(fields, groupBy) {
+    let groups = QueryConverter.recreateFields(groupBy);
+    // It isn't actually possible to Group By a set of fields and NOT have them in the select for the simple queries
+    if (isEmpty(groups)) {
+      return null;
+    }
+    // Add aliases if there were any
+    groups.forEach(group => {
+      let field = fields.findBy('field', group.get('field'));
+      QueryConverter.setIfTruthy(group, 'name', field.get('name'));
+    });
+    return groups;
+  }
+
+  static recreateMetrics(fields) {
+    if (isEmpty(fields)) {
+      return null;
+    }
+    // Field have things like SUM(foo) instead of foo. We need to correct it.
+    let metrics = A();
+    fields.forEach(metric => {
+      let result = metric.get('field').match(FUNCTION);
+      // Skip non-functions - probably group by fields
+      if (!result) {
+        return;
+      }
+      let { type, field } = result.groups;
+      type = type.toUpperCase();
+      metric.set('type', METRIC_TYPES.describe(METRIC_TYPES.forName(type)));
+      metric.set('field', field);
+      metrics.pushObject(metric);
+    })
+    return metrics;
   }
 
   static recreateDistributionAggregation(query, select) {
@@ -182,31 +219,31 @@ export default class QueryConverter {
     aggregation.set('groups', groups);
 
     let attributes = EmberObject.create();
-    attributes.set('type', DISTRIBUTION_TYPES.describe(type));
+    attributes.set('type', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.forName(type)));
 
     let pointArray = points.split(',');
     let pointType = pointArray[0].toUpperCase();
     switch (pointType) {
       case 'LINEAR': {
         attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
-        attributes.set('numberOfPoints', Number(points[1]));
+        attributes.set('numberOfPoints', Number(pointArray[1]));
         break;
       }
       case 'MANUAL': {
         attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS));
-        attributes.set('points', points.slice(1).map(p => Number(p)).join(','));
+        attributes.set('points', pointArray.slice(1).map(p => Number(p)).join(','));
         break;
       }
       case 'REGION': {
         attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED));
-        attributes.set('start', Number(points[1]));
-        attributes.set('end', Number(points[2]));
-        attributes.set('increment', Number(points[3]));
+        attributes.set('start', Number(pointArray[1]));
+        attributes.set('end', Number(pointArray[2]));
+        attributes.set('increment', Number(pointArray[3]));
         break;
       }
     }
     aggregation.set('attributes', attributes);
-    return aggregation;
+    query.set('aggregation', aggregation);
   }
 
   static recreateTopKAggregation(query, select) {
@@ -230,11 +267,10 @@ export default class QueryConverter {
     aggregation.set('groups', recreatedFields);
 
     let attributes = EmberObject.create();
-    QueryConverter.setIfTruthy(attributes, 'threshold', threshold)
-    QueryConverter.setIfTruthy(attributes, 'newName', alias)
+    QueryConverter.setIfTruthy(attributes, 'threshold', threshold);
+    QueryConverter.setIfTruthy(attributes, 'newName', QueryConverter.stripParentheses(alias));
     aggregation.set('attributes', attributes);
-
-    return aggregation;
+    query.set('aggregation', aggregation);
   }
 
   static recreateWindow(query, windowing) {
@@ -252,14 +288,9 @@ export default class QueryConverter {
     let { every, type, all } = result.groups;
     let emitEvery, emitType, includeType;
 
-    emitEvery = Number(every);
     type = type.toUpperCase();
-    if (type === EMIT_TYPES.identify(EMIT_TYPES.TIME)) {
-      emitType = EMIT_TYPES.describe(EMIT_TYPES.TIME);
-      emitEvery = emitEvery / 1000;
-    } else {
-      emitType = EMIT_TYPES.describe(EMIT_TYPES.RECORD);
-    }
+    emitType = EMIT_TYPES.describe(type === EMIT_TYPES.identify(EMIT_TYPES.TIME) ? EMIT_TYPES.TIME : EMIT_TYPES.RECORD);
+    emitEvery = Number(every);
     includeType = all ? INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL) : INCLUDE_TYPES.describe(INCLUDE_TYPES.WINDOW);
     window.set('emitType', emitType);
     window.set('emitEvery', emitEvery);
@@ -270,24 +301,8 @@ export default class QueryConverter {
   static recreateDuration(query, from) {
     let result = from.match(STREAM).groups;
     if (!isEmpty(result) && result.duration) {
-      query.set('duration', Number(result.duration) / 1000);
+      query.set('duration', Number(result.duration));
     }
-  }
-
-  static recreateMetrics(select) {
-    // This will set the field to things like SUM(foo) instead of foo. We need to correct it.
-    let metrics = QueryConverter.recreateFields(select);
-    if (isEmpty(metrics)) {
-      return null;
-    }
-    metrics.forEach(metric => {
-      let result = metric.get('field').match(FUNCTION);
-      let { type, field } = result.groups;
-      type = type.toUpperCase();
-      metric.set('type', METRIC_TYPES.describe(type));
-      metric.set('field', field);
-    })
-    return metrics;
   }
 
   static recreateFields(fieldsString, fieldName = 'field', valueName = 'name') {
@@ -472,7 +487,7 @@ export default class QueryConverter {
   }
 
   static createFrom(query) {
-    let duration = Number(query.get('duration')) * 1000;
+    let duration = Number(query.get('duration'));
     return `FROM STREAM(${duration}, TIME)`
   }
 
@@ -502,7 +517,7 @@ export default class QueryConverter {
     }
     let emitType = window.get('emitType');
     let emitEvery = window.get('emitEvery');
-    emitEvery = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? Number(emitEvery) * 1000 : Number(emitEvery);
+    emitEvery = Number(emitEvery);
     let type = EMIT_TYPES.name(emitType);
     let isAll = isEqual(window.get('includeType'), INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
     return isAll ? `WINDOWING EVERY(${emitEvery}, ${type}, ALL) ` : `WINDOWING TUMBLING(${emitEvery}, ${type}) `;

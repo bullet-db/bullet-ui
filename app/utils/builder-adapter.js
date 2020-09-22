@@ -10,6 +10,12 @@ import { bind } from '@ember/runloop';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
 
+/**
+ * This represents the empty clause better since the QueryBuilder displays nothing.
+ * @type {Object}
+ */
+export const EMPTY_CLAUSE = { condition: 'AND', rules: [] }
+
 export const SUBFIELD_ENABLED_KEY = 'show_subfield';
 
 const INTEGER_MAPPING = JSON.stringify({

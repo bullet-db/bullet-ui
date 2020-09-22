@@ -18,7 +18,7 @@ export default class QueryModel extends Model {
   @hasMany('projection', { dependent: 'destroy' }) projections;
   @belongsTo('aggregation') aggregation;
   @belongsTo('window') window;
-  @attr('number', { defaultValue: 20 }) duration;
+  @attr('number', { defaultValue: 20000 }) duration;
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 

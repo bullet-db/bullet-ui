@@ -459,7 +459,7 @@
                           @classNames="col-xs-2 aggregation-size" @type="number" @placeholder="Number"
                           @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
         {{/if}}
-        <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
+        <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (milliseconds)"
                         @onChange={{@onDirty}}
                         @classNames="col-xs-2 query-duration" @type="number" @placeholder="Number"
                         @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>

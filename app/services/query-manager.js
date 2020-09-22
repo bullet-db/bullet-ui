@@ -114,12 +114,9 @@ export default class QueryManagerService extends Service {
 
   encodeQuery(query) {
     let querier = this.querier;
-    querier.setAPIMode(false);
-    let json = querier.reformat(query);
-    querier.setAPIMode(true);
-    let string = JSON.stringify(json);
+    let bql = querier.reformat(query);
     return new Promise(resolve => {
-      resolve(Base64.encodeURI(string));
+      resolve(Base64.encodeURI(bql));
     });
   }
 
@@ -127,8 +124,8 @@ export default class QueryManagerService extends Service {
     let querier = this.querier;
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
-      let json = JSON.parse(buffer.toString());
-      resolve(querier.recreate(json));
+      let bql = buffer.toString();
+      resolve(querier.recreate(bql));
     });
   }
 

@@ -11,19 +11,19 @@ import validateQueryMaxDuration from 'bullet-ui/validators/query-max-duration';
 module('Unit | Validator | query max duration', function(hooks) {
   setupTest(hooks);
 
-  test('it does not let you exceed the maximum duration seconds', function(assert) {
+  test('it does not let you exceed the maximum duration', function(assert) {
     let validate = validateQueryMaxDuration();
     let mockModel = EmberObject.create({
-      duration: 120,
+      duration: 120000,
       settings: {
         defaultValues: {
           durationMaxSecs: 120
         }
       }
     });
-    let expected = 'The maintainer has configured Bullet to support a maximum of 120s for maximum duration';
-    assert.equal(validate('duration', 121, 120, { }, mockModel), expected);
+    let expected = 'The maintainer has configured Bullet to support a maximum of 120000ms for maximum duration';
+    assert.equal(validate('duration', 121000, 120000, { }, mockModel), expected);
     mockModel.set('duration', null);
-    assert.ok(validate('duration', 120, 120, { }, mockModel));
+    assert.ok(validate('duration', 120000, 120000, { }, mockModel));
   });
 });

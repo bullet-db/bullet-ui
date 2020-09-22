@@ -63,27 +63,27 @@ module('Unit | Validator | multi model', function(hooks) {
   test('it does not let you exceed the query duration when it is time based window', function(assert) {
     let validate = validateWindowEmitFrequency;
     let query = EmberObject.create({
-      duration: 20
+      duration: 20000
     });
     let window = EmberObject.create({
       emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
-      emitEvery: 21
+      emitEvery: 21000
     });
     let settings = EmberObject.create();
-    let expected = 'The window emit frequency should not be longer than the query duration (20 seconds)';
+    let expected = 'The window emit frequency should not be longer than the query duration (20000 milliseconds)';
     assert.equal(validate(settings, query, window), expected);
-    window.set('emitEvery', 20);
+    window.set('emitEvery', 20000);
     assert.ok(validate(settings, query, window));
   });
 
   test('it does not let you exceed the minimum emit frequency when it is time based window', function(assert) {
     let validate = validateWindowEmitFrequency;
     let query = EmberObject.create({
-      duration: 20
+      duration: 20000
     });
     let window = EmberObject.create({
       emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
-      emitEvery: 9,
+      emitEvery: 900,
     });
     let settings = EmberObject.create({
       defaultValues: {
@@ -92,7 +92,7 @@ module('Unit | Validator | multi model', function(hooks) {
     });
     let expected = 'The maintainer has configured Bullet to support a minimum of 10s for emit frequency';
     assert.equal(validate(settings, query, window), expected);
-    window.set('emitEvery', 10);
+    window.set('emitEvery', 10000);
     assert.ok(validate(settings, query, window));
   });
 
@@ -114,14 +114,14 @@ module('Unit | Validator | multi model', function(hooks) {
   test('it validates all the given changesets for multiple model relationships', function(assert) {
     let validate = validateMultiModelRelationships;
     let query = EmberObject.create({
-      duration: 20
+      duration: 20000
     });
     let aggregation = EmberObject.create({
       type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)
     });
     let window = EmberObject.create({
       emitType: EMIT_TYPES.describe(EMIT_TYPES.TIME),
-      emitEvery: 9,
+      emitEvery: 9000,
       includeType: INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL)
     });
     let metrics = A();
@@ -139,7 +139,7 @@ module('Unit | Validator | multi model', function(hooks) {
     assert.ok(result.indexOf(expectedB) !== -1);
 
     groups = A([1])
-    window.set('emitEvery', 10);
+    window.set('emitEvery', 10000);
     result = validate(settings, { query, window, aggregation, groups, metrics });
     assert.ok(isEmpty(result));
   });

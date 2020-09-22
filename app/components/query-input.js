@@ -130,7 +130,7 @@ export default class QueryInputComponent extends Component {
   }
 
   get everyFieldName() {
-    return `Frequency (${this.isRecordBasedWindow ? 'records' : 'seconds'})`;
+    return `Frequency (${this.isRecordBasedWindow ? 'records' : 'milliseconds'})`;
   }
 
   get canDeleteProjections() {
