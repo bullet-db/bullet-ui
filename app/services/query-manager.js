@@ -115,8 +115,9 @@ export default class QueryManagerService extends Service {
   encodeQuery(query) {
     let querier = this.querier;
     let bql = querier.reformat(query);
+    let payload = { name: query.get('name'), bql: bql };
     return new Promise(resolve => {
-      resolve(Base64.encodeURI(bql));
+      resolve(Base64.encodeURI(JSON.stringify(payload)));
     });
   }
 
@@ -124,8 +125,10 @@ export default class QueryManagerService extends Service {
     let querier = this.querier;
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
-      let bql = buffer.toString();
-      resolve(querier.recreate(bql));
+      let payload = JSON.parse(buffer.toString());
+      let query = querier.recreate(payload.bql);
+      query.set('name', payload.name);
+      resolve(query);
     });
   }
 

@@ -30,7 +30,7 @@ export default class QuerierService extends Service {
 
   /**
    * Recreates a Ember Data like representation from an API query specification.
-   * @param {Object} json The API Bullet query.
+   * @param {Object} bql The API Bullet query.
    * @return {Object} An Ember Object that looks like the Ember Data representation.
    */
   recreate(bql) {

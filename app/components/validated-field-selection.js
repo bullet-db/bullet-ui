@@ -39,9 +39,6 @@ export default class ValidatedFieldSelectionComponent extends Component {
     await changeset.validate();
     if (!changeset.get('isInvalid')) {
       this.isInvalid = false;
-      // This save is here for a weird bug. If we change a value and change back, no further changes apply.
-      // Saving it helps and it should be fine since we're saving to copied fields anyway
-      changeset.save();
       return;
     }
     let errors = changeset.get(`error.${path}`);
