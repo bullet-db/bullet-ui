@@ -12,9 +12,8 @@ import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
-import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import {
-  builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks, preProcessBQL
+  builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks, preProcessBQL, EMPTY_CLAUSE
 } from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
