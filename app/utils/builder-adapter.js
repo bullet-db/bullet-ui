@@ -10,6 +10,9 @@ import { bind } from '@ember/runloop';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
 
+const IN_REGEX = /IN \s*\[(.+?)\]/ig;
+const RLIKE_REGEX = /RLIKE \s*ANY\s+\[(.+?)\]/ig;
+
 /**
  * This represents the empty clause better since the QueryBuilder displays nothing.
  * @type {Object}
@@ -84,8 +87,8 @@ export function builderOptions() {
     sqlOperators: {
       equal: { op: '= ?' },
       not_equal: { op: '!= ?' },
-      in: { op: '= ANY [?]' },
-      not_in: { op: '!= ALL [?]' },
+      in: { op: 'IN [?]' },
+      not_in: { op: 'NOT IN [?]' },
       less: { op: '< ?' },
       less_or_equal: { op: '<= ?' },
       greater: { op: '> ?' },
@@ -97,7 +100,8 @@ export function builderOptions() {
       rlike: { op: 'RLIKE ANY [?]' }
     },
     sqlRuleOperator: {
-      'RLIKE ANY': (val) => {
+      // This is what we fake translate RLIKE ANY to when trying to load using the SQLParser. See preProcessSummary
+      'ANY': (val) => {
         return { op: 'rlike', val: val };
       }
     },
@@ -142,7 +146,7 @@ export function builderFilters(columns) {
 /**
  * Given a JQuery Element and options, adds the QueryBuilder to it.
  * @param {JQueryElement} element The JQuery element to add the QueryBuilder to.
- * @param {[type]} options Initial options for the builder.
+ * @param {object} options Initial options for the builder.
  */
 export function addQueryBuilder(element, options) {
   // This needs to be bound BEFORE the querybuilder is initialized to create inputs with the right types
@@ -155,9 +159,9 @@ export function addQueryBuilder(element, options) {
 
 /**
  * Given a JQuery Element with the QueryBuilder, adds the relevant hooks for dirty and validation.
- * @param {[type]} context The this context for use for the hooks.
- * @param {[type]} dirtyHook The hook to invoke whenever something changes in the QueryBuilder.
- * @param {[type]} validateHook The hook to invoke for validation when something changes in the QueryBuilder.
+ * @param {object} context The this context for use for the hooks.
+ * @param {function} dirtyHook The hook to invoke whenever something changes in the QueryBuilder.
+ * @param {function} validateHook The hook to invoke for validation when something changes in the QueryBuilder.
  */
 export function addQueryBuilderHooks(element, context, dirtyHook, validateHook) {
   element.on('rulesChanged.queryBuilder', bind(context, dirtyHook));
@@ -168,6 +172,21 @@ export function addQueryBuilderHooks(element, context, dirtyHook, validateHook) 
     'afterUpdateRuleValue.queryBuilder'
   ];
   element.on(event.join(' '), bind(context, validateHook));
+}
+
+/**
+ * This takes a BQL where clause content and translates it to a format that the QueryBuilder can load SQL from. Needed
+ * to be loadable by the setRulesFromSQL QueryBuilder function.
+ * @param {string} bql The BQL where clause  to translate.
+ * @return {string} The processed clause.
+ */
+export function preProcessSummary(bql) {
+  let result = bql;
+  // This handles both IN and NOT IN
+  result = result.replace(IN_REGEX, 'IN ($1)');
+  // This ANY needs to match with the sqlRuleOperator defined above for RLIKE
+  result = result.replace(RLIKE_REGEX, 'ANY ($1)');
+  return result;
 }
 
 /**

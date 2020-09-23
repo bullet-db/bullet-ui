@@ -13,7 +13,9 @@ import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks } from 'bullet-ui/utils/builder-adapter';
+import {
+  builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks, preProcessSummary
+} from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
@@ -336,15 +338,16 @@ export default class QueryInputComponent extends Component {
     let summary = this.filterChangeset.get('summary');
     if (rules && !$.isEmptyObject(rules)) {
       jQueryElement.queryBuilder('setRules', rules);
+      // Do this to set the summary if changed for newly created queries. This forces the changeset to dirty if needed
+      this.setFilterSummary();
     } else if (!isEmpty(summary)) {
-      jQueryElement.queryBuilder('setRulesFromSQL', summary);
+      jQueryElement.queryBuilder('setRulesFromSQL', preProcessSummary(summary));
+      this.filterChangeset.set('clause', this.currentFilterClause);
     } else {
       jQueryElement.queryBuilder('setRules', EMPTY_CLAUSE);
     }
     // Add the hooks after the initial rules for any further changes and for validation
     addQueryBuilderHooks(jQueryElement, this, this.dirtyFilter, this.validateFilter);
-    // Do this to set the summary if changed for newly created queries. This forces the changeset to dirty if needed
-    this.setFilterSummary();
   }
 
   @action
