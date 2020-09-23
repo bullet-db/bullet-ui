@@ -10411,13 +10411,13 @@ jQuery-QueryBuilder-Placeholders@bullet-db/jQuery-QueryBuilder-Placeholders#v1.0
   dependencies:
     jQuery-QueryBuilder "^2.4.0"
 
-jQuery-QueryBuilder-Subfield@bullet-db/jQuery-QueryBuilder-Subfield#v1.0.2:
-  version "1.0.2"
-  resolved "https://codeload.github.com/bullet-db/jQuery-QueryBuilder-Subfield/tar.gz/029560a1120ac616ba08dd2d184b909396f4ba77"
+jQuery-QueryBuilder-Subfield@bullet-db/jQuery-QueryBuilder-Subfield#v1.1.2:
+  version "1.1.2"
+  resolved "https://codeload.github.com/bullet-db/jQuery-QueryBuilder-Subfield/tar.gz/9fa914925f7c605375de3b04cc352fbef9f90486"
   dependencies:
-    jQuery-QueryBuilder "^2.4.0"
+    jQuery-QueryBuilder "^2.5.2"
 
-jQuery-QueryBuilder@^2.4.0:
+jQuery-QueryBuilder@^2.4.0, jQuery-QueryBuilder@^2.5.2, jQuery-QueryBuilder@~2.5.2:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/jQuery-QueryBuilder/-/jQuery-QueryBuilder-2.5.2.tgz#be337dc3ec01a35380fa0f7ee9366a5fc75a0dd1"
   integrity sha512-DkWePjNfPsposPTWvz0thDhVxuiwdpjrmKIIaoD9MgLmMKbwQmdKUH9q6xO2ZfMYEDZ8k1aZPCHIDEoC1NgIPg==

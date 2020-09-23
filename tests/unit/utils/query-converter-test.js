@@ -599,6 +599,13 @@ module('Unit | Utility | query converter', function() {
     );
   });
 
+  test('it creates bql for an empty window object correctly', function(assert) {
+    let query = MockQuery.create({ duration: 10000 });
+    query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);
+    query.addWindow();
+    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(10000, TIME) LIMIT 10 ;');
+  });
+
   test('it creates bql for a time window correctly', function(assert) {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);

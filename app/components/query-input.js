@@ -14,7 +14,7 @@ import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
 import {
-  builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks, preProcessSummary
+  builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks, preProcessBQL
 } from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
@@ -341,7 +341,7 @@ export default class QueryInputComponent extends Component {
       // Do this to set the summary if changed for newly created queries. This forces the changeset to dirty if needed
       this.setFilterSummary();
     } else if (!isEmpty(summary)) {
-      jQueryElement.queryBuilder('setRulesFromSQL', preProcessSummary(summary));
+      jQueryElement.queryBuilder('setRulesFromSQL', preProcessBQL(summary));
       this.filterChangeset.set('clause', this.currentFilterClause);
     } else {
       jQueryElement.queryBuilder('setRules', EMPTY_CLAUSE);

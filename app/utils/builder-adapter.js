@@ -10,9 +10,6 @@ import { bind } from '@ember/runloop';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { MAP_ACCESSOR, MAP_FREEFORM_SUFFIX } from 'bullet-ui/utils/type';
 
-const IN_REGEX = /IN \s*\[(.+?)\]/ig;
-const RLIKE_REGEX = /RLIKE \s*ANY\s+\[(.+?)\]/ig;
-
 /**
  * This represents the empty clause better since the QueryBuilder displays nothing.
  * @type {Object}
@@ -20,6 +17,9 @@ const RLIKE_REGEX = /RLIKE \s*ANY\s+\[(.+?)\]/ig;
 export const EMPTY_CLAUSE = { condition: 'AND', rules: [] }
 
 export const SUBFIELD_ENABLED_KEY = 'show_subfield';
+
+const IN_REGEX = /IN \s*\[(.+?)\]/ig;
+const RLIKE_REGEX = /RLIKE \s*ANY\s+\[(.+?)\]/ig;
 
 const INTEGER_MAPPING = JSON.stringify({
   type: 'integer',
@@ -71,6 +71,9 @@ export function builderOptions() {
       },
       'sortable': {
         icon: 'fa fa-ellipsis-v'
+      },
+      'sql-support': {
+        'boolean_as_integer': false
       },
       'subfield': { },
       'placeholders': { }
@@ -155,6 +158,7 @@ export function addQueryBuilder(element, options) {
   element.queryBuilder(options);
   element.on('ruleToSQL.queryBuilder.filter', bind(this, fixSQLForRule));
   element.on('validateValue.queryBuilder.filter', bind(this, fixValidation));
+  element.on('getSQLFieldID.queryBuilder.filter', bind(this, findFieldForRule));
 }
 
 /**
@@ -180,7 +184,7 @@ export function addQueryBuilderHooks(element, context, dirtyHook, validateHook) 
  * @param {string} bql The BQL where clause  to translate.
  * @return {string} The processed clause.
  */
-export function preProcessSummary(bql) {
+export function preProcessBQL(bql) {
   let result = bql;
   // This handles both IN and NOT IN
   result = result.replace(IN_REGEX, 'IN ($1)');
@@ -213,6 +217,7 @@ function isMultipleOperator(operator) {
   return MULTIPLE_OPERATORS.includes(operator);
 }
 
+// This fixes quotes for strings vs numbers in multiple operators inputs
 function fixSQLForRule(event, rule, value, sqlFunction) {
   if (isMultipleOperator(rule.operator)) {
     // Strip leading and trailing quote and add them around each. This is not added based on the rule.type but
@@ -228,6 +233,7 @@ function fixSQLForRule(event, rule, value, sqlFunction) {
   }
 }
 
+// This fixes all multiple operators to have a string input instead of number (since even numeric fields can have ,)
 function fixRuleInput(event, rule) {
   if (isMultipleOperator(rule.operator.type)) {
     event.value = event.value.replace('type="number"', 'type="text"');
@@ -247,6 +253,7 @@ function fixRuleValue(event, rule) {
   }
 }
 
+// This turns off the not a number validation for multiple operators
 function fixValidation(event, value, rule) {
   let operator = rule.operator.type;
   let result = event.value;
@@ -254,4 +261,12 @@ function fixValidation(event, value, rule) {
   if (result !== true && result.indexOf('number_nan') !== -1 && rule.type !== 'string' && isMultipleOperator(operator)) {
     event.value = true;
   }
+}
+
+// This finds the filter matching given field for a field that had a freeform subfield. Only called when not found so
+// can assume it's a freeform subfield
+function findFieldForRule(event) {
+  let field = event.value;
+  let fieldPrefix = field.slice(0, field.lastIndexOf(MAP_ACCESSOR));
+  event.value = `${fieldPrefix}${MAP_FREEFORM_SUFFIX}`;
 }

@@ -512,13 +512,16 @@ export default class QueryConverter {
   }
 
   static createOptionalWindowing(window) {
-    if (isEmpty(window)) {
+    if (isNone(window)) {
       return '';
     }
     let emitType = window.get('emitType');
+    if (isEmpty(emitType)) {
+      return '';
+    }
+    let type = EMIT_TYPES.name(emitType);
     let emitEvery = window.get('emitEvery');
     emitEvery = Number(emitEvery);
-    let type = EMIT_TYPES.name(emitType);
     let isAll = isEqual(window.get('includeType'), INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
     return isAll ? `WINDOWING EVERY(${emitEvery}, ${type}, ALL) ` : `WINDOWING TUMBLING(${emitEvery}, ${type}) `;
   }
