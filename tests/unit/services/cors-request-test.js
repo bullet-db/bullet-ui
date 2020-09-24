@@ -42,7 +42,7 @@ module('Unit | Service | cors request', function(hooks) {
     try {
       await service.get('/api/fail');
       assert.ok(false, 'Expected the call to fail but it passed instead');
-    } catch (error) {
+    } catch {
       // empty
     }
   });

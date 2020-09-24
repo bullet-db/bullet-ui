@@ -13,7 +13,7 @@ import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
 import {
-  builderOptions, builderFilters, addQueryBuilder, addQueryBuilderHooks, preProcessBQL, EMPTY_CLAUSE
+  builderFilters, addQueryBuilder, addQueryBuilderRules, addQueryBuilderHooks
 } from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
@@ -155,12 +155,6 @@ export default class QueryInputComponent extends Component {
     return `${element} input, ${element} select, ${element} button`;
   }
 
-  get queryBuilderOptions() {
-    let options = builderOptions();
-    options.filters = this.columns;
-    return options;
-  }
-
   get currentFilterClause() {
     let element = this.queryBuilderElement;
     return $(element).queryBuilder('getRules');
@@ -180,16 +174,7 @@ export default class QueryInputComponent extends Component {
     // and use it to set the clause only if something really changed.
     if (this.filterChanged) {
       this.filterChangeset.set('clause', this.currentFilterClause);
-    }
-    // Summary might change even without the clause changing because we can create it from the query builder's toSQL
-    this.setFilterSummary();
-  }
-
-  setFilterSummary() {
-    let originalSummary = this.filterChangeset.get('summary');
-    let currentFilterSummary = this.currentFilterSummary;
-    if (!isEqual(originalSummary, currentFilterSummary)) {
-      this.filterChangeset.set('summary', currentFilterSummary);
+      this.filterChangeset.set('summary', this.currentFilterSummary);
     }
   }
 
@@ -310,12 +295,16 @@ export default class QueryInputComponent extends Component {
   }
 
   async doSave() {
-    this.setFilter();
+    try {
+      this.setFilter();
+    } catch {
+      // Ignored
+    }
     try {
       await this.validate();
       await this.args.onSaveQuery();
       this.hasSaved = true;
-    } catch(errors) {
+    } catch (errors) {
       this.hasError = true;
       this.errors = A(errors);
       throw errors;
@@ -331,20 +320,9 @@ export default class QueryInputComponent extends Component {
     }
     let jQueryElement = $(element);
     // Add the querybuilder
-    addQueryBuilder(jQueryElement, this.queryBuilderOptions);
-    // Set the initial rules
-    let rules = this.filterChangeset.get('clause');
-    let summary = this.filterChangeset.get('summary');
-    if (rules && !$.isEmptyObject(rules)) {
-      jQueryElement.queryBuilder('setRules', rules);
-      // Do this to set the summary if changed for newly created queries. This forces the changeset to dirty if needed
-      this.setFilterSummary();
-    } else if (!isEmpty(summary)) {
-      jQueryElement.queryBuilder('setRulesFromSQL', preProcessBQL(summary));
-      this.filterChangeset.set('clause', this.currentFilterClause);
-    } else {
-      jQueryElement.queryBuilder('setRules', EMPTY_CLAUSE);
-    }
+    addQueryBuilder(jQueryElement, this.columns);
+    // Set the initial rules from rules or summary
+    addQueryBuilderRules(jQueryElement, this.filterChangeset.get('clause'), this.filterChangeset.get('summary'));
     // Add the hooks after the initial rules for any further changes and for validation
     addQueryBuilderHooks(jQueryElement, this, this.dirtyFilter, this.validateFilter);
   }
@@ -461,7 +439,7 @@ export default class QueryInputComponent extends Component {
   async save() {
     try {
       await this.doSave();
-    } catch(error) {
+    } catch {
       // empty
     }
   }
@@ -473,7 +451,7 @@ export default class QueryInputComponent extends Component {
       this.isListening = true;
       $(this.queryBuilderInputs).attr('disabled', true);
       this.args.onSubmitQuery();
-    } catch(error) {
+    } catch {
       // empty
     }
   }
