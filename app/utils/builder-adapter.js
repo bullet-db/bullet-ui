@@ -6,7 +6,6 @@
 
 /*eslint camelcase: 0 */
 
-import $ from 'jquery';
 import { bind } from '@ember/runloop';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import {
@@ -15,7 +14,7 @@ import {
 
 /*
  * This class contains a bunch of hooks or hacks to make the QueryBuilder work with our types and produce/consume BQL.
- * It also works hand-in-hand with the jQuery-QueryBuilder-Subfield and jQuery-QueryBuilder-Placeholders plugins.
+ * It also works hand-in-hand with the jQuery-QueryBuilder-Subfield and jQuery-QueryBuilder-Placeholder plugins.
  *
  * The OPTIONS object configures the querybuilder. See https://querybuilder.js.org/ for more details. We add the
  * subfield plugin configuration values for separator and suffix.
@@ -28,31 +27,34 @@ import {
  * our operators.
  *
  * TYPE_MAPPING handles producing a filter for each of our fields by type with supported operations and placeholders. It
- * is stored as JSON string to copy it for each field. The builderFilters method takes a list of Column objects and for
- * each flattenedColumn in a Column, makes a filter for it. It injects a baseType into it, which is used to fix the type
- * for the contains_value operation.  It also modifies the filter id and enables subfields if it's a freeform field.
+ * is stored as a JSON string to copy it for each field. The builderFilters method takes a list of Columns and for
+ * each flattenedColumn in a Column, makes a filter for it. It injects a baseType into it, which is used to validate the
+ * type for the contains_value operation. It also modifies the filter id and enables subfields if it's a freeform field.
  *
  * preProcessBQL translates a BQL where clause to look like SQL so the QueryBuilder can parse it. See sqlRuleOperator
- * for the corresponding translated fake operations to be converted back into valid QueryBuilder rules. When the
+ * for the corresponding translated fake operations that are converted back into valid QueryBuilder rules. When the
  * QueryBuilder produces SQL, we modify it to produce BQL with the sqlOperators config. In particular, for the
  * Function Operators, we need to inline the field into the function, so we add another symbol $ to map it. See
  * the fixSQLForRule method.
  *
  * This also provides three methods to add and work with a QueryBuilder:
- * The addQueryBuilder method adds the QueryBuilder to a given JQueryElement and wires up certain fixers in a particular
- * order to the QueryBuilder.
- * The addQueryBuilderRules method takes initial rules or a BQL string and adds them to the Builder. It prefers rules
- * first and uses setRules with it.  If they are not present uses the BQL (after calling preProcessBQL on it) to
- * setRulesFromSQL. If both are not present,  initializes the builder with an empty group.
- * The addQueryBuilderHooks method takes a dirtyHook and a validationHook and this context and wires up the hooks to the
- * QueryBuilder so that they are called properly in the Ember runloop. The various hooks/fixers:
+ * 1) The addQueryBuilder method adds the QueryBuilder to a given JQueryElement and wires up certain fixers in a
+ * particular order to the QueryBuilder.
+ * 2) The addQueryBuilderRules method takes initial rules or a BQL string and adds them to the Builder. It prefers rules
+ * first and uses setRules with it.  If they are not present, it uses the BQL (after calling preProcessBQL on it) to
+ * setRulesFromSQL. If both are not present, it initializes the builder with an empty group.
+ * 3) The addQueryBuilderHooks method takes a dirtyHook and a validationHook and this context and wires up the hooks to
+ * the QueryBuilder so that they are called properly in the Ember runloop.
+ *
+ * The various hooks/fixers used to tie in the events system in the QueryBuilder:
  * fixRuleInput - Bound to the getRuleInput changer. This fixer takes the rule HTML and replaces the input type
  *                (there should only be one) with string if it's a Multiple Operator.
  * fixRuleValue - Bound to the afterUpdateRuleValue trigger. This is not a changer and causes an inadvertent recursive
  *                call because it modifies the rule itself (which calls its setter which triggers this again). This
- *                must avoid infinite recursion.  For Multiple Operator, it forces the value to be string since it can
+ *                must avoid infinite recursion.  For Multiple Operators, it forces the value to be string since it can
  *                have commas. This and the quotes for non-string contains_value or size_is values is fixed later in
- *                fixSQLForRule.
+ *                fixSQLForRule. We choose not to fix the types for contains_value or size_is here so that they can be
+ *                properly validated first.
  * fixSQLForRule - Bound to the ruleToSQL changer. This converts the SQL produced by the QueryBuilder into proper BQL
  *                 where needed. If it's a Multiple Operator, it was forced to a String by fixRuleValue. The quotes
  *                 around the value are stripped and the value is split by , and rejoined with quotes around each split.
@@ -61,20 +63,21 @@ import {
  *                 fixRuleValue because we want the original value for validation. For contains_value, it searches the
  *                 filters to find the baseType since it is not available in the rule. In all cases, it calls the
  *                 getSQLField changer again since it's destroyed if we use the original field instead of the
- *                 event.value. This changer is used by our Subfield plugin.
+ *                 event.value. This changer is needed since it is used by our Subfield plugin.
  * fixValidation - Bound to the validateValue changer. This turns off the number_nan validation for Multiple Operators
  *                 that happens when , is in the value. It also adds validations for the size_is operator to make sure
  *                 only whole numbers are added. It also validates the contains_value operator rule's value to make sure
  *                 only it matches the baseType for non-strings.
  * findFieldForRule - Bound to the getSQLFieldID changer. This is for freeform subfield filter rules. They will not be
  *                    found by the QueryBuilder when setting rules and searching for a filter that matches the BQL field
- *                    that has the unknown subfield attached. This is called in that case and we assume this is the
- *                    case, and trim off the last value past the subfield separator and set the id to the prefix with
- *                    the subfield suffix.
+ *                    that has the unknown subfield attached. This is called in that case and we assume this is indeed
+ *                    the case without checking. We trim off the last value past the subfield separator and set the id
+ *                    to the prefix with the subfield suffix.
  * validationHook - Bound to the afterUpdateRuleFilter, afterUpdateRuleOperator, afterUpdateRuleSubfield,
- *                  afterUpdateRuleValue triggers to call the validationHook passed in.
- * dirtyHook - Bound to the rulesChanged trigger to call the dirtyHook passed in.
+ *                  afterUpdateRuleValue triggers to call the validationHook that was passed in.
+ * dirtyHook - Bound to the rulesChanged trigger to call the dirtyHook that was passed in.
  */
+
 export const SUBFIELD_ENABLED_KEY = 'show_subfield';
 
 // Private constants
@@ -243,11 +246,11 @@ function isContainsValue(operator) {
 }
 
 function isFloat(value) {
-  return FLOAT.test(value) && !isNaN(Number.parseFloat(value));
+  return !isNaN(Number.parseFloat(value)) && FLOAT.test(value);
 }
 
 function isInteger(value) {
-  return INT.test(value) && !isNaN(Number.parseInt(value, 10));
+  return !isNaN(Number.parseInt(value, 10)) && INT.test(value);
 }
 
 function findBaseTypeForField(field, event) {
@@ -255,15 +258,6 @@ function findBaseTypeForField(field, event) {
   return TYPES.forName(filter.baseType);
 }
 
-/**
- * Creates a QueryBuilder filter from a {@link Column}.
- * @private
- * @param {String} name The name of the field.
- * @param {String} type The type of the field.
- * @param {Symbol} typeClass The type class of the field.
- * @param {Boolean} hasSubField Whether this field has a subField or not.
- * @return {Object} The QueryBuilder filter.
- */
 function rulify(name, type, typeClass, hasSubField = false) {
   let filter = TYPE_MAPPING[typeClass];
   if (typeClass === TYPE_CLASSES.PRIMITIVE) {
