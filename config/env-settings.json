@@ -18,7 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": null,
+    "defaultQuery": "SELECT * FROM STREAM(20000, TIME) LIMIT 1;",
     "defaultValues": {
       "aggregationMaxSize": 500,
       "rawMaxSize": 100,

@@ -45,7 +45,7 @@ const TEST_SETTINGS = {
     distributionQuantileIncrement: 0.1,
     windowEmitFrequencyMinSecs: 1,
     everyForRecordBasedWindow: 1,
-    everyForTimeBasedWindow: 2,
+    everyForTimeBasedWindow: 2000,
     sketches: {
       countDistinctMaxEntries: 16384,
       groupByMaxEntries: 512,

@@ -39,6 +39,7 @@ module('Acceptance | query summarization', function(hooks) {
       e.value = 'complex_map_column';
       await triggerEvent(e, 'change');
     });
+    // The first operation is is_null so it should be autopicked and it should save
     await click('.save-button');
     await visit('queries');
 

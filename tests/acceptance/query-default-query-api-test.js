@@ -31,7 +31,7 @@ module('Acceptance | query default query api', function(hooks) {
     this.mockedAPI.server.map(function() {
       this.get(url, () => {
         hit++;
-        return jsonWrap(200, QUERIES.AND_ENUMERATED_COUNT_DISTINCT);
+        return jsonWrap(200, QUERIES.BASIC_AND_ENUMERATED_COUNT_DISTINCT);
       });
     });
   });
@@ -52,13 +52,13 @@ module('Acceptance | query default query api', function(hooks) {
     assert.dom(findIn('.rule-operator-container select', rules[0])).hasValue('not_in');
     assert.dom(findIn('.rule-value-container input', rules[0])).hasValue('1,2,3');
     assert.dom(findIn('.rule-filter-container select', rules[1])).hasValue('simple_column');
-    assert.dom(findIn('.rule-operator-container select', rules[1])).hasValue('in');
-    assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('foo,bar');
+    assert.dom(findIn('.rule-operator-container select', rules[1])).hasValue('size_is');
+    assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('15');
 
     let field = findAll('.output-container .field-selection-container')[0];
     assert.dom(findIn('.column-only-field .ember-power-select-selected-item', field)).hasText('simple_column');
     assert.dom('.output-container .count-distinct-display-name input').hasValue('');
-    assert.dom('.options-container .query-duration input').hasValue('50');
+    assert.dom('.options-container .query-duration input').hasValue('50000');
   });
 
   test('it reuses fetched values when creating new queries', async function(assert) {

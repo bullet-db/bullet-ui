@@ -95,22 +95,22 @@ const TYPE_MAPPING = {
   [TYPE_CLASSES.PRIMITIVE_MAP]: JSON.stringify({
     type: 'string',
     placeholders: { size_is: 'integer', contains_key: 'string', contains_value: ' ' },
-    operators: ['size_is', 'contains_key', 'contains_value', 'is_null', 'is_not_null']
+    operators: ['is_null', 'is_not_null', 'size_is', 'contains_key', 'contains_value']
   }),
   [TYPE_CLASSES.PRIMITIVE_MAP_MAP]: JSON.stringify({
     type: 'string',
     placeholders: { size_is: 'integer', contains_key: 'string', contains_value: ' ' },
-    operators: ['size_is', 'contains_key', 'contains_value', 'is_null', 'is_not_null']
+    operators: ['is_null', 'is_not_null', 'size_is', 'contains_key', 'contains_value']
   }),
   [TYPE_CLASSES.PRIMITIVE_MAP_LIST]: JSON.stringify({
     type: 'string',
     placeholders: { size_is: 'integer', contains_key: 'string', contains_value: ' ' },
-    operators: ['size_is', 'contains_key', 'contains_value', 'is_null', 'is_not_null']
+    operators: ['is_null', 'is_not_null', 'size_is', 'contains_key', 'contains_value']
   }),
   [TYPE_CLASSES.PRIMITIVE_LIST]: JSON.stringify({
     type: 'string',
     placeholders: { size_is: 'integer', contains_value: ' ' },
-    operators: ['size_is', 'contains_value', 'is_null', 'is_not_null']
+    operators: ['is_null', 'is_not_null', 'size_is', 'contains_value']
   }),
   [TYPE_CLASSES.PRIMITIVE]: {
     STRING: JSON.stringify({
