@@ -134,7 +134,7 @@ const COLUMNS = {
               name: 'long_map_sub_field_1'
             },
             {
-              name: 'long_map_sub_field_1'
+              name: 'long_map_sub_field_2'
             }
           ]
         }
@@ -158,7 +158,7 @@ const COLUMNS = {
               name: 'double_map_sub_field_1'
             },
             {
-              name: 'double_map_sub_field_1'
+              name: 'double_map_sub_field_2'
             }
           ]
         }

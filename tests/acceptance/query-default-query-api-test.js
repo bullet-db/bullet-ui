@@ -41,11 +41,11 @@ module('Acceptance | query default query api', function(hooks) {
     this.stub.restore();
   });
 
-  test('it creates new queries with two default filters and the count distinct aggregation', async function(assert) {
-    assert.expect(10);
+  test('it creates new queries with three default filters and the count distinct aggregation', async function(assert) {
+    assert.expect(13);
     await visit('/queries/new');
 
-    assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
+    assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 3 });
 
     let rules = findAll('.filter-container .builder .rules-list .rule-container');
     assert.dom(findIn('.rule-filter-container select', rules[0])).hasValue('enumerated_map_column.nested_1');
@@ -54,6 +54,9 @@ module('Acceptance | query default query api', function(hooks) {
     assert.dom(findIn('.rule-filter-container select', rules[1])).hasValue('simple_column');
     assert.dom(findIn('.rule-operator-container select', rules[1])).hasValue('size_is');
     assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('15');
+    assert.dom(findIn('.rule-filter-container select', rules[2])).hasValue('enumerated_map_column');
+    assert.dom(findIn('.rule-operator-container select', rules[2])).hasValue('contains_key');
+    assert.dom(findIn('.rule-value-container input', rules[2])).hasValue('bar');
 
     let field = findAll('.output-container .field-selection-container')[0];
     assert.dom(findIn('.column-only-field .ember-power-select-selected-item', field)).hasText('simple_column');

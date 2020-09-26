@@ -325,9 +325,12 @@ function fixSQLForRule(event, rule, value, sqlFunction) {
     event.value = `${field} ${sqlFunction(value)}`;
   } else if (isFunctionOperator(operator)) {
     // For contains_value or size_is, we do not strip the quotes for validation so do it now for non-strings
+    // Only fix the type if it wasn't originally string. This can happen when it's set from SQL and unmodified.
     // Filter is not available here. Need to get it. Need to use the original rule.field not the changed field
-    if (isSizeIs(operator) || (isContainsValue(operator) && findBaseTypeForField(rule.field, event) !== TYPES.STRING)) {
-      value = value.slice(1, value.length - 1);
+    let originalValue = rule.value[0];
+    if (typeof originalValue === 'string' && (isSizeIs(operator) ||
+        (isContainsValue(operator) && findBaseTypeForField(rule.field, event) !== TYPES.STRING))) {
+        value = value.slice(1, value.length - 1);
     }
     // We put a different special character $ to be replaced with the field
     let fieldLess = sqlFunction(value);
