@@ -1,12 +1,12 @@
 {
   "default": {
-    "queryHost": "https://bullet-propane-all-data-stg-api.data.yahoo.com:4443",
+    "queryHost": "https://bullet-dev-api.data.yahoo.com:4443",
     "queryNamespace": "bullet/api",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://local.data.yahoo.com:9443",
-    "schemaNamespace": "api/bullet",
+    "schemaHost": "https://bullet-dev-api.data.yahoo.com:4443",
+    "schemaNamespace": "bullet/api",
     "helpLinks": [
       {
         "name": "Tutorials",
@@ -18,7 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": "SELECT * FROM STREAM(20000, TIME) LIMIT 1;",
+    "defaultQuery": "https://bullet-dev-api.data.yahoo.com:4443/bullet/api/custom-query-bql",
     "defaultValues": {
       "aggregationMaxSize": 500,
       "rawMaxSize": 100,

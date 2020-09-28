@@ -53,7 +53,7 @@ export default class StompWebsocketService extends Service {
     return () => {
       stompClient.subscribe(queryStompResponseChannel, onStompMessage);
       let request = {
-        content: JSON.stringify(data),
+        content: data,
         type: NEW_QUERY_TYPE
       };
       stompClient.send(queryStompRequestChannel, { }, JSON.stringify(request));

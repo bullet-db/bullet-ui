@@ -51,7 +51,7 @@
       </div>
 
       <div class="progress-indicator query-progress-indicator">
-        <TimedProgressBar @shape="Circle" @isActive={{this.isRunningQuery}} @duration={{this.queryDuration}}
+        <TimedProgressBar @shape="Circle" @isActive={{this.isRunningQuery}} @duration={{@query.duration}}
                           @retriggerOnChangeIn={{this.isRunningQuery}}/>
         <EmberTooltip @side="left" @text="How long your query has been running compared to its total duration"/>
       </div>

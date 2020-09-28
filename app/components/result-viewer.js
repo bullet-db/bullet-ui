@@ -52,12 +52,8 @@ export default class ResultViewerComponent extends Component {
     this.reset();
   }
 
-  get queryDuration() {
-    return this.args.query.get('duration') * 1000;
-  }
-
   get windowDuration() {
-    return JITTER + (this.args.query.get('window.emitEvery') * 1000);
+    return JITTER + this.args.query.get('window.emitEvery');
   }
 
   get config() {

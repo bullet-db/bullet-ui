@@ -7,7 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import QUERIES from 'bullet-ui/tests/fixtures/queries';
-import { jsonWrap } from 'bullet-ui/tests/helpers/pretender';
+import { textWrap } from 'bullet-ui/tests/helpers/pretender';
 import MockedAPI from 'bullet-ui/tests/helpers/mocked-api';
 import sinon from 'sinon';
 import Stomp from '@stomp/stompjs';
@@ -31,7 +31,7 @@ module('Acceptance | query default query api', function(hooks) {
     this.mockedAPI.server.map(function() {
       this.get(url, () => {
         hit++;
-        return jsonWrap(200, QUERIES.BASIC_AND_ENUMERATED_COUNT_DISTINCT);
+        return textWrap(200, QUERIES.BASIC_AND_ENUMERATED_COUNT_DISTINCT);
       });
     });
   });
