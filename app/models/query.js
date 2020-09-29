@@ -136,7 +136,7 @@ export default class QueryModel extends Model {
   }
 
   static getEmitUnit(emitType, emitEvery) {
-    let unit = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? 'second' : 'record';
+    let unit = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? 'millisecond' : 'record';
     return Number(emitEvery) === 1 ? unit : pluralize(unit);
   }
 
