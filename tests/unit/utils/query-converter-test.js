@@ -215,6 +215,25 @@ module('Unit | Utility | query converter', function() {
     );
   });
 
+  test('it ignores malformed group by queries correctly', function(assert) {
+    assertEmberEqual(
+      assert,
+      QueryConverter.recreateQuery(
+        'SELECT * ' +
+        'FROM STREAM(10000, TIME) ' +
+        'GROUP BY foo, complex_map_column.foo'
+      ),
+      {
+        aggregation: {
+          type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP),
+          groups: [{ field: 'foo' }, { field: 'complex_map_column.foo' }],
+        },
+        duration: 10000
+      }
+    );
+  });
+
+
   test('it recreates a quantile distribution with number of points', function(assert) {
     assertEmberEqual(
       assert,
@@ -400,6 +419,21 @@ module('Unit | Utility | query converter', function() {
       }
     );
   });
+
+  test('it ignores a malformed window correctly', function(assert) {
+    assertEmberEqual(
+      assert,
+      QueryConverter.recreateQuery('SELECT * FROM STREAM(10000, TIME) WINDOWING WHAT(5000, TIME) LIMIT 10'),
+      {
+        aggregation: {
+          size: 10,
+          type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW),
+        },
+        duration: 10000
+      }
+    );
+  });
+
 
   test('it creates bql for a base query correctly', function(assert) {
     let query = MockQuery.create({ name: 'baz', foo: 'bar' });

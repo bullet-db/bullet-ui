@@ -182,7 +182,7 @@ export default class QueryConverter {
     // Add aliases if there were any
     groups.forEach(group => {
       let field = fields.findBy('field', group.get('field'));
-      QueryConverter.setIfTruthy(group, 'name', field.get('name'));
+      QueryConverter.setIfTruthy(group, 'name', field?.get('name'));
     });
     return groups;
   }
@@ -322,10 +322,10 @@ export default class QueryConverter {
 
   static recreateField(fieldString, fieldName, valueName) {
     let result = fieldString.match(FIELD);
-    if (isEmpty(result)) {
+    let { name, alias } = result.groups;
+    if (name == '*')  {
       return null;
     }
-    let { name, alias } = result.groups;
     return QueryConverter.makeField(fieldName, name, valueName, QueryConverter.stripParentheses(alias));
   }
 
