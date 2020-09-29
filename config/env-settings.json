@@ -1,12 +1,12 @@
 {
   "default": {
-    "queryHost": "https://bullet-dev-api.data.yahoo.com:4443",
-    "queryNamespace": "bullet/api",
+    "queryHost": "https://foo.bar.com:4443",
+    "queryNamespace": "api/bullet",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
-    "schemaHost": "https://bullet-dev-api.data.yahoo.com:4443",
-    "schemaNamespace": "bullet/api",
+    "schemaHost": "https://foo.bar.com:4443",
+    "schemaNamespace": "api/bullet",
     "helpLinks": [
       {
         "name": "Tutorials",
@@ -18,7 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": "https://bullet-dev-api.data.yahoo.com:4443/bullet/api/custom-query-bql",
+    "defaultQuery": "SELECT COUNT(*) FROM STREAM(60000, TIME) WINDOWING TUMBLING(2000, TIME);",
     "defaultValues": {
       "aggregationMaxSize": 500,
       "rawMaxSize": 100,
