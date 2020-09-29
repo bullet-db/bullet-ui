@@ -345,10 +345,20 @@ function fixSQLForRule(event, rule, value, sqlFunction) {
 function fixValidation(event, value, rule) {
   let operator = rule.operator.type;
   let result = event.value;
-  // Force ok: not valid, non-string, number errors for in or rlike rules
+  // Force ok: not valid, non-string, number errors for multiple operator rules
   // Check if ok: string for contains_value using baseType
   // Check if ok: string for size_is
-  if (result !== true && result.indexOf('number_nan') !== -1 && rule.type !== 'string' && isMultipleOperator(operator)) {
+  if (result !== true && result.indexOf('number_nan') !== -1 && !isEmpty(value) && rule.filter.type !== 'string' &&
+      isMultipleOperator(operator)) {
+    let type = TYPES.forName(rule.filter.baseType);
+    let splits = value.split(',');
+    for (let i = 0; i < splits.length; ++i) {
+      let number = splits[i];
+      if (((type == TYPES.INTEGER || type == TYPES.LONG) && !isInteger(number)) ||
+          ((type == TYPES.FLOAT || type == TYPES.DOUBLE) && !isFloat(number))) {
+        return;
+      }
+    }
     event.value = true;
   } else if (result === true && isContainsValue(operator)) {
     let type = TYPES.forName(rule.filter.baseType);

@@ -19,7 +19,7 @@ const QUERIES = {
   ALL_SIMPLE:
     'SELECT * ' +
     'FROM STREAM(10000, TIME) ' +
-    ' WHERE string != "foo" ' +
+    'WHERE string != "foo" ' +
     'LIMIT 10',
   ALL_OPERATORS:
     'SELECT * ' +
@@ -39,7 +39,26 @@ const QUERIES = {
     '    ) ' +
     'AND (integer > 0 OR float < 9 OR long_map.q >= 42 OR double_map.double_map_sub_field_2 <= -1) ' +
     'AND string_map_map.string_map_map_sub_field_1.ext RLIKE ANY ["x42.+",".*foo.*"] ' +
+    'AND CONTAINSVALUE(string_map_map, "zxi") ' +
     'LIMIT 10',
+  ALL_MULTIPLE_OPERATORS:
+    'SELECT * ' +
+    'FROM STREAM(10000, TIME) ' +
+    'WHERE string IN ["foo"] AND float IN [14.0,23.31] AND integer IN [42] AND double NOT IN [15.2] AND ' +
+    'long_map.l IN [2,3,4]' +
+    'LIMIT 1',
+  ALL_CONTAINSVALUE:
+    'SELECT * ' +
+    'FROM STREAM(10000, TIME) ' +
+    'WHERE CONTAINSVALUE(boolean_list, false) AND CONTAINSVALUE(integer_map, 5) AND CONTAINSVALUE(long_map_map, 42) ' +
+    'AND CONTAINSVALUE(double_map_list, 531.23) AND CONTAINSVALUE(float_map_map, 15) AND ' +
+    'CONTAINSVALUE(string_list, "x") AND CONTAINSVALUE(string_map_list, "xyz") ' +
+    'LIMIT 10',
+  ALL_SIZEIS:
+    'SELECT * ' +
+    'FROM STREAM(10000, TIME) ' +
+    'WHERE SIZEIS(string, 5234) ' +
+    'LIMIT 2;'
 };
 
 export default QUERIES;
