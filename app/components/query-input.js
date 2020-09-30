@@ -268,7 +268,7 @@ export default class QueryInputComponent extends Component {
     this.hasError = false;
     this.hasSaved = false;
     this.filterChanged = false;
-    this.errors.clear();
+    this.errors = A();
     $(this.queryBuilderInputs).removeAttr('disabled');
   }
 
