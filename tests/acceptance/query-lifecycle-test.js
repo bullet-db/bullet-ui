@@ -251,7 +251,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     await fillIn('.options-container .aggregation-size input', '40');
 
     await click('.window-container .add-button');
-    await fillIn('.window-container .window-emit-every input', '1000');
+    await fillIn('.window-container .window-emit-every input', '1');
 
     await click('.submit-button');
     await visit('queries');
@@ -268,7 +268,7 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[0])).hasValue('new_name');
     assert.dom(findIn('.field-name input', findAll('.projections-container .field-selection-container')[1])).hasValue('simple_column');
     assert.dom('.window-container .window-size input').hasValue('40');
-    assert.dom('.window-container .window-emit-every input').hasValue('1000');
+    assert.dom('.window-container .window-emit-every input').hasValue('1');
 
     await visit('queries');
     assert.dom('.queries-table .query-name-entry .query-description').exists({ count: 2 });

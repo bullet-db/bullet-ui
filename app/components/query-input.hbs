@@ -403,10 +403,17 @@
 
             <div class="sub-section-header">Emit Every</div>
             <div class="row">
-              <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label={{this.everyFieldName}}
-                              @onChange={{@onDirty}}
-                              @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
-                              @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+              {{#if this.isTimeBasedWindow}}
+                <ValidatedTimeInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label="Frequency (seconds)"
+                                    @onChange={{@onDirty}}
+                                    @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
+                                    @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+              {{else}}
+                <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label="Frequency (records)"
+                                @onChange={{@onDirty}}
+                                @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
+                                @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+              {{/if}}
             </div>
 
             {{#if this.isTimeBasedWindow}}
@@ -459,7 +466,7 @@
                           @classNames="col-xs-2 aggregation-size" @type="number" @placeholder="Number"
                           @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
         {{/if}}
-        <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (milliseconds)"
+        <ValidatedTimeInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
                         @onChange={{@onDirty}}
                         @classNames="col-xs-2 query-duration" @type="number" @placeholder="Number"
                         @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>

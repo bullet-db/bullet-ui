@@ -61,7 +61,7 @@ module('Acceptance | query default query api', function(hooks) {
     let field = findAll('.output-container .field-selection-container')[0];
     assert.dom(findIn('.column-only-field .ember-power-select-selected-item', field)).hasText('simple_column');
     assert.dom('.output-container .count-distinct-display-name input').hasValue('');
-    assert.dom('.options-container .query-duration input').hasValue('50000');
+    assert.dom('.options-container .query-duration input').hasValue('50');
   });
 
   test('it reuses fetched values when creating new queries', async function(assert) {

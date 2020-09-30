@@ -65,7 +65,7 @@ export function validateWindowEmitFrequency(settings, query, window) {
     if (emitEvery > duration) {
       return `The window emit frequency should not be longer than the query duration (${duration} milliseconds)`;
     } else if (emitEvery < windowEmitFrequencyMinimum) {
-      return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinimum}ms for emit frequency`;
+      return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinimum} ms for emit frequency`;
     }
   }
   return true;

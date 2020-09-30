@@ -10,7 +10,7 @@
   {{/if}}
   {{!-- Unlike passing in @value bound to our changeset directly for Input, we need the onChange action to update it
         since we are going through the LabeledInput --}}
-  <LabeledInput @label={{@label}} @value={{changeset-get @changeset @valuePath}}
+  <LabeledInput @label={{@label}} @value={{this.value}}
                 @onChange={{this.onChange}} @classNames={{@classNames}}
                 @maxlength={{@maxlength}} @disabled={{@disabled}} @type={{@type}} @placeholder={{@placeholder}}
                 ...attributes/>

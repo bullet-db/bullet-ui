@@ -90,7 +90,7 @@ module('Unit | Validator | multi model', function(hooks) {
         windowEmitFrequencyMinSecs: 10
       }
     });
-    let expected = 'The maintainer has configured Bullet to support a minimum of 10000ms for emit frequency';
+    let expected = 'The maintainer has configured Bullet to support a minimum of 10000 ms for emit frequency';
     assert.equal(validate(settings, query, window), expected);
     window.set('emitEvery', 10000);
     assert.ok(validate(settings, query, window));
@@ -133,7 +133,7 @@ module('Unit | Validator | multi model', function(hooks) {
     });
     let result = validate(settings, { query, window, aggregation, groups, metrics });
     let expectedA = 'If you are grouping data, you must add at least one Group Field and/or Metric Field';
-    let expectedB = 'The maintainer has configured Bullet to support a minimum of 10000ms for emit frequency';
+    let expectedB = 'The maintainer has configured Bullet to support a minimum of 10000 ms for emit frequency';
     assert.equal(result.length, 2);
     assert.ok(result.indexOf(expectedA) !== -1);
     assert.ok(result.indexOf(expectedB) !== -1);

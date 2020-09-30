@@ -28,8 +28,8 @@ module('Acceptance | query default query', function(hooks) {
     assert.dom(findIn('.rule-operator-container select', rules[1])).hasValue('rlike');
     assert.dom(findIn('.rule-value-container input', rules[1])).hasValue('.foo.+,.*bar$');
 
-    assert.dom('.window-container .window-emit-every input').hasValue('2000');
+    assert.dom('.window-container .window-emit-every input').hasValue('2');
     assert.dom('.window-container .window-size input').hasValue('1');
-    assert.dom('.options-container .query-duration input').hasValue('20000');
+    assert.dom('.options-container .query-duration input').hasValue('20');
   });
 });
