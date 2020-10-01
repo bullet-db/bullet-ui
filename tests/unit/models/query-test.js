@@ -16,7 +16,7 @@ module('Unit | Model | query', function(hooks) {
     let model = run(() => this.owner.lookup('service:store').createRecord('query'));
     let created = model.get('created');
     assert.ok(!isPresent(model.get('name')));
-    assert.equal(model.get('duration'), 20);
+    assert.equal(model.get('duration'), 20000);
     assert.ok(parseInt(created.getTime()) >= now);
   });
 });

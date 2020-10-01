@@ -18,7 +18,7 @@
     "migrations": {
       "deletions": "query"
     },
-    "defaultQuery": null,
+    "defaultQuery": "SELECT COUNT(*) FROM STREAM(60000, TIME) WINDOWING TUMBLING(2000, TIME);",
     "defaultValues": {
       "aggregationMaxSize": 500,
       "rawMaxSize": 100,
@@ -30,7 +30,7 @@
       "distributionQuantileIncrement": 0.1,
       "windowEmitFrequencyMinSecs": 1,
       "everyForRecordBasedWindow": 1,
-      "everyForTimeBasedWindow": 2,
+      "everyForTimeBasedWindow": 2000,
       "sketches": {
         "countDistinctMaxEntries": 16384,
         "groupByMaxEntries": 512,

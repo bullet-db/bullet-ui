@@ -33,7 +33,7 @@ module('Unit | Service | cors request', function(hooks) {
   test('it defaults options correctly', async function(assert) {
     let service = this.owner.lookup('service:cors-request');
     let result = await service.get('/api/pass');
-    assert.deepEqual(result, { creds: true });
+    assert.equal(result, JSON.stringify({ creds: true }));
   });
 
   test('it rejects if the request cannot be made', async function(assert) {
@@ -42,7 +42,7 @@ module('Unit | Service | cors request', function(hooks) {
     try {
       await service.get('/api/fail');
       assert.ok(false, 'Expected the call to fail but it passed instead');
-    } catch (error) {
+    } catch {
       // empty
     }
   });

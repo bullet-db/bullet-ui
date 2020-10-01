@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016, Yahoo Inc.
+ *  Copyright 2020, Yahoo Inc.
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
@@ -10,30 +10,31 @@ import { hbs } from 'ember-cli-htmlbars';
 import { assertTooltipRendered } from 'ember-tooltips/test-support/dom';
 import MockChangeset from 'bullet-ui/tests/helpers/mocked-changeset';
 
-module('Integration | Component | validated input', function(hooks) {
+module('Integration | Component | validated time input', function(hooks) {
   setupRenderingTest(hooks);
 
-  function mockChangeset(shouldError = () => false, fields = [{ name: 'bar', value: 15 }],
+  function mockChangeset(shouldError = () => false, fields = [{ name: 'bar', value: 15000 }],
                          error = { bar: { validation: ['Bar bad'] } }) {
     return new MockChangeset(fields, shouldError, error);
   }
 
-  test('it renders a labeled input component as input field and shows no error if valid', async function(assert) {
-    assert.expect(4);
+  test('it renders a labeled input component and adjusts for time', async function(assert) {
+    assert.expect(5);
     let changeset = mockChangeset();
     this.set('mockChangeset', changeset);
     this.set('mockOnChange', () => {
       assert.ok(true);
     });
     await render(hbs`
-      <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
-                      @onChange={{this.mockOnChange}}
+      <ValidatedTimeInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                          @onChange={{this.mockOnChange}}
       />
     `);
     assert.dom('label').hasText('label');
     assert.dom('input').hasValue('15');
     await fillIn('input', 30);
     assert.dom('.error-tooltip-link').doesNotExist();
+    assert.deepEqual(changeset.modifications, [{ bar: 30000 }]);
   });
 
   test('it shows a validation error tooltip if there are errors', async function(assert) {
@@ -44,8 +45,8 @@ module('Integration | Component | validated input', function(hooks) {
       assert.ok(true);
     });
     await render(hbs`
-      <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
-                      @onChange={{this.mockOnChange}}
+      <ValidatedTimeInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                          @onChange={{this.mockOnChange}}
       />
     `);
     await fillIn('input', 30);
@@ -53,7 +54,7 @@ module('Integration | Component | validated input', function(hooks) {
     await click('.error-tooltip-link');
     assertTooltipRendered(assert);
     assert.dom('.ember-tooltip p').hasText('Bar bad');
-    assert.deepEqual(changeset.modifications, [{ bar: '30' }]);
+    assert.deepEqual(changeset.modifications, [{ bar: 30000 }]);
   });
 
   test('it does not validate on initialization but does when forced to', async function(assert) {
@@ -62,9 +63,9 @@ module('Integration | Component | validated input', function(hooks) {
     this.set('mockOnChange', () => { });
     this.set('mockForceValidate', false);
     await render(hbs`
-      <ValidatedInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
-                      @onChange={{this.mockOnChange}}
-                      @forceValidate={{this.mockForceValidate}}
+      <ValidatedTimeInput @changeset={{this.mockChangeset}} @valuePath='bar' @type='number' @label='label'
+                          @onChange={{this.mockOnChange}}
+                          @forceValidate={{this.mockForceValidate}}
       />
     `);
     assert.dom('.error-tooltip-link').doesNotExist();

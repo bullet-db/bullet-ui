@@ -17,6 +17,14 @@ export default class ValidatedInputComponent extends Component {
     return argsGet(this.args, 'tooltipPosition', 'right');
   }
 
+  get value() {
+    return this.args.changeset.get(this.args.valuePath);
+  }
+
+  set value(value) {
+    // Empty setter in case the value is directly attempted to be set
+  }
+
   @action
   async validate() {
     let changeset = this.args.changeset;

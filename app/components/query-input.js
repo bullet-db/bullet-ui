@@ -12,9 +12,9 @@ import { inject as service } from '@ember/service';
 import { action, computed } from '@ember/object';
 import { alias, and, equal, or, not } from '@ember/object/computed';
 import { isEqual, isEmpty, isNone } from '@ember/utils';
-import { bind } from '@ember/runloop';
-import { EMPTY_CLAUSE } from 'bullet-ui/utils/filterizer';
-import { builderOptions, builderFilters } from 'bullet-ui/utils/builder-adapter';
+import {
+  builderFilters, addQueryBuilder, addQueryBuilderRules, addQueryBuilderHooks
+} from 'bullet-ui/utils/builder-adapter';
 import {
   AGGREGATION_TYPES, RAW_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES, METRIC_TYPES, EMIT_TYPES, INCLUDE_TYPES
 } from 'bullet-ui/utils/query-constants';
@@ -130,10 +130,6 @@ export default class QueryInputComponent extends Component {
     return this.includeDisabled || this.isRawAggregation;
   }
 
-  get everyFieldName() {
-    return `Frequency (${this.isRecordBasedWindow ? 'records' : 'seconds'})`;
-  }
-
   get canDeleteProjections() {
     return this.projections.get('length') > 1;
   }
@@ -166,46 +162,33 @@ export default class QueryInputComponent extends Component {
     return sql.sql;
   }
 
-  get filterClause() {
-    let rules = this.filterChangeset && this.filterChangeset.get('clause');
-    if (rules && !$.isEmptyObject(rules)) {
-      return rules;
-    }
-    return EMPTY_CLAUSE;
-  }
-
-  get queryBuilderOptions() {
-    let options = builderOptions();
-    options.filters = this.columns;
-    options.rules = this.filterClause;
-    return options;
-  }
-
   // Helpers
-  async createOptionalModel(modelName, collection) {
-    let model = await this.queryManager.createModel(modelName);
-    let changeset = this.queryManager.createChangeset(model, modelName);
-    collection.pushObject(changeset);
-    return changeset;
-  }
 
-  async setFilter() {
-    if (isNone(this.filterChangeset)) {
-      this.filterChangeset = await this.createOptionalModel('filter', this.filter);
-    }
+  setFilter() {
     // This check is here because the changeset creates a wrapper for the object literal clause and that counts as a
     // change. Since we have an action for forcing dirty on a filter change, we can track this on a real change instead
     // and use it to set the clause only if something really changed.
     if (this.filterChanged) {
       this.filterChangeset.set('clause', this.currentFilterClause);
-    }
-    // Summary might change even without the clause changing because we create it from the query builder's toSQL
-    let originalSummary = this.filterChangeset.get('summary');
-    let currentFilterSummary = this.currentFilterSummary;
-    if (!isEqual(originalSummary, currentFilterSummary)) {
       this.filterChangeset.set('summary', this.currentFilterSummary);
     }
-    return this.filterChangeset;
+  }
+
+  dirtyFilter() {
+    this.filterChanged = true;
+    this.args.onDirty();
+  }
+
+  validateFilter() {
+    let element = this.queryBuilderElement;
+    return $(element).queryBuilder('validate');
+  }
+
+  async createOptionalModel(modelName, collection) {
+    let model = await this.queryManager.createModel(modelName);
+    let changeset = this.queryManager.createChangeset(model, modelName);
+    collection.pushObject(changeset);
+    return changeset;
   }
 
   async changeAggregation(type) {
@@ -281,13 +264,8 @@ export default class QueryInputComponent extends Component {
     this.hasError = false;
     this.hasSaved = false;
     this.filterChanged = false;
-    this.errors.clear();
+    this.errors = A();
     $(this.queryBuilderInputs).removeAttr('disabled');
-  }
-
-  validateFilter() {
-    let element = this.queryBuilderElement;
-    return $(element).queryBuilder('validate');
   }
 
   async validate() {
@@ -306,18 +284,23 @@ export default class QueryInputComponent extends Component {
     if (!this.validateFilter()) {
       validations.push(this.queryManager.createValidationError('There is an issue with the filters'));
     }
+    this.isValidating = false;
     if (!isEmpty(validations)) {
       throw validations;
     }
   }
 
   async doSave() {
-    await this.setFilter();
+    try {
+      this.setFilter();
+    } catch {
+      // Ignored
+    }
     try {
       await this.validate();
       await this.args.onSaveQuery();
       this.hasSaved = true;
-    } catch(errors) {
+    } catch (errors) {
       this.hasError = true;
       this.errors = A(errors);
       throw errors;
@@ -327,24 +310,17 @@ export default class QueryInputComponent extends Component {
   // Actions
 
   @action
-  addQueryBuilder(element) {
-    $(element).queryBuilder(this.queryBuilderOptions);
-    // Need to use bind to put it in the ember run loop for linting
-    $(element).on('rulesChanged.queryBuilder', bind(this, () => {
-      this.filterChanged = true;
-      this.args.onDirty();
-    }));
-    let event = [
-      'afterUpdateRuleFilter.queryBuilder',
-      'afterUpdateRuleOperator.queryBuilder',
-      'afterUpdateRuleSubfield.queryBuilder',
-      'afterUpdateRuleValue.queryBuilder'
-    ];
-    $(element).on(event.join(' '), bind(this, () => {
-      this.validateFilter();
-    }));
-    // Do this to set the summary for newly created queries with default filters
-    this.setFilter()
+  async addQueryBuilder(element) {
+    if (isNone(this.filterChangeset)) {
+      this.filterChangeset = await this.createOptionalModel('filter', this.filter);
+    }
+    let jQueryElement = $(element);
+    // Add the querybuilder
+    addQueryBuilder(jQueryElement, this.columns);
+    // Set the initial rules from rules or summary
+    addQueryBuilderRules(jQueryElement, this.filterChangeset.get('clause'), this.filterChangeset.get('summary'));
+    // Add the hooks after the initial rules for any further changes and for validation
+    addQueryBuilderHooks(jQueryElement, this, this.dirtyFilter, this.validateFilter);
   }
 
   @action
@@ -459,7 +435,7 @@ export default class QueryInputComponent extends Component {
   async save() {
     try {
       await this.doSave();
-    } catch(error) {
+    } catch {
       // empty
     }
   }
@@ -471,7 +447,7 @@ export default class QueryInputComponent extends Component {
       this.isListening = true;
       $(this.queryBuilderInputs).attr('disabled', true);
       this.args.onSubmitQuery();
-    } catch(error) {
+    } catch {
       // empty
     }
   }

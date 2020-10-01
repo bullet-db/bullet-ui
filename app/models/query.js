@@ -18,7 +18,7 @@ export default class QueryModel extends Model {
   @hasMany('projection', { dependent: 'destroy' }) projections;
   @belongsTo('aggregation') aggregation;
   @belongsTo('window') window;
-  @attr('number', { defaultValue: 20 }) duration;
+  @attr('number', { defaultValue: 20000 }) duration;
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
@@ -136,7 +136,7 @@ export default class QueryModel extends Model {
   }
 
   static getEmitUnit(emitType, emitEvery) {
-    let unit = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? 'second' : 'record';
+    let unit = isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME)) ? 'millisecond' : 'record';
     return Number(emitEvery) === 1 ? unit : pluralize(unit);
   }
 

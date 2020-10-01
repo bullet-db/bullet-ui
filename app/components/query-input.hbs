@@ -206,16 +206,16 @@
                   Quantiles
                 </RadioButton>
                 <RadioButton @id="frequency" @checkedValue={{this.distributionType}}
-                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.PMF}}
+                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.FREQ}}
                              @updated={{fn (mut this.distributionType)}}
-                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.PMF}}
+                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.FREQ}}
                              @disabled={{this.isListening}}>
                   Frequencies
                 </RadioButton>
                 <RadioButton @id="cumulative" @checkedValue={{this.distributionType}}
-                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.CDF}}
+                             @changed={{fn this.changeDistributionType this.DISTRIBUTION_TYPES.CUMFREQ}}
                              @updated={{fn (mut this.distributionType)}}
-                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.CDF}}
+                             @value={{desc this.DISTRIBUTION_TYPES this.DISTRIBUTION_TYPES.CUMFREQ}}
                              @disabled={{this.isListening}}>
                   Cumulative Frequencies
                 </RadioButton>
@@ -403,10 +403,17 @@
 
             <div class="sub-section-header">Emit Every</div>
             <div class="row">
-              <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label={{this.everyFieldName}}
-                              @onChange={{@onDirty}}
-                              @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
-                              @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+              {{#if this.isTimeBasedWindow}}
+                <ValidatedTimeInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label="Frequency (seconds)"
+                                    @onChange={{@onDirty}}
+                                    @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
+                                    @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+              {{else}}
+                <ValidatedInput @changeset={{this.windowChangeset}} @valuePath="emitEvery" @label="Frequency (records)"
+                                @onChange={{@onDirty}}
+                                @classNames="col-xs-3 window-emit-every" @type="number" @placeholder="Number"
+                                @disabled={{this.everyDisabled}} @forceValidate={{this.isValidating}}/>
+              {{/if}}
             </div>
 
             {{#if this.isTimeBasedWindow}}
@@ -459,7 +466,7 @@
                           @classNames="col-xs-2 aggregation-size" @type="number" @placeholder="Number"
                           @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
         {{/if}}
-        <ValidatedInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
+        <ValidatedTimeInput @changeset={{this.queryChangeset}} @valuePath="duration" @label="Maximum Duration (seconds)"
                         @onChange={{@onDirty}}
                         @classNames="col-xs-2 query-duration" @type="number" @placeholder="Number"
                         @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>

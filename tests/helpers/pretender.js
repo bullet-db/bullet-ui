@@ -12,6 +12,10 @@ export function wrap(statusCode, contentType, response) {
   return [statusCode, { 'Content-Type': contentType }, response];
 }
 
+export function textWrap(statusCode, response) {
+  return wrap(statusCode, 'text/plain', response);
+}
+
 export function jsonWrap(statusCode, response) {
   return wrap(statusCode, 'application/json', JSON.stringify(response));
 }

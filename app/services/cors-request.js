@@ -10,7 +10,7 @@ export default class CORSRequestService extends Service {
   async get(url, options = { credentials: 'include' }) {
     let response = await fetch(url, options);
     if (response.ok) {
-      return response.json();
+      return response.text();
     }
     throw new Error(`Unable to get ${url}: ${response.statusText}`);
   }

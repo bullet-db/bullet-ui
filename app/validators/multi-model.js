@@ -61,11 +61,11 @@ export function validateWindowEmitFrequency(settings, query, window) {
   if (isEqual(emitType, EMIT_TYPES.describe(EMIT_TYPES.TIME))) {
     emitEvery = parseFloat(emitEvery);
     duration = parseFloat(duration);
-    let windowEmitFrequencyMinSecs = settings.get('defaultValues.windowEmitFrequencyMinSecs');
+    let windowEmitFrequencyMinimum = settings.get('defaultValues.windowEmitFrequencyMinSecs') * 1000;
     if (emitEvery > duration) {
-      return `The window emit frequency should not be longer than the query duration (${duration} seconds)`;
-    } else if (emitEvery < windowEmitFrequencyMinSecs) {
-      return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinSecs}s for emit frequency`;
+      return `The window emit frequency should not be longer than the query duration (${duration} milliseconds)`;
+    } else if (emitEvery < windowEmitFrequencyMinimum) {
+      return `The maintainer has configured Bullet to support a minimum of ${windowEmitFrequencyMinimum} ms for emit frequency`;
     }
   }
   return true;
