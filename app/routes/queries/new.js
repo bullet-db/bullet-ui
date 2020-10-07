@@ -8,10 +8,11 @@ import { inject as service } from '@ember/service';
 import { typeOf } from '@ember/utils';
 import Route from '@ember/routing/route';
 import isEmpty from 'bullet-ui/utils/is-empty';
+import QueryConverter from 'bullet-ui/utils/query-converter';
+import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class QueriesNewRoute extends Route {
   @service('cors-request') corsRequest;
-  @service querier;
   @service queryManager;
   @service store;
   cachedQuery;
@@ -47,7 +48,7 @@ export default class QueriesNewRoute extends Route {
 
   async createQuery(query) {
     try {
-      let queryObject = this.querier.recreate(query);
+      let queryObject = QueryConverter.recreateQuery(query);
       return this.queryManager.copyQuery(queryObject);
     } catch {
       return this.createEmptyQuery();
@@ -55,7 +56,10 @@ export default class QueriesNewRoute extends Route {
   }
 
   async createEmptyQuery() {
-    let aggregation = this.store.createRecord('aggregation', this.querier.defaultAggregation);
+    let aggregation = this.store.createRecord('aggregation', {
+      type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW),
+      size: 1
+    });
     await aggregation.save();
     let query = this.store.createRecord('query', {
       aggregation: aggregation

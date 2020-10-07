@@ -11,6 +11,7 @@ import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
 import config from 'bullet-ui/config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
+import QueryConverter from 'bullet-ui/utils/query-converter';
 import { AGGREGATION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 // Validations
 import QueryValidations from 'bullet-ui/validators/query';
@@ -114,7 +115,7 @@ export default class QueryManagerService extends Service {
 
   encodeQuery(query) {
     let querier = this.querier;
-    let bql = querier.reformat(query);
+    let bql = QueryConverter.createBQL(query);
     let payload = { name: query.get('name'), bql: bql };
     return new Promise(resolve => {
       resolve(Base64.encodeURI(JSON.stringify(payload)));
@@ -126,7 +127,7 @@ export default class QueryManagerService extends Service {
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
       let payload = JSON.parse(buffer.toString());
-      let query = querier.recreate(payload.bql);
+      let query = QueryConverter.recreateQuery(payload.bql);
       query.set('name', payload.name);
       resolve(query);
     });
