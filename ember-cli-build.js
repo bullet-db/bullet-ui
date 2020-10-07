@@ -73,6 +73,14 @@ module.exports = function(defaults) {
   app.import('node_modules/pivottable/dist/c3_renderers.js');
   app.import('node_modules/pivottable/dist/export_renderers.js');
 
+  // CodeMirror
+  app.import('node_modules/codemirror/lib/codemirror.js');
+  app.import('node_modules/codemirror/lib/codemirror.css');
+  app.import('node_modules/codemirror/mode/sql/sql.js');
+  app.import('node_modules/codemirror/addon/hint/show-hint.js');
+  app.import('node_modules/codemirror/addon/hint/show-hint.css');
+  app.import('node_modules/codemirror/addon/hint/sql-hint.js');
+
   // SockJS and Stomp
   const rollupJSON = require('@rollup/plugin-json');
   app.import('node_modules/@stomp/stompjs/index.js', {
