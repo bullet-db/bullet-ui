@@ -26,7 +26,6 @@ import Changeset from 'ember-changeset';
 
 export default class QueryManagerService extends Service {
   @service store;
-  @service querier;
   saveSegmentDebounceInterval = 10;
   debounceSegmentSaves = config.APP.SETTINGS.debounceSegmentSaves;
 
@@ -114,7 +113,6 @@ export default class QueryManagerService extends Service {
   // Transforming
 
   encodeQuery(query) {
-    let querier = this.querier;
     let bql = QueryConverter.createBQL(query);
     let payload = { name: query.get('name'), bql: bql };
     return new Promise(resolve => {
@@ -123,7 +121,6 @@ export default class QueryManagerService extends Service {
   }
 
   decodeQuery(hash) {
-    let querier = this.querier;
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
       let payload = JSON.parse(buffer.toString());
