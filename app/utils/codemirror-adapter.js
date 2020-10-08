@@ -13,7 +13,7 @@ CodeMirror.defineMIME(MIME, {
   keywords: set('select as cast count distinct sum mix max avg from where and or not is all any true false null group by having order asc desc limit'),
   builtin: set('string boolean integer long float double map list stream windowing tumbling quantile freq cumfreq top sizeis rlike containskey containsvalue'),
   atoms: set('false true null first every time record linear region manual'),
-  operatorChars: /^[*+\-%<>!=&|^\/]/,
+  operatorChars: /^[*+\-/%<>!=&|^]/,
   dateSQL: { },
   support: set('zerolessFloat doubleQuote commentHash commentSlashSlash')
 });
@@ -27,6 +27,7 @@ function set(str) {
 }
 
 export function addCodeEditor(element, columns, initialContent) {
+  let options = { };
   if (!isEmpty(initialContent)) {
     options.value = initialContent;
   }

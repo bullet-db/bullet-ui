@@ -28,7 +28,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a query and navigating to it', async function(assert) {
     assert.expect(5);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     await visit('queries');
     assert.dom('.query-description').exists({ count: 1 });
@@ -46,7 +46,7 @@ module('Acceptance | query linking', function(hooks) {
   test('clicking the linking query button twice closes it', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     await visit('queries');
     assert.dom('.query-description').exists({ count: 1 });
@@ -60,7 +60,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a full query with filters, raw data output with projections and a name works', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_list_column';
@@ -103,7 +103,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a full query with filters, grouped data output with groups and fields works', async function(assert) {
     assert.expect(17);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_list_column';
@@ -162,7 +162,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a distribution query with number of points works', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #distribution');
     await click('.distribution-type-options #cumulative');
@@ -200,7 +200,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a distribution query with generated points works', async function(assert) {
     assert.expect(13);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #distribution');
     await click('.distribution-type-options #frequency');
@@ -242,7 +242,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a distribution query with points works', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #distribution');
     await click('.output-container .distribution-point-options #points');
@@ -279,7 +279,7 @@ module('Acceptance | query linking', function(hooks) {
   test('linking a top k query works', async function(assert) {
     assert.expect(14);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #top-k');
 

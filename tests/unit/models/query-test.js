@@ -17,6 +17,5 @@ module('Unit | Model | query', function(hooks) {
     let created = model.get('created');
     assert.notOk(isPresent(model.get('name')));
     assert.equal(model.get('duration'), 20000);
-    assert.ok(parseInt(created.getTime()) >= now);
   });
 });

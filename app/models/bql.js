@@ -14,6 +14,11 @@ export default class BqlModel extends Model {
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
+  get isWindowless() {
+    let query = this.builderQuery;
+    return isEmpty(query) || isEmpty(query.window);
+  }
+
   @computed('name', 'query')
   get builderQuery() {
     if (isEmpty(this.query)) {
@@ -26,8 +31,23 @@ export default class BqlModel extends Model {
     return result;
   }
 
-  get isWindowless() {
-    let query = this.builderQuery;
-    return isEmpty(query) || isEmpty(query.window);
+  @computed('results.[]')
+  get latestResult() {
+    let results = this.results;
+    if (isEmpty(results)) {
+      return null;
+    }
+    // Earliest date
+    let latest = new Date(1);
+    let max;
+    results.forEach(result => {
+      let current = result.get('created');
+      if (current > latest) {
+        max = result;
+        latest = current;
+      }
+    });
+    return max;
   }
+
 }

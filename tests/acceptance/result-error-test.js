@@ -21,7 +21,7 @@ module('Acceptance | result error', function(hooks) {
     assert.expect(2);
     this.mockedAPI.mock([RESULTS.ERROR], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
     assert.dom('.records-container .killed').exists({ count: 1 });
@@ -32,7 +32,7 @@ module('Acceptance | result error', function(hooks) {
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
     this.mockedAPI.sendFailMessageAt(0);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
     assert.dom('.records-container .raw-display').exists({ count: 1 });

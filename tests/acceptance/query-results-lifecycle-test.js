@@ -17,7 +17,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
   test('query submission and result navigation', async function(assert) {
     assert.expect(5);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-    await visit('queries/new');
+    await visit('queries/build');
     await click('.submit-button');
     await visit('queries');
     assert.dom('.queries-table .query-results-entry .length-entry').hasText('1 Results');
@@ -33,7 +33,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     assert.expect(2);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
     await click('.submit-button');
@@ -45,7 +45,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
     assert.expect(2);
     this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #grouped-data');
     await click('.output-container .groups-container .add-group');
     await selectChoose('.output-container .groups-container .field-selection-container .field-selection', 'complex_map_column');
@@ -57,7 +57,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
   test('result table popover open and close', async function(assert) {
     assert.expect(4);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-    await visit('queries/new');
+    await visit('queries/build');
     await click('.submit-button');
 
     await visit('queries');
@@ -72,7 +72,7 @@ module('Acceptance | query results lifecycle', function(hooks) {
   test('query multiple submissions and results clearing', async function(assert) {
     assert.expect(2);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
-    await visit('queries/new');
+    await visit('queries/build');
     await click('.submit-button');
     await visit('queries');
     await click('.queries-table .query-name-entry .query-name-actions .edit-icon');

@@ -16,7 +16,7 @@ module('Acceptance | query validation', function(hooks) {
 
   test('query showing filter validation messages', async function(assert) {
     assert.expect(2);
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     await click('.save-button');
     assert.dom('.filter-container .rules-list .rule-container').hasClass('has-error');
@@ -25,7 +25,7 @@ module('Acceptance | query validation', function(hooks) {
 
   test('query showing aggregation validation messages', async function(assert) {
     assert.expect(4);
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.options-container .aggregation-size input', '-1');
     await click('.submit-button');
     assert.dom('.validation-container .alert-message > span').hasText('OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
@@ -38,7 +38,7 @@ module('Acceptance | query validation', function(hooks) {
 
   test('query showing options validation messages', async function(assert) {
     assert.expect(4);
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.options-container .query-duration input', '-1');
     await click('.submit-button');
     assert.dom('.validation-container .alert-message > span').hasText('OOPS! PLEASE FIX ALL ERRORS TO PROCEED');
@@ -51,7 +51,7 @@ module('Acceptance | query validation', function(hooks) {
 
   test('selecting count distinct without adding fields is an error', async function(assert) {
     assert.expect(3);
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #count-distinct');
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
@@ -61,7 +61,7 @@ module('Acceptance | query validation', function(hooks) {
 
   test('selecting grouped data without adding fields or metrics is an error', async function(assert) {
     assert.expect(3);
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #grouped-data');
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });
@@ -73,7 +73,7 @@ module('Acceptance | query validation', function(hooks) {
 
   test('query showing multiple error validation messages', async function(assert) {
     assert.expect(4);
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-container .raw-sub-options #select');
     await fillIn('.options-container .query-duration input', '-1');
     await click('.save-button');
@@ -88,7 +88,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions without a field and no number of points show validation messages', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '');
@@ -104,7 +104,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions with a non-positive number of points is a validation error', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '-25');
@@ -120,7 +120,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions with too many points is a validation error', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await fillIn('.output-container .distribution-type-number-of-points input', '2500');
@@ -135,7 +135,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions without a field and no generated points show validation messages', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #generate-points');
@@ -154,7 +154,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions with incorrectly generated points is an error', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #generate-points');
@@ -173,7 +173,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions with non positive increment is a validation error', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #frequency');
     await click('.distribution-point-options #generate-points');
@@ -192,7 +192,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting quantiles with incorrectly generated points is an error', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #generate-points');
@@ -211,7 +211,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions without a field and no points show validation messages', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #points');
@@ -228,7 +228,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting distributions with bad points is a validation error', async function(assert) {
     assert.expect(4);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #cumulative');
     await click('.distribution-point-options #points');
@@ -245,7 +245,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting quantiles with bad points is a validation error', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.distribution-type-options #quantile');
     await click('.distribution-point-options #points');
@@ -262,7 +262,7 @@ module('Acceptance | query validation', function(hooks) {
   test('selecting top k without fields is a validation error', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #top-k');
     await click('.save-button');
     assert.dom('.validation-container .simple-alert').exists({ count: 1 });

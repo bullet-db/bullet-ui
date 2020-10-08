@@ -3,8 +3,10 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+
 /* eslint-disable ember/no-get */
 // Need to disable since gets are needed here for ObjectProxy
+
 import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { isEmpty, isEqual } from '@ember/utils';
 import { A } from '@ember/array';
@@ -19,8 +21,7 @@ export default class QueryModel extends Model {
   @belongsTo('aggregation') aggregation;
   @belongsTo('window') window;
   @attr('number', { defaultValue: 20000 }) duration;
-  @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
-  @hasMany('result', { async: true, dependent: 'destroy' }) results;
+  @belongsTo('bql') bql;
 
   @computed('window.id')
   get isWindowless() {
@@ -110,25 +111,6 @@ export default class QueryModel extends Model {
     let emitEvery = this.get('window.emitEvery');
     let includeType = this.get('window.includeType');
     return `Every ${emitEvery} ${QueryModel.getEmitUnit(emitType, emitEvery)}${QueryModel.getIncludeType(includeType)}`;
-  }
-
-  @computed('results.[]')
-  get latestResult() {
-    let results = this.results;
-    if (isEmpty(results)) {
-      return null;
-    }
-    // Earliest date
-    let latest = new Date(1);
-    let max;
-    results.forEach(result => {
-      let current = result.get('created');
-      if (current > latest) {
-        max = result;
-        latest = current;
-      }
-    });
-    return max;
   }
 
   static summarizeFieldLike(fieldLike) {

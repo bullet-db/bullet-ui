@@ -17,7 +17,7 @@ module('Acceptance | query default query', function(hooks) {
 
   test('it creates new queries with two default filters', async function(assert) {
     assert.expect(10);
-    await visit('/queries/new');
+    await visit('/queries/build');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
     let rules = findAll('.filter-container .builder .rules-list .rule-container');

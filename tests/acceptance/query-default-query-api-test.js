@@ -43,7 +43,7 @@ module('Acceptance | query default query api', function(hooks) {
 
   test('it creates new queries with three default filters and the count distinct aggregation', async function(assert) {
     assert.expect(13);
-    await visit('/queries/new');
+    await visit('/queries/build');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 3 });
 
@@ -66,9 +66,9 @@ module('Acceptance | query default query api', function(hooks) {
 
   test('it reuses fetched values when creating new queries', async function(assert) {
     assert.expect(1);
-    await visit('/queries/new');
-    await visit('/queries/new');
-    await visit('/queries/new');
+    await visit('/queries/build');
+    await visit('/queries/build');
+    await visit('/queries/build');
     assert.equal(hit, 1);
   });
 });

@@ -24,14 +24,14 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can create all the various types of fields', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_SIMPLE);
     assert.expect(1);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
   });
 
   test('it can create a filter with all the operators', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_OPERATORS);
     assert.expect(63);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 20 });
@@ -122,7 +122,7 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can summarize a filter with all operators', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_OPERATORS);
     assert.expect(4);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
     await click('.save-button');
     await visit('queries');
@@ -163,7 +163,7 @@ module('Acceptance | query filtering', function(hooks) {
   test('it suppresses validation for numbers for the operators that allow commas in values', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_MULTIPLE_OPERATORS);
     assert.expect(34);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 5 });
@@ -256,7 +256,7 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can validate values for the size is operator', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_SIZEIS);
     assert.expect(11);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 1 });
@@ -290,7 +290,7 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can validate on base types for contains value', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_CONTAINSVALUE);
     assert.expect(35);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 7 });

@@ -133,20 +133,11 @@ export default class QueryManagerService extends Service {
   // Result manipulation
 
   async addResult(id) {
-    let query = await this.store.findRecord('query', id);
+    let query = await this.store.findRecord('bql', id);
     let result = await this.store.createRecord('result', {
-      querySnapshot: {
-        type: query.get('aggregation.type'),
-        groupsSize: query.get('aggregation.groups.length'),
-        metricsSize: query.get('aggregation.metrics.length'),
-        projectionsSize: query.get('projections.length'),
-        fieldsSummary: query.get('fieldsSummary'),
-        filterSummary: query.get('filterSummary'),
-        windowSummary: query.get('windowSummary')
-      },
+      querySnapshot: query.get('value'),
       query: query
     });
-    query.set('lastRun', result.get('created'));
     await query.save();
     result = await result.save();
     return result;
@@ -184,6 +175,8 @@ export default class QueryManagerService extends Service {
         return GroupValidations;
       case 'metric':
         return MetricValidations;
+      default:
+        return { };
     }
   }
 

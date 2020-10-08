@@ -52,8 +52,10 @@ const QUANTILE_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_
 const FREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.FREQ)}\\s*\\(.+?\\).*`, 'i');
 const CUMFREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.CUMFREQ)}\\s*\\(.+?\\).*`, 'i');
 const TOP_TEST = /.*?TOP\s*\(.+?\).*/i;
-const FUNCTION_TEST = '(?:\\s*\\S+?\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)'
+const FUNCTION_TEST = '(?:\\s*\\S+?\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)';
 const FUNCTIONAL_TEST = new RegExp(`^${FUNCTION_TEST}(?:,*${FUNCTION_TEST})*$`, 'i');
+const METRIC_TEST = `(?:\\s*${METRIC_TYPES.names.join('|')}\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)`;
+const METRICS_TEST = new RegExp(`^${METRIC_TEST}(?:,*${METRIC_TEST})*$`, 'i');
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
@@ -61,6 +63,18 @@ const FUNCTIONAL_TEST = new RegExp(`^${FUNCTION_TEST}(?:,*${FUNCTION_TEST})*$`, 
  */
 export default class QueryConverter {
   // BQL to Query methods
+
+  static parse(bql) {
+    let result = bql.match(SQL);
+    if (isEmpty(result)) {
+      return null;
+    }
+    return result.groups;
+  }
+
+  static classify({ select, groupBy }) {
+    return QueryConverter.classifyBQL(select, groupBy);
+  }
 
   static classifyBQL(select, groupBy) {
     // Group By
@@ -76,8 +90,8 @@ export default class QueryConverter {
     if (QUANTILE_TEST.test(select) || FREQ_TEST.test(select) || CUMFREQ_TEST.test(select)) {
       return AGGREGATION_TYPES.DISTRIBUTION;
     }
-    // Other special functional aggregations are done now. If any functional stuff is in the select, assume GROUP ALL
-    if (FUNCTIONAL_TEST.test(select)) {
+    // Now that specials are done, if any functional and metric stuff is in the select, assume GROUP ALL
+    if (FUNCTIONAL_TEST.test(select) && METRIC_TEST.test(select)) {
       return AGGREGATION_TYPES.GROUP;
     }
     return AGGREGATION_TYPES.RAW;
