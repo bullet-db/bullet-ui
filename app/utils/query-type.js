@@ -13,3 +13,13 @@ export function getQueryType(query) {
   }
   return QUERY_TYPES.BUILDER;
 }
+
+export function getRouteFor(query) {
+  let type = getQueryType(query);
+  switch (type) {
+    case QUERY_TYPES.BUILDER:
+      return 'query';
+    case QUERY_TYPES.BQL:
+      return 'bql';
+  }
+}

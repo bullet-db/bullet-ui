@@ -14,13 +14,15 @@ export default class BqlModel extends Model {
   @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
   @hasMany('result', { async: true, dependent: 'destroy' }) results;
 
-  get isWindowless() {
-    let query = this.builderQuery;
-    return isEmpty(query) || isEmpty(query.window);
-  }
-
   get isBQL() {
     return true;
+  }
+
+  get duration() {
+
+  }
+
+  get windowDuration() {
   }
 
   @computed('name', 'query')

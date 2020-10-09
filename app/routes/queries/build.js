@@ -26,9 +26,9 @@ export default class QueriesBuildRoute extends DefaultQueryRoute {
   async createQuery(query) {
     try {
       let queryObject = QueryConverter.recreateQuery(query);
-      let query = await this.queryManager.copyQuery(queryObject);
-      return this.queryManager.addBQL(query);
-    } catch {
+      let copy = await this.queryManager.copyQuery(queryObject);
+      return this.queryManager.addBQL(copy);
+    } catch (errors) {
       return this.createEmptyQuery();
     }
   }

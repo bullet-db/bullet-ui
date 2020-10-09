@@ -6,5 +6,8 @@
  <div class="query-blurb">
   <div class="summary-text">
     {{@summary}}
+    {{#if @showTooltip}}
+      <EmberTooltip @side="bottom">{{@summary}}</EmberTooltip>
+    {{/if}}
   </div>
 </div>

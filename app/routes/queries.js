@@ -7,7 +7,7 @@ import EmberObject, { action } from '@ember/object';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import { QUERY_TYPES, getQueryType } from 'bullet-ui/utils/query-type';
+import { QUERY_TYPES, getRouteFor } from 'bullet-ui/utils/query-type';
 
 export default class QueriesRoute extends Route {
   @service queryManager;
@@ -56,26 +56,18 @@ export default class QueriesRoute extends Route {
 
   @action
   queryClick(query) {
-    let type = getQueryType(query);
-    switch (type) {
-      case QUERY_TYPES.BQL:
-        this.transitionTo('bql', query.get('id'));
-        break;
-      case QUERY_TYPES.BUILDER:
-        this.transitionTo('query', query.get('id'));
-        break;
-    }
+    return this.transitionTo(getRouteFor(query), query.get('id'));
   }
 
   @action
   async copyQueryClick(query, callback) {
-    let copy = this.queryManager.copy(query);
+    let copy = await this.queryManager.copy(query);
     callback(copy);
   }
 
   @action
   async linkQueryClick(query, callback) {
-    let encoded = this.queryManager.encode(query);
+    let encoded = await this.queryManager.encode(query);
     let origin = this.origin;
     let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
     callback(`${origin}${path}`);

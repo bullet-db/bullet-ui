@@ -87,8 +87,7 @@ export default class QueryManagerService extends Service {
     let [, copiedAggregation, ] = await Promise.all([
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
       this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
-      query.get('isWindowless') ? Promise.resolve() :
-        this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType'])
+      this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType'])
     ]);
 
     let originalAggregation = await query.get('aggregation');
@@ -107,8 +106,7 @@ export default class QueryManagerService extends Service {
     if (copiedProjections) {
       copied.set('projections', copiedProjections);
     }
-    copied = await copied.save();
-    return copied;
+    return this.addBQL(copied);
   }
 
   async copyBQL(bql) {
@@ -143,9 +141,9 @@ export default class QueryManagerService extends Service {
     });
   }
 
-  decode(payload) {
-    let buffer = Base64.decode(hash);
+  decode(hash) {
     return new Promise(resolve => {
+      let buffer = Base64.decode(hash);
       let payload = JSON.parse(buffer.toString());
       let type = QUERY_TYPES.forName(payload.type);
       switch (type) {
@@ -164,12 +162,12 @@ export default class QueryManagerService extends Service {
   }
 
   async addResult(id) {
-    let query = await this.store.findRecord('bql', id);
+    let bql = await this.store.findRecord('bql', id);
     let result = await this.store.createRecord('result', {
-      querySnapshot: query.get('value'),
-      query: query
+      querySnapshot: bql.get('query'),
+      query: bql
     });
-    await query.save();
+    await bql.save();
     result = await result.save();
     return result;
   }

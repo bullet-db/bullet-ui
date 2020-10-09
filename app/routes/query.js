@@ -134,7 +134,7 @@ export default class QueryRoute extends Route {
     let query = await this.store.findRecord('query', this.paramsFor('query').query_id);
     let bql = await query.bql;
     let result = await this.queryManager.addResult(bql.get('id'));
-    this.submitQuery(bql.value, result);
+    this.submitQuery(bql.query, result);
   }
 
   @action

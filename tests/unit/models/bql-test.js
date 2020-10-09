@@ -18,7 +18,6 @@ module('Unit | Model | bql', function(hooks) {
     let created = model.get('created');
     assert.notOk(isPresent(model.get('name')));
     assert.ok(parseInt(created.getTime()) >= now);
-    assert.ok(model.get('isWindowless'));
   });
 
   test('it can fail to convert itself to an object', function(assert) {
@@ -34,11 +33,5 @@ module('Unit | Model | bql', function(hooks) {
     assert.equal(object.get('aggregation.size'), 10);
     assert.equal(object.get('duration'), 10000);
     assert.equal(object.get('name'), 'f');
-  });
-
-  test('it can tell if it has a window', function(assert) {
-    let store = this.owner.lookup('service:store');
-    let model = run(() => store.createRecord('bql', { query: QUERIES.BASIC_AND_LIST_TUMBLING_WINDOW }));
-    assert.notOk(model.get('isWindowless'));
   });
 });

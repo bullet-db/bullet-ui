@@ -17,7 +17,7 @@ module('Integration | Component | result viewer', function(hooks) {
 
   function makeQuery(isTimeBased, duration = 0.01) {
     return EmberObject.create({
-      window: { isTimeBased },
+      isTimeWindow,
       duration
     });
   }

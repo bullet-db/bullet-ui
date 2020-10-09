@@ -31,9 +31,9 @@ export default class ResultViewerComponent extends Component {
   @alias('args.result.hasData') hasData;
   @alias('args.result.hasError') hasError;
   @alias('args.result.errorWindow') errorWindow;
-  @alias('args.query.isWindowless') hasNoWindow;
+  @alias('args.result.hasNoWindow') hasNoWindow;
+  @alias('args.result.isTimeWindow') isTimeWindow;
   @alias('args.result.windows.length') numberOfWindows;
-  @alias('args.query.window.isTimeBased') isTimeWindow;
 
   @not('hasError') hasNoError;
   @not('isTimeWindow') isRecordWindow;
@@ -52,8 +52,17 @@ export default class ResultViewerComponent extends Component {
     this.reset();
   }
 
+  get queryDuration() {
+    let duration = this.args.result.get('queryDuration');
+    if (isNone(duration)) {
+      // Assume max duration if query had no duration
+      return this.settings.get('defaultValues.durationMaxSecs') * 1000;
+    }
+    return duration;
+  }
+
   get windowDuration() {
-    return JITTER + this.args.query.get('window.emitEvery');
+    return JITTER + this.args.result.get('windowEmitEvery');
   }
 
   get config() {

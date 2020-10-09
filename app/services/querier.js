@@ -6,17 +6,12 @@
 import { alias } from '@ember/object/computed';
 import { typeOf } from '@ember/utils';
 import Service, { inject as service } from '@ember/service';
-import QueryConverter from 'bullet-ui/utils/query-converter';
 
 export default class QuerierService extends Service {
   @service stompWebsocket;
   @alias('stompWebsocket.isConnected') isRunningQuery;
 
-  send(query, handlers, context) {
-    let data = query;
-    if (typeOf(query) !== 'string') {
-      data = QueryConverter.createBQL(query);
-    }
+  send(data, handlers, context) {
     this.stompWebsocket.startStompClient(data, handlers, context);
   }
 

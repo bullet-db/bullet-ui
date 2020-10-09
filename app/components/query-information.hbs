@@ -6,7 +6,7 @@
 <div role="button" class="information-wrapper query-blurb-wrapper" {{on "click" this.queryClick}}>
   <div class="information-text query-text">
     <h4>Query Definition</h4>
-    <QueryBlurb @summary={{@querySnapshot}} />
+    <QueryBlurb @summary={{@querySnapshot}} @showTooltip={{false}}/>
   </div>
   {{!-- template-lint-disable no-nested-interactive --}}
   <div class="query-controls">

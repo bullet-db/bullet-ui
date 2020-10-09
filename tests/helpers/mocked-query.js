@@ -49,13 +49,21 @@ export let MockResult = EmberObject.extend({
   pivotOptions: null
 });
 
+export let MockBQL = EmberObject.extend({
+  name: null,
+  query: null,
+  created: null,
+  _results: A(),
+  isBQL: true
+});
+
 export default EmberObject.extend({
   filter: null,
   projections: null,
   aggregation: null,
+  bql: null,
   results: null,
   duration: null,
-  created: null,
   name: null,
   shouldValidate: true,
   promisify: false,
@@ -66,15 +74,12 @@ export default EmberObject.extend({
       _filter: EmberObject.create(),
       _projections: A(),
       _aggregation: EmberObject.create(),
-      _results: A(),
+      _bql: EmberObject.create(),
       _window: null
     });
-    A(['filter', 'projections', 'aggregation', 'results', 'window']).forEach(this.topLevelPropertyAsPromise, this);
+    A(['filter', 'projections', 'aggregation', 'bql', 'results', 'window']).forEach(this.topLevelPropertyAsPromise, this);
+    this.addBQL(null, 'Mock BQL');
   },
-
-  isWindowless: computed('_window', function() {
-    return isEmpty(this._window);
-  }),
 
   topLevelPropertyAsPromise(attr) {
     if (this.promisify) {
@@ -122,8 +127,15 @@ export default EmberObject.extend({
     this.nestedPropertyAsPromise('aggregation', 'metrics');
   },
 
+  addBQL(name, query, created = new Date(Date.now())) {
+    let bql = this._bql;
+    this.set('_bql', MockBQL.create({ name, query, created }));
+    this.topLevelPropertyAsPromise('bql');
+    this.nestedPropertyAsPromise('bql', 'results');
+  },
+
   addResult(records, created = new Date(Date.now()), metadata = null, querySnapshot = null, pivotOptions = null) {
-    this._results.pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
+    this._bql._results.pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
     this.topLevelPropertyAsPromise('results');
   },
 
@@ -145,43 +157,10 @@ export default EmberObject.extend({
     return Promise.resolve({ validations: EmberObject.create({ isValid: false, messages: ['Forced to not validate'] }) });
   },
 
-  filterSummary: oneWay('_filter.summary'),
-
-  fieldsSummary: computed('_aggregation.{_groups.[],_metrics.[],attributes}', '_projections.[]', function() {
-    let projections = this.concatFieldLikes(this._projections);
-    let groups = this.concatFieldLikes(this._aggregation?._groups);
-    let metrics = this.concatFieldLikes(this._aggregation?._metrics);
-    let fields = ['newName', 'points', 'numberOfPoints', 'start', 'end', 'increment'];
-    let attributes = this.concatProperties(this._aggregation?.attributes, fields);
-    return `${projections}${groups}${metrics}${attributes}`;
-  }),
-
-  windowSummary: computed('_window.{emitType,emitEvery,includeType}', function() {
-    if (isEmpty(this._window)) {
-      return 'None';
-    }
-    return `${this._window?.emitType}${this._window?.emitEvery}${this._window?.includeType}`;
-  }),
-
-  latestResult: computed('_results.[]', function() {
+  latestResult: computed('_bql._results.[]', function() {
     let length = this._results?.length;
     return EmberObject.create({ created: new Date(2016, 0, (length + 1) % 30) });
   }),
 
-  concatFieldLikes(fieldLikes) {
-    if (isEmpty(fieldLikes)) {
-      return '';
-    }
-    return fieldLikes.reduce((p, c) => `${p}${c.name}`, '');
-  },
-
-  concatProperties(object, fields) {
-    if (isEmpty(object)) {
-      return '';
-    }
-    return fields.reduce((p, c) => {
-      let field = object[c];
-      return field ? `${p}${field}` : p;
-    }, '');
-  }
+  query: oneWay('_bql.query')
 });

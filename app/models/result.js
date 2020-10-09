@@ -6,12 +6,12 @@
 /* eslint-disable ember/no-get */
 // Need to disable since gets are needed here for ObjectProxy
 import Model, { attr, belongsTo } from '@ember-data/model';
-import { equal } from '@ember/object/computed';
+import { equal, none, and, or, alias } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
-import { computed } from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import { A } from '@ember/array';
 import QueryConverter from 'bullet-ui/utils/query-converter';
-import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
+import { AGGREGATION_TYPES, EMIT_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class ResultModel extends Model {
   // Cache exists to not dump all the records into windows at once. Use syncCache to consolidate cache and windows.
@@ -25,27 +25,22 @@ export default class ResultModel extends Model {
   @attr('string') querySnapshot;
 
   @computed('querySnapshot')
-  get parsedQuery() {
-    return QueryConverter.parse(this.querySnapshot);
+  get categorization() {
+    return QueryConverter.categorizeBQL(this.querySnapshot);
   }
 
-  get type() {
-    return QueryConverter.classify(this.parsedQuery);
-  }
+  @equal('categorization.type', AGGREGATION_TYPES.RAW) isRaw;
+  @equal('categorization.type', AGGREGATION_TYPES.COUNT_DISTINCT) isCountDistinct;
+  @equal('categorization.type', AGGREGATION_TYPES.GROUP) isGroup;
+  @equal('categorization.type', AGGREGATION_TYPES.DISTRIBUTION) isDistribution;
+  @equal('categorization.type', AGGREGATION_TYPES.TOP_K) isTopK;
 
-  @equal('type', AGGREGATION_TYPES.RAW) isRaw;
-  @equal('type', AGGREGATION_TYPES.COUNT_DISTINCT) isCountDistinct;
-  @equal('type', AGGREGATION_TYPES.GROUP) isGroup;
-  @equal('type', AGGREGATION_TYPES.DISTRIBUTION) isDistribution;
-  @equal('type', AGGREGATION_TYPES.TOP_K) isTopK;
-
-  get isReallyRaw() {
-    return this.isRaw && this.parsedQuery?.select?.indexOf('*') !== -1;
-  }
-
-  get isSingleRow() {
-    return this.isCountDistinct || (this.isGroup && isEmpty(this.parsedQuery?.groupBy));
-  }
+  @alias('categorization.duration') queryDuration;
+  @alias('categorization.emitEvery') windowEmitEvery;
+  @none('categorization.emitType') hasNoWindow;
+  @equal('categorization.emitType', EMIT_TYPES.TIME) isTimeWindow;
+  @and('isRaw', 'categorization.isStarSelect') isReallyRaw;
+  @or('isCountDistinct', 'categorization.isGroupAll') isSingleRow;
 
   @computed('windows.[]')
   get errorWindow() {

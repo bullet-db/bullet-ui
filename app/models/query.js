@@ -25,11 +25,6 @@ export default class QueryModel extends Model {
   @alias('bql.latestResult') latestResult;
   @alias('bql.query') query;
 
-  @computed('window.id')
-  get isWindowless() {
-    return isEmpty(this.get('window.id'));
-  }
-
   @computed('bql.results.[]')
   get results() {
     let results = this.get('bql.results');

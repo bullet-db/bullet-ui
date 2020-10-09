@@ -52,29 +52,28 @@ const QUANTILE_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_
 const FREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.FREQ)}\\s*\\(.+?\\).*`, 'i');
 const CUMFREQ_TEST = new RegExp(`.*?${DISTRIBUTION_TYPES.identify(DISTRIBUTION_TYPES.CUMFREQ)}\\s*\\(.+?\\).*`, 'i');
 const TOP_TEST = /.*?TOP\s*\(.+?\).*/i;
-const FUNCTION_TEST = '(?:\\s*\\S+?\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)';
-const FUNCTIONAL_TEST = new RegExp(`^${FUNCTION_TEST}(?:,*${FUNCTION_TEST})*$`, 'i');
-const METRIC_TEST = `(?:\\s*${METRIC_TYPES.names.join('|')}\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)`;
-const METRICS_TEST = new RegExp(`^${METRIC_TEST}(?:,*${METRIC_TEST})*$`, 'i');
+const FUNCTIONAL = '(?:\\s*\\S+?\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)';
+const FUNCTIONAL_TEST = new RegExp(`^${FUNCTIONAL}(?:,*${FUNCTIONAL})*$`, 'i');
+const METRIC = `(?:\\s*${METRIC_TYPES.names.join('|')}\\s*\\(\\s*\\S+?\\s*\\)\\s*?(?: AS\\s+\\S+\\s*)?)`;
+const METRIC_TEST = new RegExp(`${METRIC}(?:,*${METRIC})*`, 'i');
 
 /**
  * This class provides methods to convert a subset of queries supported by the simple query building interface to and
  * from BQL. It does not the support the full BQL interface.
+ *
+ * The main functions to be used are:
+ * 1) createBQL(query) - Takes a builder query and makes a BQL query string out of it.
+ * 2) recreateQuery(bql) - Takes a bql string and makes a builder query model like out of it.
+ * 3) categorizeBQL(bql) - This method tries to work for all bql. Takes a bql string and tries to extract the following
+ *                         A) type: aggregation type
+ *                         B) duration: query duration
+ *                         C) emitType: window emit type
+ *                         D) emitEvery: window emit frequency
+ *                         E) isGroupAll: If this is a Group By query with only metrics (one group result)
+ *                         F) isStarSelect: If this query is a SELECT * query
  */
 export default class QueryConverter {
   // BQL to Query methods
-
-  static parse(bql) {
-    let result = bql.match(SQL);
-    if (isEmpty(result)) {
-      return null;
-    }
-    return result.groups;
-  }
-
-  static classify({ select, groupBy }) {
-    return QueryConverter.classifyBQL(select, groupBy);
-  }
 
   static classifyBQL(select, groupBy) {
     // Group By
@@ -553,5 +552,40 @@ export default class QueryConverter {
 
   static createField(field, fieldName = 'field', aliasName = 'name') {
     return `${field.get(fieldName)} AS "${field.get(aliasName)}"`;
+  }
+
+  // Categorization methods
+
+  static categorizeBQL(bql) {
+    // Returns { type: aggregation type, duration: query duration
+    let categorization = EmberObject.create();
+    let result = bql.match(SQL);
+    if (!isEmpty(result)) {
+      let { select, from, groupBy, windowing } = result.groups;
+      let type = this.classifyBQL(select, groupBy);
+      categorization.set('type', type);
+      this.recreateDuration(categorization, from);
+      this.categorizeWindow(categorization, windowing);
+      categorization.set('isStarSelect', type === AGGREGATION_TYPES.RAW && select.indexOf('*') !== -1);
+      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy));
+    }
+    return categorization;
+  }
+
+  static categorizeWindow(categorization, windowing) {
+    if (isEmpty(windowing)) {
+      return;
+    }
+    let result = windowing.match(TUMBLING);
+    if (isEmpty(result)) {
+      result = windowing.match(EVERY);
+      if (isEmpty(result)) {
+        return;
+      }
+    }
+    let { every, type } = result.groups;
+    type = type.toUpperCase();
+    categorization.set('emitType', type === EMIT_TYPES.identify(EMIT_TYPES.TIME) ? EMIT_TYPES.TIME : EMIT_TYPES.RECORD);
+    categorization.set('emitEvery', Number(every));
   }
 }
