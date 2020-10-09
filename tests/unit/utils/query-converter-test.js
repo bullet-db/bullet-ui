@@ -438,13 +438,13 @@ module('Unit | Utility | query converter', function() {
   test('it creates bql for a base query correctly', function(assert) {
     let query = MockQuery.create({ name: 'baz', foo: 'bar' });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
-    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(0, TIME) LIMIT 1 ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(0, TIME) LIMIT 1 ');
   });
 
   test('it creates bql for duration correctly', function(assert) {
     let query = MockQuery.create({ duration: 20000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
-    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(20000, TIME) LIMIT 1 ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(20000, TIME) LIMIT 1 ');
   });
 
   test('it creates bql for projections correctly', function(assert) {
@@ -454,7 +454,7 @@ module('Unit | Utility | query converter', function() {
     query.addProjection('timestamp', 'ts');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT foo AS "goo", timestamp AS "ts" FROM STREAM(1000, TIME) LIMIT 10 ;'
+      'SELECT foo AS "goo", timestamp AS "ts" FROM STREAM(1000, TIME) LIMIT 10 '
     );
   });
 
@@ -462,7 +462,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ foo: 'bar' });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.set('filter', undefined);
-    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(0, TIME) LIMIT 1 ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(0, TIME) LIMIT 1 ');
   });
 
   test('it creates bql for a query correctly with a name', function(assert) {
@@ -470,7 +470,7 @@ module('Unit | Utility | query converter', function() {
     let filter = { condition: 'OR', rules: [] };
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW));
     query.addFilter(filter, 'foo');
-    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(0, TIME) WHERE foo LIMIT 1 ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(0, TIME) WHERE foo LIMIT 1 ');
   });
 
   test('it creates bql for a filter correctly with a summary', function(assert) {
@@ -481,7 +481,7 @@ module('Unit | Utility | query converter', function() {
     assert.equal(
       QueryConverter.createBQL(query),
       'SELECT * FROM STREAM(0, TIME) ' +
-      'WHERE complex_map_column.subfield1 != ALL ["1", "2", "3"] OR simple_column = ANY ["foo", "bar"] LIMIT 1 ;'
+      'WHERE complex_map_column.subfield1 != ALL ["1", "2", "3"] OR simple_column = ANY ["foo", "bar"] LIMIT 1 '
     );
   });
 
@@ -490,14 +490,14 @@ module('Unit | Utility | query converter', function() {
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT), 100, { newName: 'cnt' });
     query.addGroup('foo', '1');
     query.addGroup('bar', '2');
-    assert.equal(QueryConverter.createBQL(query), 'SELECT COUNT(DISTINCT foo, bar) AS "cnt" FROM STREAM(10000, TIME) ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT COUNT(DISTINCT foo, bar) AS "cnt" FROM STREAM(10000, TIME) ');
   });
 
   test('it creates bql for a count distinct query without a new name query correctly', function(assert) {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT), 100);
     query.addGroup('foo', '1');
-    assert.equal(QueryConverter.createBQL(query), 'SELECT COUNT(DISTINCT foo) FROM STREAM(10000, TIME) ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT COUNT(DISTINCT foo) FROM STREAM(10000, TIME) ');
   });
 
   test('it creates bql for a distinct query correctly', function(assert) {
@@ -507,7 +507,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('bar', '2');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT foo AS "1", bar AS "2" FROM STREAM(10000, TIME) GROUP BY foo, bar LIMIT 500 ;'
+      'SELECT foo AS "1", bar AS "2" FROM STREAM(10000, TIME) GROUP BY foo, bar LIMIT 500 '
     );
   });
 
@@ -521,7 +521,7 @@ module('Unit | Utility | query converter', function() {
     query.addMetric(METRIC_TYPES.describe(METRIC_TYPES.MIN), 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT COUNT(*) AS "cnt", SUM(baz) AS "sum", MAX(foo), AVG(bar), MIN(foo) FROM STREAM(10000, TIME) LIMIT 500 ;'
+      'SELECT COUNT(*) AS "cnt", SUM(baz) AS "sum", MAX(foo), AVG(bar), MIN(foo) FROM STREAM(10000, TIME) LIMIT 500 '
     );
   });
 
@@ -537,7 +537,7 @@ module('Unit | Utility | query converter', function() {
     assert.equal(
       QueryConverter.createBQL(query),
       'SELECT foo AS "foo", complex_map_column.foo AS "bar", COUNT(*), SUM(baz) AS "sum", MIN(foo) ' +
-      'FROM STREAM(10000, TIME) GROUP BY foo, complex_map_column.foo LIMIT 500 ;'
+      'FROM STREAM(10000, TIME) GROUP BY foo, complex_map_column.foo LIMIT 500 '
     );
   });
 
@@ -551,7 +551,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('foo', 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT QUANTILE(foo, LINEAR, 15) FROM STREAM(10000, TIME) LIMIT 500 ;'
+      'SELECT QUANTILE(foo, LINEAR, 15) FROM STREAM(10000, TIME) LIMIT 500 '
     );
   });
 
@@ -565,7 +565,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('foo', 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT FREQ(foo, LINEAR, 15) FROM STREAM(10000, TIME) LIMIT 500 ;'
+      'SELECT FREQ(foo, LINEAR, 15) FROM STREAM(10000, TIME) LIMIT 500 '
     );
   });
 
@@ -579,7 +579,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('foo', 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT CUMFREQ(foo, LINEAR, 15) FROM STREAM(10000, TIME) LIMIT 500 ;'
+      'SELECT CUMFREQ(foo, LINEAR, 15) FROM STREAM(10000, TIME) LIMIT 500 '
     );
   });
 
@@ -595,7 +595,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('foo', 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT QUANTILE(foo, REGION, 0.4, 0.6, 0.01) FROM STREAM(10000, TIME) LIMIT 500 ;'
+      'SELECT QUANTILE(foo, REGION, 0.4, 0.6, 0.01) FROM STREAM(10000, TIME) LIMIT 500 '
     );
   });
 
@@ -609,7 +609,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('foo', 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT QUANTILE(foo, MANUAL, 0.5, 0.2, 0.75, 0.99) FROM STREAM(10000, TIME) LIMIT 500 ;'
+      'SELECT QUANTILE(foo, MANUAL, 0.5, 0.2, 0.75, 0.99) FROM STREAM(10000, TIME) LIMIT 500 '
     );
   });
 
@@ -617,7 +617,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K), 500);
     query.addGroup('foo', 'foo');
-    assert.equal(QueryConverter.createBQL(query), 'SELECT TOP(500, foo), foo AS "foo" FROM STREAM(10000, TIME) ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT TOP(500, foo), foo AS "foo" FROM STREAM(10000, TIME) ');
   });
 
   test('it creates bql for a top k query with threshold and new name correctly', function(assert) {
@@ -629,7 +629,7 @@ module('Unit | Utility | query converter', function() {
     query.addGroup('foo', 'foo');
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT TOP(500, 150, foo) AS "bar", foo AS "foo" FROM STREAM(10000, TIME) ;'
+      'SELECT TOP(500, 150, foo) AS "bar", foo AS "foo" FROM STREAM(10000, TIME) '
     );
   });
 
@@ -637,7 +637,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW), 10);
     query.addWindow();
-    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(10000, TIME) LIMIT 10 ;');
+    assert.equal(QueryConverter.createBQL(query), 'SELECT * FROM STREAM(10000, TIME) LIMIT 10 ');
   });
 
   test('it creates bql for a time window correctly', function(assert) {
@@ -646,7 +646,7 @@ module('Unit | Utility | query converter', function() {
     query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.TIME), 2000, null);
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT * FROM STREAM(10000, TIME) WINDOWING TUMBLING(2000, TIME) LIMIT 10 ;'
+      'SELECT * FROM STREAM(10000, TIME) WINDOWING TUMBLING(2000, TIME) LIMIT 10 '
     );
   });
 
@@ -656,7 +656,7 @@ module('Unit | Utility | query converter', function() {
     query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.RECORD), 1, null);
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT * FROM STREAM(10000, TIME) WINDOWING TUMBLING(1, RECORD) LIMIT 10 ;'
+      'SELECT * FROM STREAM(10000, TIME) WINDOWING TUMBLING(1, RECORD) LIMIT 10 '
     );
   });
 
@@ -666,7 +666,7 @@ module('Unit | Utility | query converter', function() {
     query.addWindow(EMIT_TYPES.describe(EMIT_TYPES.TIME), 2000, INCLUDE_TYPES.describe(INCLUDE_TYPES.ALL));
     assert.equal(
       QueryConverter.createBQL(query),
-      'SELECT * FROM STREAM(10000, TIME) WINDOWING EVERY(2000, TIME, ALL) LIMIT 10 ;'
+      'SELECT * FROM STREAM(10000, TIME) WINDOWING EVERY(2000, TIME, ALL) LIMIT 10 '
     );
   });
 });

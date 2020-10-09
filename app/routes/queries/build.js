@@ -8,7 +8,7 @@ import DefaultQueryRoute from 'bullet-ui/routes/queries/default-query';
 import QueryConverter from 'bullet-ui/utils/query-converter';
 import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
 
-const DEFAULT_QUERY = {
+const DEFAULT_AGGREGATION = {
   type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW),
   size: 1
 };
@@ -26,16 +26,17 @@ export default class QueriesBuildRoute extends DefaultQueryRoute {
   async createQuery(query) {
     try {
       let queryObject = QueryConverter.recreateQuery(query);
-      return this.queryManager.copyQuery(queryObject);
+      let query = await this.queryManager.copyQuery(queryObject);
+      return this.queryManager.addBQL(query);
     } catch {
       return this.createEmptyQuery();
     }
   }
 
   async createEmptyQuery() {
-    let aggregation = this.store.createRecord('aggregation', DEFAULT_QUERY);
+    let aggregation = this.store.createRecord('aggregation', DEFAULT_AGGREGATION);
     await aggregation.save();
     let query = this.store.createRecord('query', { aggregation: aggregation });
-    return query;
+    return this.queryManager.addBQL(query);
   }
 }

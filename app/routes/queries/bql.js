@@ -6,7 +6,7 @@
 import { inject as service } from '@ember/service';
 import DefaultQueryRoute from 'bullet-ui/routes/queries/default-query';
 
-const DEFAULT_QUERY = 'SELECT * FROM STREAM(20000, TIME) LIMIT 1';
+const DEFAULT_QUERY = 'SELECT * FROM STREAM(20000, TIME) LIMIT 1 ;';
 
 export default class QueriesBqlRoute extends DefaultQueryRoute {
   @service queryManager;

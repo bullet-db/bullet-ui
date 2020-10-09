@@ -9,18 +9,10 @@ import { isEmpty, isNone, typeOf } from '@ember/utils';
 import Route from '@ember/routing/route';
 
 /**
- * Users of this class must implement isDirty(), async getModels(params)
+ * Users of this class must implement isDirty()
  */
 export default class QueryableRoute extends Route {
   @service querier;
-  @service queryManager;
-  @service store;
-
-  async model(params) {
-    let models = await this.getModels(params.query_id);
-    models.schema = await this.store.findAll('column');
-    return models;
-  }
 
   submitQuery(query, result) {
     let handlers = {

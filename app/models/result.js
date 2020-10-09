@@ -6,7 +6,7 @@
 /* eslint-disable ember/no-get */
 // Need to disable since gets are needed here for ObjectProxy
 import Model, { attr, belongsTo } from '@ember-data/model';
-import { equal, or } from '@ember/object/computed';
+import { equal } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
 import { A } from '@ember/array';
@@ -33,14 +33,6 @@ export default class ResultModel extends Model {
     return QueryConverter.classify(this.parsedQuery);
   }
 
-  get selectClause() {
-    return this.parsedQuery.select;
-  }
-
-  get groupByClause() {
-    return this.parsedQuery.groupBy;
-  }
-
   @equal('type', AGGREGATION_TYPES.RAW) isRaw;
   @equal('type', AGGREGATION_TYPES.COUNT_DISTINCT) isCountDistinct;
   @equal('type', AGGREGATION_TYPES.GROUP) isGroup;
@@ -48,13 +40,12 @@ export default class ResultModel extends Model {
   @equal('type', AGGREGATION_TYPES.TOP_K) isTopK;
 
   get isReallyRaw() {
-    return this.isRaw && this.selectClause && this.selectClause.indexOf('*') !== -1;
+    return this.isRaw && this.parsedQuery?.select?.indexOf('*') !== -1;
   }
 
   get isSingleRow() {
-    return this.isCountDistinct || (this.isGroup && isEmpty(this.groupByClause));
+    return this.isCountDistinct || (this.isGroup && isEmpty(this.parsedQuery?.groupBy));
   }
-
 
   @computed('windows.[]')
   get errorWindow() {

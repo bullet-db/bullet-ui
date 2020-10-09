@@ -5,12 +5,13 @@
  */
 import { pluralize } from 'ember-inflector';
 import { Base64 } from 'js-base64';
-import { computed, get, getProperties } from '@ember/object';
+import EmberObject, { computed, get, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
 import config from 'bullet-ui/config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
+import { QUERY_TYPES, getQueryType } from 'bullet-ui/utils/query-type';
 import QueryConverter from 'bullet-ui/utils/query-converter';
 import { AGGREGATION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
 // Validations
@@ -110,27 +111,57 @@ export default class QueryManagerService extends Service {
     return copied;
   }
 
+  async copyBQL(bql) {
+    return this.createModel('bql', { name: bql.get('name'), query: bql.get('query') });
+  }
+
+  async copy(query) {
+    let type = getQueryType(query);
+    switch (type) {
+      case QUERY_TYPES.BUILDER:
+        return this.copyQuery(query);
+      case QUERY_TYPES.BQL:
+        return this.copyBQL(query);
+    }
+  }
+
   // Transforming
 
-  encodeQuery(query) {
-    let bql = QueryConverter.createBQL(query);
-    let payload = { name: query.get('name'), bql: bql };
+  encode(query) {
     return new Promise(resolve => {
+      let type = getQueryType(query);
+      let payload = { name: query.get('name'), type: QUERY_TYPES.forSymbol(type) };
+      switch (type) {
+        case QUERY_TYPES.BUILDER:
+          payload.bql = QueryConverter.createBQL(query);
+          break;
+        case QUERY_TYPES.BQL:
+          payload.bql = query.get('query');
+          break;
+      }
       resolve(Base64.encodeURI(JSON.stringify(payload)));
     });
   }
 
-  decodeQuery(hash) {
+  decode(payload) {
     let buffer = Base64.decode(hash);
     return new Promise(resolve => {
       let payload = JSON.parse(buffer.toString());
-      let query = QueryConverter.recreateQuery(payload.bql);
-      query.set('name', payload.name);
-      resolve(query);
+      let type = QUERY_TYPES.forName(payload.type);
+      switch (type) {
+        case QUERY_TYPES.BUILDER: {
+          let query = QueryConverter.recreateQuery(payload.bql);
+          query.set('name', payload.name);
+          resolve(query)
+          break;
+        }
+        case QUERY_TYPES.BQL: {
+          resolve(EmberObject.create({ name: payload.name, isBQL: true, query: payload.bql }));
+          break;
+        }
+      }
     });
   }
-
-  // Result manipulation
 
   async addResult(id) {
     let query = await this.store.findRecord('bql', id);
@@ -364,6 +395,19 @@ export default class QueryManagerService extends Service {
     await queryModel.save();
   }
 
+  async addBQL(query) {
+    let bql = await query.bql;
+    if (isEmpty(bql)) {
+      bql = this.store.createRecord('bql', {
+        name: query.name,
+      })
+      query.set('bql', bql);
+    }
+    bql.set('query', QueryConverter.createBQL(query));
+    await bql.save();
+    return query.save();
+  }
+
   // Creating
 
   async createModel(modelName, opts = {}) {
@@ -433,24 +477,47 @@ export default class QueryManagerService extends Service {
       return;
     }
     query.set('window', null);
-    await query.save();
     return window.destroyRecord();
   }
 
-  async deleteResults(query) {
-    await this.deleteMultiple('results', query, 'query');
-    return query.save();
+  async deleteResults(bql) {
+    await this.deleteMultiple('results', bql, 'query');
+    return bql.save();
+  }
+
+  async deleteBQL(bql) {
+    await this.deleteResults(bql);
+    return bql.destroyRecord();
+  }
+
+  async deleteBQLInQuery(query) {
+    let bql = await query.get('bql');
+    if (isEmpty(bql)) {
+      return;
+    }
+    query.set('bql', null);
+    return this.deleteBQL(bql);
   }
 
   async deleteQuery(query) {
     await Promise.all([
       this.deleteSingle('filter', query, 'query'),
       this.deleteMultiple('projections', query, 'query'),
-      this.deleteResults(query),
+      this.deleteAggregation(query),
       this.deleteWindow(query),
-      this.deleteAggregation(query)
+      this.deleteBQLInQuery(query)
     ]);
     return query.destroyRecord();
+  }
+
+  async delete(query) {
+    let type = getQueryType(query);
+    switch (type) {
+      case QUERY_TYPES.BQL:
+        return this.deleteBQL(query);
+      case QUERY_TYPES.BUILDER:
+        return this.deleteQuery(query);
+    }
   }
 
   async deleteAllUnparented(models) {
@@ -466,7 +533,7 @@ export default class QueryManagerService extends Service {
   }
 
   async deleteAllResults() {
-    let queries = await this.store.findAll('query');
+    let queries = await this.store.findAll('bql');
     let promises = queries.map(this.deleteResults);
     return Promise.all(promises);
   }

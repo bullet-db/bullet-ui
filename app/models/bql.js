@@ -19,6 +19,10 @@ export default class BqlModel extends Model {
     return isEmpty(query) || isEmpty(query.window);
   }
 
+  get isBQL() {
+    return true;
+  }
+
   @computed('name', 'query')
   get builderQuery() {
     if (isEmpty(this.query)) {

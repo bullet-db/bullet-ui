@@ -125,15 +125,16 @@ export default class QueryRoute extends Route {
       filter: changesets.filter.objectAt(0), window: changesets.window.objectAt(0),
       projections: changesets.projections, metrics: changesets.metrics, groups: changesets.groups
     });
+    await this.queryManager.addBQL(changesets.query);
     this.controller.set('forcedDirty', false);
   }
 
   @action
   async sendQuery() {
-    let id = this.paramsFor('query').query_id;
-    let result = await this.queryManager.addResult(id);
-    let query = await this.store.findRecord('query', id);
-    this.submitQuery(query, result);
+    let query = await this.store.findRecord('query', this.paramsFor('query').query_id);
+    let bql = await query.bql;
+    let result = await this.queryManager.addResult(bql.get('id'));
+    this.submitQuery(bql.value, result);
   }
 
   @action

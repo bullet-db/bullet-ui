@@ -392,7 +392,7 @@ export default class QueryConverter {
     let windowing = QueryConverter.createOptionalWindowing(query.get('window'));
     let limit = QueryConverter.createOptionalLimit(type, aggregation);
     // Optionals are responsible for adding a trailing space if they exist
-    return `${select} ${from} ${where}${groupBy}${windowing}${limit};`;
+    return `${select} ${from} ${where}${groupBy}${windowing}${limit}`;
   }
 
   static createSelect(type, query, aggregation) {
