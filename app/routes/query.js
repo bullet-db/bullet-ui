@@ -120,12 +120,12 @@ export default class QueryRoute extends Route {
       return;
     }
     let changesets = this.controller.get('changesets');
-    await this.queryManager.save({
+    let query = await this.queryManager.save({
       query: changesets.query, aggregation: changesets.aggregation,
       filter: changesets.filter.objectAt(0), window: changesets.window.objectAt(0),
       projections: changesets.projections, metrics: changesets.metrics, groups: changesets.groups
     });
-    await this.queryManager.addBQL(changesets.query);
+    await this.queryManager.addBQL(query);
     this.controller.set('forcedDirty', false);
   }
 

@@ -18,13 +18,6 @@ export default class BqlModel extends Model {
     return true;
   }
 
-  get duration() {
-
-  }
-
-  get windowDuration() {
-  }
-
   @computed('name', 'query')
   get builderQuery() {
     if (isEmpty(this.query)) {

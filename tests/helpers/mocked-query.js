@@ -23,7 +23,6 @@ export let MockAggregation = EmberObject.extend({
   size: null,
   groups: null,
   metrics: null,
-  attributes: null,
 
   init() {
     this.setProperties({ _metrics: A(), _groups: A() });
@@ -109,7 +108,9 @@ export default EmberObject.extend({
   },
 
   addAggregation(type, size = 1, attributes = { }) {
-    this.set('_aggregation', MockAggregation.create({ type, size, attributes }));
+    let aggregation = { type, size } ;
+    Object.keys(attributes).forEach(attribute => aggregation[attribute] = attributes[attribute]);
+    this.set('_aggregation', MockAggregation.create(aggregation));
     this.topLevelPropertyAsPromise('aggregation');
     this.nestedPropertyAsPromise('aggregation', 'groups');
     this.nestedPropertyAsPromise('aggregation', 'metrics');

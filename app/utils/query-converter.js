@@ -168,9 +168,7 @@ export default class QueryConverter {
     let recreatedFields = QueryConverter.recreateFields(fields);
     QueryConverter.setIfTruthy(aggregation, 'groups', recreatedFields);
     if (!isEmpty(alias)) {
-      let attributes = EmberObject.create();
-      attributes.set('newName', QueryConverter.stripParentheses(alias));
-      aggregation.set('attributes', attributes);
+      aggregation.set('newName', QueryConverter.stripParentheses(alias));
     }
     query.set('aggregation', aggregation);
   }
@@ -231,31 +229,29 @@ export default class QueryConverter {
     let groups = A([EmberObject.create({ field: field })]);
     aggregation.set('groups', groups);
 
-    let attributes = EmberObject.create();
-    attributes.set('type', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.forName(type)));
+    aggregation.set('distributionType', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.forName(type)));
 
     let pointArray = points.split(',');
     let pointType = pointArray[0].toUpperCase();
     switch (pointType) {
       case 'LINEAR': {
-        attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
-        attributes.set('numberOfPoints', Number(pointArray[1]));
+        aggregation.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER));
+        aggregation.set('numberOfPoints', Number(pointArray[1]));
         break;
       }
       case 'MANUAL': {
-        attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS));
-        attributes.set('points', pointArray.slice(1).map(p => Number(p)).join(','));
+        aggregation.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS));
+        aggregation.set('points', pointArray.slice(1).map(p => Number(p)).join(','));
         break;
       }
       case 'REGION': {
-        attributes.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED));
-        attributes.set('start', Number(pointArray[1]));
-        attributes.set('end', Number(pointArray[2]));
-        attributes.set('increment', Number(pointArray[3]));
+        aggregation.set('pointType', DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED));
+        aggregation.set('start', Number(pointArray[1]));
+        aggregation.set('end', Number(pointArray[2]));
+        aggregation.set('increment', Number(pointArray[3]));
         break;
       }
     }
-    aggregation.set('attributes', attributes);
     query.set('aggregation', aggregation);
   }
 
@@ -279,10 +275,8 @@ export default class QueryConverter {
     }
     aggregation.set('groups', recreatedFields);
 
-    let attributes = EmberObject.create();
-    QueryConverter.setIfTruthy(attributes, 'threshold', threshold);
-    QueryConverter.setIfTruthy(attributes, 'newName', QueryConverter.stripParentheses(alias));
-    aggregation.set('attributes', attributes);
+    QueryConverter.setIfTruthy(aggregation, 'threshold', threshold);
+    QueryConverter.setIfTruthy(aggregation, 'newName', QueryConverter.stripParentheses(alias));
     query.set('aggregation', aggregation);
   }
 
@@ -419,7 +413,7 @@ export default class QueryConverter {
 
   static createSelectCountDistinct(aggregation) {
     let fields = aggregation.get('groups').mapBy('field').join(', ');
-    let alias = aggregation.get('attributes.newName');
+    let alias = aggregation.get('newName');
     let optionalAlias = isEmpty(alias) ? '' : ` AS "${alias}"`;
     return `SELECT COUNT(DISTINCT ${fields})${optionalAlias}`;
   }
@@ -455,28 +449,28 @@ export default class QueryConverter {
   }
 
   static createSelectDistribution(aggregation) {
-    let distribution = DISTRIBUTION_TYPES.name(aggregation.get('attributes.type'));
+    let distribution = DISTRIBUTION_TYPES.name(aggregation.get('distributionType'));
     // Only one
     let field = aggregation.get('groups').mapBy('field')[0];
 
-    let pointType = DISTRIBUTION_POINT_TYPES.name(aggregation.get('attributes.pointType'));
+    let pointType = DISTRIBUTION_POINT_TYPES.name(aggregation.get('pointType'));
     let type = DISTRIBUTION_POINT_TYPES.forName(pointType);
     let points;
     switch (type) {
       case DISTRIBUTION_POINT_TYPES.NUMBER: {
-        let numberOfPoints = parseFloat(aggregation.get('attributes.numberOfPoints'));
+        let numberOfPoints = parseFloat(aggregation.get('numberOfPoints'));
         points = `LINEAR, ${numberOfPoints}`;
         break;
       }
       case DISTRIBUTION_POINT_TYPES.POINTS: {
-        let manual = aggregation.get('attributes.points');
+        let manual = aggregation.get('points');
         points = `MANUAL, ${manual.split(',').map(p => parseFloat(p.trim())).join(', ')}`;
         break;
       }
       case DISTRIBUTION_POINT_TYPES.GENERATED: {
-        let start = parseFloat(aggregation.get('attributes.start'));
-        let end = parseFloat(aggregation.get('attributes.end'));
-        let increment = parseFloat(aggregation.get('attributes.increment'));
+        let start = parseFloat(aggregation.get('start'));
+        let end = parseFloat(aggregation.get('end'));
+        let increment = parseFloat(aggregation.get('increment'));
         points = `REGION, ${start}, ${end}, ${increment}`;
         break;
       }
@@ -487,11 +481,11 @@ export default class QueryConverter {
   static createSelectTopK(aggregation) {
     let groups = aggregation.get('groups');
     let k = Number(aggregation.get('size'));
-    let threshold = aggregation.get('attributes.threshold');
+    let threshold = aggregation.get('threshold');
     let optionalThreshold = isEmpty(threshold) ? '' : `, ${Number(threshold)}`;
     let fields = groups.mapBy('field').join(', ');
 
-    let newName = aggregation.get('attributes.newName');
+    let newName = aggregation.get('newName');
     let optionalAlias = isEmpty(newName) ? '' : ` AS "${newName}"`;
 
     let renames = groups.map(field => QueryConverter.createField(field)).join(', ');

@@ -10,11 +10,7 @@ import { AGGREGATION_TYPES, DISTRIBUTION_TYPES, DISTRIBUTION_POINT_TYPES } from 
 
 export default function validatePoints() {
   return (key, newValue, oldValue, changes, content) => {
-    let {
-      'type': type,
-      'attributes.type' : distributionType,
-      'attributes.pointType' : pointType
-    } = currentValue(changes, content, ['type', 'attributes.type', 'attributes.pointType']);
+    let { type, distributionType, pointType } = currentValue(changes, content, ['type', 'distributionType', 'pointType']);
     if (!isEqual(type, AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION))) {
       return true;
     }
@@ -37,9 +33,7 @@ function validateMaximumPoints(size, content) {
 }
 
 function validateFreeFormPoints(type, changes, content) {
-  let {
-    'attributes.points' : points
-  } = currentValue(changes, content, ['attributes.points']);
+  let { points } = currentValue(changes, content, ['points']);
 
   if (isEmpty(points)) {
     return `You must specify a comma separated list of points for this option`;
@@ -59,9 +53,7 @@ function validateFreeFormPoints(type, changes, content) {
 }
 
 function validateNumberOfPoints(changes, content) {
-  let {
-    'attributes.numberOfPoints' : numberOfPoints
-  } = currentValue(changes, content, ['attributes.numberOfPoints']);
+  let { numberOfPoints } = currentValue(changes, content, ['numberOfPoints']);
 
   if (isEmpty(numberOfPoints)) {
     return `You must specify the Number of Points you want to generate`;
@@ -74,11 +66,7 @@ function validateNumberOfPoints(changes, content) {
 }
 
 function validateGeneratedPoints(type, changes, content) {
-  let {
-    'attributes.start' : start,
-    'attributes.end' : end,
-    'attributes.increment' : increment
-  } = currentValue(changes, content, ['attributes.start', 'attributes.end', 'attributes.increment']);
+  let { start, end, increment } = currentValue(changes, content, ['start', 'end', 'increment']);
 
   if (isEmpty(start) || isEmpty(end) || isEmpty(increment)) {
     return `You must specify the Start, End and Increment for the points you want to generate`;

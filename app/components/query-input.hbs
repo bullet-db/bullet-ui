@@ -186,8 +186,8 @@
 
               <div class="sub-section-header">Rename Count Field</div>
               <div class="row narrow-row count-distinct-display-name">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
-                              @onChange={{fn this.changeAttribute "newName"}}
+                <LabeledInput @value={{changeset-get this.aggregationChangeset "newName"}}
+                              @onChange={{@onDirty}}
                               @label="Display Name"@classNames="col-xs-2" @type="text" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>
@@ -259,14 +259,14 @@
 
               {{#if this.isNumberOfPoints}}
                 <div class="row narrow-row distribution-type-number-of-points">
-                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.numberOfPoints"
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="numberOfPoints"
                                   @onChange={{@onDirty}}
                                   @label="Number of Points" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                   @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
                 </div>
               {{else if this.isPoints}}
                 <div class="row narrow-row distribution-type-points">
-                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.points"
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="points"
                                   @onChange={{@onDirty}}
                                   @label="Points" @classNames="col-xs-4" @maxlength={{131072}}
                                   @placeholder="Comma separated numbers" @disabled={{this.isListening}}
@@ -274,15 +274,15 @@
                 </div>
               {{else if this.isGeneratedPoints}}
                 <div class="row narrow-row distribution-type-point-range">
-                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.start"
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="start"
                                   @onChange={{@onDirty}}
                                   @label="Start" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                   @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
-                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.end"
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="end"
                                   @onChange={{@onDirty}}
                                   @label="End" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                   @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
-                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="attributes.increment"
+                  <ValidatedInput @changeset={{this.aggregationChangeset}} @valuePath="increment"
                                   @onChange={{@onDirty}}
                                   @label="Increment" @classNames="col-xs-2" @type="number" @placeholder="Number"
                                   @disabled={{this.isListening}} @forceValidate={{this.isValidating}}/>
@@ -316,15 +316,15 @@
               </div>
               <div class="sub-section-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.threshold"}}
-                              @onChange={{fn this.changeAttribute "threshold"}}
+                <LabeledInput @value={{changeset-get this.aggregationChangeset "threshold"}}
+                              @onChange={{@onDirty}}
                               @label="Minimum Count" @classNames="col-xs-2" @type="number" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>
               <div class="sub-section-header">Rename Count Field</div>
               <div class="row narrow-row top-k-display-name">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "attributes.newName"}}
-                              @onChange={{fn this.changeAttribute "newName"}}
+                <LabeledInput @value={{changeset-get this.aggregationChangeset "newName"}}
+                              @onChange={{@onDirty}}
                               @label="Display Name" @classNames="col-xs-2" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>

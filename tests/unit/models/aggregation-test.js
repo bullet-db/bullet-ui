@@ -11,11 +11,6 @@ import { AGGREGATION_TYPES, DISTRIBUTION_TYPES } from 'bullet-ui/utils/query-con
 module('Unit | Model | aggregation', function(hooks) {
   setupTest(hooks);
 
-  test('it sets its default values right', function(assert) {
-    let model = run(() => this.owner.lookup('service:store').createRecord('aggregation'));
-    assert.ok(model.get('attributes'));
-  });
-
   test('it maps the names for the aggregation types properly', function(assert) {
     assert.equal(
       AGGREGATION_TYPES.name(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)),

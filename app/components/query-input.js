@@ -111,8 +111,8 @@ export default class QueryInputComponent extends Component {
 
     this.rawType = RAW_TYPES.describe(isEmpty(this.projections) ? RAW_TYPES.ALL : RAW_TYPES.SELECT);
     this.outputDataType = this.aggregationChangeset.get('type') || AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW);
-    this.distributionType = this.aggregationChangeset.get('attributes.type') || DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
-    this.pointType = this.aggregationChangeset.get('attributes.pointType') || DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
+    this.distributionType = this.aggregationChangeset.get('distributionType') || DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE);
+    this.pointType = this.aggregationChangeset.get('pointType') || DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER);
   }
 
   // Getters
@@ -236,7 +236,7 @@ export default class QueryInputComponent extends Component {
     }
     defaults.numberOfPoints = this.settings.get('defaultValues.distributionNumberOfPoints');
 
-    let lastQuantile = isEqual(this.aggregationChangeset.get('attributes.type'), quantile);
+    let lastQuantile = isEqual(this.aggregationChangeset.get('distributionType'), quantile);
     let isQuantile = isEqual(type, quantile);
     let fields = [];
     for (let field in defaults) {
@@ -245,15 +245,14 @@ export default class QueryInputComponent extends Component {
       // But if you go to quantile or come from quantile, it will wipe all the quantile specific defaults
       fields.push({ name: field, value: defaults[field], forceSet: lastQuantile !== isQuantile });
     }
-    fields.push({ name: 'type', value: type, forceSet: true });
+    fields.push({ name: 'distributionType', value: type, forceSet: true });
     fields.push({ name: 'pointType', value: pointType, forceSet: true });
     fields.forEach(field => {
       let name = field.name;
       let value = field.value;
       let forceSet = field.forceSet || false;
-      let fieldPath = `attributes.${name}`;
-      if (forceSet || isEmpty(this.aggregationChangeset.get(fieldPath))) {
-        this.aggregationChangeset.set(fieldPath, value);
+      if (forceSet || isEmpty(this.aggregationChangeset.get(name))) {
+        this.aggregationChangeset.set(name, value);
       }
     });
   }
@@ -388,11 +387,6 @@ export default class QueryInputComponent extends Component {
     collection.removeObject(item);
     this.queryManager.deleteModel(item.get('data'));
     this.args.onDirty();
-  }
-
-  @action
-  changeAttribute(field, value) {
-    this.aggregationChangeset.set(`attributes.${field}`, value);
   }
 
   @action

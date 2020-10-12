@@ -13,13 +13,11 @@ export default {
     validateNumber({ gte: 1, message: 'Maximum results must be a positive integer' }),
     validateAggregationMaxSize()
   ],
-  attributes: {
-    type: [validatePoints()],
-    pointType: [validatePoints()],
-    numberOfPoints: [validatePoints()],
-    points: [validatePoints()],
-    start: [validatePoints()],
-    end: [validatePoints()],
-    increment: [validatePoints()]
-  }
+  distributionType: [validatePoints()],
+  pointType: [validatePoints()],
+  numberOfPoints: [validatePoints()],
+  points: [validatePoints()],
+  start: [validatePoints()],
+  end: [validatePoints()],
+  increment: [validatePoints()]
 }

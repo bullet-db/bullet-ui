@@ -11,6 +11,7 @@ import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
 import config from 'bullet-ui/config/environment';
 import isEmpty from 'bullet-ui/utils/is-empty';
+import { ATTRIBUTES } from 'bullet-ui/models/aggregation';
 import { QUERY_TYPES, getQueryType } from 'bullet-ui/utils/query-type';
 import QueryConverter from 'bullet-ui/utils/query-converter';
 import { AGGREGATION_TYPES, DISTRIBUTION_POINT_TYPES } from 'bullet-ui/utils/query-constants';
@@ -86,7 +87,7 @@ export default class QueryManagerService extends Service {
     // Assume prefetched
     let [, copiedAggregation, ] = await Promise.all([
       this.copySingle(query, copied, 'filter', 'query', ['clause', 'summary']),
-      this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', 'attributes']),
+      this.copySingle(query, copied, 'aggregation', 'query', ['type', 'size', ...ATTRIBUTES]),
       this.copySingle(query, copied, 'window', 'query', ['emitType', 'emitEvery', 'includeType'])
     ]);
 
@@ -288,7 +289,7 @@ export default class QueryManagerService extends Service {
 
   removeAttributes(aggregation, ...fields) {
     fields.forEach(field => {
-      aggregation.set(`attributes.${field}`, undefined);
+      aggregation.set(field, undefined);
     });
   }
 
@@ -306,14 +307,13 @@ export default class QueryManagerService extends Service {
   }
 
   wipeAggregationAttributes(aggregation) {
-    const fields = ['type', 'pointType', 'newName', 'threshold', 'numberOfPoints', 'start', 'end', 'increment', 'points'];
-    for (const field of fields) {
-      aggregation.set(`attributes.${field}`, undefined);
+    for (const field of ATTRIBUTES) {
+      aggregation.set(field, undefined);
     }
   }
 
   fixAggregationAttributes(aggregation) {
-    let pointType = aggregation.get('attributes.pointType');
+    let pointType = aggregation.get('pointType');
     if (isEqual(pointType, DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED))) {
       this.removeAttributes(aggregation, 'numberOfPoints', 'points');
     } else if (isEqual(pointType, DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER))) {
@@ -391,6 +391,7 @@ export default class QueryManagerService extends Service {
     await this.mergeChangeset(queryModel, 'window', window, 'query');
     await this.mergeChangesets(queryModel, 'projections', projections, 'query');
     await queryModel.save();
+    return queryModel;
   }
 
   async addBQL(query) {

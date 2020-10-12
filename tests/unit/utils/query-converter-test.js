@@ -135,7 +135,7 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT),
           groups: [{ field: 'foo' }, { field: 'bar' }],
-          attributes: { newName: 'cnt' }
+          newName: 'cnt'
         },
         duration: 10000
       }
@@ -242,11 +242,9 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
           groups: [{ field: 'foo' }],
-          attributes: {
-            type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
-            pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
-            numberOfPoints: 15
-          }
+          distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
+          pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
+          numberOfPoints: 15
         },
         duration: 10000
       }
@@ -260,11 +258,9 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
           groups: [{ field: 'foo' }],
-          attributes: {
-            type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
-            pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
-            numberOfPoints: 15
-          }
+          distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
+          pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
+          numberOfPoints: 15
         },
         duration: 10000
       }
@@ -279,11 +275,9 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
           groups: [{ field: 'foo' }],
-          attributes: {
-            type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CUMFREQ),
-            pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
-            numberOfPoints: 15
-          }
+          distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CUMFREQ),
+          pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER),
+          numberOfPoints: 15
         },
         duration: 10000
       }
@@ -298,11 +292,9 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
           groups: [{ field: 'foo' }],
-          attributes: {
-            type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
-            pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED),
-            start: 0.4, end: 0.6, increment: 0.01
-          }
+          distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
+          pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED),
+          start: 0.4, end: 0.6, increment: 0.01
         },
         duration: 10000
       }
@@ -319,11 +311,9 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION),
           groups: [{ field: 'foo' }],
-          attributes: {
-            type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
-            pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS),
-            points: '0.5,0.2,0.75,0.99'
-          }
+          distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
+          pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS),
+          points: '0.5,0.2,0.75,0.99'
         },
         duration: 10000
       }
@@ -338,7 +328,6 @@ module('Unit | Utility | query converter', function() {
         aggregation: {
           size: 500,
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K),
-          attributes: { },
           groups: [{ field: 'foo' }]
         },
         duration: 10000
@@ -355,10 +344,8 @@ module('Unit | Utility | query converter', function() {
           size: 500,
           type: AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K),
           groups: [{ field: 'foo', name: 'foo' }],
-          attributes: {
-            newName: 'bar',
-            threshold: 150
-          }
+          newName: 'bar',
+          threshold: 150
         },
         duration: 10000
       }
