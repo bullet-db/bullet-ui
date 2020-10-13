@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { isEmpty } from '@ember/utils';
 import { oneWay } from '@ember/object/computed';
 import { A } from '@ember/array';
 import EmberObject, { computed } from '@ember/object';
@@ -54,7 +53,7 @@ export let MockBQL = EmberObject.extend({
   query: null,
   created: null,
   results: null,
-  isBQL: true
+  isBQL: true,
 
   init() {
     this.setProperties({ _results: A() });

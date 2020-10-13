@@ -52,8 +52,7 @@ module('Unit | Model | result', function(hooks) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
       model.set('categorization', { type: AGGREGATION_TYPES.GROUP, isGroupAll: false });
-      assert.ok(model.get('isGroupBy'));
-      assert.notOk(model.get('isGroupAll'));
+      assert.ok(model.get('isGroup'));
       assert.notOk(model.get('isSingleRow'));
     });
   });
@@ -62,7 +61,7 @@ module('Unit | Model | result', function(hooks) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
       model.set('categorization', { type: AGGREGATION_TYPES.GROUP, isGroupAll: true });
-      assert.ok(model.get('isGroupBy'));
+      assert.ok(model.get('isGroup'));
       assert.ok(model.get('isSingleRow'));
     });
   });
@@ -89,7 +88,7 @@ module('Unit | Model | result', function(hooks) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
       model.set('categorization', { type: AGGREGATION_TYPES.RAW });
-      assert.ok(model.get('isTopK'));
+      assert.ok(model.get('isRaw'));
       assert.ok(model.get('hasNoWindow'));
     });
   });

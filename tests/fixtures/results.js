@@ -17,6 +17,18 @@ const RESULTS = {
       }
     ]
   },
+  SINGLE_COMPLEX: {
+    meta: {},
+    records: [
+      {
+        foo: 'test',
+        timestamp: 1231231231,
+        domain: {
+          bar: true
+        }
+      }
+    ]
+  },
   ERROR: {
     meta: { errors: [] },
     records: [

@@ -77,7 +77,7 @@ module('Integration | Component | queries table', function(hooks) {
     await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
     assertTooltipNotRendered(assert);
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[2]).hasText('04 Jan 12:00 AM');
-    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[2]);
     assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[2]).hasText('02 Jan 12:00 AM');
   });
 

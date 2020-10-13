@@ -62,7 +62,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
   test('it lets you expand result entries in a popover', async function(assert) {
     assert.expect(5);
-    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.SINGLE_COMPLEX], COLUMNS.BASIC);
 
     await visit('/queries/build');
     await click('.submit-button');
@@ -70,10 +70,10 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.dom('.lt-body .lt-row .lt-cell').exists({ count: 3 });
     // Need to specify this because table-view tooltip is rendered
     assertTooltipNotRendered(assert, { selector: '.ember-popover' });
-    let cell = findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'test');
+    let cell = findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'bar');
     await click(cell);
     assertTooltipVisible(assert, { selector: '.ember-popover' });
-    assert.dom(findIn('.record-entry-popover-wrapper .record-entry-popover-body pre', cell.parentNode)).hasText('test');
+    assert.dom(findIn('.record-entry-popover-wrapper .record-entry-popover-body pre', cell.parentNode)).hasText('{ "bar": true }');
     await click(findIn('.record-entry-popover-wrapper .close-button', cell.parentNode));
     assertTooltipNotVisible(assert, { selector: '.ember-popover' });
   });
