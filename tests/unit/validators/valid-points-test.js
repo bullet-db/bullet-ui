@@ -100,8 +100,8 @@ module('Unit | Validator | valid points', function(hooks) {
     mockModel.set('start', -1);
     mockModel.set('end', 1);
     mockModel.set('increment', 0.1);
-    mockModel.set('type', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE));
-    assert.equal(validate('type', null, null, { }, mockModel), expected);
+    mockModel.set('distributionType', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE));
+    assert.equal(validate('distributionType', null, null, { }, mockModel), expected);
     mockModel.set('end', 10);
     assert.equal(validate('end', null, null, { }, mockModel), expected);
 
@@ -133,7 +133,7 @@ module('Unit | Validator | valid points', function(hooks) {
     assert.equal(validate('points', null, null, { }, mockModel), expected);
 
     expected = 'Quantiles requires points between 0 and 1. These are not: -0.4,1.2';
-    mockModel.set('type', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE));
+    mockModel.set('distributionType', DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE));
     mockModel.set('points', '0.3, -0.4, 0.35, 0.4, 1.2, 0');
     assert.equal(validate('points', null, null, { }, mockModel), expected);
 

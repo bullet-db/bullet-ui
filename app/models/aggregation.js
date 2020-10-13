@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
-import EmberObject from '@ember/object';
 
 export const ATTRIBUTES = [
   'newName', 'threshold',

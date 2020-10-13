@@ -128,9 +128,9 @@ module('Acceptance | query filtering', function(hooks) {
     await visit('queries');
 
     // Need to not use dom() since it trims whitespace
-    let summary = find('.query-description .filter-summary-text');
+    let summary = find('.query-description .summary-text');
     let { expected } = QUERIES.ALL_OPERATORS.match(/.*WHERE (?<expected>.+?) LIMIT 10/i).groups;
-    assert.equal(summary.textContent.trim(), `Filters:  ${expected}`);
+    assert.equal(summary.textContent.trim(), `SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 10`);
 
     await click('.query-description');
     assert.equal(currentRouteName(), 'query');
@@ -157,7 +157,7 @@ module('Acceptance | query filtering', function(hooks) {
       '( integer > 0 OR float < 9 OR long_map.q >= 42 OR double_map.double_map_sub_field_2 <= -1.2 ) AND ' +
       'string_map_map.string_map_map_sub_field_1.ext RLIKE ANY [\'.+42.+\',\'.*\\\\S\'] AND ' +
       'CONTAINSVALUE(string_map_map, \'xyz\')';
-    assert.dom('.query-description .filter-summary-text').hasText(`Filters:  ${expected}`);
+    assert.dom('.query-description .summary-text').hasText(`SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 10`);
   });
 
   test('it suppresses validation for numbers for the operators that allow commas in values', async function(assert) {
@@ -250,7 +250,7 @@ module('Acceptance | query filtering', function(hooks) {
     let expected =
       'string IN [\'qux\',\'bar\',\'baz\'] AND float IN [1,2,3,4,5,6.1] AND integer IN [1,42] ' +
       'AND double NOT IN [1.2,42] AND long_map.l IN [42]';
-    assert.dom('.query-description .filter-summary-text').hasText(`Filters:  ${expected}`);
+    assert.dom('.query-description .summary-text').hasText(`SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 1`);
   });
 
   test('it can validate values for the size is operator', async function(assert) {
@@ -390,6 +390,6 @@ module('Acceptance | query filtering', function(hooks) {
       'CONTAINSVALUE(long_map_map, 01) AND CONTAINSVALUE(double_map_list, -1.52) AND ' +
       'CONTAINSVALUE(float_map_map, 42.52000001) AND CONTAINSVALUE(string_list, \'foo.1\') AND ' +
       'CONTAINSVALUE(string_map_list, \'xyz\')';
-    assert.dom('.query-description .filter-summary-text').hasText(`Filters:  ${expected}`);
+    assert.dom('.query-description .summary-text').hasText(`SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 10`);
   });
 });

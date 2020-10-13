@@ -15,19 +15,18 @@ module('Acceptance | query summarization', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.SINGLE], COLUMNS.BASIC);
 
   test('it summarizes a blank query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
     await visit('/queries/build');
     await click('.save-button');
     await visit('queries');
 
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: All');
+    assert.dom('.query-description .summary-text').hasText('SELECT * FROM STREAM(20000, TIME) LIMIT 1');
   });
 
   test('it summarizes a query with filters', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -43,14 +42,14 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.save-button');
     await visit('queries');
 
-    assert.dom('.query-description .filter-summary-text').hasText(
-      'Filters: complex_map_column IS NULL AND ( complex_map_column IS NULL AND complex_map_column IS NULL )'
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT * FROM STREAM(20000, TIME) WHERE complex_map_column IS NULL AND ' +
+      '( complex_map_column IS NULL AND complex_map_column IS NULL ) LIMIT 1'
     );
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: All');
   });
 
   test('it summarizes a query with raw fields', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -77,12 +76,14 @@ module('Acceptance | query summarization', function(hooks) {
     await click('.save-button');
     await visit('queries');
 
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: new_name, simple_column, complex_map_column.bar');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT complex_map_column.foo AS "new_name", simple_column AS "simple_column", ' +
+      'complex_map_column.bar AS "complex_map_column.bar" FROM STREAM(20000, TIME) LIMIT 1'
+    );
   });
 
   test('it summarizes a count distinct query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.COUNT_DISTINCT], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -93,12 +94,13 @@ module('Acceptance | query summarization', function(hooks) {
     await fillIn('.output-container .count-distinct-display-name input', 'cnt');
     await click('.save-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: Count Distinct ON (simple_column, complex_map_column)');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT COUNT(DISTINCT simple_column, complex_map_column) AS "cnt" FROM STREAM(20000, TIME)'
+    );
   });
 
   test('it summarizes a distinct query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -117,12 +119,14 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.save-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: complex_map_column.foo, bar');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT complex_map_column.foo AS "complex_map_column.foo", simple_column AS "bar" ' +
+      'FROM STREAM(20000, TIME) GROUP BY complex_map_column.foo, simple_column LIMIT 512'
+    );
   });
 
   test('it summarizes a group all query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -154,13 +158,13 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields:  Count(*), avg_s, Average(simple_column), Sum(simple_column), ' +
-               'Minimum(simple_column), Maximum(simple_column)');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT COUNT(*), AVG(simple_column) AS "avg_s", AVG(simple_column), SUM(simple_column), MIN(simple_column), ' +
+      'MAX(simple_column)  FROM STREAM(20000, TIME) LIMIT 512');
   });
 
   test('it summarizes a grouped data query with groups first', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -184,12 +188,15 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: complex_map_column.foo, bar, Count(*), avg_bar');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT complex_map_column.foo AS "complex_map_column.foo", simple_column AS "bar", COUNT(*), ' +
+      'AVG(simple_column) AS "avg_bar" FROM STREAM(20000, TIME) GROUP BY complex_map_column.foo, simple_column ' +
+      'LIMIT 512'
+    );
   });
 
   test('it summarizes a quantile distribution query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -201,12 +208,13 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: Quantile ON complex_map_column.foo');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT QUANTILE(complex_map_column.foo, LINEAR, 11) FROM STREAM(20000, TIME) LIMIT 512'
+    );
   });
 
   test('it summarizes a frequency distribution query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -217,12 +225,13 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: Frequency ON simple_column');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT FREQ(simple_column, LINEAR, 11) FROM STREAM(20000, TIME) LIMIT 512'
+    );
   });
 
   test('it summarizes a cumulative frequency distribution query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -233,12 +242,13 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: Cumulative Frequency ON simple_column');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT CUMFREQ(simple_column, LINEAR, 11) FROM STREAM(20000, TIME) LIMIT 512'
+    );
   });
 
   test('it summarizes a top k query', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.TOP_K], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -248,12 +258,13 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: TOP 1 OF (simple_column)');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT TOP(1, simple_column), simple_column AS "simple_column" FROM STREAM(20000, TIME)'
+    );
   });
 
   test('it summarizes a top k query with multiple fields', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.TOP_K], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -267,12 +278,14 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText('Fields: TOP 1 OF (simple_column, complex_map_column.foo)');
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT TOP(1, simple_column, complex_map_column.foo), simple_column AS "simple_column", ' +
+      'complex_map_column.foo AS "complex_map_column.foo" FROM STREAM(20000, TIME)'
+    );
   });
 
   test('it summarizes a top k query with custom k and threshold', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.TOP_K], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -289,14 +302,14 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText(
-      'Fields: TOP 15 OF (simple_column, complex_map_column.foo) HAVING Count >= 1500'
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT TOP(15, 1500, simple_column, complex_map_column.foo), simple_column AS "simple_column", ' +
+      'complex_map_column.foo AS "complex_map_column.foo" FROM STREAM(20000, TIME)'
     );
   });
 
   test('it summarizes a top k query with custom k, threshold and name', async function(assert) {
-    assert.expect(2);
+    assert.expect(1);
     this.mockedAPI.mock([RESULTS.TOP_K], COLUMNS.BASIC);
 
     await visit('/queries/build');
@@ -314,9 +327,9 @@ module('Acceptance | query summarization', function(hooks) {
 
     await click('.submit-button');
     await visit('queries');
-    assert.dom('.query-description .filter-summary-text').hasText('Filters: None');
-    assert.dom('.query-description .fields-summary-text').hasText(
-      'Fields: TOP 15 OF (simple_column, complex_map_column.foo) HAVING cnt >= 1500'
+    assert.dom('.query-description .summary-text').hasText(
+      'SELECT TOP(15, 1500, simple_column, complex_map_column.foo) AS "cnt", simple_column AS "simple_column", ' +
+      'complex_map_column.foo AS "complex_map_column.foo" FROM STREAM(20000, TIME)'
     );
   });
 });

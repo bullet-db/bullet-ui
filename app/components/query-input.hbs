@@ -186,7 +186,7 @@
 
               <div class="sub-section-header">Rename Count Field</div>
               <div class="row narrow-row count-distinct-display-name">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "newName"}}
+                <LabeledInput @value={{this.aggregationChangeset.newName}}
                               @onChange={{@onDirty}}
                               @label="Display Name"@classNames="col-xs-2" @type="text" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
@@ -316,14 +316,14 @@
               </div>
               <div class="sub-section-header">Having Minimum Count</div>
               <div class="row narrow-row top-k-min-count">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "threshold"}}
+                <LabeledInput @value={{this.aggregationChangeset.threshold}}
                               @onChange={{@onDirty}}
                               @label="Minimum Count" @classNames="col-xs-2" @type="number" @placeholder="Optional"
                               @disabled={{this.isListening}}/>
               </div>
               <div class="sub-section-header">Rename Count Field</div>
               <div class="row narrow-row top-k-display-name">
-                <LabeledInput @value={{changeset-get this.aggregationChangeset "newName"}}
+                <LabeledInput @value={{this.aggregationChangeset.newName}}
                               @onChange={{@onDirty}}
                               @label="Display Name" @classNames="col-xs-2" @placeholder="Optional"
                               @disabled={{this.isListening}}/>

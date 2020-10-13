@@ -5,7 +5,6 @@
  */
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import { isEmpty, isNone, typeOf } from '@ember/utils';
 import Route from '@ember/routing/route';
 
 /**

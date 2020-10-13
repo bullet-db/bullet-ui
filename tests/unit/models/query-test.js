@@ -12,9 +12,7 @@ module('Unit | Model | query', function(hooks) {
   setupTest(hooks);
 
   test('it sets its default values right', function(assert) {
-    let now = parseInt(Date.now());
     let model = run(() => this.owner.lookup('service:store').createRecord('query'));
-    let created = model.get('created');
     assert.notOk(isPresent(model.get('name')));
     assert.equal(model.get('duration'), 20000);
   });

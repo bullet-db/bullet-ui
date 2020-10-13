@@ -45,15 +45,20 @@ export let MockResult = EmberObject.extend({
   records: null,
   created: null,
   querySnapshot: null,
-  pivotOptions: null
+  pivotOptions: null,
+  categorization: null
 });
 
 export let MockBQL = EmberObject.extend({
   name: null,
   query: null,
   created: null,
-  _results: A(),
+  results: null,
   isBQL: true
+
+  init() {
+    this.setProperties({ _results: A() });
+  }
 });
 
 export default EmberObject.extend({
@@ -61,7 +66,6 @@ export default EmberObject.extend({
   projections: null,
   aggregation: null,
   bql: null,
-  results: null,
   duration: null,
   name: null,
   shouldValidate: true,
@@ -76,7 +80,7 @@ export default EmberObject.extend({
       _bql: EmberObject.create(),
       _window: null
     });
-    A(['filter', 'projections', 'aggregation', 'bql', 'results', 'window']).forEach(this.topLevelPropertyAsPromise, this);
+    A(['filter', 'projections', 'aggregation', 'window']).forEach(this.topLevelPropertyAsPromise, this);
     this.addBQL(null, 'Mock BQL');
   },
 
@@ -129,15 +133,15 @@ export default EmberObject.extend({
   },
 
   addBQL(name, query, created = new Date(Date.now())) {
-    let bql = this._bql;
     this.set('_bql', MockBQL.create({ name, query, created }));
     this.topLevelPropertyAsPromise('bql');
     this.nestedPropertyAsPromise('bql', 'results');
   },
 
-  addResult(records, created = new Date(Date.now()), metadata = null, querySnapshot = null, pivotOptions = null) {
-    this._bql._results.pushObject(MockResult.create({ records, created, metadata, querySnapshot, pivotOptions }));
-    this.topLevelPropertyAsPromise('results');
+  addResult(records, created = new Date(Date.now()), metadata = null, querySnapshot = null, pivotOptions = null, categorization = null) {
+    let result = MockResult.create({ records, created, metadata, querySnapshot, pivotOptions, categorization });
+    this._bql.get('_results').pushObject(result);
+    this.nestedPropertyAsPromise('bql', 'results');
   },
 
   addWindow(emitType, emitEvery, includeType) {
@@ -159,9 +163,11 @@ export default EmberObject.extend({
   },
 
   latestResult: computed('_bql._results.[]', function() {
-    let length = this._results?.length;
+    let length = this._bql._results?.length;
     return EmberObject.create({ created: new Date(2016, 0, (length + 1) % 30) });
   }),
 
-  query: oneWay('_bql.query')
+  query: oneWay('_bql.query'),
+
+  results: oneWay('bql.results')
 });

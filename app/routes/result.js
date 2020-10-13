@@ -6,7 +6,7 @@
 import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import { QUERY_TYPES, getRouteFor } from 'bullet-ui/utils/query-type';
+import { getRouteFor } from 'bullet-ui/utils/query-type';
 
 export default class ResultRoute extends Route {
   @service querier;

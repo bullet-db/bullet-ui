@@ -14,7 +14,7 @@ import MockQuery from 'bullet-ui/tests/helpers/mocked-query';
 module('Integration | Component | queries table', function(hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders three columns when passed in a query', async function(assert) {
+  test('it renders four columns when passed in a query', async function(assert) {
     let query = MockQuery.create({ duration: 1 });
     query.addFilter({ }, 'An Actual Filter Summary');
     query.addProjection('foo', 'f');
@@ -26,12 +26,14 @@ module('Integration | Component | queries table', function(hooks) {
 
     await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
     assertTooltipNotRendered(assert);
-    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[0]).hasText('Query');
-    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[1]).hasText('Last Result');
-    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[2]).hasText('Historical Results');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[0]).hasNoText();
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[1]).hasText('Query');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[2]).hasText('Last Result');
+    assert.dom(this.element.querySelectorAll('.lt-head .lt-column')[3]).hasText('Historical Results');
     assert.dom('.lt-body .lt-row').exists({ count: 1 });
-    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).hasText('foo');
-    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('03 Jan 12:00 AM');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).hasNoText();
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('foo');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[2]).hasText('03 Jan 12:00 AM');
     assert.dom(this.element.querySelector('.lt-body .lt-row .lt-cell .length-entry')).hasText('2 Results');
   });
 
@@ -48,14 +50,13 @@ module('Integration | Component | queries table', function(hooks) {
 
     await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
     assertTooltipNotRendered(assert);
-    assert.dom('.lt-head .lt-column.is-sortable').exists({ count: 3 });
-    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0]).includesText('foo');
+    assert.dom('.lt-head .lt-column.is-sortable').exists({ count: 4 });
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).includesText('foo');
 
     // Click twice for descending
-    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
-    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[0]);
-    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[0])
-                           .includesText('Filters: An Actual Filter Summary Fields: fb Window: None');
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
+    await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).includesText('Mock BQL');
   });
 
   test('it sorts by the latest result column on click', async function(assert) {
@@ -75,9 +76,9 @@ module('Integration | Component | queries table', function(hooks) {
     this.set('mockQueries', A([queryA, queryB]));
     await render(hbs`<QueriesTable @queries={{this.mockQueries}}/>`);
     assertTooltipNotRendered(assert);
-    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('04 Jan 12:00 AM');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[2]).hasText('04 Jan 12:00 AM');
     await click(this.element.querySelectorAll('.lt-head .lt-column.is-sortable')[1]);
-    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[1]).hasText('02 Jan 12:00 AM');
+    assert.dom(this.element.querySelectorAll('.lt-body .lt-row .lt-cell')[2]).hasText('02 Jan 12:00 AM');
   });
 
   test('it sorts by the number of results column on click', async function(assert) {

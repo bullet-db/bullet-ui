@@ -532,7 +532,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
+      distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
       pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER)
     });
     query.addGroup('foo', 'foo');
@@ -546,7 +546,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
+      distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.FREQ),
       pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER)
     });
     query.addGroup('foo', 'foo');
@@ -560,7 +560,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       numberOfPoints: 15,
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CUMFREQ),
+      distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.CUMFREQ),
       pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.NUMBER)
     });
     query.addGroup('foo', 'foo');
@@ -576,7 +576,7 @@ module('Unit | Utility | query converter', function() {
       start: 0.4,
       end: 0.6,
       increment: 0.01,
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
+      distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
       pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.GENERATED)
     });
     query.addGroup('foo', 'foo');
@@ -590,7 +590,7 @@ module('Unit | Utility | query converter', function() {
     let query = MockQuery.create({ duration: 10000 });
     query.addAggregation(AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION), 500, {
       points: '0.5,0.2, 0.75,0.99',
-      type: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
+      distributionType: DISTRIBUTION_TYPES.describe(DISTRIBUTION_TYPES.QUANTILE),
       pointType: DISTRIBUTION_POINT_TYPES.describe(DISTRIBUTION_POINT_TYPES.POINTS)
     });
     query.addGroup('foo', 'foo');

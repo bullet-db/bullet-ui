@@ -5,7 +5,7 @@
  */
 import { tracked } from '@glimmer/tracking';
 import { get } from '@ember/object';
-import { isEmpty, typeOf } from '@ember/utils';
+import { typeOf } from '@ember/utils';
 import CloseablePopoverComponent from 'bullet-ui/components/closeable-popover';
 
 export default class RecordEntryComponent extends CloseablePopoverComponent {
@@ -13,7 +13,7 @@ export default class RecordEntryComponent extends CloseablePopoverComponent {
 
   constructor() {
     super(...arguments);
-    this.hasPopover = !isEmpty(this.data);
+    this.hasPopover = this.isComplex;
   }
 
   get label() {

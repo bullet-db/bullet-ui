@@ -8,7 +8,7 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
 import { equal, none, and, or, alias } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
-import EmberObject, { computed } from '@ember/object';
+import { computed } from '@ember/object';
 import { A } from '@ember/array';
 import QueryConverter from 'bullet-ui/utils/query-converter';
 import { AGGREGATION_TYPES, EMIT_TYPES } from 'bullet-ui/utils/query-constants';

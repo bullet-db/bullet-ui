@@ -5,7 +5,6 @@
  */
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { run } from '@ember/runloop';
 import { AGGREGATION_TYPES, DISTRIBUTION_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Model | aggregation', function(hooks) {

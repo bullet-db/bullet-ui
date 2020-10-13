@@ -4,7 +4,6 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { alias } from '@ember/object/computed';
-import { typeOf } from '@ember/utils';
 import Service, { inject as service } from '@ember/service';
 
 export default class QuerierService extends Service {
