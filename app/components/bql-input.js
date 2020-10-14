@@ -73,6 +73,10 @@ export default class BqlInputComponent extends Component {
   }
 
   @action
+  addCodeEditor(element) {
+  }
+
+  @action
   async save() {
     try {
       await this.doSave();

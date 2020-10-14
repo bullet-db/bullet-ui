@@ -4,27 +4,12 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .query-panel {
-  // TODO: Move these into closest block after changes are all done.
-  $fill-icon-color: $inactive-grey;
   $error-icon-color: $error-red;
   $error-icon-hover-color: #FF9693;
   $box-rectangle-color: #F6F6F6;
   $background-box-color: $background-grey;
   $background-box-error-color: #FFE1E0;
   $background-box-hover-color: $background-grey-darker;
-  $divider-color: #979797;
-  $label-text-color: #878C91;
-  $input-text-color: $text-color-regular;
-  $secondary-text-color: $heading-text-color;
-  $query-input-height: 38px;
-  $row-height: 54px;
-  $inactive-button-color: #D3D3D3;
-  $inactive-secondary-button-color: #E9E9E9;
-  $inactive-container-color: #EAEAEA;
-  $query-footer-panel-height: 140px;
-  $output-option-indentation: 25px;
-  $border-rectangle-color: #DCDEE2;
-  $sub-section-color: #8C8C8C;
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // Reused mixins
@@ -46,26 +31,6 @@
   %remove-button {
     @extend %delete-button;
     font-size: $font-size-regular-large;
-  }
-
-  %query-input-label {
-    position: absolute;
-    font-size: $font-size-small;
-    z-index: 1;
-    font-weight: $font-weight-regular;
-    font-family: $font-family-regular;
-    color: $label-text-color;
-    padding-top: 3px;
-  }
-
-  %query-input-field {
-    height: 38px;
-    line-height: 38px;
-    font-size: $font-size-regular;
-    color: $input-text-color;
-    padding-left: 10px;
-    padding-top: $font-size-small + 5px;
-    padding-bottom: 4px;
   }
 
   %error-icon {
@@ -98,15 +63,6 @@
     }
   }
 
-  %sub-section-header {
-    margin: 5px 0;
-    text-transform: uppercase;
-    font-size: $font-size-small;
-    font-weight: $font-weight-medium;
-    color: $sub-section-color;
-    opacity: 0.9;
-  }
-
   %validated-input-row {
     @import "validated-input";
     margin-top: 10px;
@@ -121,88 +77,10 @@
     }
   }
 
-  @import "section-heading-with-help";
-  @import "column-field";
-  @import "labeled-input";
-
-
-  ///////////////////////////////////////////////////////////////////////////////////////
-  // Query Form wide styling
-  .row {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .container-fluid {
-    // The query-panel-container padding is what will push the inputs inside
-    padding-left: 0;
-  }
-
-  // Change all the input elements
-  .form-control {
-    font-family: $font-family-regular;
-    font-weight: $font-weight-regular;
-    font-size: $font-size-regular;
-    color: $input-text-color;
-    height: $query-input-height;
-    line-height: $query-input-height;
-    border-radius: $input-radius-regular;
-    border-color: $background-grey;
-    box-shadow: none;
-    &:focus {
-      border: 1px solid $input-border-focus;
-      box-shadow: none;
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  .validation-container {
-    @import "simple-alert";
-    margin-left: (-$query-panel-side-padding);
-    margin-right: (-$query-panel-side-padding);
-    .error-list {
-      margin-left: -20px;
-      font-size: $font-size-regular;
-    }
-  }
-
-  // Top level query builder elements
   .scrollable-panel {
-    overflow-y: auto;
-    padding-bottom: $query-footer-panel-height;
-    background: transparent;
+    @import "column-field";
 
-    // Buffer for content inside to not clip into the scrollable panel
-    margin-left: (-$query-panel-side-padding);
-    padding-left: $query-panel-side-padding;
-
-    // All this styling is to make the query name look like the title of the page
-    .name-container {
-      margin-top: 10px;
-      margin-bottom: 5px;
-      .query-name {
-        max-width: 900px;
-        margin-left: -25px;
-        label {
-          display: none;
-        }
-        .form-control {
-          height: 45px;
-          color: $heading-text-color;
-          font-weight: $font-weight-strong;
-          font-size: $font-size-large;
-          font-family: $font-family-regular;
-          padding-top: 6px;
-          border-color: $white;
-          box-shadow: none;
-          &:focus {
-            border: 1px solid $input-border-focus;
-            box-shadow: none;
-          }
-        }
-      }
-    }
-
+    // Top level query builder elements
     .filter-container {
       margin-top: 15px;
       @import "query-builder";
@@ -234,54 +112,11 @@
         }
       }
     }
-
-  }
-
-  .control-container {
-    height: $query-footer-panel-height;
-    width: 100%;
-    background-color: white;
-    z-index: 100;
-
-    position: fixed;
-    bottom: 0;
-
-    hr {
-      margin-left: (-$query-panel-side-padding);
-      margin-right: (-$grid-gutter-width/2) + (-$query-panel-side-padding);
-      margin-top: 0;
-      border-color: $divider-color;
-      opacity: 0.2;
-    }
-
-    .submit-button {
-      @extend %primary-button;
-      margin-top: 25px;
-      width: 140px;
-      height: 40px;
-      font-weight: $font-weight-medium;
-      font-size: $font-size-regular;
-    }
-
-    .save-button {
-      @extend %secondary-button;
-      border-width: 2px;
-      width: 140px;
-      margin-top: 25px;
-      height: 40px;
-      font-size: $font-size-regular;
-      margin-left: 10px;
-    }
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
   // Running state page styling
-
   &.query-running {
-    .btn {
-      background-color:  $inactive-button-color !important;
-      border-color:  $inactive-button-color !important;
-    }
     // Querybuilder
     .query-builder .rules-group-header .group-conditions > .btn:not(.active) {
       background-color:  $inactive-secondary-button-color !important;

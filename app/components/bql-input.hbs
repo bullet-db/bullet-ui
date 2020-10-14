@@ -3,7 +3,7 @@
   Licensed under the terms of the Apache License, Version 2.0.
   See the LICENSE file associated with the project for terms.
  --}}
-<div class="bql-panel {{if this.isListening "query-running"}}">
+<div class="query-panel {{if this.isListening "query-running"}}">
 
   <div class="validation-container">
     {{#if this.hasError}}
@@ -22,7 +22,7 @@
     {{/if}}
   </div>
 
-  <div class="editor-panel">
+  <div class="scrollable-panel editor-panel">
     <div class="container-fluid name-container">
       <div class="col-xs-12 query-name">
         <LabeledInput @value={{this.queryChangeset.name}}

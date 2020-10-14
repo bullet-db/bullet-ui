@@ -4,14 +4,13 @@
  *  See the LICENSE file associated with the project for terms.
  */
 .query-type-entry {
-  .query-type {
-    &::before {
-      content: '\03b2';
-    }
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $inactive-grey;
+  .query-type::before {
+    content: '\03b2';
   }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $inactive-grey;
+  font-weight: $font-weight-medium;
   margin-left: -10px;
 }
