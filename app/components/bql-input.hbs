@@ -1,0 +1,42 @@
+{{!--
+  Copyright 2020, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="bql-panel {{if this.isListening "query-running"}}">
+
+  <div class="validation-container">
+    {{#if this.hasError}}
+      <SimpleAlert @type="error">
+        <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
+        <ul class="error-list">
+          {{#each this.errors as |error|}}
+            <li>{{error}}</li>
+          {{/each}}
+        </ul>
+      </SimpleAlert>
+    {{else if this.hasSaved}}
+      <SimpleAlert @type="success">
+        <span>SAVED TO BROWSER CACHE!</span>
+      </SimpleAlert>
+    {{/if}}
+  </div>
+
+  <div class="editor-panel">
+    <div class="container-fluid name-container">
+      <div class="col-xs-12 query-name">
+        <LabeledInput @value={{this.queryChangeset.name}}
+                      @label="Name" @type="text" @placeholder="Name Your Query" @maxlength={{80}}
+                      @disabled={{this.isListening}}/>
+      </div>
+    </div>
+    <div class="{{this.codeEditorClass}}" {{did-insert this.addCodeEditor}}/>
+  </div>
+
+  <div class="container-fluid control-container">
+    <hr/>
+    <button type="submit" disabled={{this.isListening}} class="btn btn-primary btn-md submit-button" {{on "click" this.listen}}>Run Query</button>
+    <button type="button" disabled={{this.isListening}} class="btn btn-default btn-md save-button" {{on "click" this.save}}>Save Query</button>
+  </div>
+
+</div>

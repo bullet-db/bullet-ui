@@ -8,13 +8,13 @@ import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
 import Route from '@ember/routing/route';
+import QueryableRoute from 'bullet-ui/routes/queryable';
 
-export default class QueryRoute extends Route {
-  @service querier;
+export default class QueryRoute extends QueryableRoute {
   @service queryManager;
   @service store;
 
-  get areChangesetsDirty() {
+  get isDirty() {
     if (this.controller.get('forcedDirty')) {
       return true;
     }
@@ -91,24 +91,6 @@ export default class QueryRoute extends Route {
     return changesets;
   }
 
-  submitQuery(query, result) {
-    let handlers = {
-      success(route) {
-        route.transitionTo('result', route.savedResult.get('id'));
-      },
-      error(error, route) {
-        console.error(error); // eslint-disable-line no-console
-        route.transitionTo('errored');
-      },
-      message(message, route) {
-        route.queryManager.addSegment(route.savedResult, message);
-      }
-    };
-    // Needs to be on the route not the controller since it gets wiped and controller is changed once we transition
-    this.savedResult = result;
-    this.querier.send(query, handlers, this);
-  }
-
   @action
   forceDirty() {
     this.controller.set('forcedDirty', true);
@@ -116,7 +98,7 @@ export default class QueryRoute extends Route {
 
   @action
   async saveQuery() {
-    if (!this.areChangesetsDirty) {
+    if (!this.isDirty) {
       return;
     }
     let changesets = this.controller.get('changesets');
@@ -135,21 +117,5 @@ export default class QueryRoute extends Route {
     let bql = await query.bql;
     let result = await this.queryManager.addResult(bql.get('id'));
     this.submitQuery(bql.query, result);
-  }
-
-  @action
-  willTransition(transition) {
-    // If dirty and the user clicked no (hence negated), abort. Else if not dirty or user clicked yes, bubble.
-    if (this.areChangesetsDirty && !confirm('You have changes that may be lost unless you save! Are you sure?')) {
-      transition.abort();
-    } else {
-      // If the user url navigates away or closes the browser, these copied models will be cleaned up on queries load.
-      return true;
-    }
-  }
-
-  @action
-  error() {
-    this.replaceWith('missing', 'not-found');
   }
 }

@@ -17,8 +17,8 @@ export default class QueriesRoute extends Route {
     let queries = await this.store.findAll('query');
     let bqls = await this.store.findAll('bql');
     let all = A(queries.toArray());
+    // Dedup the true bqls
     let map = new Map();
-
     bqls.forEach(bql => map.set(bql.get('id'), bql));
     queries.forEach(query => map.delete(query.get('bql.id')));
     map.forEach(bql => all.pushObject(bql));

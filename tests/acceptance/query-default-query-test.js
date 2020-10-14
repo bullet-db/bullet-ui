@@ -15,6 +15,16 @@ module('Acceptance | query default query', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
   setupForMockSettings(hooks, QUERIES.BASIC_AND_LIST_TUMBLING_WINDOW);
 
+  test('it creates an empty query if the provided query is bad', async function(assert) {
+    assert.expect(3);
+    let settings = this.owner.lookup('settings:mocked');
+    settings.set('defaultQuery', 'garbage');
+    await visit('/queries/build');
+    assert.dom('.filter-container .builder .rules-list .rule-container').doesNotExist();
+    assert.dom('.window-container .window-emit-every').doesNotExist();
+    assert.dom('.options-container .query-duration input').hasValue('20');
+  });
+
   test('it creates new queries with two default filters', async function(assert) {
     assert.expect(10);
     await visit('/queries/build');

@@ -39,6 +39,7 @@ const SQL = new RegExp(`^${S}\\s+${F}\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${
 // Sub-BQL to Query parts regexes
 const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i;
 const EVERY = /(?:EVERY\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*(?:,\s*(?<all>ALL))?\s*\))/i;
+const EVERY_GENERIC = /(?:EVERY\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*(?:,\s*(?<include>.*))?\s*\))/i;
 const TUMBLING = /(?:TUMBLING\s*\(\s*(?<every>\d+)\s*,\s*(?<type>TIME|RECORD)\s*\))/i;
 const COUNT_DISTINCT = /COUNT\s*\(\s*DISTINCT (?<fields>.+?)\)\s*(?:AS\s+(?<alias>\S+?))?$/i;
 const DISTRIBUTION = /.*?(?<type>\S+?)\s*\(\s*(?<field>\S+?)\s*,\s*(?<points>.+?)\s*\)/i;
@@ -572,7 +573,7 @@ export default class QueryConverter {
     }
     let result = windowing.match(TUMBLING);
     if (isEmpty(result)) {
-      result = windowing.match(EVERY);
+      result = windowing.match(EVERY_GENERIC);
       if (isEmpty(result)) {
         return;
       }

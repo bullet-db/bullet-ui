@@ -8,7 +8,7 @@ import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 
 /**
- * Users of this class must implement isDirty()
+ * Users of this class must implement the isDirty property
  */
 export default class QueryableRoute extends Route {
   @service querier;

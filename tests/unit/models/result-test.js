@@ -23,7 +23,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a raw result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.RAW });
+      model.set('querySnapshot', 'SELECT abc FROM STREAM() LIMIT 5');
       assert.ok(model.get('isRaw'));
       assert.notOk(model.get('isReallyRaw'));
     });
@@ -32,7 +32,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a really raw result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.RAW, isStarSelect: true });
+      model.set('querySnapshot', 'SELECT * FROM STREAM() LIMIT 5');
       assert.ok(model.get('isRaw'));
       assert.ok(model.get('isReallyRaw'));
       assert.notOk(model.get('isSingleRow'));
@@ -42,7 +42,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a count distinct result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.COUNT_DISTINCT });
+      model.set('querySnapshot', 'SELECT COUNT(DISTINCT foo) AS "cnt" FROM STREAM()');
       assert.ok(model.get('isCountDistinct'));
       assert.ok(model.get('isSingleRow'));
     });
@@ -51,7 +51,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a group by result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.GROUP, isGroupAll: false });
+      model.set('querySnapshot', 'SELECT foo, bar, CAST(AVG(baz) AS FLOAT) FROM STREAM() GROUP BY foo, bar');
       assert.ok(model.get('isGroup'));
       assert.notOk(model.get('isSingleRow'));
     });
@@ -60,7 +60,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a group all result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.GROUP, isGroupAll: true });
+      model.set('querySnapshot', 'SELECT COUNT(*) FROM STREAM()');
       assert.ok(model.get('isGroup'));
       assert.ok(model.get('isSingleRow'));
     });
@@ -69,7 +69,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a distribution result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.DISTRIBUTION });
+      model.set('querySnapshot', 'SELECT FREQ(foo, LINEAR, 15) FROM STREAM()');
       assert.ok(model.get('isDistribution'));
       assert.notOk(model.get('isSingleRow'));
     });
@@ -78,7 +78,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a top k result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.TOP_K });
+      model.set('querySnapshot', 'SELECT TOP(15, 2000, foo, bar, baz) FROM STREAM()');
       assert.ok(model.get('isTopK'));
       assert.notOk(model.get('isSingleRow'));
     });
@@ -87,7 +87,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a windowless result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.RAW });
+      model.set('querySnapshot', 'SELECT abc FROM STREAM() LIMIT 5');
       assert.ok(model.get('isRaw'));
       assert.ok(model.get('hasNoWindow'));
     });
@@ -96,7 +96,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a windowed result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.RAW, emitType: EMIT_TYPES.RECORD });
+      model.set('querySnapshot', 'SELECT abc FROM STREAM() WINDOWING TUMBLING(1, RECORD)');
       assert.ok(model.get('isRaw'));
       assert.notOk(model.get('hasNoWindow'));
       assert.notOk(model.get('isTimeWindow'));
@@ -106,7 +106,7 @@ module('Unit | Model | result', function(hooks) {
   test('it recognizes a time windowed result type', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.RAW, emitType: EMIT_TYPES.TIME });
+      model.set('querySnapshot', 'SELECT abc FROM STREAM() WINDOWING EVERY(10, TIME, FIRST, 10, TIME)');
       assert.ok(model.get('isRaw'));
       assert.notOk(model.get('hasNoWindow'));
       assert.ok(model.get('isTimeWindow'));
@@ -116,7 +116,7 @@ module('Unit | Model | result', function(hooks) {
   test('it can provide a window interval', function(assert) {
     let model = run(() => this.owner.lookup('service:store').createRecord('result'));
     run(() => {
-      model.set('categorization', { type: AGGREGATION_TYPES.RAW, emitType: EMIT_TYPES.TIME, emitEvery: 1000 });
+      model.set('querySnapshot', 'SELECT abc FROM STREAM() WINDOWING TUMBLING(1000, TIME)');
       assert.ok(model.get('isRaw'));
       assert.notOk(model.get('hasNoWindow'));
       assert.ok(model.get('isTimeWindow'));

@@ -53,8 +53,8 @@ export default class QueryInputComponent extends Component {
   @tracked isListening = false;
   @tracked isValidating = false;
   @tracked hasError = false;
-  @tracked errors;
   @tracked hasSaved = false;
+  @tracked errors;
   @tracked hasWindow;
   // Radio button properties
   @tracked outputDataType;
