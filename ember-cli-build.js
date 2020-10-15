@@ -74,12 +74,13 @@ module.exports = function(defaults) {
   app.import('node_modules/pivottable/dist/export_renderers.js');
 
   // CodeMirror
-  app.import('node_modules/codemirror/lib/codemirror.js');
   app.import('node_modules/codemirror/lib/codemirror.css');
-  app.import('node_modules/codemirror/mode/sql/sql.js');
-  app.import('node_modules/codemirror/addon/hint/show-hint.js');
   app.import('node_modules/codemirror/addon/hint/show-hint.css');
-  app.import('node_modules/codemirror/addon/hint/sql-hint.js');
+  // Webpack externals does not seem to work for these. These are imported directly where needed
+  // app.import('node_modules/codemirror/lib/codemirror.js');
+  // app.import('node_modules/codemirror/mode/sql/sql.js');
+  // app.import('node_modules/codemirror/addon/hint/show-hint.js');
+  // app.import('node_modules/codemirror/addon/hint/sql-hint.js');
 
   // SockJS and Stomp
   const rollupJSON = require('@rollup/plugin-json');

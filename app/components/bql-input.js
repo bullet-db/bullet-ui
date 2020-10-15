@@ -10,9 +10,10 @@ import { A } from '@ember/array';
 import { action, computed } from '@ember/object';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { getTypeClass } from 'bullet-ui/utils/type';
+import { addCodeEditor } from 'bullet-ui/utils/codemirror-adapter';
 
 export default class BqlInputComponent extends Component {
-  codeEditorClass = 'editor';
+  editorClass = 'editor';
 
   @tracked isListening = false;
   @tracked isValidating = false;
@@ -73,7 +74,8 @@ export default class BqlInputComponent extends Component {
   }
 
   @action
-  addCodeEditor(element) {
+  addEditor(element) {
+    addCodeEditor(element, this.queryChangeset.get('query'));
   }
 
   @action
