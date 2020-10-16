@@ -19,6 +19,7 @@ const TEST_SETTINGS = {
   queryPath: 'ws-query',
   queryStompRequestChannel: '/server/request',
   queryStompResponseChannel: '/client/response',
+  validationPath: 'validate-query',
   schemaHost: 'https://foo.bar.com:4443',
   schemaNamespace: 'bullet/api',
   helpLinks: [

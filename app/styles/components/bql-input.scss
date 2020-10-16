@@ -4,4 +4,17 @@
  *  See the LICENSE file associated with the project for terms.
  */
  .query-panel {
+   .editor {
+     margin-top: 20px;
+     max-width: 900px;
+
+     .CodeMirror {
+       border: solid 1px $inactive-grey-lighter;
+       height: 700px;
+       &.CodeMirror-focused {
+         border: 1px solid $input-border-focus;
+       }
+     }
+
+   }
  }

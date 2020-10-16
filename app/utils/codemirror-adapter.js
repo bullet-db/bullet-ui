@@ -5,9 +5,11 @@
  */
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/sql/sql';
+import 'codemirror/addon/edit/matchbrackets';
+import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/hint/show-hint';
-import 'codemirror/addon/hint/sql-hint';
 import isEmpty from 'bullet-ui/utils/is-empty';
+import QueryConverter from 'bullet-ui/utils/query-converter';
 
 const MIME = 'text/x-bql';
 
@@ -33,21 +35,25 @@ export function defineBQL() {
   });
 }
 
-export function addCodeEditor(element, initialContent) {
+export function addEditor(element, columns, initialContent) {
   defineBQL();
-  console.log(CodeMirror.modes);
-  console.log(CodeMirror.mimeModes);
-  let options = getConfiguration();
+  let options = getConfiguration(columns);
   if (!isEmpty(initialContent)) {
-    options.value = initialContent;
+    options.value = QueryConverter.formatQuery(initialContent);
   }
   options.mode = MIME;
   return CodeMirror(element, options);
 }
 
-function getConfiguration() {
+export function getEditorContent(editor) {
+  return editor.getValue();
+}
+
+function getConfiguration(columns) {
   return {
     lineNumbers: true,
-    lineWrapping: true
+    lineWrapping: true,
+    autoCloseBrackets: true,
+    matchBrackets: true
   };
 }

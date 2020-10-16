@@ -5,12 +5,14 @@
  */
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { inject as service } from '@ember/service';
 import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { action, computed } from '@ember/object';
+import { isNone } from '@ember/utils';
 import isEmpty from 'bullet-ui/utils/is-empty';
-import { getTypeClass } from 'bullet-ui/utils/type';
-import { addCodeEditor } from 'bullet-ui/utils/codemirror-adapter';
+import { addEditor, getEditorContent } from 'bullet-ui/utils/codemirror-adapter';
+import QueryConverter from 'bullet-ui/utils/query-converter';
 
 export default class BqlInputComponent extends Component {
   editorClass = 'editor';
@@ -20,9 +22,11 @@ export default class BqlInputComponent extends Component {
   @tracked hasError = false;
   @tracked hasSaved = false;
   @tracked errors;
+  @service('cors-request') corsRequest;
 
   queryChangeset;
   settings;
+  editor;
 
   constructor() {
     super(...arguments);
@@ -40,10 +44,33 @@ export default class BqlInputComponent extends Component {
     }
     return schema.reduce((previous, item) => {
       let flattenedColumns = item.flattenedColumns;
-      return previous.concat(flattenedColumns.map(flatColumn => {
-        return { name: flatColumn.name, type: flatColumn.type, typeClass: getTypeClass(flatColumn.type) };
-      }));
+      return previous.concat(flattenedColumns.map(flatColumn => flatColumn.name));
     }, columns);
+  }
+
+  get validationURL() {
+    let { queryHost, queryNamespace, validationPath } = this.settings;
+    return `${queryHost}/${queryNamespace}/${validationPath}`;
+  }
+
+  async parseError(response) {
+    let json = await response.json();
+    let errors = json.meta.errors;
+    let parsedErrors = [];
+    for (let object of errors) {
+      let { error } = object;
+      let splits = error.split(':');
+      let line = 0;
+      let character = 0;
+      let message = error;
+      if (splits.length >= 3) {
+        line = splits[0];
+        character = splits[1];
+        message = splits.slice(2).join(':');
+      }
+      parsedErrors.push({ line, character, message });
+    }
+    return parsedErrors;
   }
 
   reset() {
@@ -53,17 +80,22 @@ export default class BqlInputComponent extends Component {
     this.errors = A();
   }
 
-  async validate() {
+  async validate(query) {
     this.reset();
-    let validations;
-    if (!isEmpty(validations)) {
-      throw validations;
+    try {
+      await this.corsRequest.post(this.validationURL, query);
+    } catch (errorResponse) {
+      let errors = await this.parseError(errorResponse);
+      throw errors;
     }
   }
 
   async doSave() {
     try {
-      await this.validate();
+      let query = getEditorContent(this.editor);
+      console.log(query);
+      await this.validate(query);
+      this.queryChangeset.set('query', QueryConverter.normalizeQuery(query));
       await this.args.onSaveQuery();
       this.hasSaved = true;
     } catch (errors) {
@@ -75,7 +107,7 @@ export default class BqlInputComponent extends Component {
 
   @action
   addEditor(element) {
-    addCodeEditor(element, this.queryChangeset.get('query'));
+    this.editor = addEditor(element, this.columns, this.queryChangeset.get('query'));
   }
 
   @action

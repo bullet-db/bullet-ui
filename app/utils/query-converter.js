@@ -34,7 +34,7 @@ const O = regex('ORDER BY', 'orderBy');
 const WI = regex('WINDOWING', 'windowing');
 const L = regex('LIMIT', 'limit');
 // Handles Having and Order By as well
-const SQL = new RegExp(`^${S}\\s+${F}\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
+const SQL = new RegExp(`^${S}\\s*${F}\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
 
 // Sub-BQL to Query parts regexes
 const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i;
@@ -582,5 +582,20 @@ export default class QueryConverter {
     type = type.toUpperCase();
     categorization.set('emitType', type === EMIT_TYPES.identify(EMIT_TYPES.TIME) ? EMIT_TYPES.TIME : EMIT_TYPES.RECORD);
     categorization.set('emitEvery', Number(every));
+  }
+
+  static formatQuery(bql) {
+    bql = bql.replace(/from/i, '\nFROM');
+    bql = bql.replace(/where/i, '\nWHERE');
+    bql = bql.replace(/group\s+by/i, '\nGROUP BY');
+    bql = bql.replace(/having/i, '\nHAVING');
+    bql = bql.replace(/order\s+by\s+/i, '\nORDER BY');
+    bql = bql.replace(/windowing/i, '\nWINDOWING');
+    bql = bql.replace(/limit/i, '\nLIMIT');
+    return bql;
+  }
+
+  static normalizeQuery(bql) {
+    return bql.replace(/[\r\n]/g, '');
   }
 }

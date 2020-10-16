@@ -33,6 +33,7 @@ module('Unit | Service | cors request', function(hooks) {
   test('it defaults options correctly', async function(assert) {
     let service = this.owner.lookup('service:cors-request');
     let result = await service.get('/api/pass');
+    let body = await result.text();
     assert.equal(result, JSON.stringify({ creds: true }));
   });
 

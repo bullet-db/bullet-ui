@@ -11,7 +11,7 @@
         <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
         <ul class="error-list">
           {{#each this.errors as |error|}}
-            <li>{{error}}</li>
+            <li>{{error.message}} at line {{error.line}}, character {{error.character}}</li>
           {{/each}}
         </ul>
       </SimpleAlert>

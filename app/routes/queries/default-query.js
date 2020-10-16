@@ -31,8 +31,13 @@ export default class DefaultQueryRoute extends Route {
     // If defaultQuery is an url to get the default query from, fetch it first
     let query = defaultQuery;
     if (defaultQuery.startsWith('http')) {
-      query = await this.corsRequest.get(defaultQuery);
-      this.set('cachedQuery', query);
+      try {
+        response = await this.corsRequest.get(defaultQuery);
+        let query = await response.text();
+        this.set('cachedQuery', query);
+      } catch {
+        return this.createEmptyQuery();
+      }
     }
     // Now query is a default query (fetched from a url in settings or provided in settings)
     return this.createQuery(query);

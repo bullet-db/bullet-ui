@@ -5,6 +5,7 @@
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
+    "validationPath": "validate-query",
     "schemaHost": "https://bullet-dev-api.data.yahoo.com:4443",
     "schemaNamespace": "bullet/api",
     "helpLinks": [

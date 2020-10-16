@@ -18,9 +18,9 @@ module.exports = function(defaults) {
     autoImport: {
       webpack: {
         // Needed for global in sockjs dependency
-        node: { global: true }
-        // TODO: Enable this if jquery is not being bound to by our jquery plugins
-        // externals: { jquery: 'jQuery' }
+        node: { global: true },
+        // This allows us to bind to the right CodeMirror at build time. Others below can be converted to this style
+        externals: { 'codemirror': 'CodeMirror' }
       }
     }
   });
@@ -73,14 +73,9 @@ module.exports = function(defaults) {
   app.import('node_modules/pivottable/dist/c3_renderers.js');
   app.import('node_modules/pivottable/dist/export_renderers.js');
 
-  // CodeMirror
+  // CodeMirror (just styles)
   app.import('node_modules/codemirror/lib/codemirror.css');
   app.import('node_modules/codemirror/addon/hint/show-hint.css');
-  // Webpack externals does not seem to work for these. These are imported directly where needed
-  // app.import('node_modules/codemirror/lib/codemirror.js');
-  // app.import('node_modules/codemirror/mode/sql/sql.js');
-  // app.import('node_modules/codemirror/addon/hint/show-hint.js');
-  // app.import('node_modules/codemirror/addon/hint/sql-hint.js');
 
   // SockJS and Stomp
   const rollupJSON = require('@rollup/plugin-json');
