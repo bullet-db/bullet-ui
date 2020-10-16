@@ -8,6 +8,7 @@ import 'codemirror/mode/sql/sql';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/hint/show-hint';
+import 'codemirror/addon/hint/sql-hint';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import QueryConverter from 'bullet-ui/utils/query-converter';
 
@@ -49,10 +50,19 @@ export function getEditorContent(editor) {
   return editor.getValue();
 }
 
-function getConfiguration() {
+function getConfiguration(columns) {
   return {
     lineNumbers: true,
     lineWrapping: true,
+    extraKeys: {
+      "Ctrl-Space": "autocomplete"
+    },
+    hintOptions: {
+      defaultTable: 'default',
+      tables: {
+        default: columns
+      }
+    },
     autoCloseBrackets: true,
     matchBrackets: true
   };

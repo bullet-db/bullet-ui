@@ -9,10 +9,10 @@
      max-width: 900px;
 
      .CodeMirror {
-       border: solid 1px $inactive-grey-lighter;
-       height: 700px;
+       border: solid 2px $inactive-grey-lighter;
+       height: 600px;
        &.CodeMirror-focused {
-         border: 1px solid $input-border-focus;
+         border: 3px solid $input-border-focus;
        }
      }
 
