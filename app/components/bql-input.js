@@ -9,7 +9,6 @@ import { inject as service } from '@ember/service';
 import { getOwner } from '@ember/application';
 import { A } from '@ember/array';
 import { action, computed } from '@ember/object';
-import { isNone } from '@ember/utils';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { addEditor, getEditorContent } from 'bullet-ui/utils/codemirror-adapter';
 import QueryConverter from 'bullet-ui/utils/query-converter';

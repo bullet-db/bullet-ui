@@ -7,7 +7,6 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
-import Route from '@ember/routing/route';
 import QueryableRoute from 'bullet-ui/routes/queryable';
 
 export default class QueryRoute extends QueryableRoute {

@@ -5,7 +5,6 @@
  */
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import QueryableRoute from 'bullet-ui/routes/queryable';
 
 export default class BqlRoute extends QueryableRoute {

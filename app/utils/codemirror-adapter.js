@@ -49,7 +49,7 @@ export function getEditorContent(editor) {
   return editor.getValue();
 }
 
-function getConfiguration(columns) {
+function getConfiguration() {
   return {
     lineNumbers: true,
     lineWrapping: true,

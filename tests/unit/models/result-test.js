@@ -7,7 +7,6 @@ import { run } from '@ember/runloop';
 import { isPresent } from '@ember/utils';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import { AGGREGATION_TYPES, EMIT_TYPES } from 'bullet-ui/utils/query-constants';
 
 module('Unit | Model | result', function(hooks) {
   setupTest(hooks);
