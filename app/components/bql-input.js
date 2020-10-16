@@ -93,7 +93,6 @@ export default class BqlInputComponent extends Component {
   async doSave() {
     try {
       let query = getEditorContent(this.editor);
-      console.log(query);
       await this.validate(query);
       this.queryChangeset.set('query', QueryConverter.normalizeQuery(query));
       await this.args.onSaveQuery();

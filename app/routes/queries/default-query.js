@@ -33,7 +33,7 @@ export default class DefaultQueryRoute extends Route {
     if (defaultQuery.startsWith('http')) {
       try {
         response = await this.corsRequest.get(defaultQuery);
-        let query = await response.text();
+        query = await response.text();
         this.set('cachedQuery', query);
       } catch {
         return this.createEmptyQuery();
