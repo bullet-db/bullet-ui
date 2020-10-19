@@ -14,6 +14,8 @@
     font-family: $font-family-regular;
     background: $white;
     color: $info-text-color;
+    position: relative;
+    z-index: 10000;
 
     .info-popover-title {
       font-size: $font-size-regular;

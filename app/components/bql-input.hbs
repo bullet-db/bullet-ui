@@ -30,7 +30,16 @@
                       @disabled={{this.isListening}}/>
       </div>
     </div>
-    <div class="{{this.editorClass}}" {{did-insert this.addEditor}}/>
+
+    <div class="container-fluid editor-container">
+      <div class="section-header">
+        <h3 class="section-title">BQL Query</h3>
+        <InfoPopover @title="BQL (Bullet Query Language)">
+          <Popovers::BqlHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </div>
+      <div class="{{this.editorClass}}" {{did-insert this.addEditor}}/>
+    </div>
   </div>
 
   <div class="container-fluid control-container">

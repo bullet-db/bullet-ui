@@ -55,7 +55,8 @@ function getConfiguration(columns) {
     lineNumbers: true,
     lineWrapping: true,
     extraKeys: {
-      "Ctrl-Space": "autocomplete"
+      "Ctrl-Space": "autocomplete",
+      "Tab": "autocomplete"
     },
     hintOptions: {
       defaultTable: 'default',
