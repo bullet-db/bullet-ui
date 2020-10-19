@@ -6,5 +6,6 @@
  <div class="query-panel-container bql-panel-container">
    <BqlInput @query={{@model.query}} @schema={{@model.schema}}
              @onSaveQuery={{fn (route-action "saveQuery")}}
+             @onEditorCreate={{fn (route-action "saveEditor")}}
              @onSubmitQuery={{fn (route-action "sendQuery")}}/>
  </div>

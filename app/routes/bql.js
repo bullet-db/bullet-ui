@@ -6,13 +6,15 @@
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import QueryableRoute from 'bullet-ui/routes/queryable';
+import { isEditorClean, markEditorClean } from 'bullet-ui/utils/codemirror-adapter';
 
 export default class BqlRoute extends QueryableRoute {
   @service queryManager;
   @service store;
+  editor;
 
   get isDirty() {
-    return this.controller.get('changeset.isDirty');
+    return this.controller.get('changeset.isDirty') || !isEditorClean(this.editor);
   }
 
   setupController(controller, model) {
@@ -29,10 +31,16 @@ export default class BqlRoute extends QueryableRoute {
   }
 
   @action
+  saveEditor(editor) {
+    this.editor = editor;
+  }
+
+  @action
   async saveQuery() {
     if (this.isDirty) {
       let changeset = this.controller.get('changeset');
       await changeset.save();
+      markEditorClean(this.editor);
     }
   }
 

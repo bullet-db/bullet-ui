@@ -50,6 +50,14 @@ export function getEditorContent(editor) {
   return editor.getValue();
 }
 
+export function isEditorClean(editor) {
+  return editor.isClean();
+}
+
+export function markEditorClean(editor) {
+  return editor.markClean();
+}
+
 function getConfiguration(columns) {
   return {
     lineNumbers: true,

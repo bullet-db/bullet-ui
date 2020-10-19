@@ -105,6 +105,7 @@ export default class BqlInputComponent extends Component {
   @action
   addEditor(element) {
     this.editor = addEditor(element, this.columns, this.queryChangeset.get('query'));
+    this.args.onEditorCreate(this.editor);
   }
 
   @action
