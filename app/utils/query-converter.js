@@ -585,17 +585,13 @@ export default class QueryConverter {
   }
 
   static formatQuery(bql) {
-    bql = bql.replace(/from/i, '\nFROM');
-    bql = bql.replace(/where/i, '\nWHERE');
-    bql = bql.replace(/group\s+by/i, '\nGROUP BY');
-    bql = bql.replace(/having/i, '\nHAVING');
-    bql = bql.replace(/order\s+by\s+/i, '\nORDER BY');
-    bql = bql.replace(/windowing/i, '\nWINDOWING');
-    bql = bql.replace(/limit/i, '\nLIMIT');
+    bql = bql.replace(/(?<!\n|\r)from/i, '\nFROM');
+    bql = bql.replace(/(?<!\n|\r)where/i, '\nWHERE');
+    bql = bql.replace(/(?<!\n|\r)group\s+by/i, '\nGROUP BY');
+    bql = bql.replace(/(?<!\n|\r)having/i, '\nHAVING');
+    bql = bql.replace(/(?<!\n|\r)order\s+by\s+/i, '\nORDER BY');
+    bql = bql.replace(/(?<!\n|\r)windowing/i, '\nWINDOWING');
+    bql = bql.replace(/(?<!\n|\r)limit/i, '\nLIMIT');
     return bql;
-  }
-
-  static normalizeQuery(bql) {
-    return bql.replace(/[\r\n]/g, '');
   }
 }

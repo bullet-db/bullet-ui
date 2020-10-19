@@ -11,7 +11,6 @@ import { A } from '@ember/array';
 import { action, computed } from '@ember/object';
 import isEmpty from 'bullet-ui/utils/is-empty';
 import { addEditor, getEditorContent } from 'bullet-ui/utils/codemirror-adapter';
-import QueryConverter from 'bullet-ui/utils/query-converter';
 
 export default class BqlInputComponent extends Component {
   editorClass = 'editor';
@@ -93,7 +92,7 @@ export default class BqlInputComponent extends Component {
     try {
       let query = getEditorContent(this.editor);
       await this.validate(query);
-      this.queryChangeset.set('query', QueryConverter.normalizeQuery(query));
+      this.queryChangeset.set('query', query);
       await this.args.onSaveQuery();
       this.hasSaved = true;
     } catch (errors) {
