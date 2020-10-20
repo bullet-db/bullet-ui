@@ -43,7 +43,6 @@ export function addEditor(element, columns, initialContent) {
     options.value = QueryConverter.formatQuery(initialContent);
   }
   options.mode = MIME;
-  console.log(CodeMirror);
   return CodeMirror(element, options);
 }
 
