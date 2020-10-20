@@ -7,9 +7,10 @@
    margin-top: 20px;
    .editor {
      margin-top: 5px;
-     max-width: 900px;
+     max-width: 860px;
      position: relative;
      z-index: 0;
+     font-size: $font-size-regular;
 
      .CodeMirror {
        border: solid 2px $inactive-grey-lighter;

@@ -29,7 +29,7 @@ export function defineBQL() {
                   'group by having order asc desc limit every first time record linear region manual stream '  +
                   'windowing tumbling quantile freq cumfreq top sizeis rlike containskey containsvalue'),
     builtin: set('string boolean integer long float double map list'),
-    atoms: set('false true null first'),
+    atoms: set('false true null'),
     operatorChars: /^[*+\-/%<>!=&|^]/,
     dateSQL: { },
     support: set('zerolessFloat doubleQuote commentHash commentSlashSlash')
@@ -43,6 +43,7 @@ export function addEditor(element, columns, initialContent) {
     options.value = QueryConverter.formatQuery(initialContent);
   }
   options.mode = MIME;
+  console.log(CodeMirror);
   return CodeMirror(element, options);
 }
 

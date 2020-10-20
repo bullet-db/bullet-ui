@@ -34,7 +34,7 @@ module('Unit | Service | cors request', function(hooks) {
     let service = this.owner.lookup('service:cors-request');
     let result = await service.get('/api/pass');
     let body = await result.json();
-    assert.equal(body, { creds: true });
+    assert.deepEqual(body, { creds: true });
   });
 
   test('it rejects if the request cannot be made', async function(assert) {
