@@ -151,7 +151,7 @@
         opacity: 0.2;
       }
 
-      .submit-button {
+      .primary-button {
         @extend %primary-button;
         margin-top: 25px;
         width: 140px;
@@ -160,7 +160,7 @@
         font-size: $font-size-regular;
       }
 
-      .save-button {
+      .secondary-button {
         @extend %secondary-button;
         border-width: 2px;
         width: 140px;

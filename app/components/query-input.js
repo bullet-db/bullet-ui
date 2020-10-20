@@ -445,4 +445,14 @@ export default class QueryInputComponent extends Component {
       // empty
     }
   }
+
+  @action
+  async toBQL() {
+    try {
+      await this.doSave();
+      this.args.onCreateBQL();
+    } catch {
+      // empty
+    }
+  }
 }

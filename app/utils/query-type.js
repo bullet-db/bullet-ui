@@ -3,6 +3,7 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
+import EmberObject from '@ember/object';
 import Enum from 'bullet-ui/utils/enum';
 
 export const QUERY_TYPES = Enum.of(['BUILDER', 'BQL']);
@@ -12,6 +13,19 @@ export function getQueryType(query) {
     return QUERY_TYPES.BQL;
   }
   return QUERY_TYPES.BUILDER;
+}
+
+export function makeQueryLike(type, name) {
+  let query = EmberObject.create({ name: name });
+  switch (type) {
+    case QUERY_TYPES.BUILDER:
+      query.isBQL = false;
+      break;
+    case QUERY_TYPES.BQL:
+      query.isBQL = true;
+      break;
+  }
+  return query;
 }
 
 export function getRouteFor(query) {

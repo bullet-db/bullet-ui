@@ -3,11 +3,12 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import { action } from '@ember/object';
+import EmberObject, { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
 import QueryableRoute from 'bullet-ui/routes/queryable';
+import { QUERY_TYPES, makeQueryLike } from 'bullet-ui/utils/query-type';
 
 export default class QueryRoute extends QueryableRoute {
   @service queryManager;
@@ -116,5 +117,15 @@ export default class QueryRoute extends QueryableRoute {
     let bql = await query.bql;
     let result = await this.queryManager.addResult(bql.get('id'));
     this.submitQuery(bql.query, result);
+  }
+
+  @action
+  async createBQLQuery() {
+    let query = await this.store.findRecord('query', this.paramsFor('query').query_id);
+    let bql = await query.bql;
+    let queryLike = makeQueryLike(QUERY_TYPES.BQL, query.get('name'))
+    queryLike.query = bql.query;
+    let encoded = await this.queryManager.encode(queryLike);
+    this.transitionTo('create', encoded);
   }
 }

@@ -1,13 +1,13 @@
 {
   "default": {
-    "queryHost": "https://bullet-dev-api.data.yahoo.com:4443",
-    "queryNamespace": "bullet/api",
+    "queryHost": "https://local.data.yahoo.com:9443",
+    "queryNamespace": "api/bullet",
     "queryPath": "ws-query",
     "queryStompRequestChannel": "/server/request",
     "queryStompResponseChannel": "/client/response",
     "validationPath": "validate-query",
-    "schemaHost": "https://bullet-dev-api.data.yahoo.com:4443",
-    "schemaNamespace": "bullet/api",
+    "schemaHost": "https://local.data.yahoo.com:9443",
+    "schemaNamespace": "api/bullet",
     "helpLinks": [
       {
         "name": "Tutorials",
