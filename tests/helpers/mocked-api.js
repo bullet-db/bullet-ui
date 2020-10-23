@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import { isEqual, isEmpty } from '@ember/utils';
-import { mockAPI, failAPI } from 'bullet-ui/tests/helpers/pretender';
+import { mockAPI, failValidateAPI } from 'bullet-ui/tests/helpers/pretender';
 import { next } from '@ember/runloop';
 
 export default class MockedAPI {
@@ -13,11 +13,11 @@ export default class MockedAPI {
   server = null;
   errorMessageIndex = -1;
 
-  mock(dataArray, columns, delay = 0) {
+  mock(dataArray, columns) {
     this.shutdown();
     this.type = 'mockAPI';
     this.dataArray = dataArray;
-    this.server = mockAPI(columns, delay);
+    this.server = mockAPI(columns);
     this.errorMessageIndex = -1;
   }
 
@@ -32,7 +32,13 @@ export default class MockedAPI {
   fail(columns) {
     this.shutdown();
     this.type = 'failAPI';
-    this.server = failAPI(columns);
+    this.server = mockAPI(columns);
+  }
+
+  failValidate(columns, errors) {
+    this.shutdown();
+    this.type = 'failAPI';
+    this.server = failValidateAPI(columns, errors);
   }
 
   shutdown() {

@@ -269,4 +269,16 @@ module('Acceptance | query validation', function(hooks) {
     assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
     assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
   });
+
+
+  test('validation errors prevent converting to bql', async function(assert) {
+    assert.expect(3);
+
+    await visit('/queries/build');
+    await click('.output-options #top-k');
+    await click('.bql-button');
+    assert.dom('.validation-container .simple-alert').exists({ count: 1 });
+    assert.dom('.validation-container .simple-alert .alert-message .error-list li').exists({ count: 1 });
+    assert.dom('.validation-container .simple-alert .alert-message .error-list').includesText('Please fix the fields');
+  });
 });

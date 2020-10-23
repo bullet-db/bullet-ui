@@ -7,7 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, triggerEvent, currentURL, find, findAll, blur } from '@ember/test-helpers';
+import { currentRouteName, visit, click, fillIn, triggerEvent, currentURL, find, findAll, blur } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -544,4 +544,39 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('');
     assert.dom(findAll('.output-container .distribution-type-point-range input')[2]).hasValue('');
   });
+
+  test('creating bql from a full query with filters, grouped data output with groups and fields works', async function(assert) {
+    assert.expect(3);
+
+    await visit('/queries/build');
+    await fillIn('.name-container input', 'test query');
+    await click('.filter-container button[data-add=\'rule\']');
+    find('.filter-container .rule-filter-container select').value = 'complex_list_column';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
+    await click('.output-options #grouped-data');
+    await click('.output-container .groups-container .add-group');
+    await click('.output-container .groups-container .add-group');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
+
+    await click('.output-container .metrics-container .add-metric');
+    await click('.output-container .metrics-container .add-metric');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findAll('.output-container .metrics-container .metric-selection')[1], 'Average');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
+
+    await click('.bql-button');
+    assert.equal(currentRouteName(), 'bql');
+    assert.dom('.name-container input').hasValue('test query');
+    assert.dom('.query-panel .editor').includesText(
+      '1SELECT complex_map_column AS "complex_map_column", simple_column AS "bar", COUNT(*), AVG(simple_column) AS "avg_bar" ' +
+      '2FROM STREAM(20000, TIME) ' +
+      '3WHERE complex_list_column IS NULL ' +
+      '4GROUP BY complex_map_column, simple_column ' +
+      '5LIMIT 512'
+    );
+  });
+
 });
