@@ -15,6 +15,7 @@ export default class RecordsTableComponent extends PaginatedTable {
   sortedByColumn;
   alreadyReset;
   @tracked table;
+  numberOfColumns;
   rows;
 
   constructor() {
@@ -22,6 +23,7 @@ export default class RecordsTableComponent extends PaginatedTable {
     this.alreadyReset = false;
     // Use natural types in the results
     this.useDefaultStringExtractor = false;
+    this.numberOfColumns = this.args.columnNames.length;
     this.recreateTable();
     this.recomputeTable();
   }
@@ -43,7 +45,9 @@ export default class RecordsTableComponent extends PaginatedTable {
   }
 
   recreateTable() {
-    this.table = Table.create({ columns: this.columns });
+    let columns = this.columns;
+    this.numberOfColumns = columns.length;
+    this.table = Table.create({ columns: columns });
   }
 
   @action
@@ -54,9 +58,10 @@ export default class RecordsTableComponent extends PaginatedTable {
     let alreadyReset = this.alreadyReset;
     let timeSeriesMode = this.args.timeSeriesMode;
 
-    // If we are switching to timeSeriesMode but have not reset yet or if we have reset but are switching off
-    // timeSeriesMode (to remove the old extra columns), recreate the table
-    if ((!alreadyReset && timeSeriesMode) || (alreadyReset && !timeSeriesMode)) {
+    // If we are switching to timeSeriesMode but have not reset yet, or if we have reset but are switching off
+    // timeSeriesMode (to remove the old extra columns), or if the column count changed, recreate the table
+    if ((!alreadyReset && timeSeriesMode) || (alreadyReset && !timeSeriesMode) ||
+        (this.args.columnNames.length !== this.numberOfColumns)) {
       this.recreateTable();
     }
 

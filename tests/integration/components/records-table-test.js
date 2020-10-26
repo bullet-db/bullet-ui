@@ -74,4 +74,22 @@ module('Integration | Component | records table', function(hooks) {
     await settled();
     assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
   });
+
+  test('it resets the table when columns change', async function(assert) {
+    assert.expect(3);
+    this.set('columns', A(['foo']));
+    this.set('rows', A([{ foo: 2 }, { foo: 1 }, { foo: 3 }]));
+    await render(hbs`<RecordsTable @columnNames={{this.columns}} @rows={{this.rows}}/>`);
+    assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
+    // Does not update
+    this.set('columns', A(['bar']));
+    this.set('rows', A([{ foo: 2, bar: 10 }, { foo: 1, bar: 2 }, { foo: 3, bar: 0 }]));
+    await settled();
+    assert.dom(this.element.querySelector('.lt-head')).hasText('foo');
+    //  Now it updates
+    this.set('columns', A(['foo', 'bar']));
+    this.set('rows', A([{ foo: 2, bar: 10 }, { foo: 1, bar: 2 }, { foo: 3 }]));
+    await settled();
+    assert.dom(this.element.querySelector('.lt-head')).hasText('foo bar');
+  });
 });
