@@ -50,3 +50,16 @@ export function setupForAcceptanceTest(hooks, results, columns) {
     this.stub.restore();
   });
 }
+
+export function setupForValidationEndpoint(hooks, columns, errors) {
+  basicSetupForAcceptanceTest(hooks);
+
+  hooks.beforeEach(function() {
+    this.mockedAPI = new MockedAPI();
+    this.mockedAPI.failValidate(columns, errors);
+  });
+
+  hooks.afterEach(function() {
+    this.mockedAPI.shutdown();
+  });
+}

@@ -15,6 +15,14 @@ module('Unit | Service | cors request', function(hooks) {
       this.get('/api/pass', function(request) {
         return [200, { 'Content-Type': 'application/json' }, JSON.stringify({ creds: request.withCredentials })];
       });
+      this.post('/api/pass', function(request) {
+        return [
+          204, { 'Content-Type': 'application/json' },
+          JSON.stringify({
+            creds: request.withCredentials, type: request.requestHeaders['content-type'], body: request.requestBody
+          })
+        ];
+      });
       this.get('/api/fail', function() {
         return [404, { }, ''];
       });
@@ -30,11 +38,18 @@ module('Unit | Service | cors request', function(hooks) {
     assert.ok(service);
   });
 
-  test('it defaults options correctly', async function(assert) {
+  test('it defaults options correctly for gets', async function(assert) {
     let service = this.owner.lookup('service:cors-request');
     let result = await service.get('/api/pass');
     let body = await result.json();
     assert.deepEqual(body, { creds: true });
+  });
+
+  test('it defaults options correctly for posts', async function(assert) {
+    let service = this.owner.lookup('service:cors-request');
+    let result = await service.post('/api/pass', 'body');
+    let body = await result.json();
+    assert.deepEqual(body, { creds: true,  type: 'text/plain', body: 'body' });
   });
 
   test('it rejects if the request cannot be made', async function(assert) {

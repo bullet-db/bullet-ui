@@ -57,16 +57,14 @@ export default class BqlInputComponent extends Component {
     let parsedErrors = [];
     for (let object of errors) {
       let { error } = object;
+      let parsed = { message: error };
       let splits = error.split(':');
-      let line = 0;
-      let character = 0;
-      let message = error;
       if (splits.length >= 3) {
-        line = splits[0];
-        character = splits[1];
-        message = splits.slice(2).join(':');
+        parsed.line = splits[0];
+        parsed.character = splits[1];
+        parsed.message = splits.slice(2).join(':');
       }
-      parsedErrors.push({ line, character, message });
+      parsedErrors.push(parsed);
     }
     return parsedErrors;
   }

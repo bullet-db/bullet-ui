@@ -14,6 +14,7 @@ import QueryConverter from 'bullet-ui/utils/query-converter';
 
 const MIME = 'text/x-bql';
 
+// Adapted from https://github.com/codemirror/CodeMirror/blob/master/mode/sql/sql.js
 function set(str) {
   let object = { };
   str.split(' ').forEach(word => {
