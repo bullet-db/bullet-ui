@@ -8,7 +8,7 @@ import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
 import QueryableRoute from 'bullet-ui/routes/queryable';
-import { QUERY_TYPES, makeQueryLike } from 'bullet-ui/utils/query-type';
+import { QUERY_TYPES, makeBQLQueryLike } from 'bullet-ui/utils/query-type';
 
 export default class QueryRoute extends QueryableRoute {
   @service queryManager;
@@ -123,7 +123,7 @@ export default class QueryRoute extends QueryableRoute {
   async createBQLQuery() {
     let query = await this.store.findRecord('query', this.paramsFor('query').query_id);
     let bql = await query.bql;
-    let queryLike = makeQueryLike(QUERY_TYPES.BQL, query.get('name'))
+    let queryLike = makeBQLQueryLike(query.get('name'));
     queryLike.query = bql.query;
     let encoded = await this.queryManager.encode(queryLike);
     this.transitionTo('create', encoded);

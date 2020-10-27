@@ -15,16 +15,9 @@ export function getQueryType(query) {
   return QUERY_TYPES.BUILDER;
 }
 
-export function makeQueryLike(type, name) {
+export function makeBQLQueryLike(name) {
   let query = EmberObject.create({ name: name });
-  switch (type) {
-    case QUERY_TYPES.BUILDER:
-      query.isBQL = false;
-      break;
-    case QUERY_TYPES.BQL:
-      query.isBQL = true;
-      break;
-  }
+  query.isBQL = true;
   return query;
 }
 
