@@ -26,9 +26,9 @@ function set(str) {
 export function defineBQL() {
   CodeMirror.defineMIME(MIME, {
     name: 'sql',
-    keywords: set('select as cast count distinct sum mix max avg from where and or not is all any true false null ' +
-                  'group by having order asc desc limit every first time record linear region manual stream '  +
-                  'windowing tumbling quantile freq cumfreq top sizeis rlike containskey containsvalue'),
+    keywords: set('select as cast count distinct sum min max avg from where if and or not xor is all any true false ' +
+                  'null group by having order asc desc limit every first time record linear region manual stream '  +
+                  'windowing tumbling quantile freq cumfreq top sizeis sizeof filter rlike containskey containsvalue'),
     builtin: set('string boolean integer long float double map list'),
     atoms: set('false true null'),
     operatorChars: /^[*+\-/%<>!=&|^]/,
