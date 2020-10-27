@@ -8,7 +8,7 @@ import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isEmpty, isNone, typeOf } from '@ember/utils';
 import QueryableRoute from 'bullet-ui/routes/queryable';
-import { QUERY_TYPES, makeBQLQueryLike } from 'bullet-ui/utils/query-type';
+import { makeBQLQueryLike } from 'bullet-ui/utils/query-type';
 
 export default class QueryRoute extends QueryableRoute {
   @service queryManager;
