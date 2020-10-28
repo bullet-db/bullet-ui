@@ -7,7 +7,7 @@ import { module, test } from 'qunit';
 import RESULTS from 'bullet-ui/tests/fixtures/results';
 import COLUMNS from 'bullet-ui/tests/fixtures/columns';
 import { setupForAcceptanceTest } from 'bullet-ui/tests/helpers/setup-for-acceptance-test';
-import { visit, click, fillIn, triggerEvent, currentURL, find, findAll, blur } from '@ember/test-helpers';
+import { currentRouteName, visit, click, fillIn, triggerEvent, currentURL, find, findAll, blur } from '@ember/test-helpers';
 import { selectChoose } from 'ember-power-select/test-support/helpers';
 import { findIn, findAllIn } from 'bullet-ui/tests/helpers/find-helpers';
 
@@ -17,7 +17,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('creating a query and finding it again', async function(assert) {
     assert.expect(1);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     let createdQuery = currentURL();
     await visit('queries');
     await click('.queries-table .query-name-entry .query-description');
@@ -27,7 +27,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('creating a query and deleting it', async function(assert) {
     assert.expect(2);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await visit('queries');
     assert.dom('.query-description').exists({ count: 1 });
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
@@ -38,7 +38,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('creating a query and copying it', async function(assert) {
     assert.expect(2);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await visit('queries');
     assert.dom('.query-description').exists({ count: 1 });
     await triggerEvent('.queries-table .query-name-entry', 'mouseover');
@@ -49,8 +49,8 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('creating multiple queries and deleting them', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
-    await visit('/queries/new');
+    await visit('/queries/build');
+    await visit('/queries/build');
     await visit('queries');
     assert.dom('.query-description').exists({ count: 2 });
     await triggerEvent(findAll('.queries-table .query-name-entry')[0], 'mouseover');
@@ -64,8 +64,8 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('creating multiple queries and copying them', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
-    await visit('/queries/new');
+    await visit('/queries/build');
+    await visit('/queries/build');
     await visit('queries');
     assert.dom('.query-description').exists({ count: 2 });
     await triggerEvent(findAll('.queries-table .query-name-entry')[0], 'mouseover');
@@ -79,7 +79,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('adding a filter with a simple column', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'simple_column';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
@@ -91,7 +91,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('adding a complex map field column filter with a subfield column', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_map_column.*';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
@@ -103,7 +103,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('adding a complex map field column filter without a subfield column', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_map_column';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
@@ -115,7 +115,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('adding and removing filter rules', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.dom('.filter-container .rule-container').doesNotExist();
     await click('.filter-container button[data-add=\'rule\']');
     assert.dom('.filter-container .rule-container').exists({ count: 1 });
@@ -126,7 +126,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('raw data output with all columns is selected by default', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.dom(find('.output-options #raw').parentElement).hasClass('checked');
     assert.dom('.output-container .projections-container .add-projection').doesNotExist();
     assert.dom('.projections-container').doesNotExist();
@@ -135,7 +135,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('adding and removing raw data output projections', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-container .raw-sub-options #select');
     await click('.output-container .projections-container .add-projection');
     let fields = findAll('.projections-container .field-selection-container');
@@ -151,7 +151,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('filling out projection name even when there are errors', async function(assert) {
     assert.expect(3);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'simple_column');
     assert.dom('.projections-container .column-only-field').exists({ count: 1 });
@@ -164,7 +164,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('adding a projection with a subfield column', async function(assert) {
     assert.expect(5);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-container .raw-sub-options #select');
     await selectChoose('.projections-container .field-selection-container .field-selection', 'complex_map_column.*');
     await fillIn('.projections-container .field-selection-container .field-name input', 'new_name');
@@ -181,7 +181,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('switching to another output data type wipes selected columns', async function(assert) {
     assert.expect(6);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-container .raw-sub-options #select');
     await selectChoose(findIn('.field-selection', findAll('.projections-container .field-selection-container')[0]), 'complex_map_column.*');
     await fillIn(
@@ -209,7 +209,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('aggregation size is only visible when selecting the raw output option', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.dom(find('.output-options #raw').parentElement).hasClass('checked');
     assert.dom(find('.output-container .raw-sub-options #all').parentElement).hasClass('checked');
     assert.dom('.aggregation-size input').exists({ count: 1 });
@@ -230,7 +230,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('copying and deleting a query with filters, raw projections, window and a name works', async function(assert) {
     assert.expect(13);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_list_column';
@@ -281,7 +281,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('copying a full query with filters, grouped data output with groups and fields works', async function(assert) {
     assert.expect(15);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_list_column';
@@ -335,7 +335,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('distribution output selects quantiles and number of points by default', async function(assert) {
     assert.expect(6);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     assert.dom(find('.output-options #distribution').parentElement).hasClass('checked');
     assert.dom(find('.output-container .distribution-type-options #quantile').parentElement).hasClass('checked');
@@ -348,7 +348,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('copying a distribution query with number of points works', async function(assert) {
     assert.expect(9);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #distribution');
     await click('.distribution-type-options #cumulative');
@@ -377,7 +377,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('copying a distribution query with generated points works', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #distribution');
     await click('.distribution-type-options #frequency');
@@ -410,7 +410,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('copying a distribution query with points works', async function(assert) {
     assert.expect(9);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #distribution');
     await click('.output-container .distribution-point-options #points');
@@ -438,7 +438,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('copying a top k query works', async function(assert) {
     assert.expect(12);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await fillIn('.name-container input', 'test query');
     await click('.output-options #top-k');
 
@@ -478,7 +478,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('distribution queries are sticky when switching to and from frequency to cumulative frequency', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
 
     await click('.distribution-type-options #cumulative');
@@ -513,7 +513,7 @@ module('Acceptance | query lifecycle', function(hooks) {
   test('quantile query point value fields are not sticky when switching to another distribution', async function(assert) {
     assert.expect(11);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
 
     await click('.distribution-type-options #quantile');
@@ -544,4 +544,39 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom(findAll('.output-container .distribution-type-point-range input')[1]).hasValue('');
     assert.dom(findAll('.output-container .distribution-type-point-range input')[2]).hasValue('');
   });
+
+  test('creating bql from a full query with filters, grouped data output with groups and fields works', async function(assert) {
+    assert.expect(3);
+
+    await visit('/queries/build');
+    await fillIn('.name-container input', 'test query');
+    await click('.filter-container button[data-add=\'rule\']');
+    find('.filter-container .rule-filter-container select').value = 'complex_list_column';
+    await triggerEvent('.filter-container .rule-filter-container select', 'change');
+    await click('.output-options #grouped-data');
+    await click('.output-container .groups-container .add-group');
+    await click('.output-container .groups-container .add-group');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[0]), 'complex_map_column');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .groups-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .groups-container .field-selection-container')[1]), 'bar');
+
+    await click('.output-container .metrics-container .add-metric');
+    await click('.output-container .metrics-container .add-metric');
+    await selectChoose(findIn('.metric-selection', findAll('.output-container .metrics-container .field-selection-container')[0]), 'Count');
+    await selectChoose(findAll('.output-container .metrics-container .metric-selection')[1], 'Average');
+    await selectChoose(findIn('.field-selection', findAll('.output-container .metrics-container .field-selection-container')[1]), 'simple_column');
+    await fillIn(findIn('.field-name input', findAll('.output-container .metrics-container .field-selection-container')[1]), 'avg_bar');
+
+    await click('.bql-button');
+    assert.equal(currentRouteName(), 'bql');
+    assert.dom('.name-container input').hasValue('test query');
+    assert.dom('.query-panel .editor').includesText(
+      '1SELECT complex_map_column AS "complex_map_column", simple_column AS "bar", COUNT(*), AVG(simple_column) AS "avg_bar" ' +
+      '2FROM STREAM(20000, TIME) ' +
+      '3WHERE complex_list_column IS NULL ' +
+      '4GROUP BY complex_map_column, simple_column ' +
+      '5LIMIT 512'
+    );
+  });
+
 });

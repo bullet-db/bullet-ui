@@ -24,14 +24,14 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can create all the various types of fields', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_SIMPLE);
     assert.expect(1);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
   });
 
   test('it can create a filter with all the operators', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_OPERATORS);
     assert.expect(63);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 20 });
@@ -122,15 +122,15 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can summarize a filter with all operators', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_OPERATORS);
     assert.expect(4);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
     await click('.save-button');
     await visit('queries');
 
     // Need to not use dom() since it trims whitespace
-    let summary = find('.query-description .filter-summary-text');
+    let summary = find('.query-description .summary-text');
     let { expected } = QUERIES.ALL_OPERATORS.match(/.*WHERE (?<expected>.+?) LIMIT 10/i).groups;
-    assert.equal(summary.textContent.trim(), `Filters:  ${expected}`);
+    assert.equal(summary.textContent.trim(), `SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 10`);
 
     await click('.query-description');
     assert.equal(currentRouteName(), 'query');
@@ -157,13 +157,13 @@ module('Acceptance | query filtering', function(hooks) {
       '( integer > 0 OR float < 9 OR long_map.q >= 42 OR double_map.double_map_sub_field_2 <= -1.2 ) AND ' +
       'string_map_map.string_map_map_sub_field_1.ext RLIKE ANY [\'.+42.+\',\'.*\\\\S\'] AND ' +
       'CONTAINSVALUE(string_map_map, \'xyz\')';
-    assert.dom('.query-description .filter-summary-text').hasText(`Filters:  ${expected}`);
+    assert.dom('.query-description .summary-text').hasText(`SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 10`);
   });
 
   test('it suppresses validation for numbers for the operators that allow commas in values', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_MULTIPLE_OPERATORS);
     assert.expect(34);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 5 });
@@ -250,13 +250,13 @@ module('Acceptance | query filtering', function(hooks) {
     let expected =
       'string IN [\'qux\',\'bar\',\'baz\'] AND float IN [1,2,3,4,5,6.1] AND integer IN [1,42] ' +
       'AND double NOT IN [1.2,42] AND long_map.l IN [42]';
-    assert.dom('.query-description .filter-summary-text').hasText(`Filters:  ${expected}`);
+    assert.dom('.query-description .summary-text').hasText(`SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 1`);
   });
 
   test('it can validate values for the size is operator', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_SIZEIS);
     assert.expect(11);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 1 });
@@ -290,7 +290,7 @@ module('Acceptance | query filtering', function(hooks) {
   test('it can validate on base types for contains value', async function(assert) {
     setDefaultQuery(this, QUERIES.ALL_CONTAINSVALUE);
     assert.expect(35);
-    await visit('/queries/new');
+    await visit('/queries/build');
     assert.equal(currentRouteName(), 'query');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 7 });
@@ -390,6 +390,6 @@ module('Acceptance | query filtering', function(hooks) {
       'CONTAINSVALUE(long_map_map, 01) AND CONTAINSVALUE(double_map_list, -1.52) AND ' +
       'CONTAINSVALUE(float_map_map, 42.52000001) AND CONTAINSVALUE(string_list, \'foo.1\') AND ' +
       'CONTAINSVALUE(string_map_list, \'xyz\')';
-    assert.dom('.query-description .filter-summary-text').hasText(`Filters:  ${expected}`);
+    assert.dom('.query-description .summary-text').hasText(`SELECT * FROM STREAM(10000, TIME) WHERE ${expected} LIMIT 10`);
   });
 });

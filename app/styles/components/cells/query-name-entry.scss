@@ -24,6 +24,7 @@
   .query-description {
     flex: 1 1 75%;
     max-width: 72%;
+    margin-left: 5px;
     margin-right: 20px;
     .query-real-name {
       white-space: nowrap;
@@ -34,9 +35,6 @@
       @import "../query-blurb";
       display: flex;
       align-items: center;
-      .filter-summary-text, .fields-summary-text {
-        padding-right: 5px;
-      }
     }
   }
 

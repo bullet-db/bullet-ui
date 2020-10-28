@@ -6,6 +6,7 @@
 import Route from '@ember/routing/route';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
+import { getRouteFor } from 'bullet-ui/utils/query-type';
 
 export default class ResultRoute extends Route {
   @service querier;
@@ -15,14 +16,15 @@ export default class ResultRoute extends Route {
   async model(params) {
     let result = await this.store.findRecord('result', params.result_id);
     let query = await result.query;
-    // Fetch all the things
-    await query.filter;
-    await query.projections;
-    await query.window;
-    let aggregation = await query.aggregation;
-    await aggregation.groups;
-    await aggregation.metrics;
     return { result, query };
+  }
+
+  async findQuery() {
+    let query = this.controller.get('model.query');
+    // If there is a builder query associated, use that
+    let queries = await this.store.findAll('query');
+    let optional = queries.findBy('bql.id', query.get('id'));
+    return optional ? optional : query;
   }
 
   lateSubmitQuery(query) {
@@ -41,9 +43,9 @@ export default class ResultRoute extends Route {
   }
 
   @action
-  queryClick() {
-    let query = this.controller.get('model.query');
-    this.transitionTo('query', query.get('id'));
+  async queryClick() {
+    let query = await this.findQuery();
+    this.transitionTo(getRouteFor(query), query.get('id'));
   }
 
   @action
@@ -71,7 +73,8 @@ export default class ResultRoute extends Route {
   didTransition() {
     let controller = this.controller;
     if (controller.hasPendingSubmit) {
-      this.lateSubmitQuery(controller.get('model.query'));
+      let bql = controller.get('model.query');
+      this.lateSubmitQuery(bql.query);
       controller.hasPendingSubmit = false;
     }
     return true;

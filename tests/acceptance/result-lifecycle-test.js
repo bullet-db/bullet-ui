@@ -19,7 +19,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.expect(2);
 
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
-    await visit('/queries/new');
+    await visit('/queries/build');
     let createdQuery = currentURL();
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
@@ -32,7 +32,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     await click('.table-view');
     assert.dom('.pretty-json-container').doesNotExist();
@@ -46,7 +46,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     assert.expect(7);
     this.mockedAPI.mock([RESULTS.COUNT_DISTINCT], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #count-distinct');
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
     await click('.submit-button');
@@ -62,18 +62,18 @@ module('Acceptance | result lifecycle', function(hooks) {
 
   test('it lets you expand result entries in a popover', async function(assert) {
     assert.expect(5);
-    this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
+    this.mockedAPI.mock([RESULTS.SINGLE_COMPLEX], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     await click('.table-view');
     assert.dom('.lt-body .lt-row .lt-cell').exists({ count: 3 });
     // Need to specify this because table-view tooltip is rendered
     assertTooltipNotRendered(assert, { selector: '.ember-popover' });
-    let cell = findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'test');
+    let cell = findContains('.records-table .lt-body .lt-row .record-entry .plain-entry', 'bar');
     await click(cell);
     assertTooltipVisible(assert, { selector: '.ember-popover' });
-    assert.dom(findIn('.record-entry-popover-wrapper .record-entry-popover-body pre', cell.parentNode)).hasText('test');
+    assert.dom(findIn('.record-entry-popover-wrapper .record-entry-popover-body pre', cell.parentNode)).hasText('{ "bar": true }');
     await click(findIn('.record-entry-popover-wrapper .close-button', cell.parentNode));
     assertTooltipNotVisible(assert, { selector: '.ember-popover' });
   });
@@ -83,7 +83,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     await click('.table-view');
     assert.dom('.records-charter').doesNotExist();
@@ -108,7 +108,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.output-container .distribution-point-options #points');
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
@@ -143,7 +143,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.output-container .distribution-point-options #points');
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
@@ -179,7 +179,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     assert.dom('.records-charter').doesNotExist();
     assert.dom('.lt-body .lt-row .lt-cell').doesNotExist();
@@ -199,7 +199,7 @@ module('Acceptance | result lifecycle', function(hooks) {
 
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
     await click('.rerun-button');

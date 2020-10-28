@@ -41,9 +41,9 @@ module('Acceptance | query default query api', function(hooks) {
     this.stub.restore();
   });
 
-  test('it creates new queries with three default filters and the count distinct aggregation', async function(assert) {
+  test('it creates new builder queries with three default filters and the count distinct aggregation', async function(assert) {
     assert.expect(13);
-    await visit('/queries/new');
+    await visit('/queries/build');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 3 });
 
@@ -64,11 +64,32 @@ module('Acceptance | query default query api', function(hooks) {
     assert.dom('.options-container .query-duration input').hasValue('50');
   });
 
-  test('it reuses fetched values when creating new queries', async function(assert) {
+
+  test('it creates new bql queries with three default filters and the count distinct aggregation', async function(assert) {
     assert.expect(1);
-    await visit('/queries/new');
-    await visit('/queries/new');
-    await visit('/queries/new');
+    await visit('/queries/bql');
+
+    assert.dom('.query-panel .editor').includesText(
+      '1SELECT COUNT(DISTINCT simple_column) ' +
+      '2FROM STREAM(50000, TIME) ' +
+      '3WHERE enumerated_map_column.nested_1 NOT IN ["1", "2", "3"] AND SIZEIS(simple_column, 15) AND ' +
+              'CONTAINSKEY(enumerated_map_column, "bar");'
+    );
+  });
+
+  test('it reuses fetched values when creating new builder queries', async function(assert) {
+    assert.expect(1);
+    await visit('/queries/build');
+    await visit('/queries/build');
+    await visit('/queries/build');
+    assert.equal(hit, 1);
+  });
+
+  test('it reuses fetched values when creating new bql queries', async function(assert) {
+    assert.expect(1);
+    await visit('/queries/bql');
+    await visit('/queries/bql');
+    await visit('/queries/bql');
     assert.equal(hit, 1);
   });
 });

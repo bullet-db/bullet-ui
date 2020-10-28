@@ -11,7 +11,7 @@
     {{#if @row.name}}
       <p class="query-real-name"><strong>{{@row.name}}</strong></p>
     {{else}}
-      <QueryBlurb @summary={{@row}} />
+      <QueryBlurb @summary={{@row.query}} @showTooltip={{true}}/>
     {{/if}}
   </div>
   {{!-- template-lint-disable no-nested-interactive --}}

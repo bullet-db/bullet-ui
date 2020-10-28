@@ -3,7 +3,6 @@
  *  Licensed under the terms of the Apache License, Version 2.0.
  *  See the LICENSE file associated with the project for terms.
  */
-import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
@@ -14,11 +13,9 @@ module('Integration | Component | query information', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it displays a query summary', async function(assert) {
-    this.set('mockSnapshot', EmberObject.create({ filterSummary: 'foo', fieldsSummary: 'bar', windowSummary: 'baz' }));
+    this.set('mockSnapshot', 'foo bar baz');
     await render(hbs`<QueryInformation @querySnapshot={{this.mockSnapshot}}/>`);
-    assert.dom(this.element).includesText('foo');
-    assert.dom(this.element).includesText('bar');
-    assert.dom(this.element).includesText('baz');
+    assert.dom(this.element).includesText('foo bar baz');
   });
 
   test('it displays an edit and a rerun button', async function(assert) {

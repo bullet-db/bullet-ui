@@ -7,11 +7,22 @@ import fetch from 'fetch';
 import Service from '@ember/service';
 
 export default class CORSRequestService extends Service {
-  async get(url, options = { credentials: 'include' }) {
+  async method(method, url, options) {
+    options.method = method;
     let response = await fetch(url, options);
     if (response.ok) {
-      return response.text();
+      return response;
     }
-    throw new Error(`Unable to get ${url}: ${response.statusText}`);
+    throw response;
+  }
+
+  async get(url, options = { mode: 'cors', credentials: 'include' }) {
+    return this.method('GET', url, options);
+  }
+
+  async post(url, payload, contentType = 'text/plain', options = { mode: 'cors', credentials: 'include' }) {
+    options.headers = { 'Content-Type': contentType };
+    options.body = payload;
+    return this.method('POST', url, options);
   }
 }

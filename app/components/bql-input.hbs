@@ -1,0 +1,55 @@
+{{!--
+  Copyright 2020, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<div class="query-panel {{if this.isListening "query-running"}}">
+
+  <div class="validation-container">
+    {{#if this.hasError}}
+      <SimpleAlert @type="error">
+        <span>OOPS! PLEASE FIX ALL ERRORS TO PROCEED</span>
+        <ul class="error-list">
+          {{#each this.errors as |error|}}
+            {{#if error.line}}
+              <li>{{error.message}} at line {{error.line}}, character {{error.character}}</li>
+            {{else}}
+              <li>{{error.message}}</li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </SimpleAlert>
+    {{else if this.hasSaved}}
+      <SimpleAlert @type="success">
+        <span>SAVED TO BROWSER CACHE!</span>
+      </SimpleAlert>
+    {{/if}}
+  </div>
+
+  <div class="scrollable-panel editor-panel">
+    <div class="container-fluid name-container">
+      <div class="col-xs-12 query-name">
+        <LabeledInput @value={{this.queryChangeset.name}}
+                      @label="Name" @type="text" @placeholder="Name Your Query" @maxlength={{80}}
+                      @disabled={{this.isListening}}/>
+      </div>
+    </div>
+
+    <div class="container-fluid editor-container">
+      <div class="section-header">
+        <h3 class="section-title">BQL Query</h3>
+        <InfoPopover @title="BQL (Bullet Query Language)">
+          <Popovers::BqlHelp @settings={{this.settings}}/>
+        </InfoPopover>
+      </div>
+      <div class="{{this.editorClass}}" {{did-insert this.addEditor}}/>
+    </div>
+  </div>
+
+  <div class="container-fluid control-container">
+    <hr/>
+    <button type="submit" disabled={{this.isListening}} class="btn btn-primary btn-md primary-button submit-button" {{on "click" this.listen}}>Run Query</button>
+    <button type="button" disabled={{this.isListening}} class="btn btn-default btn-md secondary-button save-button" {{on "click" this.save}}>Save Query</button>
+  </div>
+
+</div>

@@ -11,9 +11,13 @@
     </InfoPopover>
   </span>
   <div class="clearfix">
-    <LinkTo @route="queries.new" @tagName="button" class="btn btn-primary btn-md add-button pull-left">
-      {{fa-icon "plus"}}
-      New Query
+    <LinkTo @route="queries.build" @tagName="button" class="btn btn-primary btn-md build-button add-button">
+      {{fa-icon "sliders"}}
+      Build Query
+    </LinkTo>
+    <LinkTo @route="queries.bql" @tagName="button" class="btn btn-primary btn-md bql-button add-button">
+      {{fa-icon "code"}}
+      BQL Query
     </LinkTo>
   </div>
     <QueriesTable @queries={{@model.queries}}

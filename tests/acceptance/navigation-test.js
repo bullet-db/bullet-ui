@@ -38,7 +38,7 @@ module('Acceptance | navigation', function(hooks) {
   test('visiting / and going somewhere and coming back to the index page', async function(assert) {
     await visit('/schema');
     await click(findContains('.left-bar .left-bar-link', 'Queries'));
-    await click('.queries-list .add-button');
+    await click('.queries-list .build-button');
     await click('.navbar-logo > a');
     assert.equal(currentURL(), '/queries');
   });

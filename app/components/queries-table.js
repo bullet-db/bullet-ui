@@ -15,8 +15,8 @@ const QUERIES_TABLE_EXTRACTOR = EmberObject.create({
     if (!isEmpty(name)) {
       return name;
     }
-    // Stick a ~~~ in front so that generated summaries sort together toward one end
-    return `~~~${row.get('filterSummary')}${row.get('projectionsSummary')}${row.get('windowSummary')}`;
+    // Stick a ~~~ in front so that generated queries sort together toward one end
+    return `~~~${row.get('query')}`;
   },
 
   latestResult(row) {
@@ -32,6 +32,7 @@ const QUERIES_TABLE_EXTRACTOR = EmberObject.create({
 export default class QueriesTableComponent extends PaginatedTable {
   extractors = QUERIES_TABLE_EXTRACTOR;
   columns = A([
+    { label: '', valuePath: 'isBQL', cellComponent: 'cells/query-type-entry', width: '1%' },
     { label: 'Query', valuePath: 'name', cellComponent: 'cells/query-name-entry' },
     { label: 'Last Result', valuePath: 'latestResult', cellComponent: 'cells/query-date-entry', width: '20%' },
     { label: 'Historical Results', valuePath: 'results', cellComponent: 'cells/query-results-entry', width: '15%' }

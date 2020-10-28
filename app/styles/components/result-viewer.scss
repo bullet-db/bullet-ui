@@ -7,10 +7,13 @@
   @import "window-metadata";
   margin-bottom: 10px;
   text-align: center;
-  .section-header > .section-title {
-    font-size: $font-size-regular-large;
-    // To center this after padding with elements below
-    padding-left: 20px;
+  .section-header {
+    justify-content: center;
+    & > .section-title {
+      font-size: $font-size-regular-large;
+      // To center this after padding with elements below
+      padding-left: 10px;
+    }
   }
   .window-metadata {
     text-align: left;

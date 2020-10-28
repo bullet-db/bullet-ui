@@ -6,44 +6,41 @@
 /* eslint-disable ember/no-get */
 // Need to disable since gets are needed here for ObjectProxy
 import Model, { attr, belongsTo } from '@ember-data/model';
-import { equal, or } from '@ember/object/computed';
+import { equal, none, and, or, alias } from '@ember/object/computed';
 import { isEmpty, isNone } from '@ember/utils';
 import { computed } from '@ember/object';
 import { A } from '@ember/array';
-import { AGGREGATION_TYPES } from 'bullet-ui/utils/query-constants';
+import QueryConverter from 'bullet-ui/utils/query-converter';
+import { AGGREGATION_TYPES, EMIT_TYPES } from 'bullet-ui/utils/query-constants';
 
 export default class ResultModel extends Model {
-  @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
-  @belongsTo('query', { autoSave: true }) query;
-  // Not using hasMany to handle extremely high volume (rate-limited) results.
-  @attr('window-array', { defaultValue: () => A() }) windows;
-  @attr('string') pivotOptions;
-  @attr() querySnapshot;
-
   // Cache exists to not dump all the records into windows at once. Use syncCache to consolidate cache and windows.
   cache = [];
 
-  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.RAW)) isRaw;
-  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.COUNT_DISTINCT)) isCountDistinct;
-  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.GROUP)) isGroup;
-  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.DISTRIBUTION)) isDistribution;
-  @equal('querySnapshot.type', AGGREGATION_TYPES.describe(AGGREGATION_TYPES.TOP_K)) isTopK;
-  @or('isCountDistinct', 'isGroupAll') isSingleRow;
+  @attr('date', { defaultValue: () => new Date(Date.now()) }) created;
+  @belongsTo('bql', { autoSave: true }) query;
+  // Not using hasMany to handle extremely high volume (rate-limited) results.
+  @attr('window-array', { defaultValue: () => A() }) windows;
+  @attr('string') pivotOptions;
+  @attr('string') querySnapshot;
 
-  @computed('isRaw', 'querySnapshot.projectionsSize')
-  get isReallyRaw() {
-    return this.isRaw && this.get('querySnapshot.projectionsSize') === 0;
+  @computed('querySnapshot')
+  get categorization() {
+    return QueryConverter.categorizeBQL(this.querySnapshot);
   }
 
-  @computed('isGroup', 'querySnapshot.groupsSize')
-  get isGroupAll() {
-    return this.isGroup && this.get('querySnapshot.groupsSize') === 0;
-  }
+  @equal('categorization.type', AGGREGATION_TYPES.RAW) isRaw;
+  @equal('categorization.type', AGGREGATION_TYPES.COUNT_DISTINCT) isCountDistinct;
+  @equal('categorization.type', AGGREGATION_TYPES.GROUP) isGroup;
+  @equal('categorization.type', AGGREGATION_TYPES.DISTRIBUTION) isDistribution;
+  @equal('categorization.type', AGGREGATION_TYPES.TOP_K) isTopK;
 
-  @computed('isGroup', 'querySnapshot.{metricsSize,groupsSize}')
-  get isGroupBy() {
-    return this.isGroup && this.get('querySnapshot.metricsSize') >= 1 && this.get('querySnapshot.groupsSize') >= 1;
-  }
+  @alias('categorization.duration') queryDuration;
+  @alias('categorization.emitEvery') windowEmitEvery;
+  @none('categorization.emitType') hasNoWindow;
+  @equal('categorization.emitType', EMIT_TYPES.TIME) isTimeWindow;
+  @and('isRaw', 'categorization.isStarSelect') isReallyRaw;
+  @or('isCountDistinct', 'categorization.isGroupAll') isSingleRow;
 
   @computed('windows.[]')
   get errorWindow() {

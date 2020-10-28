@@ -18,7 +18,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(1);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
-    await visit('queries/new');
+    await visit('queries/build');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
   });
@@ -29,7 +29,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(6);
     this.mockedAPI.mock([RESULTS.MULTIPLE], COLUMNS.BASIC);
 
-    await visit('queries/new');
+    await visit('queries/build');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
     data = find('pre').textContent;
@@ -46,7 +46,7 @@ module('Acceptance | query submission', function(hooks) {
   test('query submission and redirecting to error', async function(assert) {
     assert.expect(1);
     this.mockedAPI.fail(COLUMNS.BASIC);
-    await visit('queries/new');
+    await visit('queries/build');
     await click('.submit-button');
     assert.equal(currentRouteName(), 'errored');
   });
@@ -55,7 +55,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(12);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     await click('.filter-container button[data-delete=\'rule\']');
     await click('.filter-container button[data-add=\'rule\']');
@@ -101,7 +101,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(7);
     this.mockedAPI.mock([RESULTS.SINGLE], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'simple_column';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
@@ -128,7 +128,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(4);
     this.mockedAPI.mock([RESULTS.RAW], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_map_column.*';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
@@ -147,7 +147,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(4);
     this.mockedAPI.mock([RESULTS.RAW], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.filter-container button[data-add=\'rule\']');
     find('.filter-container .rule-filter-container select').value = 'complex_map_column.*';
     await triggerEvent('.filter-container .rule-filter-container select', 'change');
@@ -165,7 +165,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(5);
     this.mockedAPI.mock([RESULTS.COUNT_DISTINCT], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #count-distinct');
     await click('.output-container .fields-selection-container .add-field');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
@@ -191,7 +191,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(11);
     this.mockedAPI.mock([RESULTS.GROUP], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #grouped-data');
     await click('.output-container .groups-container .add-group');
     await click('.output-container .groups-container .add-group');
@@ -242,7 +242,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(7);
     this.mockedAPI.mock([RESULTS.DISTRIBUTION], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #distribution');
     await click('.output-container .distribution-point-options #points');
     await selectChoose('.output-container .field-selection-container .field-selection', 'simple_column');
@@ -272,7 +272,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(10);
     this.mockedAPI.mock([RESULTS.TOP_K], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.output-options #top-k');
     await click('.output-container .add-field');
     await selectChoose(findIn('.field-selection', findAll('.output-container .field-selection-container')[0]), 'simple_column');
@@ -309,7 +309,7 @@ module('Acceptance | query submission', function(hooks) {
     assert.expect(7);
     this.mockedAPI.mock([RESULTS.RAW], COLUMNS.BASIC);
 
-    await visit('/queries/new');
+    await visit('/queries/build');
     await click('.window-input .add-button');
     await click('.submit-button');
     await visit('queries');

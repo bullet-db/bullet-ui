@@ -26,7 +26,7 @@ module('Integration | Component | Cell | query name entry', function(hooks) {
     this.set('mockRow', query);
 
     await render(hbs`<Cells::QueryNameEntry @row={{this.mockRow}}/>`);
-    assert.dom(this.element).hasText('Filters: An Actual Filter Summary Fields: fb Window: None');
+    assert.dom(this.element).hasText('Mock BQL');
   });
 
   test('it calls the table action queryClick on click with a given query', async function(assert) {

@@ -1,0 +1,28 @@
+{{!--
+  Copyright 2020, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+<p>
+  BQL is the underlying query language used to construct Bullet queries. This page lets you type in a BQL query instead of building a query. The query building page does not support all the features that BQL has - such as arbitrary expressions with fields, casting.
+</p>
+
+<h5 class="content-header">BQL</h5>
+<p>
+  A BQL query looks very similar to a SQL query with some restrictions. Bullet does not support JOINs or nested queries. Essentially, a BQL query is first-order SQL. It also has custom functions to support additional queries in Bullet that are not first-order SQL like QUANTILEs or TOP Ks.
+</p>
+<h5 class="content-header">Spec</h5>
+<p>
+  For information on how to write BQL queries, see <a href="https://bullet-db.github.io/ws/api-bql">documentation</a>.
+</p>
+<h5 class="content-header">Examples</h5>
+<p>
+  For examples on how to write BQL queries, see <a href="https://bullet-db.github.io/ws/examples">examples</a>.
+</p>
+<h5 class="content-header">BQL Editor</h5>
+<p>
+  The editor is aware of the schema. Press <i>Ctrl + Space</i> or the <i>Tab</i> key when typing a BQL keyword or a field name to autocomplete.
+</p>
+<p>
+  The editor will try to reformat your query to separate out the various clauses on a different line - such as <i>SELECT</i>, <i>WHERE</i>.
+</p>

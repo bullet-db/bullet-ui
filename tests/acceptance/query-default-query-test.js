@@ -15,9 +15,19 @@ module('Acceptance | query default query', function(hooks) {
   setupForAcceptanceTest(hooks, [RESULTS.MULTIPLE], COLUMNS.BASIC);
   setupForMockSettings(hooks, QUERIES.BASIC_AND_LIST_TUMBLING_WINDOW);
 
-  test('it creates new queries with two default filters', async function(assert) {
+  test('it creates an empty builder query if the provided query is bad', async function(assert) {
+    assert.expect(3);
+    let settings = this.owner.lookup('settings:mocked');
+    settings.set('defaultQuery', 'garbage');
+    await visit('/queries/build');
+    assert.dom('.filter-container .builder .rules-list .rule-container').doesNotExist();
+    assert.dom('.window-container .window-emit-every').doesNotExist();
+    assert.dom('.options-container .query-duration input').hasValue('20');
+  });
+
+  test('it creates a new builder query with two default filters', async function(assert) {
     assert.expect(10);
-    await visit('/queries/new');
+    await visit('/queries/build');
 
     assert.dom('.filter-container .builder .rules-list .rule-container').exists({ count: 2 });
     let rules = findAll('.filter-container .builder .rules-list .rule-container');
@@ -32,4 +42,26 @@ module('Acceptance | query default query', function(hooks) {
     assert.dom('.window-container .window-size input').hasValue('1');
     assert.dom('.options-container .query-duration input').hasValue('20');
   });
+
+  test('it creates an empty bql query if the provided query is bad', async function(assert) {
+    assert.expect(1);
+    let settings = this.owner.lookup('settings:mocked');
+    settings.set('defaultQuery', 'garbage');
+    await visit('/queries/bql');
+    assert.dom('.query-panel .editor').includesText('1garbage' );
+  });
+
+  test('it creates new bql query with two default filters', async function(assert) {
+    assert.expect(1);
+    await visit('/queries/bql');
+
+    assert.dom('.query-panel .editor').includesText(
+      '1SELECT * ' +
+      '2FROM STREAM(20000, TIME) ' +
+      '3WHERE CONTAINSVALUE(complex_list_column, "foo") AND simple_column RLIKE ANY [".foo.+", ".*bar$"] ' +
+      '4WINDOWING TUMBLING(2000, TIME) ' +
+      '5LIMIT 1'
+    );
+  });
+
 });

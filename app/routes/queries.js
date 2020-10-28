@@ -4,15 +4,29 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import EmberObject, { action } from '@ember/object';
+import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
+import { getRouteFor } from 'bullet-ui/utils/query-type';
 
 export default class QueriesRoute extends Route {
   @service queryManager;
   @service router;
 
-  async model() {
+  async findQueries() {
     let queries = await this.store.findAll('query');
+    let bqls = await this.store.findAll('bql');
+    let all = A(queries.toArray());
+    // Dedup the true bqls
+    let map = new Map();
+    bqls.forEach(bql => map.set(bql.get('id'), bql));
+    queries.forEach(query => map.delete(query.get('bql.id')));
+    map.forEach(bql => all.pushObject(bql));
+    return all;
+  }
+
+  async model() {
+    let queries = await this.findQueries();
     let filters = await this.store.findAll('filter');
     let results = await this.store.findAll('result');
     let groups = await this.store.findAll('group');
@@ -42,19 +56,18 @@ export default class QueriesRoute extends Route {
 
   @action
   queryClick(query) {
-    // Force the model hook to fire in query.
-    this.transitionTo('query', query.get('id'));
+    return this.transitionTo(getRouteFor(query), query.get('id'));
   }
 
   @action
   async copyQueryClick(query, callback) {
-    let copy = await this.queryManager.copyQuery(query);
+    let copy = await this.queryManager.copy(query);
     callback(copy);
   }
 
   @action
   async linkQueryClick(query, callback) {
-    let encoded = await this.queryManager.encodeQuery(query);
+    let encoded = await this.queryManager.encode(query);
     let origin = this.origin;
     let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
     callback(`${origin}${path}`);
@@ -72,6 +85,6 @@ export default class QueriesRoute extends Route {
 
   @action
   deleteQueryClick(query) {
-    this.queryManager.deleteQuery(query);
+    this.queryManager.delete(query);
   }
 }

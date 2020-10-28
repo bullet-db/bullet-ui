@@ -61,8 +61,9 @@
     "broccoli-asset-rev": "^3.0.0",
     "c3": "~0.5.3",
     "chart.js": "~2.7.2",
+    "codemirror": "~5.58.1",
     "ember-auto-import": "^1.5.3",
-    "ember-changeset": "^3.9.1",
+    "ember-changeset": "^3.9.2",
     "ember-changeset-validations": "^3.9.1",
     "ember-cli": "~3.20.2",
     "ember-cli-app-version": "~3.2.0",
@@ -98,7 +99,7 @@
     "ember-responsive": "~3.0.5",
     "ember-route-action-helper": "2.0.8",
     "ember-sinon": "~5.0.0",
-    "ember-source": "~3.20.2",
+    "ember-source": "~3.20.5",
     "ember-tether": "2.0.0",
     "ember-tooltips": "~3.4.5",
     "eslint": "~6.8.0",
@@ -126,7 +127,8 @@
   "resolutions": {
     "ember-composable-helpers": "^3.1.1",
     "jquery": "^3.5.1",
-    "progressbar.js": "~1.0.1"
+    "progressbar.js": "~1.0.1",
+    "validated-changeset": "0.9.2"
   },
   "engines": {
     "node": ">= 10.*"

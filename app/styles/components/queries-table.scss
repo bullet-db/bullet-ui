@@ -20,6 +20,7 @@
     }
     .lt-row {
       .lt-cell {
+        @import "cells/query-type-entry";
         @import "cells/query-name-entry";
         @import "cells/query-results-entry";
         @import "cells/date-entry";

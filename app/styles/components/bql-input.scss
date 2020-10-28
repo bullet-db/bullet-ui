@@ -1,0 +1,24 @@
+/*
+ *  Copyright 2020, Yahoo Inc.
+ *  Licensed under the terms of the Apache License, Version 2.0.
+ *  See the LICENSE file associated with the project for terms.
+ */
+ .query-panel .editor-container {
+   margin-top: 20px;
+   .editor {
+     margin-top: 5px;
+     max-width: 860px;
+     position: relative;
+     z-index: 0;
+     font-size: $font-size-regular;
+
+     .CodeMirror {
+       border: solid 2px $inactive-grey-lighter;
+       height: 600px;
+       &.CodeMirror-focused {
+         border: 3px solid $input-border-focus;
+       }
+     }
+
+   }
+ }

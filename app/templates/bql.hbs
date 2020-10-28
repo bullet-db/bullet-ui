@@ -1,0 +1,11 @@
+{{!--
+  Copyright 2020, Yahoo Inc.
+  Licensed under the terms of the Apache License, Version 2.0.
+  See the LICENSE file associated with the project for terms.
+ --}}
+ <div class="query-panel-container bql-panel-container">
+   <BqlInput @query={{@model.query}} @schema={{@model.schema}}
+             @onSaveQuery={{fn (route-action "saveQuery")}}
+             @onEditorCreate={{fn (route-action "saveEditor")}}
+             @onSubmitQuery={{fn (route-action "sendQuery")}}/>
+ </div>

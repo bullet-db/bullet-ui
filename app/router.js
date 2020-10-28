@@ -13,9 +13,11 @@ export default class Router extends EmberRouter {
 
 Router.map(function() {
   this.route('queries', function() {
-    this.route('new');
+    this.route('build');
+    this.route('bql');
   });
   this.route('query', { path: 'query/:query_id' });
+  this.route('bql', { path: 'bql/:query_id' });
 
   this.route('create', { path: 'create/:hash' });
 

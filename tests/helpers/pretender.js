@@ -7,6 +7,7 @@ import Pretender from 'pretender';
 import ENV from 'bullet-ui/config/environment';
 
 const SCHEMA_ENDPOINT = `${ENV.APP.SETTINGS.schemaHost}/${ENV.APP.SETTINGS.schemaNamespace}/columns`;
+const VALIDATE_ENDPOINT = `${ENV.APP.SETTINGS.queryHost}/${ENV.APP.SETTINGS.queryNamespace}/${ENV.APP.SETTINGS.validationPath}`;
 
 export function wrap(statusCode, contentType, response) {
   return [statusCode, { 'Content-Type': contentType }, response];
@@ -24,9 +25,10 @@ export function jsonAPIWrap(statusCode, response) {
   return wrap(statusCode, 'application/vnd.api+json', JSON.stringify(response));
 }
 
-export function requiredRoutes(columns, delay) {
+export function requiredRoutes(columns) {
   return function() {
-    this.get(SCHEMA_ENDPOINT, () => jsonAPIWrap(200, columns), delay);
+    this.get(SCHEMA_ENDPOINT, () => jsonAPIWrap(200, columns));
+    this.post(VALIDATE_ENDPOINT, () => [204]);
   };
 }
 
@@ -38,16 +40,17 @@ export function emptyAPI() {
   return pretender;
 }
 
-export function mockAPI(columns, delay = 0) {
+export function mockAPI(columns) {
   let pretender = emptyAPI();
-  pretender.map(requiredRoutes(columns, delay));
+  pretender.map(requiredRoutes(columns));
   return pretender;
 }
 
-export function failAPI(columns) {
+export function failValidateAPI(columns, errors) {
   let pretender = emptyAPI();
   pretender.map(function() {
     this.get(SCHEMA_ENDPOINT, () => jsonAPIWrap(200, columns));
+    this.post(VALIDATE_ENDPOINT, () => jsonAPIWrap(422, errors));
   });
   return pretender;
 }

@@ -4,13 +4,10 @@
   See the LICENSE file associated with the project for terms.
  --}}
  <div class="query-blurb">
-  <div class="filter-summary-text">
-    <strong>Filters: </strong> {{@summary.filterSummary}}
-  </div>
-  <div class="fields-summary-text">
-    <strong>Fields: </strong> {{@summary.fieldsSummary}}
-  </div>
-  <div class="window-summary-text">
-    <strong>Window: </strong> {{@summary.windowSummary}}
+  <div class="summary-text">
+    {{@summary}}
+    {{#if @showTooltip}}
+      <EmberTooltip @side="bottom">{{@summary}}</EmberTooltip>
+    {{/if}}
   </div>
 </div>
