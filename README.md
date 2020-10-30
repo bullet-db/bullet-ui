@@ -1,6 +1,6 @@
 # Bullet UI
 
-[![Build Status](https://travis-ci.org/bullet-db/bullet-ui.svg?branch=master)](https://travis-ci.org/bullet-db/bullet-ui) [![Code Climate](https://codeclimate.com/github/bullet-db/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/bullet-db/bullet-ui) [![Test Coverage](https://codeclimate.com/github/bullet-db/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/bullet-db/bullet-ui/coverage) [![GitHub release](https://img.shields.io/github/release/bullet-db/bullet-ui.svg)](https://github.com/bullet-db/bullet-ui/releases/latest)
+[![Build Status](https://travis-ci.com/bullet-db/bullet-ui.svg?branch=master)](https://travis-ci.com/bullet-db/bullet-ui) [![Code Climate](https://codeclimate.com/github/bullet-db/bullet-ui/badges/gpa.svg)](https://codeclimate.com/github/bullet-db/bullet-ui) [![Test Coverage](https://codeclimate.com/github/bullet-db/bullet-ui/badges/coverage.svg)](https://codeclimate.com/github/bullet-db/bullet-ui/coverage) [![GitHub release](https://img.shields.io/github/release/bullet-db/bullet-ui.svg)](https://github.com/bullet-db/bullet-ui/releases/latest)
 
 ## Introduction
 
