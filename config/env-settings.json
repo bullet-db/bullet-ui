@@ -1,7 +1,7 @@
 {
   "default": {
     "queryHost": "https://foo.bar.com:4443",
-    "queryNamespace": "api/bullet",
+    "queryNamespace": "api/bullet/queries",
     "queryPath": "ws-query",
     "validationPath": "validate-query",
     "queryStompRequestChannel": "/server/request",
