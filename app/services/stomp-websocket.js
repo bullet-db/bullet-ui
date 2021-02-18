@@ -39,7 +39,7 @@ export default class StompWebsocketService extends Service {
       let { type, content } = JSON.parse(payload.body);
       if (!isEqual(type, ACK_TYPE)) {
         if (isEqual(type, COMPLETE_TYPE) || isEqual(type, FAIL_TYPE)) {
-          this.client = null;
+          this.disconnect();
         }
         handlers.message(JSON.parse(content), context);
       }
