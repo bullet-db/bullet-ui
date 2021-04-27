@@ -1,0 +1,19 @@
+cache:
+  pipeline: ["node_modules"]
+
+shared:
+  image: timbru31/node-chrome:10
+  environment:
+    SD_SONAR_OPTS: '-Dsonar.sources=lib -Dsonar.javascript.lcov.reportPaths=/coverage/lcov.info'
+
+jobs:
+  main:
+    requires: [~pr, ~commit]
+    secrets:
+      - CC_TEST_REPORTER_ID
+    steps:
+      - build: yarn global add codeclimate-test-reporter && yarn
+      - lint-template: yarn lint:hbs
+      - lint-js: yarn lint:js
+      - test: yarn test
+      - coverage: codeclimate-test-reporter < coverage/lcov.info
