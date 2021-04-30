@@ -7,7 +7,7 @@ shared:
     SD_SONAR_OPTS: '-Dsonar.sources=lib -Dsonar.javascript.lcov.reportPaths=/coverage/lcov.info'
   annotations:
     screwdriver.cd/cpu: HIGH
-    screwdriver.cd/ram: HIGH
+    screwdriver.cd/ram: TURBO
 
 jobs:
   main:
