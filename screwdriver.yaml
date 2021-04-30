@@ -1,0 +1,27 @@
+cache:
+  pipeline: ["node_modules"]
+
+shared:
+  image: timbru31/node-chrome:10
+  environment:
+    SD_SONAR_OPTS: '-Dsonar.sources=app -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info'
+  annotations:
+    screwdriver.cd/cpu: HIGH
+    screwdriver.cd/ram: TURBO
+
+jobs:
+  main:
+    requires: [~pr, ~commit]
+    secrets:
+      - CC_TEST_REPORTER_ID
+    steps:
+      - build: yarn
+      - lint-template: yarn lint:hbs
+      - lint-js: yarn lint:js
+      - update-browsers: npx browserslist@latest --update-db
+      - test: yarn test
+      - coverage: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.json coverage/lcov.info
+          ./cc-test-reporter upload-coverage
