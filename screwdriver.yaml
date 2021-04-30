@@ -18,5 +18,6 @@ jobs:
       - build: yarn global add codeclimate-test-reporter && yarn
       - lint-template: yarn lint:hbs
       - lint-js: yarn lint:js
+      - update-browsers: npx browserslist@latest --update-db
       - test: yarn test
       - coverage: codeclimate-test-reporter < coverage/lcov.info
