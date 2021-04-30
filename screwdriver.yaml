@@ -4,7 +4,7 @@ cache:
 shared:
   image: timbru31/node-chrome:10
   environment:
-    SD_SONAR_OPTS: '-Dsonar.sources=lib -Dsonar.javascript.lcov.reportPaths=/coverage/lcov.info'
+    SD_SONAR_OPTS: '-Dsonar.sources=app -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info'
   annotations:
     screwdriver.cd/cpu: HIGH
     screwdriver.cd/ram: TURBO
