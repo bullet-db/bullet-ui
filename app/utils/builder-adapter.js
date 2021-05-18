@@ -447,12 +447,18 @@ export function addQueryBuilderRules(element, rules, bql) {
  * @param {function} validateHook The hook to invoke for validation when something changes in the QueryBuilder.
  */
 export function addQueryBuilderHooks(element, context, dirtyHook, validateHook) {
-  element.on('rulesChanged.queryBuilder', bind(context, dirtyHook));
-  let event = [
+  let subFieldChanged = 'afterUpdateRuleSubfield.queryBuilder';
+  let dirtyEvents = [
+    'rulesChanged.queryBuilder',
+    subFieldChanged
+  ];
+  element.on(dirtyEvents.join(' '), bind(context, dirtyHook));
+
+  let validateEvents = [
     'afterUpdateRuleFilter.queryBuilder',
     'afterUpdateRuleOperator.queryBuilder',
-    'afterUpdateRuleSubfield.queryBuilder',
+    subFieldChanged,
     'afterUpdateRuleValue.queryBuilder'
   ];
-  element.on(event.join(' '), bind(context, validateHook));
+  element.on(validateEvents.join(' '), bind(context, validateHook));
 }
