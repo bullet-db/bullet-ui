@@ -75,6 +75,6 @@ function getConfiguration(columns) {
       }
     },
     autoCloseBrackets: true,
-    matchBrackets: true,
+    matchBrackets: true
   };
 }
