@@ -16,8 +16,8 @@ module('Integration | Component | Cell | record entry', function(hooks) {
     this.set('mockRow', { content: { value: 'foo' } });
     this.set('mockColumn', { label: 'value' });
     await render(hbs`<Cells::RecordEntry @row={{this.mockRow}} @column={{this.mockColumn}}/>`);
-    assert.dom(this.element).hasText('foo');
-    assert.dom('.record-popover-body').doesNotExist();
+    assert.dom('.plain-entry').hasText('"foo"');
+    assertTooltipNotRendered(assert);
   });
 
   test('it renders a complex array as text', async function(assert) {
