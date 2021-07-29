@@ -27,7 +27,7 @@ export default class RecordEntryComponent extends CloseablePopoverComponent {
 
   get isComplex() {
     let type = typeOf(this.data);
-    return type === 'object' || type === 'array';
+    return type === 'object' || type === 'array' || type === 'string';
   }
 
   get textValue() {

@@ -19,12 +19,12 @@ export default class SchemaTableComponent extends PaginatedTable {
 
   constructor() {
     super(...arguments);
-    this.pageSize = 10;
+    this.pageSize = 50;
     this.rows = SchemaTableComponent.fieldsToRows(this.args.fields);
     this.table = Table.create({ columns: this.columns });
     if (!this.args.isNested) {
       this.sortBy('name', 'ascending');
-      this.addPages(2);
+      this.addPages(1);
     } else {
       // Add everything if nested
       this.addRows(0, this.numberOfRows);

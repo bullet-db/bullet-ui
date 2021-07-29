@@ -141,7 +141,12 @@ const TYPE_MAPPING = {
     }),
     BOOLEAN: JSON.stringify({
       type: 'boolean', input: 'radio', values: { true: 'true', false: 'false' }
-    })
+    }),
+    UNKNOWN: JSON.stringify({
+      type: 'string',
+      placeholder: 'string',
+      operators: ['is_null', 'is_not_null']
+    }),
   }
 };
 
