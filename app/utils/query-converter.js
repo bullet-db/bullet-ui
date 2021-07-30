@@ -28,13 +28,14 @@ function regex(keyword, groupName) {
 const S = regex('SELECT', 'select');
 const F = regex('FROM', 'from');
 const WH = regex('WHERE', 'where');
+const LV = regex('LATERAL VIEW', 'lateralView');
 const G = regex('GROUP BY', 'groupBy');
 const H = regex('HAVING', 'having');
 const O = regex('ORDER BY', 'orderBy');
 const WI = regex('WINDOWING', 'windowing');
 const L = regex('LIMIT', 'limit');
 // Handles Having and Order By as well
-const SQL = new RegExp(`^${S}\\s*${F}\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
+const SQL = new RegExp(`^${S}\\s*${F}\\s*${LV}?\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
 
 // Sub-BQL to Query parts regexes
 const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i;
@@ -586,6 +587,7 @@ export default class QueryConverter {
 
   static formatQuery(bql) {
     bql = bql.replace(/(?<!\n|\r)from/i, '\nFROM');
+    bql = bql.replace(/(?<!\n|\r)lateral\s+view\s+explode/i, '\nLATERAL VIEW EXPLODE');
     bql = bql.replace(/(?<!\n|\r)where/i, '\nWHERE');
     bql = bql.replace(/(?<!\n|\r)group\s+by/i, '\nGROUP BY');
     bql = bql.replace(/(?<!\n|\r)having/i, '\nHAVING');
