@@ -571,7 +571,7 @@ export default class QueryConverter {
       this.recreateDuration(categorization, from);
       this.categorizeWindow(categorization, windowing);
       categorization.set('isStarSelect', type === AGGREGATION_TYPES.RAW && select.indexOf('*') !== -1);
-      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy) && isEmpty(groupBy2)));
+      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy) && isEmpty(groupBy2));
     }
     return categorization;
   }
