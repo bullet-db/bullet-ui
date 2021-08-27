@@ -5,7 +5,7 @@
  */
 import { pluralize } from 'ember-inflector';
 import { Base64 } from 'js-base64';
-import EmberObject, { computed, get, getProperties } from '@ember/object';
+import EmberObject, { computed, get, getWithDefault, getProperties } from '@ember/object';
 import Service, { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { isBlank, isEqual, isNone, typeOf } from '@ember/utils';
@@ -36,6 +36,13 @@ export default class QueryManagerService extends Service {
     let mapping = get(this.settings, 'defaultValues.metadataKeyMapping');
     let { windowSection, windowNumber } = getProperties(mapping, 'windowSection', 'windowNumber');
     return `${windowSection}.${windowNumber}`;
+  }
+
+  @computed('settings').readOnly()
+  get innerWindowNumberProperty() {
+    let mapping = get(this.settings, 'defaultValues.metadataKeyMapping');
+    let { innerQuerySection, windowSection, windowNumber } = getProperties(mapping, 'innerQuerySection', 'windowSection', 'windowNumber');
+    return `${innerQuerySection}.${windowSection}.${windowNumber}`;
   }
 
   // Copying
@@ -178,7 +185,7 @@ export default class QueryManagerService extends Service {
     result.get('cache').push({
       metadata: data.meta,
       records: data.records,
-      sequence: get(data.meta, this.windowNumberProperty),
+      sequence: getWithDefault(data.meta, this.innerWindowNumberProperty, get(data.meta, this.windowNumberProperty)),
       index: position,
       created: new Date(Date.now())
     });

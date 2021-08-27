@@ -34,8 +34,17 @@ const H = regex('HAVING', 'having');
 const O = regex('ORDER BY', 'orderBy');
 const WI = regex('WINDOWING', 'windowing');
 const L = regex('LIMIT', 'limit');
+
+const FS = '(?:FROM\\s+\\(\\s*SELECT\\s+(?<fromSelect>.+?))';
+const WH2 = regex('WHERE', 'where2');
+const LV2 = regex('LATERAL VIEW', 'lateralView2');
+const G2 = regex('GROUP BY', 'groupBy2');
+const H2 = regex('HAVING', 'having2');
+const O2 = regex('ORDER BY', 'orderBy2');
+const L2 = regex('LIMIT', 'limit2');
+
 // Handles Having and Order By as well
-const SQL = new RegExp(`^${S}\\s*${F}\\s*${LV}?\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
+const SQL = new RegExp(`^${S}\\s*${FS}?\\s*${F}\\s*${LV}?\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*${LV2}?\\s*${WH2}?\\s*${G2}?\\s*${H2}?\\s*${O2}?\\s*${L2}?\\s*;?$`, 'is');
 
 // Sub-BQL to Query parts regexes
 const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i;
@@ -77,9 +86,8 @@ const METRIC_TEST = new RegExp(`${METRIC}(?:,*${METRIC})*`, 'i');
 export default class QueryConverter {
   // BQL to Query methods
 
-  static classifyBQL(select, groupBy) {
-    // Group By
-    if (!isEmpty(groupBy)) {
+  static classifyBQL(select, groupBy, innerSelect, extraGroupBy) {
+    if (!isEmpty(extraGroupBy)) {
       return AGGREGATION_TYPES.GROUP;
     }
     if (COUNT_DISTINCT_TEST.test(select)) {
@@ -92,10 +100,10 @@ export default class QueryConverter {
       return AGGREGATION_TYPES.DISTRIBUTION;
     }
     // Now that specials are done, if any functional and metric stuff is in the select, assume GROUP ALL
-    if (FUNCTIONAL_TEST.test(select) && METRIC_TEST.test(select)) {
+    if (!isEmpty(groupBy) || (FUNCTIONAL_TEST.test(select) && METRIC_TEST.test(select))) {
       return AGGREGATION_TYPES.GROUP;
     }
-    return AGGREGATION_TYPES.RAW;
+    return innerSelect ? QueryConverter.classifyBQL(innerSelect) : AGGREGATION_TYPES.RAW;
   }
 
   /**
@@ -557,13 +565,13 @@ export default class QueryConverter {
     let categorization = EmberObject.create();
     let result = bql.match(SQL);
     if (!isEmpty(result)) {
-      let { select, from, groupBy, windowing } = result.groups;
-      let type = this.classifyBQL(select, groupBy);
+      let { select, fromSelect, from, groupBy, groupBy2, windowing } = result.groups;
+      let type = this.classifyBQL(select, groupBy, fromSelect, groupBy2);
       categorization.set('type', type);
       this.recreateDuration(categorization, from);
       this.categorizeWindow(categorization, windowing);
       categorization.set('isStarSelect', type === AGGREGATION_TYPES.RAW && select.indexOf('*') !== -1);
-      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy));
+      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy) && isEmpty(groupBy2)));
     }
     return categorization;
   }
