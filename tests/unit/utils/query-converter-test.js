@@ -656,4 +656,20 @@ module('Unit | Utility | query converter', function() {
       'SELECT * FROM STREAM(10000, TIME) WINDOWING EVERY(2000, TIME, ALL) LIMIT 10 '
     );
   });
+
+  test('it matches bql for a simple query correctly', function(assert) {
+    let query = 'SELECT * FROM STREAM(10000, TIME) WINDOWING EVERY(2000, TIME, ALL) LIMIT 10';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('duration'), 10000);
+    assert.equal(categorization.get('emitType'), EMIT_TYPES.TIME);
+    assert.equal(categorization.get('emitEvery'), 2000);
+  });
+
+  test('it matches bql for a simple nested query correctly', function(assert) {
+    let query = 'SELECT COUNT(DISTINCT foo) FROM (SELECT * FROM STREAM(10000, TIME) WINDOWING EVERY(2000, TIME, ALL) LIMIT 10)';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('duration'), 10000);
+    assert.equal(categorization.get('emitType'), EMIT_TYPES.TIME);
+    assert.equal(categorization.get('emitEvery'), 2000);
+  });
 });

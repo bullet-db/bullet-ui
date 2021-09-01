@@ -9,8 +9,6 @@ import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/sql-hint';
-import isEmpty from 'bullet-ui/utils/is-empty';
-import QueryConverter from 'bullet-ui/utils/query-converter';
 
 const MIME = 'text/x-bql';
 
