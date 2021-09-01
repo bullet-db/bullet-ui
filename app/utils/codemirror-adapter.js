@@ -41,9 +41,7 @@ export function defineBQL() {
 export function addEditor(element, columns, initialContent) {
   defineBQL();
   let options = getConfiguration(columns);
-  if (!isEmpty(initialContent)) {
-    options.value = QueryConverter.formatQuery(initialContent);
-  }
+  options.value = initialContent;
   options.mode = MIME;
   return CodeMirror(element, options);
 }

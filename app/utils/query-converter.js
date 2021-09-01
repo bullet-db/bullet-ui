@@ -14,10 +14,10 @@ import {
 /**
  * Creates a non-capturing group for the given keyword and captures the content (non-greedily) after the keyword
  * in a named group with the given groupName
-  * @param {[type]} keyword The keyword to capture. If multiple words, will be converted to have one or more whitespace.
-  * @param {[type]} groupName The name of the capture group for the content after the keyword (non-greedy).
-  * @return {[type]} A String that represents the regex.
-  */
+ * @param {[type]} keyword The keyword to capture. If multiple words, will be converted to have one or more whitespace.
+ * @param {[type]} groupName The name of the capture group for the content after the keyword (non-greedy).
+ * @return {[type]} A String that represents the regex.
+ */
 function regex(keyword, groupName) {
   // Split by whitespace and join back the words using the literal '\s+;'
   keyword = keyword.split(/\s+/).join('\\s+');
@@ -591,17 +591,5 @@ export default class QueryConverter {
     type = type.toUpperCase();
     categorization.set('emitType', type === EMIT_TYPES.identify(EMIT_TYPES.TIME) ? EMIT_TYPES.TIME : EMIT_TYPES.RECORD);
     categorization.set('emitEvery', Number(every));
-  }
-
-  static formatQuery(bql) {
-    bql = bql.replace(/(?<!\n|\r)from/i, '\nFROM');
-    bql = bql.replace(/(?<!\n|\r)lateral\s+view\s+explode/i, '\nLATERAL VIEW EXPLODE');
-    bql = bql.replace(/(?<!\n|\r)where/i, '\nWHERE');
-    bql = bql.replace(/(?<!\n|\r)group\s+by/i, '\nGROUP BY');
-    bql = bql.replace(/(?<!\n|\r)having/i, '\nHAVING');
-    bql = bql.replace(/(?<!\n|\r)order\s+by\s+/i, '\nORDER BY');
-    bql = bql.replace(/(?<!\n|\r)windowing/i, '\nWINDOWING');
-    bql = bql.replace(/(?<!\n|\r)limit/i, '\nLIMIT');
-    return bql;
   }
 }
