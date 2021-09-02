@@ -56,11 +56,10 @@ module('Acceptance | query default query', function(hooks) {
     await visit('/queries/bql');
 
     assert.dom('.query-panel .editor').includesText(
-      '1SELECT * ' +
-      '2FROM STREAM(20000, TIME) ' +
-      '3WHERE CONTAINSVALUE(complex_list_column, "foo") AND simple_column RLIKE ANY [".foo.+", ".*bar$"] ' +
-      '4WINDOWING TUMBLING(2000, TIME) ' +
-      '5LIMIT 1'
+      '1SELECT * FROM STREAM(20000, TIME) ' +
+      'WHERE CONTAINSVALUE(complex_list_column, "foo") AND simple_column RLIKE ANY [".foo.+", ".*bar$"] ' +
+      'WINDOWING TUMBLING(2000, TIME) ' +
+      'LIMIT 1'
     );
   });
 

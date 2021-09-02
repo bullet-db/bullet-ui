@@ -572,10 +572,10 @@ module('Acceptance | query lifecycle', function(hooks) {
     assert.dom('.name-container input').hasValue('test query');
     assert.dom('.query-panel .editor').includesText(
       '1SELECT complex_map_column AS "complex_map_column", simple_column AS "bar", COUNT(*), AVG(simple_column) AS "avg_bar" ' +
-      '2FROM STREAM(20000, TIME) ' +
-      '3WHERE complex_list_column IS NULL ' +
-      '4GROUP BY complex_map_column, simple_column ' +
-      '5LIMIT 512'
+      'FROM STREAM(20000, TIME) ' +
+      'WHERE complex_list_column IS NULL ' +
+      'GROUP BY complex_map_column, simple_column ' +
+      'LIMIT 512'
     );
   });
 
