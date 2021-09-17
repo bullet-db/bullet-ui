@@ -735,7 +735,7 @@ module('Unit | Utility | query converter', function() {
   test('it matches bql for a nested select star query', function(assert) {
     let query = 'SELECT abc FROM (SELECT * FROM STREAM(20000, TIME))';
     let categorization = QueryConverter.categorizeBQL(query);
-    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.RAW);
     assert.equal(categorization.get('isStarSelect'), true);
     assert.equal(categorization.get('isGroupAll'), false);
     assert.equal(categorization.get('duration'), 20000);
@@ -744,7 +744,7 @@ module('Unit | Utility | query converter', function() {
   test('it matches bql for another nested select star query', function(assert) {
     let query = 'SELECT * FROM (SELECT abc FROM STREAM(20000, TIME))';
     let categorization = QueryConverter.categorizeBQL(query);
-    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.RAW);
     assert.equal(categorization.get('isStarSelect'), true);
     assert.equal(categorization.get('isGroupAll'), false);
     assert.equal(categorization.get('duration'), 20000);
