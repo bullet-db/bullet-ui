@@ -665,11 +665,88 @@ module('Unit | Utility | query converter', function() {
     assert.equal(categorization.get('emitEvery'), 2000);
   });
 
-  test('it matches bql for a simple nested query correctly', function(assert) {
+  test('it matches bql for a count distinct query', function(assert) {
     let query = 'SELECT COUNT(DISTINCT foo) FROM (SELECT * FROM STREAM(10000, TIME) WINDOWING EVERY(2000, TIME, ALL) LIMIT 10)';
     let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.COUNT_DISTINCT);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), false);
     assert.equal(categorization.get('duration'), 10000);
     assert.equal(categorization.get('emitType'), EMIT_TYPES.TIME);
     assert.equal(categorization.get('emitEvery'), 2000);
+  });
+
+  test('it matches bql for a nested raw query', function(assert) {
+    let query = 'SELECT abc FROM (SELECT def FROM STREAM(10000, TIME))';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.RAW);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), false);
+    assert.equal(categorization.get('duration'), 10000);
+    assert.equal(categorization.get('emitType'), undefined);
+    assert.equal(categorization.get('emitEvery'), undefined);
+  });
+
+  test('it matches bql for a nested group by query', function(assert) {
+    let query = 'SELECT * FROM (SELECT SUM(def) FROM STREAM(20000, TIME) GROUP BY def)';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), false);
+    assert.equal(categorization.get('duration'), 20000);
+  });
+
+  test('it matches bql for another nested group by query', function(assert) {
+    let query = 'SELECT abc FROM (SELECT SUM(def) FROM STREAM(20000, TIME) GROUP BY def) GROUP BY abc';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), false);
+    assert.equal(categorization.get('duration'), 20000);
+  });
+
+  test('it matches bql for one more nested group by query', function(assert) {
+    let query = 'SELECT abc FROM (SELECT SUM(def) FROM STREAM(20000, TIME) ORDER BY def) GROUP BY abc';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), false);
+    assert.equal(categorization.get('duration'), 20000);
+  });
+
+  test('it matches bql for a nested group all query', function(assert) {
+    let query = 'SELECT * FROM (SELECT SUM(def) FROM STREAM(20000, TIME))';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), true);
+    assert.equal(categorization.get('duration'), 20000);
+  });
+
+  test('it matches bql for another nested group all query', function(assert) {
+    let query = 'SELECT SUM(def) FROM (SELECT * FROM STREAM(20000, TIME))';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), false);
+    assert.equal(categorization.get('isGroupAll'), true);
+    assert.equal(categorization.get('duration'), 20000);
+  });
+
+  test('it matches bql for a nested select star query', function(assert) {
+    let query = 'SELECT abc FROM (SELECT * FROM STREAM(20000, TIME))';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), true);
+    assert.equal(categorization.get('isGroupAll'), false);
+    assert.equal(categorization.get('duration'), 20000);
+  });
+
+  test('it matches bql for another nested select star query', function(assert) {
+    let query = 'SELECT * FROM (SELECT abc FROM STREAM(20000, TIME))';
+    let categorization = QueryConverter.categorizeBQL(query);
+    assert.equal(categorization.get('type'), AGGREGATION_TYPES.GROUP);
+    assert.equal(categorization.get('isStarSelect'), true);
+    assert.equal(categorization.get('isGroupAll'), false);
+    assert.equal(categorization.get('duration'), 20000);
   });
 });
