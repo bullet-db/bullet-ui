@@ -44,6 +44,7 @@
         "querySection": "Query",
         "windowSection": "Window",
         "sketchSection": "Sketch",
+        "innerQuerySection": "Inner Query",
         "theta": "Theta",
         "uniquesEstimate": "Uniques Estimate",
         "queryCreationTime": "Receive Time",

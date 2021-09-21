@@ -14,10 +14,10 @@ import {
 /**
  * Creates a non-capturing group for the given keyword and captures the content (non-greedily) after the keyword
  * in a named group with the given groupName
-  * @param {[type]} keyword The keyword to capture. If multiple words, will be converted to have one or more whitespace.
-  * @param {[type]} groupName The name of the capture group for the content after the keyword (non-greedy).
-  * @return {[type]} A String that represents the regex.
-  */
+ * @param {[type]} keyword The keyword to capture. If multiple words, will be converted to have one or more whitespace.
+ * @param {[type]} groupName The name of the capture group for the content after the keyword (non-greedy).
+ * @return {[type]} A String that represents the regex.
+ */
 function regex(keyword, groupName) {
   // Split by whitespace and join back the words using the literal '\s+;'
   keyword = keyword.split(/\s+/).join('\\s+');
@@ -34,8 +34,17 @@ const H = regex('HAVING', 'having');
 const O = regex('ORDER BY', 'orderBy');
 const WI = regex('WINDOWING', 'windowing');
 const L = regex('LIMIT', 'limit');
+
+const FS = '(?:FROM\\s+.*SELECT\\s+(?<fromSelect>.+?))';
+const WHX = regex('WHERE', 'extraWhere');
+const LVX = regex('LATERAL VIEW', 'extraLateralView');
+const GX = regex('GROUP BY', 'extraGroupBy');
+const HX = regex('HAVING', 'extraHaving');
+const OX = regex('ORDER BY', 'extraOrderBy');
+const LX = regex('LIMIT', 'extraLimit');
+
 // Handles Having and Order By as well
-const SQL = new RegExp(`^${S}\\s*${F}\\s*${LV}?\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*;?$`, 'i');
+const SQL = new RegExp(`^${S}\\s*${FS}?\\s*${F}\\s*${LV}?\\s*${WH}?\\s*${G}?\\s*${H}?\\s*${O}?\\s*${WI}?\\s*${L}?\\s*${LVX}?\\s*${WHX}?\\s*${GX}?\\s*${HX}?\\s*${OX}?\\s*${LX}?\\s*;?$`, 'is');
 
 // Sub-BQL to Query parts regexes
 const STREAM = /(?:STREAM\s*\(\s*(?<duration>\d*)(?:\s*,\s*TIME)?\s*\))/i;
@@ -77,9 +86,8 @@ const METRIC_TEST = new RegExp(`${METRIC}(?:,*${METRIC})*`, 'i');
 export default class QueryConverter {
   // BQL to Query methods
 
-  static classifyBQL(select, groupBy) {
-    // Group By
-    if (!isEmpty(groupBy)) {
+  static classifyBQL(select, groupBy, innerSelect, extraGroupBy) {
+    if (!isEmpty(extraGroupBy)) {
       return AGGREGATION_TYPES.GROUP;
     }
     if (COUNT_DISTINCT_TEST.test(select)) {
@@ -92,10 +100,10 @@ export default class QueryConverter {
       return AGGREGATION_TYPES.DISTRIBUTION;
     }
     // Now that specials are done, if any functional and metric stuff is in the select, assume GROUP ALL
-    if (FUNCTIONAL_TEST.test(select) && METRIC_TEST.test(select)) {
+    if (!isEmpty(groupBy) || (FUNCTIONAL_TEST.test(select) && METRIC_TEST.test(select))) {
       return AGGREGATION_TYPES.GROUP;
     }
-    return AGGREGATION_TYPES.RAW;
+    return innerSelect ? QueryConverter.classifyBQL(innerSelect) : AGGREGATION_TYPES.RAW;
   }
 
   /**
@@ -557,13 +565,13 @@ export default class QueryConverter {
     let categorization = EmberObject.create();
     let result = bql.match(SQL);
     if (!isEmpty(result)) {
-      let { select, from, groupBy, windowing } = result.groups;
-      let type = this.classifyBQL(select, groupBy);
+      let { select, fromSelect, from, groupBy, extraGroupBy, windowing } = result.groups;
+      let type = this.classifyBQL(select, groupBy, fromSelect, extraGroupBy);
       categorization.set('type', type);
       this.recreateDuration(categorization, from);
       this.categorizeWindow(categorization, windowing);
       categorization.set('isStarSelect', type === AGGREGATION_TYPES.RAW && select.indexOf('*') !== -1);
-      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy));
+      categorization.set('isGroupAll', type === AGGREGATION_TYPES.GROUP && isEmpty(groupBy) && isEmpty(extraGroupBy));
     }
     return categorization;
   }
@@ -583,17 +591,5 @@ export default class QueryConverter {
     type = type.toUpperCase();
     categorization.set('emitType', type === EMIT_TYPES.identify(EMIT_TYPES.TIME) ? EMIT_TYPES.TIME : EMIT_TYPES.RECORD);
     categorization.set('emitEvery', Number(every));
-  }
-
-  static formatQuery(bql) {
-    bql = bql.replace(/(?<!\n|\r)from/i, '\nFROM');
-    bql = bql.replace(/(?<!\n|\r)lateral\s+view\s+explode/i, '\nLATERAL VIEW EXPLODE');
-    bql = bql.replace(/(?<!\n|\r)where/i, '\nWHERE');
-    bql = bql.replace(/(?<!\n|\r)group\s+by/i, '\nGROUP BY');
-    bql = bql.replace(/(?<!\n|\r)having/i, '\nHAVING');
-    bql = bql.replace(/(?<!\n|\r)order\s+by\s+/i, '\nORDER BY');
-    bql = bql.replace(/(?<!\n|\r)windowing/i, '\nWINDOWING');
-    bql = bql.replace(/(?<!\n|\r)limit/i, '\nLIMIT');
-    return bql;
   }
 }

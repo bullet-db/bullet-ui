@@ -9,8 +9,6 @@ import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/sql-hint';
-import isEmpty from 'bullet-ui/utils/is-empty';
-import QueryConverter from 'bullet-ui/utils/query-converter';
 
 const MIME = 'text/x-bql';
 
@@ -41,9 +39,7 @@ export function defineBQL() {
 export function addEditor(element, columns, initialContent) {
   defineBQL();
   let options = getConfiguration(columns);
-  if (!isEmpty(initialContent)) {
-    options.value = QueryConverter.formatQuery(initialContent);
-  }
+  options.value = initialContent;
   options.mode = MIME;
   return CodeMirror(element, options);
 }

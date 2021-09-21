@@ -71,8 +71,8 @@ module('Acceptance | query default query api', function(hooks) {
 
     assert.dom('.query-panel .editor').includesText(
       '1SELECT COUNT(DISTINCT simple_column) ' +
-      '2FROM STREAM(50000, TIME) ' +
-      '3WHERE enumerated_map_column.nested_1 NOT IN ["1", "2", "3"] AND SIZEIS(simple_column, 15) AND ' +
+      'FROM STREAM(50000, TIME) ' +
+      'WHERE enumerated_map_column.nested_1 NOT IN ["1", "2", "3"] AND SIZEIS(simple_column, 15) AND ' +
               'CONTAINSKEY(enumerated_map_column, "bar");'
     );
   });
