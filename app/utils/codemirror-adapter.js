@@ -27,7 +27,7 @@ export function defineBQL() {
     keywords: set('select as cast count distinct sum min max avg from where if and or not xor is all any true false ' +
                   'null group by having order asc desc limit every first time record linear region manual stream '  +
                   'windowing tumbling quantile freq cumfreq top sizeis sizeof filter rlike containskey containsvalue ' +
-                  'lateral view outer explode trim abs between substr substring unixtimestamp'),
+                  'lateral view outer explode trim abs lower upper hash between substr substring unixtimestamp now'),
     builtin: set('string boolean integer long float double map list'),
     atoms: set('false true null'),
     operatorChars: /^[*+\-/%<>!=&|^]/,
