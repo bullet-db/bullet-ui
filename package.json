@@ -112,7 +112,7 @@
     "jQuery-QueryBuilder": "~2.5.2",
     "jQuery-QueryBuilder-Placeholders": "bullet-db/jQuery-QueryBuilder-Placeholders#v1.0.1",
     "jQuery-QueryBuilder-Subfield": "bullet-db/jQuery-QueryBuilder-Subfield#v1.1.2",
-    "jquery-ui": "~1.12.1",
+    "jquery-ui": "~1.13.0",
     "js-base64": "^2.5.2",
     "json-formatter-js": "~2.3.4",
     "loader.js": "~4.7.0",
