@@ -4,6 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';``
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { alias } from '@ember/object/computed';
@@ -11,6 +12,12 @@ import { alias } from '@ember/object/computed';
 export default class QueryInformationComponent extends Component {
   @service querier;
   @alias('querier.isRunningQuery') isRunningQuery;
+  @tracked savedToClipboard = false;
+
+  @action
+  inClipboard() {
+    this.savedToClipboard = true;
+  }
 
   @action
   cancelClick(event) {

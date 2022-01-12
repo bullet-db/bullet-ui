@@ -8,6 +8,7 @@ import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import { getRouteFor } from 'bullet-ui/utils/query-type';
+import { getOrigin } from 'bullet-ui/utils/page-origin';
 
 export default class QueriesRoute extends Route {
   @service queryManager;
@@ -48,12 +49,6 @@ export default class QueriesRoute extends Route {
     this.queryManager.deleteAllUnparented(model);
   }
 
-  get origin() {
-    let { protocol, hostname, port } = window.location;
-    port = port ? `:${port}` : '';
-    return `${protocol}//${hostname}${port}`;
-  }
-
   @action
   queryClick(query) {
     return this.transitionTo(getRouteFor(query), query.get('id'));
@@ -68,7 +63,7 @@ export default class QueriesRoute extends Route {
   @action
   async linkQueryClick(query, callback) {
     let encoded = await this.queryManager.encode(query);
-    let origin = this.origin;
+    let origin = getOrigin();
     let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
     callback(`${origin}${path}`);
   }

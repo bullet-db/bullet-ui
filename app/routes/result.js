@@ -4,27 +4,42 @@
  *  See the LICENSE file associated with the project for terms.
  */
 import Route from '@ember/routing/route';
-import { action } from '@ember/object';
+import EmberObject, { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { getRouteFor } from 'bullet-ui/utils/query-type';
+import { getOrigin } from 'bullet-ui/utils/page-origin';
 
 export default class ResultRoute extends Route {
   @service querier;
   @service queryManager;
   @service store;
+  @service router;
 
   async model(params) {
     let result = await this.store.findRecord('result', params.result_id);
     let query = await result.query;
-    return { result, query };
+    let originalQuery = await this.findQuery(query);
+    let encoded = await this.queryManager.encode(originalQuery);
+    let origin = getOrigin();
+    let path = this.router.urlFor('create', EmberObject.create({ hash: encoded }));
+    let encodedQuery = `${origin}${path}`;
+    return { result, query, encodedQuery };
   }
 
-  async findQuery() {
-    let query = this.controller.get('model.query');
-    // If there is a builder query associated, use that
+  async findQuery(query) {
+    // If there is a builder query associated, use that after fetching relationships
     let queries = await this.store.findAll('query');
     let optional = queries.findBy('bql.id', query.get('id'));
-    return optional ? optional : query;
+    if (optional) {
+      await optional.projections;
+      await optional.filter;
+      await optional.window;
+      let aggregation = await optional.aggregation;
+      await aggregation.groups;
+      await aggregation.metrics;
+      return optional;
+    }
+    return query;
   }
 
   lateSubmitQuery(query) {
@@ -44,7 +59,7 @@ export default class ResultRoute extends Route {
 
   @action
   async queryClick() {
-    let query = await this.findQuery();
+    let query = await this.findQuery(this.controller.get('model.query'));
     this.transitionTo(getRouteFor(query), query.get('id'));
   }
 

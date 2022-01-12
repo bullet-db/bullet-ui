@@ -52,12 +52,14 @@
 
     .link-button {
       @extend %primary-button;
+    }
+
+    .link-button,.encode-button {
       margin-right: 5px;
     }
 
-    .rerun-button,.cancel-button {
+    .encode-button,.rerun-button,.cancel-button {
       @extend %secondary-button;
     }
   }
-
 }
