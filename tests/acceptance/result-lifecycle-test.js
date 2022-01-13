@@ -23,7 +23,7 @@ module('Acceptance | result lifecycle', function(hooks) {
     let createdQuery = currentURL();
     await click('.submit-button');
     assert.equal(currentRouteName(), 'result');
-    await click('.query-blurb-wrapper');
+    await click('.link-button');
     assert.equal(currentURL(), createdQuery);
   });
 

@@ -6,6 +6,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
+import { triggerCopySuccess } from 'ember-cli-clipboard/test-support';
 import { hbs } from 'ember-cli-htmlbars';
 import Service from '@ember/service';
 
@@ -18,9 +19,10 @@ module('Integration | Component | query information', function(hooks) {
     assert.dom(this.element).includesText('foo bar baz');
   });
 
-  test('it displays an edit and a rerun button', async function(assert) {
+  test('it displays an edit, copy to clipboard and a rerun button', async function(assert) {
     await render(hbs`<QueryInformation/>`);
     assert.dom('.link-button').exists({ count: 1 });
+    assert.dom('.encode-button').exists({ count: 1 });
     assert.dom('.rerun-button').exists({ count: 1 });
   });
 
@@ -44,14 +46,16 @@ module('Integration | Component | query information', function(hooks) {
     await click('button.link-button');
   });
 
-  test('it links to the query from the whole wrapper too', async function(assert) {
-    assert.expect(2);
-    this.set('mockQueryClick', () => {
-      assert.ok(true);
-    });
-    await render(hbs`<QueryInformation @queryClick={{this.mockQueryClick}}/>`);
-    assert.dom('.query-blurb-wrapper').exists({ count: 1 });
-    await click('div.query-blurb-wrapper');
+  test('it encodes the query', async function(assert) {
+    assert.expect(5);
+    this.set('mockEncodedQuery', 'Mock');
+    await render(hbs`<QueryInformation @encodedQuery={{this.mockEncodedQuery}}/>`);
+    assert.dom('.query-blurb-wrapper .copy-icon').exists({ count: 1 });
+    assert.dom('.query-blurb-wrapper .check-icon').doesNotExist();
+    assert.dom('button.encode-button').hasAttribute('data-clipboard-text', 'Mock');
+    triggerCopySuccess();
+    assert.dom('.query-blurb-wrapper .check-icon').exists({ count: 1 });
+    assert.dom('.query-blurb-wrapper .copy-icon').doesNotExist();
   });
 
   // Nested module for stubbing running
