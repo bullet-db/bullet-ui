@@ -4,7 +4,7 @@
  *  See the LICENSE file associated with the project for terms.
  */
 
- export function getOrigin(query) {
+ export function getOrigin() {
    let { protocol, hostname, port } = window.location;
    port = port ? `:${port}` : '';
    return `${protocol}//${hostname}${port}`;
